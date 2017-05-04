@@ -2,13 +2,13 @@ const util = require('../Util').Utils;
 const DashboardAdmin = require('./DashboardAdmin').DashboardAdmin;
 
 exports.DashboardAdminP = function(globalVariables) {
-    const dashboardView = DashboardAdmin(globalVariables),
+    const DashboardView = DashboardAdmin(globalVariables),
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
 
 
     class DashboardAdminP {
         constructor(formations) {
-            this.view = new dashboardView(this);
+            this.view = new DashboardView(this);
             this.formations = formations;
             this.formationsList = formations.getFormations();
         }

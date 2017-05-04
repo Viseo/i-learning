@@ -10,11 +10,15 @@ const util = globalVariables.util,
         constructor(presenter){
             let createBack = ()=>{
                 this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
-                this.titleBack = new svg.Rect(50, 30).color(myColors.white,0,myColors.none);
+                this.title.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3)
+                this.titleBack = new svg.Rect(200, 20).color(myColors.white,0,myColors.none);
+                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3);
                 this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
                 this.panel.position(this.panel.width/2 +MARGIN ,
                     this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
                 this.manipulator.add(this.panel.component);
+                this.manipulator.add(this.titleBack);
+                this.manipulator.add(this.title);
                 this.backRect = new svg.Rect(5000, 5000) //TODO
                     .position(this.panel.width/2, this.panel.height/2)
                     .color(myColors.white, 0, myColors.none);
@@ -88,6 +92,7 @@ const util = globalVariables.util,
 
         addFormationHandler(){
             this.presenter.createFormation(this.addFormationField.textMessage);
+            this.addFormationField.message('Ajouter une formation');
         }
 
         displayErrorMessage(message){
@@ -117,7 +122,7 @@ const util = globalVariables.util,
                 return {border: polygon, content: content};
             }
             let placeMiniature = (miniature, i)=>{
-                let elementPerLine = Math.floor(drawing.width/(this.tileWidth + this.spaceBetween));
+                let elementPerLine = Math.floor((drawing.width-this.tileWidth/2)/(this.tileWidth + this.spaceBetween));
                 let line = Math.floor(i/elementPerLine);
                 let y = line*(this.tileWidth*1.5);
                 let x = line%2 == 0 ? (i-line*elementPerLine)*(this.tileWidth+this.spaceBetween) : (i-line*elementPerLine)*(this.tileWidth + this.spaceBetween) + this.tileWidth/2 + MARGIN;
@@ -125,10 +130,10 @@ const util = globalVariables.util,
             }
             let miniature = createMiniature(formation);
             miniature.manipulator = new Manipulator(this).addOrdonator(3);
-            miniature.manipulator.set(0,miniature.border)
-                .set(1,miniature.content);
+            miniature.manipulator.set(0,miniature.border).set(1,miniature.content);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
+
             let onMouseOverSelect = manipulator => {
                 manipulator.get(0).color([130, 180, 255], 3, myColors.black);
                 manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature.manipulator));
