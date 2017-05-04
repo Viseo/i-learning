@@ -54,6 +54,11 @@ exports.DashboardAdminP = function(globalVariables) {
         updateFormations(){
             this.formationsList = this.formations.getFormations();
         }
+
+        miniatureClickHandler(formation){
+            this.formations.loadFormation(formation);
+            console.log(formation);
+        }
     }
     return DashboardAdminP;
 }

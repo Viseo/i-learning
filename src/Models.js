@@ -22,6 +22,18 @@ exports.Models = function(globalVariables){
             this._formations.push(newFormation);
             return newFormation;
         }
+        loadFormation(formation){
+            let tmpLevelsTab = formation.levelsTab;
+            formation.levelsTab = [];
+            tmpLevelsTab.forEach(level => {
+                var gamesTab = [];
+                level.gamesTab.forEach(game => {
+                    game.tabQuestions && gamesTab.push(new Quiz(game, false, formation));
+                    gamesTab[gamesTab.length - 1].id = game.id;
+                });
+                formation.levelsTab.push(new Level(formation, gamesTab, globalVariables.playerMode));
+            });
+        }
     }
 
     class Formation{
@@ -41,6 +53,12 @@ exports.Models = function(globalVariables){
         }
     }
 
+    class Level{
+        constructor(gamesTab){
+            this.gamesTab = gamesTab;
+        }
+    }
+
     class User {
         constructor(user){
 
@@ -49,10 +67,13 @@ exports.Models = function(globalVariables){
 
     class Game{
 
+
     }
 
     class Quiz {
-
+        constructor(game){
+            this.label = game.label;
+        }
     }
 
     class Question{

@@ -62,8 +62,10 @@ const util = globalVariables.util,
                 editedCaption.position(editedIcon.getSize(), 6.6);
                 publishedIcon.position(editedCaption.x + editedCaption.boundingRect().width + MARGIN + publishedIcon.getSize(), 0);
                 publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize()*2 + MARGIN, 6.6);
-                let positionCaption = {x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 2*MARGIN,
-                y : this.header.height + publishedIcon.getSize() + MARGIN};
+                let positionCaption = {
+                    x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 2*MARGIN,
+                    y : this.header.height + publishedIcon.getSize() + MARGIN
+                };
                 captionManipulator.move(positionCaption.x, positionCaption.y);
             }
 
@@ -166,6 +168,11 @@ const util = globalVariables.util,
                 manipulator.get(0).color([250, 250, 250], 1, myColors.grey);
             };
             miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature.manipulator));
+            miniature.manipulator.addEvent('click', ()=>{this.miniatureClickHandler(formation)});
+        }
+
+        miniatureClickHandler(formation){
+            this.presenter.miniatureClickHandler(formation);
         }
     }
     return DashboardAdmin;
