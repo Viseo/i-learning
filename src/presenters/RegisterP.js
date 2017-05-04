@@ -6,14 +6,14 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
-        ERROR_INPUT = [myColors.white, 2, myColors.red],
         runtime = globalVariables.runtime,
         Server = globalVariables.util.Server,
         drawing = globalVariables.drawing;
 
     class RegisterP {
-        constructor() {
+        constructor(parent) {
             this.view = new registerView(this);
+            this.parent = parent;
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -74,8 +74,7 @@ exports.RegisterP = function (globalVariables) {
 
         goToConnection() {
             drawing.manipulator.flush();
-            let connectionP = new globalVariables.ConnectionP();
-            connectionP.displayView();
+            this.parent.displayView();
         }
 
         registerNewUser() {
