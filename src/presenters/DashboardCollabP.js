@@ -4,9 +4,10 @@ exports.DashboardCollabP = function(globalVariables) {
     const DashboardCollabV = FDashboardCollabV(globalVariables);
 
     class DashboardCollabP {
-        constructor(formations){
+        constructor(user, formations){
             this.view = new DashboardCollabV(this);
             this.formations = formations;
+            this.user = user;
         };
 
         displayView(){

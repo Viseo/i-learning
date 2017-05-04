@@ -43,6 +43,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
 
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
+        let user = new models.User(data);
 
         if(redirect){
             password.display(param.ID);
@@ -57,7 +58,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
                     if(globalVariables.admin){
                         dashboardP = new globalVariables.dashboardAdminP(formations);
                     }else {
-                        dashboardP = new globalVariables.DashboardCollabP(formations);
+                        dashboardP = new globalVariables.DashboardCollabP(user, formations);
                     }
                     dashboardP.displayView();
                 })

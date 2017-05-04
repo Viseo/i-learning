@@ -87,7 +87,9 @@ exports.Models = function(globalVariables){
 
     class User {
         constructor(user){
-
+            this.lastName = user.lastName;
+            this.firstName = user.firstName;
+            this.lastAction = (user.lastAction) ? user.lastAction : {};
         }
     }
 
@@ -107,7 +109,8 @@ exports.Models = function(globalVariables){
     }
 
     return {
-        Formations
+        Formations,
+        User
     }
 }
 
