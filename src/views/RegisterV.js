@@ -213,7 +213,19 @@ exports.RegisterV = function (globalVariables) {
                 this.focusField(isPrevious);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                this.registerNewUser();
+                this.registerNewUser().then(() => {
+                    let message = new svg.Text("Votre compte a bien été créé !")
+                        .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                        .position(0, -MARGIN - BUTTON_HEIGHT)
+                        .color(myColors.green)
+                        .font(FONT, FONT_SIZE_INPUT)
+                        .mark('successMessage');
+                    this.saveButtonManipulator.add(message);
+                    setTimeout(() => {
+                        this.saveButtonManipulator.remove(message);
+                        this.goToConnection();
+                    }, 3000);
+                });
             }
         }
 
