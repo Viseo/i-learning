@@ -185,7 +185,7 @@ exports.Domain = function (globalVariables) {
 
                 deconnexion.border.corners(5,5);
                 pos -= deconnexionWidth / 2;
-                deconnexion.content.position(0, 0);
+                deconnexion.content.position(0, -font_size/4);
                 deconnexion.border.position(0, -font_size/4).mark('deconnection');
                 deconnexion.content.color(myColors.white);
                 pos -= deconnexionWidth / 2 + 40;

@@ -14,6 +14,12 @@ exports.FormationAdminP = function(globalVariables){
         getLabel(){
             return this.formation.label;
         }
+
+        returnHandler(){
+            let dashboardAP = new globalVariables.dashboardAdminP();
+            this.view.flush();
+            dashboardAP.displayView();
+        }
     }
 
     return FormationsAdminP;
