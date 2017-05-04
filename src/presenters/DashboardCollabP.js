@@ -12,6 +12,14 @@ exports.DashboardCollabP = function(globalVariables) {
         displayView(){
             this.view.display();
         }
+
+        clickOnFormation(formation){
+            alert(JSON.stringify(formation));
+        }
+
+        getFormations(){
+            return this.formations.getFormations();
+        }
     }
     return DashboardCollabP;
 };
