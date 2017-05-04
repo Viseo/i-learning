@@ -4,7 +4,7 @@ const register = require('./RegisterP').RegisterP;
 
 exports.PresenterFactory = function(globalvariables){
     globalvariables.dashboardAdminP = dashboard(globalvariables);
-    globalvariables.connectionP = connection(globalvariables);
-    globalvariables.registerP = register(globalvariables);
+    globalvariables.ConnectionP = connection(globalvariables);
+    globalvariables.RegisterP = register(globalvariables);
 
 }

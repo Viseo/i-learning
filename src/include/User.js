@@ -445,12 +445,12 @@ exports.User = function (globalVariables, classContainer) {
                 this.connectionButtonManipulator.component.mark("connectionButtonManipulator");
                 this.cookieManipulator = new Manipulator(this).addOrdonator(5);
                 this.cookieManipulator.component.mark("cookieManipulator");
-                this.inscriptionTextManipulator = new Manipulator(this);
-                this.inscriptionTextManipulator.component.mark("inscriptiontext");
+                this.registerTextManipulator = new Manipulator(this);
+                this.registerTextManipulator.component.mark("inscriptiontext");
                 this.manipulator
                     .add(this.mailAddressManipulator)
                     .add(this.cookieManipulator)
-                    .add(this.inscriptionTextManipulator)
+                    .add(this.registerTextManipulator)
                     .add(this.newPasswordManipulator)
                     .add(this.passwordManipulator)
                     .add(this.connectionButtonManipulator);
@@ -524,7 +524,7 @@ exports.User = function (globalVariables, classContainer) {
 
         /**
          * définition des évènements
-         * @returns {{click connectionButtonManipulator: ConnexionManagerVue.connexionButtonHandler, click inscriptionTextManipulator: ConnexionManagerVue.inscriptionTextHandler, click cookieManipulator: ConnexionManagerVue.cookieAction, click newPasswordManipulator: ConnexionManagerVue.newPasswordAction, keydown: ConnexionManagerVue.keyDownHandler}}
+         * @returns {{click connectionButtonManipulator: ConnexionManagerVue.connexionButtonHandler, click registerTextManipulator: ConnexionManagerVue.inscriptionTextHandler, click cookieManipulator: ConnexionManagerVue.cookieAction, click newPasswordManipulator: ConnexionManagerVue.newPasswordAction, keydown: ConnexionManagerVue.keyDownHandler}}
          */
         events() {
             return {
@@ -541,7 +541,7 @@ exports.User = function (globalVariables, classContainer) {
          */
         render() {
             var _displayHeader = () => {
-                this.inscriptionTextManipulator.flush();
+                this.registerTextManipulator.flush();
                 main.currentPageDisplayed = "ConnexionManager";
                 this.header.display("Connexion");
             };
@@ -653,7 +653,7 @@ exports.User = function (globalVariables, classContainer) {
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .color(myColors.greyerBlue)
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-                this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.registerTextManipulator.add(inscriptionText).move(0, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
             };
 
             _displayHeader();

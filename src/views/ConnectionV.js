@@ -35,13 +35,13 @@ exports.ConnectionV = function (globalVariables) {
                 this.newPasswordManipulator = new Manipulator(this);
                 this.newPasswordManipulator.component.mark("newPasswordManipulator");
                 this.connectionButtonManipulator = new Manipulator(this);
-                this.inscriptionTextManipulator = new Manipulator(this);
+                this.registerTextManipulator = new Manipulator(this);
                 this.manipulator
                     .add(this.fieldsManip)
                     .add(this.cookieManipulator)
                     .add(this.newPasswordManipulator)
                     .add(this.connectionButtonManipulator)
-                    .add(this.inscriptionTextManipulator);
+                    .add(this.registerTextManipulator);
             }
 
             _initV();
@@ -139,36 +139,40 @@ exports.ConnectionV = function (globalVariables) {
                     .move(drawing.width / 2 + INPUT_WIDTH / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayButton = () => {
-                var _connectionHandler = () => {
-                    let message = this.logIn();
-                    if (message) {
-                        let error = new svg.Text(message)
-                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                            .position(0, -(INPUT_HEIGHT + MARGIN))
-                            .color(myColors.red)
-                            .font(FONT, FONT_SIZE_INPUT)
-                            .mark("msgFieldError");
-                        this.connectionButtonManipulator.add(error);
-                        svg.timeout(() => {
-                            this.connectionButtonManipulator.remove(error);
-                        }, 5000);
+                var _displayButton = () => {
+                    var _connectionHandler = () => {
+                        this.logIn().catch((message) => {
+                            let error = new svg.Text(message)
+                                .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                                .position(0, -(INPUT_HEIGHT + MARGIN))
+                                .color(myColors.red)
+                                .font(FONT, FONT_SIZE_INPUT)
+                                .mark("msgFieldError");
+                            this.connectionButtonManipulator.add(error);
+                            svg.timeout(() => {
+                                this.connectionButtonManipulator.remove(error);
+                            }, 5000);
+                        });
                     }
+                    let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
+                    button.text.color(myColors.lightgrey, 0, myColors.white);
+                    button.activeShadow();
+                    this.connectionButtonManipulator
+                        .add(button.component)
+                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
+                    this.connectionButtonManipulator.addEvent('click', _connectionHandler);
+                }
+                var _displayRegisterText = () => {
+                    let registerText = new svg.Text("Vous venez d'arriver ? Créer un compte")
+                        .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                        .color(myColors.greyerBlue)
+                        .font(FONT, FONT_SIZE_TITLE * 2 / 3);
+                    this.registerTextManipulator.add(registerText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                    this.registerTextManipulator.addEvent('click',(event) => this.goToRegister.call(this, event));
                 }
 
-                let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
-                button.text.color(myColors.lightgrey, 0, myColors.white);
-                button.activeShadow();
-                this.connectionButtonManipulator
-                    .add(button.component)
-                    .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
-
-                let inscriptionText = new svg.Text("Vous venez d'arriver ? Créer un compte")
-                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                    .color(myColors.greyerBlue)
-                    .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-                this.inscriptionTextManipulator.add(inscriptionText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
-
-                this.connectionButtonManipulator.addEvent('click', _connectionHandler);
+                _displayButton();
+                _displayRegisterText();
             };
 
             drawing.manipulator.add(this.manipulator);
@@ -177,7 +181,7 @@ exports.ConnectionV = function (globalVariables) {
             _displayCookieCheckbox();
             _displayForgotPWD();
             _displayButton();
-            svg.addGlobalEvent("keydown",(event) => this.keyDown.call(this, event));
+            svg.addGlobalEvent("keydown", (event) => this.keyDown.call(this, event));
         }
 
         refresh() {
@@ -187,27 +191,30 @@ exports.ConnectionV = function (globalVariables) {
         logIn() {
             return this.presenter.logIn();
         }
+        goToRegister(){
+            this.presenter.goToRegister();
+        }
 
-        focusField(isPrevious){
+        focusField(isPrevious) {
             var _previousIndex = (currentIndex) => {
-                if(currentIndex != -1){
-                    if(currentIndex === 0){
+                if (currentIndex != -1) {
+                    if (currentIndex === 0) {
                         return (this.inputs.length - 1);
-                    }else {
+                    } else {
                         return currentIndex - 1;
                     }
-                }else {
+                } else {
                     return 0;
                 }
             }
             var _nextIndex = (currentIndex) => {
-                if(currentIndex != -1){
-                    if(currentIndex === (this.inputs.length - 1)){
+                if (currentIndex != -1) {
+                    if (currentIndex === (this.inputs.length - 1)) {
                         return 0;
-                    }else {
+                    } else {
                         return currentIndex + 1;
                     }
-                }else {
+                } else {
                     return 0;
                 }
             }
@@ -218,9 +225,10 @@ exports.ConnectionV = function (globalVariables) {
             this.selectedInput = this.inputs[newIndex];
 
         }
-        selectInput(input){
+        selectInput(input) {
             this.selectedInput = input;
         }
+
         keyDown(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
@@ -235,11 +243,9 @@ exports.ConnectionV = function (globalVariables) {
         getFields() {
             return this.presenter.getFields();
         }
-
         setValid(field, valid) {
             this.presenter.setValid(field, valid);
         }
-
         setFieldText(field, text) {
             this.presenter.setFieldText(field, text);
         }

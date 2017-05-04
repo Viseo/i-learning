@@ -65,7 +65,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
                 _onConnected(data);
             } else {
                 globalVariables.admin = false;
-                let connectionP = new globalVariables.connectionP();
+                let connectionP = new globalVariables.ConnectionP();
                 connectionP.onConnected(_onConnected);
                 connectionP.displayView();
             }

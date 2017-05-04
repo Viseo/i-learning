@@ -6,6 +6,7 @@ const ConnectionV = require('../views/ConnectionV').ConnectionV;
 exports.ConnectionP = function(globalVariables) {
     const connectionView = ConnectionV(globalVariables);
     const Server = globalVariables.util.Server;
+    const drawing = globalVariables.drawing;
 
     class ConnectionP {
         constructor() {
@@ -71,18 +72,25 @@ exports.ConnectionP = function(globalVariables) {
 
             if(_checkInputs()){
                 //TODO faire stayConnected
-                Server.connect(this._fields[0].text, this._fields[1].text, this._stayConnected).then(data => {
-                    if(!data) return 'Connexion refusée';
+                return Server.connect(this._fields[0].text, this._fields[1].text, this._stayConnected).then(data => {
+                    if(!data) throw 'Connexion refusée';
                     data = JSON.parse(data);
                     if (data.ack === 'OK') {
                         this._onConnected(data);
                     } else {
-                        return 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide';
+                        throw 'adresse e-mail ou mot de passe invalide';
                     }
                 });
             }else {
-                return "Veuillez remplir correctement tous les champs";
+                //TODO changer pour pouvoir mocker pour les tests
+                return Promise.reject("Veuillez remplir correctement tous les champs");
             }
+        }
+
+        goToRegister(){
+            drawing.manipulator.flush();
+            let registerP = new globalVariables.RegisterP();
+            registerP.displayView();
         }
     }
     return ConnectionP;
