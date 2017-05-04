@@ -441,8 +441,8 @@ exports.User = function (globalVariables, classContainer) {
                 this.passwordManipulator = new Manipulator(this).addOrdonator(5);
                 this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
                 this.newPasswordManipulator.component.mark("newPasswordManipulator");
-                this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
-                this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
+                this.connectionButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.connectionButtonManipulator.component.mark("connectionButtonManipulator");
                 this.cookieManipulator = new Manipulator(this).addOrdonator(5);
                 this.cookieManipulator.component.mark("cookieManipulator");
                 this.inscriptionTextManipulator = new Manipulator(this);
@@ -453,7 +453,7 @@ exports.User = function (globalVariables, classContainer) {
                     .add(this.inscriptionTextManipulator)
                     .add(this.newPasswordManipulator)
                     .add(this.passwordManipulator)
-                    .add(this.connexionButtonManipulator);
+                    .add(this.connectionButtonManipulator);
                 this.mailAddressManipulator.imageLayer = 3;
                 this.passwordManipulator.imageLayer = 3;
             };
@@ -524,7 +524,7 @@ exports.User = function (globalVariables, classContainer) {
 
         /**
          * définition des évènements
-         * @returns {{click connexionButtonManipulator: ConnexionManagerVue.connexionButtonHandler, click inscriptionTextManipulator: ConnexionManagerVue.inscriptionTextHandler, click cookieManipulator: ConnexionManagerVue.cookieAction, click newPasswordManipulator: ConnexionManagerVue.newPasswordAction, keydown: ConnexionManagerVue.keyDownHandler}}
+         * @returns {{click connectionButtonManipulator: ConnexionManagerVue.connexionButtonHandler, click inscriptionTextManipulator: ConnexionManagerVue.inscriptionTextHandler, click cookieManipulator: ConnexionManagerVue.cookieAction, click newPasswordManipulator: ConnexionManagerVue.newPasswordAction, keydown: ConnexionManagerVue.keyDownHandler}}
          */
         events() {
             return {
@@ -645,7 +645,7 @@ exports.User = function (globalVariables, classContainer) {
                 let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
                 button.text.color(myColors.lightgrey, 0, myColors.white);
                 button.activeShadow();
-                this.connexionButtonManipulator
+                this.connectionButtonManipulator
                     .set(0, button.component)
                     .move(0, 2.5 * drawing.height / 10);
 
@@ -653,7 +653,7 @@ exports.User = function (globalVariables, classContainer) {
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .color(myColors.greyerBlue)
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-                this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
             };
 
             _displayHeader();
@@ -772,10 +772,10 @@ exports.User = function (globalVariables, classContainer) {
                     .color(myColors.red)
                     .font(FONT, FONT_SIZE_INPUT)
                     .mark("msgFieldError");
-                this.connexionButtonManipulator.set(1, message);
+                this.connectionButtonManipulator.set(1, message);
 
                 svg.timeout(() => {
-                    this.connexionButtonManipulator.unset(1);
+                    this.connectionButtonManipulator.unset(1);
                     emptyAreas.forEach(emptyArea => {
                         emptyArea.input.color(COLORS);
                     });
@@ -809,9 +809,9 @@ exports.User = function (globalVariables, classContainer) {
                             .color(myColors.red)
                             .font(FONT, FONT_SIZE_INPUT)
                             .mark("msgFieldError");
-                        this.connexionButtonManipulator.set(1, message);
+                        this.connectionButtonManipulator.set(1, message);
                         svg.timeout(() => {
-                            this.connexionButtonManipulator.unset(1);
+                            this.connectionButtonManipulator.unset(1);
                         }, 5000);
                     }
                 });

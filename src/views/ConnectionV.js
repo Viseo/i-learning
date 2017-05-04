@@ -22,22 +22,30 @@ exports.ConnectionV = function (globalVariables) {
 
     class ConnectionV {
         constructor(presenter) {
-            this.presenter = presenter;
-            this.manipulator = new Manipulator(this);
-            this.header = new globalVariables.domain.HeaderVue();
-            this.fieldsManip = new Manipulator(this);
-            this.cookieManipulator = new Manipulator(this);
-            this.cookieManipulator.component.mark("cookieManipulator");
-            this.newPasswordManipulator = new Manipulator(this);
-            this.newPasswordManipulator.component.mark("newPasswordManipulator");
-            this.connexionButtonManipulator = new Manipulator(this);
-            this.inscriptionTextManipulator = new Manipulator(this);
-            this.manipulator
-                .add(this.fieldsManip)
-                .add(this.cookieManipulator)
-                .add(this.newPasswordManipulator)
-                .add(this.connexionButtonManipulator)
-                .add(this.inscriptionTextManipulator);
+            var _initV = () => {
+                this.presenter = presenter;
+                this.inputs = [];
+            }
+            var _declareManipulators = () => {
+                this.manipulator = new Manipulator(this);
+                this.header = new globalVariables.domain.HeaderVue();
+                this.fieldsManip = new Manipulator(this);
+                this.cookieManipulator = new Manipulator(this);
+                this.cookieManipulator.component.mark("cookieManipulator");
+                this.newPasswordManipulator = new Manipulator(this);
+                this.newPasswordManipulator.component.mark("newPasswordManipulator");
+                this.connectionButtonManipulator = new Manipulator(this);
+                this.inscriptionTextManipulator = new Manipulator(this);
+                this.manipulator
+                    .add(this.fieldsManip)
+                    .add(this.cookieManipulator)
+                    .add(this.newPasswordManipulator)
+                    .add(this.connectionButtonManipulator)
+                    .add(this.inscriptionTextManipulator);
+            }
+
+            _initV();
+            _declareManipulators();
         }
 
         display() {
@@ -50,7 +58,7 @@ exports.ConnectionV = function (globalVariables) {
                 var _displayField = (field) => {
                     var _displayIcon = () => {
                         let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
-                        icon.position(-INPUT_WIDTH/2 + icon.getContentSize()/2 + MARGIN, 0);
+                        icon.position(-INPUT_WIDTH / 2 + icon.getContentSize() / 2 + MARGIN, 0);
                     }
                     var _displayTitle = () => {
                         let fieldTitle = new svg.Text(field.title);
@@ -63,6 +71,14 @@ exports.ConnectionV = function (globalVariables) {
                         fieldManip.add(fieldTitle);
                     }
                     var _displayArea = () => {
+                        var _onInput = (oldMessage, newMessage, valid) => {
+                            this.setValid(field, valid);
+                            if (valid) this.setFieldText(field, newMessage);
+                        }
+                        var _onClick = () => {
+                            this.selectInput(fieldArea);
+                        }
+
                         let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
                         fieldArea.font(FONT, FONT_SIZE_INPUT)
                             .color(COLORS)
@@ -71,11 +87,15 @@ exports.ConnectionV = function (globalVariables) {
                             .type(field.type)
                             .anchor("center")
                         fieldManip.set(0, fieldArea.component);
+
+                        fieldArea.onInput(_onInput);
+                        fieldArea.onClick(_onClick);
+                        this.inputs.push(fieldArea);
                     }
 
                     let fieldManip = new Manipulator(this).addOrdonator(2);
                     let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
-                    fieldManip.move(0, manipHeight / 2  + field.index * (manipHeight + 2*MARGIN));
+                    fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
 
                     _displayTitle();
                     _displayArea()
@@ -85,7 +105,7 @@ exports.ConnectionV = function (globalVariables) {
                 };
 
                 let fields = this.getFields();
-                this.fieldsManip.move(drawing.width / 2, this.header.height + 2*MARGIN);
+                this.fieldsManip.move(drawing.width / 2, this.header.height + 2 * MARGIN);
                 fields.forEach(field => {
                     let fieldManip = _displayField(field);
                     this.fieldsManip.add(fieldManip);
@@ -99,14 +119,14 @@ exports.ConnectionV = function (globalVariables) {
                 fieldTitle.dimension(INPUT_WIDTH / 2, FONT_SIZE_TITLE);
                 fieldTitle.font("Arial", FONT_SIZE_TITLE * 3 / 4).anchor("start");
                 fieldTitle.color(TITLE_COLOR);
-                fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE)/2);
+                fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE) / 2);
 
                 let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                 this.cookieManipulator
                     .add(fieldTitle)
                     .add(checkbox)
                     .add(checked)
-                    .move(drawing.width/2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2*MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2*MARGIN) * 4);
+                    .move(drawing.width / 2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayForgotPWD = () => {
                 let fieldTitle = new svg.Text("Mot de passe oublié ?")
@@ -116,21 +136,39 @@ exports.ConnectionV = function (globalVariables) {
                     .position(0, 0)
                     .font(FONT, FONT_SIZE_TITLE * 3 / 4);
                 this.newPasswordManipulator.add(fieldTitle)
-                    .move(drawing.width/2 + INPUT_WIDTH / 2, this.header.height + 2*MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2*MARGIN) * 4);
+                    .move(drawing.width / 2 + INPUT_WIDTH / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayButton = () => {
+                var _connectionHandler = () => {
+                    let message = this.logIn();
+                    if (message) {
+                        let error = new svg.Text(message)
+                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                            .position(0, -(INPUT_HEIGHT + MARGIN))
+                            .color(myColors.red)
+                            .font(FONT, FONT_SIZE_INPUT)
+                            .mark("msgFieldError");
+                        this.connectionButtonManipulator.add(error);
+                        svg.timeout(() => {
+                            this.connectionButtonManipulator.remove(error);
+                        }, 5000);
+                    }
+                }
+
                 let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
                 button.text.color(myColors.lightgrey, 0, myColors.white);
                 button.activeShadow();
-                this.connexionButtonManipulator
+                this.connectionButtonManipulator
                     .add(button.component)
-                    .move(drawing.width/2, this.header.height + BUTTON_MARGIN + 2*MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2*MARGIN) *5 );
+                    .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
 
                 let inscriptionText = new svg.Text("Vous venez d'arriver ? Créer un compte")
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .color(myColors.greyerBlue)
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-                this.inscriptionTextManipulator.add(inscriptionText).move(drawing.width/2, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.inscriptionTextManipulator.add(inscriptionText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+
+                this.connectionButtonManipulator.addEvent('click', _connectionHandler);
             };
 
             drawing.manipulator.add(this.manipulator);
@@ -139,15 +177,74 @@ exports.ConnectionV = function (globalVariables) {
             _displayCookieCheckbox();
             _displayForgotPWD();
             _displayButton();
+            svg.addGlobalEvent("keydown",(event) => this.keyDown.call(this, event));
+        }
+
+        refresh() {
+
+        }
+
+        logIn() {
+            return this.presenter.logIn();
+        }
+
+        focusField(isPrevious){
+            var _previousIndex = (currentIndex) => {
+                if(currentIndex != -1){
+                    if(currentIndex === 0){
+                        return (this.inputs.length - 1);
+                    }else {
+                        return currentIndex - 1;
+                    }
+                }else {
+                    return 0;
+                }
+            }
+            var _nextIndex = (currentIndex) => {
+                if(currentIndex != -1){
+                    if(currentIndex === (this.inputs.length - 1)){
+                        return 0;
+                    }else {
+                        return currentIndex + 1;
+                    }
+                }else {
+                    return 0;
+                }
+            }
+
+            let currentIndex = this.inputs.indexOf(this.selectedInput);
+            let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
+            svg.event(this.inputs[newIndex].glass, 'click');
+            this.selectedInput = this.inputs[newIndex];
+
+        }
+        selectInput(input){
+            this.selectedInput = input;
+        }
+        keyDown(event) {
+            if (event.keyCode === 9) { // TAB
+                event.preventDefault();
+                let isPrevious = !!event.shiftKey;
+                this.focusField(isPrevious);
+            } else if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                this.logIn();
+            }
         }
 
         getFields() {
             return this.presenter.getFields();
         }
 
-        refresh() {
-
+        setValid(field, valid) {
+            this.presenter.setValid(field, valid);
         }
+
+        setFieldText(field, text) {
+            this.presenter.setFieldText(field, text);
+        }
+
+
     }
     return ConnectionV;
 }
