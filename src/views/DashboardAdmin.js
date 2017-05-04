@@ -1,10 +1,10 @@
 exports.DashboardAdmin = function(globalVariables){
-const util = globalVariables.util,
-    Manipulator = util.Manipulator,
-    svg = globalVariables.svg,
-    gui = globalVariables.gui,
-    drawing = globalVariables.drawing,
-    IconCreator = globalVariables.domain.IconCreator;
+    const util = globalVariables.util,
+        Manipulator = util.Manipulator,
+        svg = globalVariables.svg,
+        gui = globalVariables.gui,
+        drawing = globalVariables.drawing,
+        IconCreator = globalVariables.domain.IconCreator;
 
 
     class DashboardAdmin {
@@ -12,8 +12,8 @@ const util = globalVariables.util,
             let createBack = ()=>{
                 this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
                 this.title.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3)
-                this.titleBack = new svg.Rect(200, 20).color(myColors.white,0,myColors.none);
-                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3);
+                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
+                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN);
                 this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
                 this.panel.position(this.panel.width/2 +MARGIN ,
                     this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
@@ -45,7 +45,7 @@ const util = globalVariables.util,
 
 
         display(){
-            drawing.manipulator.add(this.manipulator);
+            drawing.manipulator.set(0,this.manipulator);
             let headerManipulator = this.header.getManipulator();
             this.manipulator.add(headerManipulator);
             this.header.display("Dashboard");
@@ -59,11 +59,11 @@ const util = globalVariables.util,
                 let publishedCaption = new svg.Text('Publiée').font('Arial', 20).anchor('left');
                 this.manipulator.add(captionManipulator);
                 captionManipulator.add(editedCaption).add(publishedCaption);
-                editedCaption.position(editedIcon.getSize(), 6.6);
+                editedCaption.position(editedIcon.getSize()+ MARGIN, 6.6);
                 publishedIcon.position(editedCaption.x + editedCaption.boundingRect().width + MARGIN + publishedIcon.getSize(), 0);
-                publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize()*2 + MARGIN, 6.6);
+                publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize()*2 + 2*MARGIN, 6.6);
                 let positionCaption = {
-                    x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 2*MARGIN,
+                    x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 3*MARGIN,
                     y : this.header.height + publishedIcon.getSize() + MARGIN
                 };
                 captionManipulator.move(positionCaption.x, positionCaption.y);
@@ -129,7 +129,7 @@ const util = globalVariables.util,
         getFormations(){
             return this.presenter.getFormations();
         }
-        
+
 
         refresh(){
 
@@ -173,6 +173,10 @@ const util = globalVariables.util,
 
         miniatureClickHandler(formation){
             this.presenter.miniatureClickHandler(formation);
+        }
+
+        flush(){
+            this.manipulator.flush();
         }
     }
     return DashboardAdmin;

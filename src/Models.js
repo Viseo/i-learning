@@ -20,7 +20,8 @@ exports.Models = function(globalVariables){
         createFormation(label){
             let newFormation = new Formation({label:label});
             this._formations.push(newFormation);
-            return newFormation;
+            let result = newFormation.saveNewFormation();
+            return result;
         }
         loadFormation(formation){
             let tmpLevelsTab = formation.levelsTab;
@@ -50,6 +51,31 @@ exports.Models = function(globalVariables){
             this.levelsTab = [];
             this.label = formation.label ? formation.label : "";
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
+        }
+
+        saveNewFormation(callback) {
+            const getObjectToSave = () => {
+                return {
+                    label: this.label,
+                    gamesCounter: this.gamesCounter,
+                    links: this.links,
+                    levelsTab: this.levelsTab
+                };
+            };
+
+            return util.Server.insertFormation(getObjectToSave(), ignoredData)
+                .then(data => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved) {
+                        this._id = answer.idVersion;
+                        this.formationId = answer.id;
+                        return {status: true, formation:this}
+                    } else {
+                        if (answer.reason === "NameAlreadyUsed") {
+                            return {status: false, error: 'Nom déjà utilisé'}
+                        }
+                    }
+                });
         }
     }
 

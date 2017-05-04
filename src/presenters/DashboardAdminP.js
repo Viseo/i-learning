@@ -43,9 +43,16 @@ exports.DashboardAdminP = function(globalVariables) {
             }
             let check = checkLabel(label);
             if(check.status){
-                let newFormation = this.formations.createFormation(label);
-                this.updateFormations();
-                this.view.addFormationMiniature(newFormation);
+                this.formations.createFormation(label).then(data=>{
+                    if(data.status) {
+                        let newFormation = data.formation;
+                        this.updateFormations();
+                        this.view.addFormationMiniature(newFormation);
+                    }
+                    else{
+                        this.view.displayErrorMessage(data.error);
+                    }
+                });
             }
             else{
                 this.view.displayErrorMessage(check.error);
@@ -57,7 +64,9 @@ exports.DashboardAdminP = function(globalVariables) {
 
         miniatureClickHandler(formation){
             this.formations.loadFormation(formation);
-            console.log(formation);
+            let formationPresenter = new globalVariables.FormationsAdminP(formation);
+            this.view.flush();
+            formationPresenter.displayView();
         }
     }
     return DashboardAdminP;
