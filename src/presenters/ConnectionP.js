@@ -6,10 +6,9 @@ const ConnectionV = require('../views/ConnectionV').ConnectionV;
 exports.ConnectionP = function(globalVariables) {
     const connectionView = ConnectionV(globalVariables);
     const Server = globalVariables.util.Server;
-    const drawing = globalVariables.drawing;
 
     class ConnectionP {
-        constructor(formations) {
+        constructor() {
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -38,7 +37,6 @@ exports.ConnectionP = function(globalVariables) {
 
             _declareTextFields();
             this.view = new connectionView(this);
-            this.formations = formations;
         }
         displayView(){
             this.view.display();
@@ -63,9 +61,12 @@ exports.ConnectionP = function(globalVariables) {
             this._stayConnected = !!stay;
         }
 
+        onConnected(handler){
+            this._onConnected = handler;
+        }
         logIn(){
             var _checkInputs = () => {
-                return this._fields.reduce((o, n) => o.valid && n.valid);
+                return this._fields.reduce((o, n) => o && n.valid, true);
             }
 
             if(_checkInputs()){
@@ -74,17 +75,7 @@ exports.ConnectionP = function(globalVariables) {
                     if(!data) throw 'Connexion refusée';
                     data = JSON.parse(data);
                     if (data.ack === 'OK') {
-                        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                        data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
-                        return this.formations.sync().then(() => {
-                            let dashboardP;
-                            if(globalVariables.admin){
-                                dashboardP = new globalVariables.dashboardAdminP(this.formations);
-                            }else {
-                                dashboardP = new globalVariables.dashboardCollabP(this.formations);
-                            }
-                            dashboardP.displayView();
-                        })
+                        this._onConnected(data);
                     } else {
                         throw 'adresse e-mail ou mot de passe invalide';
                     }

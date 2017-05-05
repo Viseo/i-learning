@@ -171,7 +171,7 @@ exports.Tool = function (globalVariables, classContainer) {
             _createContent(contentProperties);
 
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
-            (borderProperties.layer && borderProperties >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
+            (borderProperties.layer && borderProperties.layer >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
                 : manipulator.add(this.manipulator);
         }
 

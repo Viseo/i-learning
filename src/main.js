@@ -8,6 +8,20 @@ const Domain = require('./Domain').Domain,
 
 
 function main(svg, runtime, dbListener, ImageRuntime,param) {
+    var _onConnected = (data) => {
+        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+        data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+        formations.sync().then(() => {
+            let dashboardP;
+            if(globalVariables.admin){
+                dashboardP = new globalVariables.dashboardAdminP(formations);
+            }else {
+                dashboardP = new globalVariables.dashboardCollabP(formations);
+            }
+            dashboardP.displayView();
+        })
+    }
+
     let domain, util, gui, drawing, drawings;
     let globalVariables = { svg, runtime, dbListener, ImageRuntime };
 
@@ -36,7 +50,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
     let formations = new models.Formations();
 
     let redirect;
-    if(param){
+    if(param) {
         redirect = param.redirect;
     }
 
@@ -48,20 +62,11 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
         }
         else {
             if (data.ack === 'OK') {
-                drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
-                formations.sync().then(() => {
-                    let dashboardP;
-                    if(globalVariables.admin){
-                        dashboardP = new globalVariables.dashboardAdminP(formations);
-                    }else {
-                        dashboardP = new globalVariables.dashboardCollabP(formations);
-                    }
-                    dashboardP.displayView();
-                })
+                _onConnected(data);
             } else {
                 globalVariables.admin = false;
-                let connectionP = new globalVariables.ConnectionP(formations);
+                let connectionP = new globalVariables.ConnectionP();
+                connectionP.onConnected(_onConnected);
                 connectionP.displayView();
             }
         }

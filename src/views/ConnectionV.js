@@ -75,12 +75,26 @@ exports.ConnectionV = function (globalVariables) {
                         fieldManip.add(fieldTitle);
                     }
                     var _displayArea = () => {
-                        var _onInput = (oldMessage, newMessage, valid) => {
+                        var _updatePresenter = (oldMessage, newMessage, valid) => {
                             this.setValid(field, valid);
                             if (valid) this.setFieldText(field, newMessage);
                         }
-                        var _onClick = () => {
-                            this.selectInput(fieldArea);
+                        var _selectInput = () => {
+                            this.selectedInput = fieldArea;
+                        }
+                        var _displayEye = () => {
+                            var _displayPwdIcon = (isShown) => {
+                                var _toggleIcon = () => {
+                                    _displayPwdIcon(!isShown);
+                                }
+                                let src = isShown ? '../images/hide.png' : '../images/view.png';
+                                let icon = IconCreator.createImageIcon(src, fieldManip, 2);
+                                icon.position(INPUT_WIDTH/2 + MARGIN + icon.getContentSize() / 2, 0);
+                                icon.addEvent('click', _toggleIcon);
+                                fieldArea.type(isShown ? 'text' : 'password');
+                            }
+
+                            _displayPwdIcon(false);
                         }
 
                         let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
@@ -92,12 +106,16 @@ exports.ConnectionV = function (globalVariables) {
                             .anchor("center")
                         fieldManip.set(0, fieldArea.component);
 
-                        fieldArea.onInput(_onInput);
-                        fieldArea.onClick(_onClick);
+                        fieldArea.onInput(_updatePresenter);
+                        fieldArea.onClick(_selectInput);
                         this.inputs.push(fieldArea);
+
+                        if(field.type === "password"){
+                            _displayEye();
+                        }
                     }
 
-                    let fieldManip = new Manipulator(this).addOrdonator(2);
+                    let fieldManip = new Manipulator(this).addOrdonator(3);
                     let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
                     fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
 
@@ -158,27 +176,13 @@ exports.ConnectionV = function (globalVariables) {
             };
             var _displayButton = () => {
                 var _displayButton = () => {
-                    var _connectionHandler = () => {
-                        this.logIn().catch((message) => {
-                            let error = new svg.Text(message)
-                                .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                                .position(0, -(INPUT_HEIGHT + MARGIN))
-                                .color(myColors.red)
-                                .font(FONT, FONT_SIZE_INPUT)
-                                .mark("msgFieldError");
-                            this.connectionButtonManipulator.add(error);
-                            svg.timeout(() => {
-                                this.connectionButtonManipulator.remove(error);
-                            }, 5000);
-                        });
-                    }
                     let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
                     button.text.color(myColors.lightgrey, 0, myColors.white);
                     button.activeShadow();
                     this.connectionButtonManipulator
                         .add(button.component)
                         .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
-                    this.connectionButtonManipulator.addEvent('click', _connectionHandler);
+                    this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
                 }
                 var _displayRegisterText = () => {
                     let registerText = new svg.Text("Vous venez d'arriver ? Créer un compte")
@@ -206,6 +210,62 @@ exports.ConnectionV = function (globalVariables) {
 
         }
 
+        tryLogin(){
+            this.logIn().catch((message) => {
+                let error = new svg.Text(message)
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .position(0, -(INPUT_HEIGHT + MARGIN))
+                    .color(myColors.red)
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .mark("msgFieldError");
+                this.connectionButtonManipulator.add(error);
+                svg.timeout(() => {
+                    this.connectionButtonManipulator.remove(error);
+                }, 5000);
+            });
+        }
+
+        keyDown(event) {
+            var _focusField = (isPrevious) => {
+                var _previousIndex = (currentIndex) => {
+                    if (currentIndex != -1) {
+                        if (currentIndex === 0) {
+                            return (this.inputs.length - 1);
+                        } else {
+                            return currentIndex - 1;
+                        }
+                    } else {
+                        return 0;
+                    }
+                }
+                var _nextIndex = (currentIndex) => {
+                    if (currentIndex != -1) {
+                        if (currentIndex === (this.inputs.length - 1)) {
+                            return 0;
+                        } else {
+                            return currentIndex + 1;
+                        }
+                    } else {
+                        return 0;
+                    }
+                }
+
+                let currentIndex = this.inputs.indexOf(this.selectedInput);
+                let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
+                svg.event(this.inputs[newIndex].glass, 'click');
+                this.selectedInput = this.inputs[newIndex];
+            }
+
+            if (event.keyCode === 9) { // TAB
+                event.preventDefault();
+                let isPrevious = !!event.shiftKey;
+                _focusField(isPrevious);
+            } else if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                this.tryLogin();
+            }
+        }
+
         logIn() {
             return this.presenter.logIn();
         }
@@ -215,52 +275,6 @@ exports.ConnectionV = function (globalVariables) {
         forgotPWD(){
             return this.presenter.forgotPWD();
         }
-
-        focusField(isPrevious) {
-            var _previousIndex = (currentIndex) => {
-                if (currentIndex != -1) {
-                    if (currentIndex === 0) {
-                        return (this.inputs.length - 1);
-                    } else {
-                        return currentIndex - 1;
-                    }
-                } else {
-                    return 0;
-                }
-            }
-            var _nextIndex = (currentIndex) => {
-                if (currentIndex != -1) {
-                    if (currentIndex === (this.inputs.length - 1)) {
-                        return 0;
-                    } else {
-                        return currentIndex + 1;
-                    }
-                } else {
-                    return 0;
-                }
-            }
-
-            let currentIndex = this.inputs.indexOf(this.selectedInput);
-            let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
-            svg.event(this.inputs[newIndex].glass, 'click');
-            this.selectedInput = this.inputs[newIndex];
-
-        }
-        selectInput(input) {
-            this.selectedInput = input;
-        }
-
-        keyDown(event) {
-            if (event.keyCode === 9) { // TAB
-                event.preventDefault();
-                let isPrevious = !!event.shiftKey;
-                this.focusField(isPrevious);
-            } else if (event.keyCode === 13) { // Entrée
-                event.preventDefault();
-                this.logIn();
-            }
-        }
-
         getFields() {
             return this.presenter.getFields();
         }
