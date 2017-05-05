@@ -9,23 +9,7 @@ exports.DashboardAdmin = function(globalVariables){
 
     class DashboardAdmin {
         constructor(presenter){
-            let createBack = ()=>{
-                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
-                this.title.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3)
-                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
-                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN);
-                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
-                this.panel.position(this.panel.width/2 +MARGIN ,
-                    this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
-                this.manipulator.add(this.panel.component);
-                this.manipulator.add(this.titleBack);
-                this.manipulator.add(this.title);
-                this.backRect = new svg.Rect(5000, 5000) //TODO
-                    .position(this.panel.width/2, this.panel.height/2)
-                    .color(myColors.white, 0, myColors.none);
-                this.miniaturesManipulator.add(this.backRect);
-                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-            }
+
             this.presenter = presenter;
             this.manipulator = new Manipulator(this).addOrdonator(2);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
@@ -38,16 +22,37 @@ exports.DashboardAdmin = function(globalVariables){
             this.headHeight = this.header.height + MARGIN;
             this.inputSize = {width: 400, height:30};
             this.buttonSize= {width:40, height:30};
-            this.manipulator
-                .add(this.addFormationManipulator);
-            createBack();
+
         }
 
 
         display(){
+            let createBack = ()=>{
+                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
+                this.title.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3)
+                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
+                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN);
+                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
+                this.panel.position(this.panel.width/2 +MARGIN ,
+                    this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
+                this.backRect = new svg.Rect(5000, 5000) //TODO
+                    .position(this.panel.width/2, this.panel.height/2)
+                    .color(myColors.white, 0, myColors.none);
+                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                this.panelComponent = this.panel.component;
+            }
+            createBack();
+            let manipulatorAdding = ()=>{
+                this.manipulator.add(this.panelComponent)
+                    .add(this.titleBack)
+                    .add(this.title)
+                    .add(this.addFormationManipulator);
+                this.miniaturesManipulator.add(this.backRect);
+                let headerManipulator = this.header.getManipulator();
+                this.manipulator.add(headerManipulator);
+            }
+            manipulatorAdding();
             drawing.manipulator.set(0,this.manipulator);
-            let headerManipulator = this.header.getManipulator();
-            this.manipulator.add(headerManipulator);
             this.header.display("Dashboard");
 
             let addIconCaption = ()=>{
@@ -81,7 +86,6 @@ exports.DashboardAdmin = function(globalVariables){
                     addFormationTextArea.text.position(-this.inputSize.width/2+MARGIN, 7.5);
                 });
                 addFormationTextArea.color([myColors.lightgrey, 1, myColors.black]);
-                this.headHeight += 30 + MARGIN;
                 this.addFormationManipulator.add(addFormationTextArea.component);
                 this.addFormationManipulator.move(MARGIN + this.inputSize.width/2, this.header.height + MARGIN + this.inputSize.height/2);
 
@@ -175,11 +179,11 @@ exports.DashboardAdmin = function(globalVariables){
             this.presenter.miniatureClickHandler(formation);
         }
         fromReturn(){
-            drawing.manipulator.set(0,this.manipulator);
+            this.display()
         }
 
         flush(){
-            drawing.manipulator.unset(0);
+            drawing.manipulator.flush();
         }
     }
     return DashboardAdmin;

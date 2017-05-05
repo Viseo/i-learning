@@ -86,6 +86,63 @@ exports.Models = function(globalVariables){
                     }
                 });
         }
+
+        addNewFormation(object){
+            const
+                messageSave = "Votre travail a bien été enregistré.",
+                messageError = "Vous devez remplir correctement le nom de la formation.",
+                messageReplace = "Les modifications ont bien été enregistrées.",
+                messageUsedName = "Le nom de cette formation est déjà utilisé !",
+                messageNoModification = "Les modifications ont déjà été enregistrées.";
+            return util.Server.insertFormation(object, status, ignoredData)
+                .then(data => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved) {
+                        this._id = answer.idVersion;
+                        this.formationId = answer.id;
+                        return messageSave;
+                    } else {
+                        if (answer.reason === "NameAlreadyUsed") {
+                            return messageUsedName;
+                        }
+                    }
+                })
+        }
+        getId(){
+            if (this._id){
+                return this._id;
+            }
+            else{
+                return null;
+            }
+        }
+        setLabel(label){
+            this.label = label;
+        }
+
+        replaceFormation(object) {
+            const
+                messageSave = "Votre travail a bien été enregistré.",
+                messageReplace = "Les modifications ont bien été enregistrées.",
+                messageUsedName = "Le nom de cette formation est déjà utilisé !",
+                messageNoModification = "Les modifications ont déjà été enregistrées.";
+            return util.Server.replaceFormation(this._id, object, status, ignoredData)
+                .then((data) => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved) {
+                        return messageSave;
+                    } else {
+                        switch (answer.reason) {
+                            case "NoModif" :
+                                return messageNoModification;
+                                break;
+                            case "NameAlreadyUsed" :
+                                return messageUsedName;
+                                break;
+                        }
+                    }
+                })
+        };
     }
 
     class Level{
