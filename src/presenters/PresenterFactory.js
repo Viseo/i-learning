@@ -3,6 +3,7 @@ const FDashboardCollabP = require('./DashboardCollabP').DashboardCollabP;
 const FFormationAdminP = require('./FormationsdminP').FormationAdminP;
 const connection = require('./ConnectionP').ConnectionP;
 const register = require('./RegisterP').RegisterP;
+const FQuizCollab = require('./QuizCollabP').QuizCollabP;
 
 exports.PresenterFactory = function(globalvariables){
     globalvariables.dashboardAdminP = dashboard(globalvariables);
@@ -10,4 +11,5 @@ exports.PresenterFactory = function(globalvariables){
     globalvariables.FormationsAdminP = FFormationAdminP(globalvariables);
     globalvariables.ConnectionP = connection(globalvariables);
     globalvariables.RegisterP = register(globalvariables);
+    globalvariables.QuizCollabP = FQuizCollab(globalvariables);
 };

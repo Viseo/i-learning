@@ -229,8 +229,10 @@ exports.Models = function(globalVariables){
     }
 
     class Quiz {
-        constructor(game){
-            this.label = game.label;
+        constructor(quiz){
+            this.id = quiz.id;
+            this.label = quiz.label;
+            this.questions = quiz.questions;
         }
     }
 
@@ -240,7 +242,8 @@ exports.Models = function(globalVariables){
 
     return {
         Formations,
-        User
+        User,
+        Quiz //TODO à retirer après les tests
     }
 }
 

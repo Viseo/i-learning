@@ -29,8 +29,19 @@ function main(svg, runtime, dbListener, ImageRuntime, param) {
             if (globalVariables.admin) {
                 dashboardP = new globalVariables.dashboardAdminP(formations);
             } else {
-                let user = new models.User(data.user);
-                dashboardP = new globalVariables.DashboardCollabP(user, formations);
+                //let user = new models.User(data.user);
+                //dashboardP = new globalVariables.DashboardCollabP(user, formations);
+
+                var testQuiz = new models.Quiz({
+                    id:"quiz1",
+                    label: "test quiz",
+                    questions: [
+                        {label: "1re question", multipleChoice: true, answers: [{label: "oui", correct: true, explanation: {label: "parce que"}}, {label: "non"}]},
+                        {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]}
+                    ]
+                });
+                dashboardP = new globalVariables.QuizCollabP(null, testQuiz);
+
             }
             dashboardP.displayView();
         })
