@@ -43,7 +43,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
 
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
-        let user = new models.User(data);
+        let user = new models.User(data.user);
 
         if(redirect){
             password.display(param.ID);

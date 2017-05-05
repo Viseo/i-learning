@@ -155,7 +155,71 @@ exports.Models = function(globalVariables){
         constructor(user){
             this.lastName = user.lastName;
             this.firstName = user.firstName;
-            this.lastAction = (user.lastAction) ? user.lastAction : {};
+            this.lastAction = new LastAction(user.lastAction);
+        }
+
+        hasLastAction(){
+            return this.lastAction.hasLastAction();
+        }
+
+        getLastActionQuestionsAnswered(){
+            return this.lastAction.getQuestionsAnswered();
+        }
+
+        getLastActionFormationId(){
+            return this.lastAction.getFormationId();
+        }
+
+        getLastActionFormationVersion(){
+            return this.lastAction.getFormationVersion();
+        }
+
+        getLastActionCurrentIndexQuestion(){
+            return this.lastAction.getCurrentIndexQuestion();
+        }
+
+        getLastActionTypeOfGame(){
+            return this.lastAction.getTypeOfGame();
+        }
+
+    }
+
+
+    class LastAction {
+        constructor(lastAction = {}){
+            this.indexQuestion = lastAction.indexQuestion ;
+            this.questionsAnswered = lastAction.questionsAnswered;
+            this.game = lastAction.game;
+            this.version = lastAction.version;
+            this.formation = lastAction.formation;
+        }
+
+        hasLastAction(){
+            var hasLasAction = false;
+            if(this.formation){
+                hasLasAction = true;
+            }
+            return hasLasAction;
+        }
+
+        getQuestionsAnswered(){
+            return this.questionsAnswered;
+        }
+
+        getFormationId(){
+            return this.formation;
+        }
+
+        getFormationVersion(){
+            return this.version;
+        }
+
+        getCurrentIndexQuestion(){
+            return this.indexQuestion;
+        }
+
+        getTypeOfGame(){
+            return this.game;
         }
     }
 

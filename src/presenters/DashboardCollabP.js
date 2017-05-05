@@ -8,7 +8,16 @@ exports.DashboardCollabP = function(globalVariables) {
             this.view = new DashboardCollabV(this);
             this.formations = formations;
             this.user = user;
+
+            //todo
+            if(this.hasLastAction()){
+                alert("Todo Got last action");
+            }
         };
+
+        hasLastAction(){
+            return this.user.hasLastAction();
+        }
 
         displayView(){
             this.view.display();
@@ -20,15 +29,12 @@ exports.DashboardCollabP = function(globalVariables) {
 
         clickOnFormation(formation){
             alert(JSON.stringify(formation));
-            /*this.formations.loadFormation(formation);
-            let formationPresenter = new globalVariables.FormationsAdminP(formation);
-            this.view.flush();
-            formationPresenter.displayView();*/
         }
 
         getFormations(){
             return this.formations.getFormations();
         }
+
     }
     return DashboardCollabP;
 };
