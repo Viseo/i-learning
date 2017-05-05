@@ -68,13 +68,29 @@ exports.RegisterV = function (globalVariables) {
                         fieldManip.add(fieldTitle);
                     }
                     var _displayArea = () => {
-                        var _onInput = (oldMessage, newMessage, valid) => {
+                        var _updatePresenter = (oldMessage, newMessage, valid) => {
                             this.setValid(field, valid);
                             if (valid) this.setFieldText(field, newMessage);
                         }
-                        var _onClick = () => {
-                            this.selectInput(fieldArea);
+                        var _selectInput = () => {
+                            this.selectedInput = fieldArea;
                         }
+                        var _displayEye = () => {
+                            var _displayPwdIcon = (isShown) => {
+                                var _toggleIcon = () => {
+                                    _displayPwdIcon(!isShown);
+                                }
+
+                                let src = isShown ? '../images/hide.png' : '../images/view.png';
+                                let icon = IconCreator.createImageIcon(src, fieldManip, 2);
+                                icon.position(INPUT_WIDTH/2 + MARGIN + icon.getContentSize() / 2, 0);
+                                icon.addEvent('click', _toggleIcon);
+                                fieldArea.type(isShown ? 'text' : 'password');
+                            }
+
+                            _displayPwdIcon(false);
+                        }
+
                         let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
                         fieldArea.font(FONT, FONT_SIZE_INPUT)
                             .color(COLORS)
@@ -84,12 +100,16 @@ exports.RegisterV = function (globalVariables) {
                             .anchor("center")
                         fieldManip.set(0, fieldArea.component);
 
-                        fieldArea.onInput(_onInput);
-                        fieldArea.onClick(_onClick);
+                        fieldArea.onInput(_updatePresenter);
+                        fieldArea.onClick(_selectInput);
                         this.inputs.push(fieldArea);
+
+                        if(field.type === "password"){
+                            _displayEye();
+                        }
                     }
 
-                    let fieldManip = new Manipulator(this).addOrdonator(2);
+                    let fieldManip = new Manipulator(this).addOrdonator(3);
                     let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
                     fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
 
@@ -231,10 +251,6 @@ exports.RegisterV = function (globalVariables) {
 
         registerNewUser() {
             return this.presenter.registerNewUser();
-        }
-
-        selectInput(input) {
-            this.selectedInput = input;
         }
 
         setValid(field, valid) {
