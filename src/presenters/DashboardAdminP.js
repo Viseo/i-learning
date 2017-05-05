@@ -63,7 +63,12 @@ exports.DashboardAdminP = function(globalVariables) {
         }
 
         fromReturn(){
-            this.view.fromReturn();
+            this.formations.sync().then(()=> {
+                    this.getFormations();
+                    this.view.fromReturn();
+                }
+            )
+
         }
 
         miniatureClickHandler(formation){
