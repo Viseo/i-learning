@@ -57,8 +57,8 @@ exports.ConnectionP = function(globalVariables) {
                 this._fields[index].text = text;
             }
         }
-        setStayConnected(stay){
-            this._stayConnected = !!stay;
+        setStayConnected(isStay){
+            this._stayConnected = !!isStay;
         }
 
         onConnected(handler){

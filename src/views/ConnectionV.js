@@ -87,6 +87,7 @@ exports.ConnectionV = function (globalVariables) {
                                 var _toggleIcon = () => {
                                     _displayPwdIcon(!isShown);
                                 }
+
                                 let src = isShown ? '../images/hide.png' : '../images/view.png';
                                 let icon = IconCreator.createImageIcon(src, fieldManip, 2);
                                 icon.position(INPUT_WIDTH/2 + MARGIN + icon.getContentSize() / 2, 0);
@@ -135,20 +136,38 @@ exports.ConnectionV = function (globalVariables) {
 
             };
             var _displayCookieCheckbox = () => {
-                let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                let fieldTitle = new svg.Text("Se souvenir de moi");
+                var _displayTitle = () => {
+                    let fieldTitle = new svg.Text("Se souvenir de moi");
+                    fieldTitle.dimension(INPUT_WIDTH / 2, FONT_SIZE_TITLE);
+                    fieldTitle.font("Arial", FONT_SIZE_TITLE * 3 / 4).anchor("start");
+                    fieldTitle.color(TITLE_COLOR);
+                    fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE) / 2);
+                    this.cookieManipulator.add(fieldTitle)
+                }
+                var _displayCheckBox = () => {
+                    var _displayChecked = (isChecked) => {
+                        var _toggleChecked = () => {
+                            _displayChecked(!isChecked);
+                        }
 
-                fieldTitle.dimension(INPUT_WIDTH / 2, FONT_SIZE_TITLE);
-                fieldTitle.font("Arial", FONT_SIZE_TITLE * 3 / 4).anchor("start");
-                fieldTitle.color(TITLE_COLOR);
-                fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE) / 2);
+                        this.setStayConnected(isChecked);
+                        if(isChecked){
+                            this.cookieManipulator.add(checked);
+                        }else {
+                            this.cookieManipulator.remove(checked);
+                        }
+                        this.cookieManipulator.addEvent('click', _toggleChecked);
+                    }
 
-                let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
-                this.cookieManipulator
-                    .add(fieldTitle)
-                    .add(checkbox)
-                    .add(checked)
-                    .move(drawing.width / 2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                    this.cookieManipulator.add(checkbox);
+                    _displayChecked(true);
+                }
+
+                _displayTitle();
+                _displayCheckBox();
+                this.cookieManipulator.move(drawing.width / 2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayForgotPWD = () => {
                 var _forgotHandler = () => {
@@ -283,6 +302,9 @@ exports.ConnectionV = function (globalVariables) {
         }
         setFieldText(field, text) {
             this.presenter.setFieldText(field, text);
+        }
+        setStayConnected(isStay){
+            this.presenter.setStayConnected(isStay);
         }
 
 
