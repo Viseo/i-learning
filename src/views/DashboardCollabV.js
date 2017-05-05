@@ -15,12 +15,12 @@ exports.DashboardCollabV = function (globalVariables) {
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
-                this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
+                this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
 
                 this.manipulator
                     .add(this.miniaturesManipulator)
-                    .add(this.addFormationManipulator)
-                    .add(this.header.getManipulator());
+                    .add(this._getHeaderManipulator())
+                    .add(this.toggleFormationsManipulator);
             };
             var _declareDimension = () => {
                 this.tileWidth = 120;
@@ -28,16 +28,29 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.spaceBetween = 20;
                 this.headHeight = this.header.height + MARGIN;
             };
+            var _declareIcons = () => {
+                let iconCreator = new IconCreator();
+
+                this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
+                //this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
+
+                this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
+                this.inProgressIcon.content.mark('inProgressIcon');
+
+                this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
+                //this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0).content.mark("doneIcon");
+                this.toggleFormationsManipulator.move(0, this.headHeight + this.undoneIcon.getSize());
+            };
 
             this.presenter = presenter;
             this.header = new HeaderVue();
 
             _declareDimension();
             _declareManipulator();
+            _declareIcons();
         }
 
         display() {
-            var h = this.tileHeight;
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
                     let polygon = util.drawHexagon(this.tileWidth, this.tileHeight, 'V', 1);
@@ -99,7 +112,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     };
 
                     let starMiniatures = createRating(miniature.manipulator, 3);
-                    starMiniatures.popMark(formation.label).popPosition(0, -h / 2);
+                    starMiniatures.popMark(formation.label).popPosition(0, -this.tileHeight / 2);
 
 
                     starMiniatures.forEach(
@@ -111,9 +124,9 @@ exports.DashboardCollabV = function (globalVariables) {
                     );
 
                     starMiniatures.scaleStar(factor);
-                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3, -h / 3);
+                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3, -this.tileHeight / 3);
 
-                    let notationText = new svg.Text('Notez cette \n formation :').position(0, -h * 0.5).font('Arial', 12, 10);
+                    let notationText = new svg.Text('Notez cette \n formation :').position(0, -this.tileHeight * 0.5).font('Arial', 12, 10);
                     miniature.manipulator.add(notationText);
                 };
 
@@ -125,13 +138,24 @@ exports.DashboardCollabV = function (globalVariables) {
             };
 
             drawing.manipulator.set(0, this.manipulator);
-            this.header.display("Dashboard");
+            this._displayHeader("Dashboard");
 
-            this.miniaturesManipulator.move(2 * MARGIN + this.tileWidth / 2,
-                this.headHeight + this.tileHeight + 3 * MARGIN);
+            this._moveMiniature(2 * MARGIN + this.tileWidth / 2, this.headHeight + this.tileHeight + 3 * MARGIN);
             this.getFormations().forEach((formation, i) => {
                 _displayMiniature(formation, i);
             });
+        }
+
+        _displayHeader(label){
+            this.header.display(label);
+        }
+
+        _getHeaderManipulator(){
+            return this.header.getManipulator();
+        }
+
+        _moveMiniature(x, y){
+            this.miniaturesManipulator.move(x, y);
         }
 
         clickOnFormation(formation) {

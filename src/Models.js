@@ -23,6 +23,7 @@ exports.Models = function(globalVariables){
             let result = newFormation.saveNewFormation();
             return result;
         }
+
         loadFormation(formation){
             let tmpLevelsTab = formation.levelsTab;
             formation.levelsTab = [];
