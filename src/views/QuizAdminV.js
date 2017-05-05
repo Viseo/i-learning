@@ -1,0 +1,440 @@
+/**
+ * Created by DMA3622 on 05/05/2017.
+ */
+exports.QuizAdminV = function (globalVariables) {
+    const util = globalVariables.util,
+        Manipulator = util.Manipulator,
+        svg = globalVariables.svg,
+        gui = globalVariables.gui,
+        drawing = globalVariables.drawing,
+        drawings = globalVariables.drawings,
+        IconCreator = globalVariables.domain.IconCreator,
+        ReturnButton = globalVariables.util.ReturnButton,
+        BUTTON_WIDTH = 250,
+        BUTTON_HEIGHT = 30,
+        QUESTIONS_PER_LINE = 6,
+        ANSWERS_PER_LINE = 4,
+        CHECKBOX_SIZE = 15;
+
+    class QuizAdminV {
+        constructor(presenter) {
+            var _createReturnButton = () => {
+                this.returnButton = new ReturnButton(this, "Retour à la formation");
+                this.returnButton.setHandler(() => {
+                    // this.formation.display();
+                    this.displayParentFormation();
+                })
+                this.manipulator.add(this.returnButton.manipulator);
+            }
+
+            this.presenter = presenter;
+            this.manipulator = new Manipulator(this);
+            this.header = new globalVariables.domain.HeaderVue();
+            this.label = this.getLabel();
+            this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
+            this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
+            this.titleManipulator = new Manipulator(this).addOrdonator(1);
+            this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
+            this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
+            this.manipulator
+                .add(this.questionsBlockManipulator)
+                .add(this.questionDetailsManipulator)
+                .add(this.titleManipulator)
+                .add(this.previewButtonManipulator)
+                .add(this.saveQuizButtonManipulator);
+            _createReturnButton();
+        }
+
+        display() {
+            this.manipulator.add(this.header.getManipulator());
+            var _resetDrawings = () => {
+                // main.currentPageDisplayed = "QuizManager";
+                drawings.component.clean();
+                this.questionsBlockManipulator.flush();
+                this.questionDetailsManipulator.flush();
+                drawing.manipulator.set(0, this.manipulator);
+                // drawing.manipulator.set(1, this.manipulator);
+                this.questions = [];
+                this.width = drawing.width - 2 * MARGIN;
+                this.height = drawing.height - drawing.height * HEADER_SIZE;
+            }
+            var _updateHeader = () => {
+                let buttonSize = 20;
+                let formationLabel = this.getFormationLabel();
+                this.header.display(formationLabel + " - " + this.label);
+                // globalVariables.header.display(this.formation.label + " - " + this.quizInfos.label);
+                this.returnButton.display(0, buttonSize / 2 + currentY, buttonSize, buttonSize);
+                currentY += buttonSize + MARGIN;
+            }
+            var _displayTitleArea = () => {
+                let dimensions = {
+                    width: this.width * 1 / 4,
+                    height: BUTTON_HEIGHT
+                }
+                let titleTextArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, this.label);
+
+                this.titleManipulator.set(0, titleTextArea.component);
+                titleTextArea.font('Arial', 15);
+                titleTextArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
+                currentY += dimensions.height + MARGIN;
+            }
+            var _displayQuestionsHeader = () => {
+                let dimensions = {
+                    width: this.width,
+                    height: this.height * 1 / 6
+                }
+                let border = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
+                this.questionsBlockManipulator.set(0, border);
+                this.questionsBlockManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
+                currentY += dimensions.height + MARGIN;
+            }
+            var _displayMediaLibrary = () => {
+                let dimensions = {
+                    width: this.width * 1 / 5 - MARGIN,
+                    height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
+                }
+                /** TODO MediaLibrary refonte **/
+                // this.library.display(MARGIN, currentY, dimensions.width, dimensions.height);
+            }
+            var _displayQuestionDetails = () => {
+                let dimensions = {
+                    width: this.width * 4 / 5,
+                    height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
+                }
+                this.questionDetailsDim = dimensions;
+                let border = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
+                this.questionDetailsManipulator.set(0, border);
+                this.questionDetailsManipulator.move(MARGIN + this.width * 1 / 5 + dimensions.width / 2, currentY + dimensions.height / 2);
+                currentY += dimensions.height + MARGIN;
+            }
+            var _displayPreviewButton = () => {
+                let dimensions = {
+                    width: BUTTON_WIDTH,
+                    height: BUTTON_HEIGHT
+                }
+                let previewButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Aperçu");
+                previewButton.glass.mark('previewButton');
+                previewButton.onClick(this.previewQuiz);
+                this.previewButtonManipulator.set(0, previewButton.component);
+                this.previewButtonManipulator.move(this.width / 2 - dimensions.width / 2 - MARGIN, currentY + dimensions.height / 2);
+            }
+            var _displaySaveButton = () => {
+                let dimensions = {
+                    width: BUTTON_WIDTH,
+                    height: BUTTON_HEIGHT
+                }
+                let saveButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
+                saveButton.glass.mark('saveButtonQuiz');
+                saveButton.onClick(this.saveQuiz);
+                this.saveQuizButtonManipulator.set(0, saveButton.component);
+                this.saveQuizButtonManipulator.move(this.width / 2 + dimensions.width / 2 + MARGIN, currentY + dimensions.height / 2);
+            }
+            var _displayQuestions = () => {
+                var _displayQuestionBlock = (question, index) => {
+                    // let question = {};
+                    var _createBlock = (question, index) => {
+                        var _newQuestionObject = () => {
+                            var _initManipulators = () => {
+                                question.blockManipulator = new Manipulator(this).addOrdonator(2);
+                                question.typeManipulator = new Manipulator(this).addOrdonator(2);
+                                question.textAreaManipulator = new Manipulator(this).addOrdonator(1);
+                                question.answersManipulator = new Manipulator(this);
+                            };
+                            var _initInfos = () => {
+                                // this.quiz = quiz;
+                                question.index = index;
+                                // if(question){
+                                //     this.load(question);
+                                // }else {
+                                //     this.load({
+                                //         label: "",
+                                //         multipleChoice: false,
+                                //         tabAnswers : []
+                                //     });
+                                // }
+                            };
+
+                            _initManipulators();
+                            _initInfos();
+                            question.unselect = () => {
+                                if (question.selected) {
+                                    question.selected = false;
+                                    question.questionButton.color([myColors.white, 1, myColors.black]);
+                                }
+                            }
+                            question.select = () => {
+                                if (!question.selected) {
+                                    question.selected = true;
+                                    question.questionButton.color([[43, 120, 228], 1, myColors.black]);
+                                    this.selectQuestion(question.index);
+                                }
+                            }
+                            question.setMultipleChoice = (isMultiple) => {
+                                if (isMultiple) {
+                                    question.uniqueButton.color([myColors.white, 1, myColors.black]);
+                                    question.multipleButton.color([[43, 120, 228], 1, myColors.black])
+                                } else {
+                                    question.uniqueButton.color([[43, 120, 228], 1, myColors.black]);
+                                    question.multipleButton.color([myColors.white, 1, myColors.black]);
+                                }
+                                question.multipleChoice = !!isMultiple; //convert to Boolean
+                            }
+                        }
+                        var _displayBloc = () => {
+                            let dimensions = {
+                                width: this.width / QUESTIONS_PER_LINE,
+                                height: this.height * 1 / 6 - 2 * MARGIN
+                            }
+                            question.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], question.label || "Question " + question.index);
+                            question.questionButton.back.corners(5, 5);
+                            question.questionButton.onClick(() => question.select());
+                            question.blockManipulator.add(question.questionButton.component);
+                            question.blockManipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + question.index * (dimensions.width + MARGIN), 0);
+                        };
+                        var _displayType = () => {
+                            let dimensions = {
+                                width: BUTTON_WIDTH,
+                                height: BUTTON_HEIGHT
+                            }
+                            question.uniqueButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], "Réponse unique");
+                            question.multipleButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], 'Réponses multiples');
+                            question.uniqueButton.position(-(dimensions.width / 2 + MARGIN), MARGIN - this.questionDetailsDim.height / 2 + dimensions.height / 2);
+                            question.multipleButton.position(dimensions.width / 2 + MARGIN, MARGIN - this.questionDetailsDim.height / 2 + dimensions.height / 2);
+                            question.uniqueButton.onClick(() => question.setMultipleChoice(false));
+                            question.multipleButton.onClick(() => question.setMultipleChoice(true));
+                            question.setMultipleChoice(question.multipleChoice);
+                            /** TODO récupérer multipleChoice du modèle Question **/
+                            question.typeManipulator.add(question.uniqueButton.component).add(question.multipleButton.component);
+                            question.answersDimension.height -= dimensions.height;
+                        };
+                        var _displayTextArea = () => {
+                            let dimensions = {
+                                width: this.questionDetailsDim.width - 2 * MARGIN,
+                                height: this.questionDetailsDim.height * 1 / 6 - 2 * MARGIN
+                            }
+                            question.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + question.index);
+                            question.textAreaManipulator.set(0, question.textArea.component);
+                            question.textArea.font('Arial', 15);
+                            question.textArea.anchor('center');
+                            question.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                            question.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
+                            question.answersDimension.height -= dimensions.height;
+                        };
+                        var _displayAnswers = () => {
+                            var _displayAnswerBlock = (question, answer, index) => {
+                                var _newAnswerObject = () => {
+                                    var _initManipulators = () => {
+                                        answer.manipulator = new Manipulator(this).addOrdonator(3);
+                                    }
+                                    var _initInfos = () => {
+                                        // this.question = question;
+                                        answer.index = index;
+                                        // if(answerInfos){
+                                        //     this.load(answerInfos);
+                                        // }else {
+                                        //     this.load({
+                                        //         label: "",
+                                        //         correct: false,
+                                        //         explanation: {}
+                                        //     });
+                                        // }
+                                    }
+                                    _initManipulators();
+                                    _initInfos();
+                                };
+                                var _displayTextArea = () => {
+                                    var _addExplanationPen = () => {
+                                        // displayPen = function (x, y, size, object, handler) {
+                                        answer.explanationPenManipulator = new Manipulator(this);
+                                        answer.linesManipulator = new Manipulator(this);
+                                        answer.penManipulator = new Manipulator(this);
+                                        var _toggleExplanation = () => {
+                                            // if (answer.explanation) {                           // modele or state
+                                            //     // answer.checkBoxManipulator.remove(checked);
+                                            //     answer.explanation = false;                     // modele or state
+                                            // } else {
+                                            //     // answer.checkBoxManipulator.add(checked);
+                                            //     answer.explanation = true;                      // modele or state
+                                            // }
+                                            //     if (!answer.explanation) answer.explanation = classContainer.createClass("PopInVue", this, true);
+                                            //     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                                            //     this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                                            //     questionCreator.explanation = this.popIn;
+                                            if (!answer.explanation) answer.explanation = {};
+                                            console.log(answer.explanation + 'help me !');
+                                        }
+                                        let fontColor = answer.filled ? myColors.darkerGreen : myColors.black,    // object.filled == la réponse dispose d'une explication remplie
+                                            square = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 1, myColors.black),
+                                            tipEnd = new svg.Triangle(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 5, "S").color(myColors.white, 1, fontColor).position(0, CHECKBOX_SIZE / 3),
+                                            end = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 10).color(myColors.fontColor, 1, fontColor).position(0, -CHECKBOX_SIZE / 3),
+                                            body = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2).color(fontColor).position(0, 0),
+                                            line1 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
+                                            line2 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + 2 * CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + 2 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
+                                            line3 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + 3 * CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + 3 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
+                                            line4 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
+                                                -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5, -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 7,
+                                                -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey);
+                                        // elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+                                        // square.mark("explanationSquare" + object.model.parentQuestion.tabAnswer.indexOf(object));
+                                        // answer.explanationPenManipulator.set(6, square);
+                                        // answer.linesManipulator.move(0, 0);
+                                        // answer.linesManipulator.set(0, line1);
+                                        // answer.linesManipulator.set(1, line2);
+                                        // answer.linesManipulator.set(2, line3);
+                                        // answer.linesManipulator.set(3, line4);
+                                        answer.explanationPenManipulator.add(square);
+                                        answer.linesManipulator.add(line1).add(line2).add(line3).add(line4);
+                                        // answer.penManipulator.set(1, tipEnd);
+                                        // answer.penManipulator.set(2, end);
+                                        // answer.penManipulator.set(3, body);
+                                        answer.penManipulator.add(tipEnd).add(end).add(body).rotate(40);
+                                        // answer.penManipulator.move(x + size / 8, y - size / 8);
+                                        answer.explanationPenManipulator.addEvent('click', _toggleExplanation);
+                                        answer.explanationPenManipulator.add(answer.linesManipulator)
+                                            .add(answer.penManipulator)
+                                            .move(dimensions.width / 2 - CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2)
+                                        answer.manipulator.set(1, answer.explanationPenManipulator);
+                                        // handler && elementsTab.forEach(element => svg.addEvent(element, "click", handler));
+                                        // };
+                                    }
+                                    var _addValidCheckbox = () => {
+                                        answer.checkBoxManipulator = new Manipulator(this);
+                                        var _toggleChecked = () => {
+                                            if (answer.checked) {                           // modele or state
+                                                answer.checkBoxManipulator.remove(checked);
+                                                answer.checked = false;                     // modele or state
+                                            } else {
+                                                answer.checkBoxManipulator.add(checked);
+                                                answer.checked = true;                      // modele or state
+                                            }
+                                        }
+                                        let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                                        let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                                        answer.checkBoxManipulator.addEvent('click', _toggleChecked);
+                                        answer.checkBoxManipulator.add(checkbox).move(-dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                                        answer.manipulator.set(2, answer.checkBoxManipulator);
+                                    }
+                                    let dimensions = {
+                                            width: question.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                                            height: 70
+                                        },
+                                        indexX = Math.floor(index % ANSWERS_PER_LINE),
+                                        indexY = Math.floor(index / ANSWERS_PER_LINE),
+                                        y = dimensions.height / 2,
+                                        x = MARGIN / 2 + dimensions.width / 2 - question.answersDimension.width / 2;
+
+                                    answer.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, answer.label || "Réponse");
+                                    answer.manipulator.set(0, answer.textArea.component);
+                                    answer.textArea.font('Arial', 15);
+                                    answer.textArea.anchor('center');
+                                    answer.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                                    // answer.manipulator.move(
+                                    //     -question.answersDimension.width/2 + dimensions.width/2 + answer.index*(dimensions.width + MARGIN),
+                                    //     -question.answersDimension.height/2 + dimensions.height/2
+                                    // answer.manipulator.move(x + answer.index * (dimensions.width + MARGIN), y * indexY);
+                                    answer.manipulator.move(x + indexX * (dimensions.width + MARGIN), y * indexY + (dimensions.height + MARGIN) * indexY);
+                                    _addExplanationPen();
+                                    _addValidCheckbox();
+                                }
+
+                                _newAnswerObject();
+                                _displayTextArea();
+
+
+                                return answer;
+                            }
+                            question.answers.forEach((answer, index) => {
+                                let answerDisplayElement = _displayAnswerBlock(question, answer, index);
+                                // question.answers.push(answer);
+                                question.answersManipulator.add(answerDisplayElement.manipulator);
+                                // let vue = new AnswerVue(this, answer, index);
+                                // this.answers.push(vue);
+                                // question.answersManipulator.add(vue.manipulator);
+                            });
+                        }
+
+                        question.answersDimension = {
+                            width: this.questionDetailsDim.width - 2 * MARGIN,
+                            height: this.questionDetailsDim.height - 2 * MARGIN
+                        }
+                        _newQuestionObject();
+                        _displayBloc();
+                        _displayType();
+                        _displayTextArea();
+                        _displayAnswers();
+                        return question;
+                    }
+                    return _createBlock(question, index);
+                }
+                let questions = this.getQuestions();
+                this.numberQuestions = questions.length;
+                questions.forEach((question, i) => {
+                    // this.questionsBlockManipulator.add(_displayQuestionBlock(question, i));
+                    let questionDisplayElement = _displayQuestionBlock(question, i);
+                    this.questions.push(question);
+                    this.questionsBlockManipulator.add(questionDisplayElement.blockManipulator);
+                });
+                // this.quizInfos.tabQuestions.forEach((question, index) => {
+                //     let vue = new QuestionVue(this, question, index);
+                //     this.questions.push(vue);
+                //     if (index === 0) vue.select();
+                //     this.questionsBlockManipulator.add(vue.blockManipulator);
+                // });
+            }
+            // var _displayAnswers = ()
+
+            var currentY = drawing.height * HEADER_SIZE + MARGIN;
+            _resetDrawings();
+            _updateHeader();
+            _displayTitleArea();
+            _displayQuestionsHeader();
+            _displayMediaLibrary();
+            _displayQuestionDetails();
+            _displayPreviewButton();
+            _displaySaveButton();
+            _displayQuestions();
+        }
+
+        displayParentFormation() {
+            this.presenter.displayParentFormation();
+        }
+
+        flush() {
+            drawing.manipulator.unset(0);
+        }
+
+        getFormationLabel() {
+            return this.presenter.getFormationLabel();
+        }
+
+        getLabel() {
+            return this.presenter.getLabel();
+        }
+
+        getQuestions() {
+            return this.presenter.getQuestions();
+        }
+
+        selectQuestion(index) {
+            if (this.selectedQuestionIndex >= 0) this.questions[this.selectedQuestionIndex].unselect();
+            this.selectedQuestionIndex = index;
+            this.questionDetailsManipulator
+                .set(1, this.questions[index].typeManipulator)
+                .set(2, this.questions[index].textAreaManipulator)
+                .set(3, this.questions[index].answersManipulator);
+        }
+
+        refresh() {
+
+        }
+    }
+
+    return QuizAdminV;
+}

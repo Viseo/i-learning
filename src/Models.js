@@ -164,6 +164,10 @@ exports.Models = function (globalVariables) {
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
         }
 
+        getLevelsTab() {
+            return this._levelsTab;
+        }
+
         saveNewFormation(callback) {
             const getObjectToSave = () => {
                 return {
@@ -285,8 +289,11 @@ exports.Models = function (globalVariables) {
 
     class Level{
         constructor(gamesTab, index){
-            this.gamesTab = gamesTab;
+            this._gamesTab = gamesTab;
             this.index = index;
+        }
+        getGamesTab() {
+            return this._gamesTab;
         }
     }
 
@@ -364,8 +371,8 @@ exports.Models = function (globalVariables) {
     }
 
     class Game{
-        constructor(game){
-
+        constructor(level) {
+            this.levelGame = level;
         }
 
     }
@@ -376,10 +383,31 @@ exports.Models = function (globalVariables) {
             this.index = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
+            this.tabQuestions = game.tabQuestions;
+            this.parentGame = game;
+            this.questions = [];
         }
     }
 
-    class Question {
+    class Question{
+        constructor(quiz) {
+            this.parentQuiz = quiz;
+            this.answers = [];
+            this.label = "Question par déf";
+            this.multipleChoice = false;
+            // this.media = imgSrc;
+
+        }
+    }
+
+    class Answer {
+        constructor(question) {
+            this.parentQuestion = question;
+            this.label = "Réponse par déf";
+            this.correct = false;
+            this.explanation = {};
+            // this.media = imgSrc;
+        }
 
     }
 

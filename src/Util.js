@@ -485,6 +485,31 @@ exports.Util = function (globalVariables) {
             sender.model.correct && drawPathChecked(sender, x, y, size);
             return sender.obj;
         };
+        // displayPenElement = function (size) {
+        //     const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
+        //         square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
+        //         tipEnd = new svg.Triangle(size / 5, size / 5, "S").color(myColors.white, 1, fontColor).position(0, size / 2),
+        //         end = new svg.Rect(size / 5, size / 10).color(myColors.fontColor, 1, fontColor).position(0, size / 5 - size / 4 - size / 10),
+        //         body = new svg.Rect(size / 5, size / 2).color(fontColor).position(0, size / 5),
+        //         line1 = new svg.Line(-size / 2 + size / 8, -size / 2 + size / 5, size / 2 - size / 8, -size / 2 + size / 5).color(myColors.grey, 1, myColors.grey),
+        //         line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.grey, 1, myColors.grey),
+        //         line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
+        //         line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey),
+        //         elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+        //     square.mark("explanationSquare" + object.model.parentQuestion.tabAnswer.indexOf(object));
+        //     object.manipulator.set(6, square);
+        //     object.linesManipulator.move(x, y);
+        //     object.linesManipulator.set(0, line1);
+        //     object.linesManipulator.set(1, line2);
+        //     object.linesManipulator.set(2, line3);
+        //     object.linesManipulator.set(3, line4);
+        //     object.penManipulator.set(1, tipEnd);
+        //     object.penManipulator.set(2, end);
+        //     object.penManipulator.set(3, body);
+        //     object.penManipulator.move(x + size / 8, y - size / 8);
+        //     object.penManipulator.rotate(40);
+        //     // handler && elementsTab.forEach(element => svg.addEvent(element, "click", handler));
+        // };
 
         drawVideoIcon = function (x, y, size, parentObject) {
             const
@@ -1754,7 +1779,7 @@ exports.Util = function (globalVariables) {
             this.parent = parent;
             this.labelDefault = "Retour";
             this.label = label ? label : this.labelDefault;
-            this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
+            this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(2);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
             this.manipulator.add(this.chevronManipulator);
@@ -1779,16 +1804,14 @@ exports.Util = function (globalVariables) {
             returnText.parentObj = this;
             returnButton.parentObj = this;
             background.parentObj = this;
-            this.setHandler = (returnHandler) => {
-                svg.addEvent(returnButton, "click", returnHandler);
-                svg.addEvent(returnText, "click", returnHandler);
-                svg.addEvent(background, "click", returnHandler);
-            };
-            this.removeHandler = (returnHandler) => {
-                svg.removeEvent(returnButton, "click", returnHandler);
-                svg.removeEvent(returnText, "click", returnHandler);
-                svg.removeEvent(background, "click", returnHandler);
-            }
+        }
+
+        setHandler(returnHandler){
+            this.manipulator.addEvent('click', returnHandler);
+        }
+
+        removeHandler(){
+            this.manipulator.removeEvent('click');
         }
     }
 

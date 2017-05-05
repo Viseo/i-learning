@@ -8,6 +8,7 @@ exports.FormationAdminP = function(globalVariables){
             this.formation = formation;
             this.view = new FormationAdminV(this);
             this.regex = TITLE_FORMATION_REGEX;
+            this.levelsTab = formation.getLevelsTab();
             this.state = state;
         }
         displayView(){
@@ -58,6 +59,12 @@ exports.FormationAdminP = function(globalVariables){
 
         flushView(){
             this.view.flush();
+        }
+        loadQuiz(quiz) {
+            // this.quizz.loadQuiz(quizz);
+            let quizPresenter = new globalVariables.QuizAdminP(this, quiz);
+            this.view.flush();
+            quizPresenter.displayView();
         }
     }
 
