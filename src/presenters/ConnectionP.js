@@ -40,6 +40,7 @@ exports.ConnectionP = function(globalVariables) {
         }
 
         onConnected(handler){
+            this.view.flush();
             this._onConnected = handler;
         }
         logIn(){

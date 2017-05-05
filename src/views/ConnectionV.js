@@ -220,7 +220,7 @@ exports.ConnectionV = function (globalVariables) {
                 _displayRegisterText();
             };
 
-            drawing.manipulator.add(this.manipulator);
+            drawing.manipulator.set(0, this.manipulator);
             _displayHeader();
             _displayFields();
             _displayCookieCheckbox();
@@ -311,8 +311,6 @@ exports.ConnectionV = function (globalVariables) {
         setStayConnected(isStay){
             this.presenter.setStayConnected(isStay);
         }
-
-
     }
     return ConnectionV;
 }
