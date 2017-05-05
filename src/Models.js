@@ -130,14 +130,14 @@ exports.Models = function(globalVariables){
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
-                        return messageSave;
+                        return {message: messageSave, status:true};
                     } else {
                         switch (answer.reason) {
                             case "NoModif" :
-                                return messageNoModification;
+                                return {message: messageNoModification, status: false};
                                 break;
                             case "NameAlreadyUsed" :
-                                return messageUsedName;
+                                return {message : messageUsedName, status: false};
                                 break;
                         }
                     }

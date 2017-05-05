@@ -29,17 +29,20 @@ exports.FormationAdminP = function(globalVariables){
                     return {label: this.formation.label};
                 };
                 if (this.formation.getId()){
-                    this.formation.replaceFormation(getObjectToSave()).then(message => {
-                        this.view.displayMessage(message);
+                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
                     });
                 }
                 else{
-                    this.formation.addNewFormation(getObjectToSave()).then(message => {
-                        this.view.displayMessage(message);
+                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
                     })
                 }
             } else {
                 this.view.displayMessage(messageError);
+                return Promise.resolve(false);
             }
 
         }

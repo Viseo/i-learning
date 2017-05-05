@@ -96,7 +96,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.titleGraph = new svg.Text('Formation : ' +  this.label).font('Arial', 25).color(myColors.grey).anchor('left');
                 this.titleGraph.position(-0.85*this.graphSize.width/2, -this.graphSize.height/2 + 8.3);
                 this.graphManipulator.set(2,this.titleGraph);
-                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + MARGIN, 3).color(myColors.white);
+                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
                 this.graphManipulator.set(1,this.titleGraphBack);
             }
@@ -110,7 +110,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.titleLibrary = new svg.Text('Jeux').color(myColors.grey).font('Arial', 25).anchor('left');
                 this.titleLibrary.position(-0.85*this.gamePanel.width/2, -this.gamePanel.height/2 + 8.33);
                 this.gameLibraryManipulator.set(2,this.titleLibrary);
-                this.titleLibraryBack = new svg.Rect(this.titleLibrary.boundingRect().width + MARGIN, 3).color(myColors.white);
+                this.titleLibraryBack = new svg.Rect(this.titleLibrary.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
                 this.titleLibraryBack.position(-0.85*this.gamePanel.width/2 + this.titleLibrary.boundingRect().width/2,
                     -this.gamePanel.height/2);
                 this.gameLibraryManipulator.set(1,this.titleLibraryBack);
@@ -140,11 +140,14 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         renameFormation(){
-            this.presenter.renameFormation(this.nameFormationField.textMessage);
-            this.header.display(this.nameFormationField.textMessage);
-            this.titleGraph.message('Formation : ' + this.nameFormationField.textMessage);
-            this.titleGraphBack.dimension(this.titleGraph.boundingRect().width + MARGIN, 3);
-            this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
+            this.presenter.renameFormation(this.nameFormationField.textMessage).then(status=>{
+                if (status){
+                    this.header.display(this.nameFormationField.textMessage);
+                    this.titleGraph.message('Formation : ' + this.nameFormationField.textMessage);
+                    this.titleGraphBack.dimension(this.titleGraph.boundingRect().width + 2*MARGIN, 3);
+                    this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
+                }
+            });
         }
 
         displayMessage(message){
