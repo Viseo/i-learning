@@ -1314,29 +1314,29 @@ exports.Util = function (globalVariables) {
         let factor = ratio || 1;
         if (orientation == 'V') {
             var points = [
-                [w / 2, -h / 1.5],
+                [w / 2, -h / 2],
                 [0, -factor * h],
-                [-w / 2, -h / 1.5],
-                [-w / 2, h / 1.5],
+                [-w / 2, -h / 2],
+                [-w / 2, h / 2],
                 [0, factor * h],
-                [w / 2, h / 1.5]
+                [w / 2, h / 2]
             ];
         }
         else {
             var points = [
-                [w / 2, -h / 1.5],
+                [w / 2, -h / 2],
                 [factor * w, 0],
-                [w / 2, h / 1.5],
-                [-w / 2, h / 1.5],
+                [w / 2, h / 2],
+                [-w / 2, h / 2],
                 [-factor * w, 0],
-                [-w / 2, -h / 1.5]
+                [-w / 2, -h / 2]
             ];
         }
 
         let shape = new svg.Polygon().add(points).color(
             hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
-        shape.width = w;
-        shape.height = h;
+        shape.width = orientation == 'V' ? w : w*factor;
+        shape.height = orientation == 'V' ? h*factor : h;
 
         return shape;
     };

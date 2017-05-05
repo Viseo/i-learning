@@ -234,6 +234,16 @@ exports.Models = function(globalVariables){
             this.label = quiz.label;
             this.questions = quiz.questions;
         }
+
+        getLabel(){
+            return this.label;
+        }
+        getQuestionLabel(index){
+            return this.questions[index] ? this.questions[index].label : "";
+        }
+        getAnswers(questionIndex){
+            return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
+        }
     }
 
     class Question{
