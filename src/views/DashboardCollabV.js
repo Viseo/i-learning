@@ -29,17 +29,54 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.headHeight = this.header.height + MARGIN;
             };
             var _declareIcons = () => {
-                let iconCreator = new IconCreator();
+                var _createIcon = () => {
+                    let iconCreator = new IconCreator();
 
-                this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
-                //this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
+                    let paddingIconX =  (IconCreator.getRadiusContent() * 2 + MARGIN);
+                    this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
+                    this.undoneIcon.content.mark("unDoneIcon");
 
-                this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
-                this.inProgressIcon.content.mark('inProgressIcon');
+                    this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
+                    this.inProgressIcon.position(paddingIconX, 0).content.mark('inProgressIcon');
 
-                this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
-                //this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0).content.mark("doneIcon");
-                this.toggleFormationsManipulator.move(0, this.headHeight + this.undoneIcon.getSize());
+                    this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
+                    this.doneIcon.position(2 * paddingIconX, 0).content.mark("doneIcon");
+
+                    let positionCaption = {
+                        x: drawing.width - 4 * (IconCreator.getRadiusContent() + MARGIN) - MARGIN,
+                        y: this.headHeight + IconCreator.getRadiusContent()
+                    };
+
+                    this.toggleFormationsManipulator.move(positionCaption.x, positionCaption.y);
+                }
+                var _createFilter = () => {
+                    var _drawBorderFilter = () => {
+                        this.undoneIcon.showActualBorder();
+                        this.doneIcon.showActualBorder();
+                        this.inProgressIcon.showActualBorder();
+                    };
+                    var _setIconClickEvent = () => {
+                        var _toggleFilter = (iconActionReverse, iconCancelAction1, iconCancelAction2) => {
+                            iconActionReverse.changeStatusActionIcon();
+                            iconCancelAction1.cancelActionIcon();
+                            iconCancelAction2.cancelActionIcon();
+                            this.miniaturesManipulator.flush();
+                            this._displayFormation();
+                            _drawBorderFilter();
+                        };
+                        this.inProgressIcon.addEvent('click',
+                            () => { _toggleFilter(this.inProgressIcon, this.undoneIcon, this.doneIcon)});
+                        this.undoneIcon.addEvent('click',
+                            () => { _toggleFilter(this.undoneIcon, this.inProgressIcon, this.doneIcon)});
+                        this.doneIcon.addEvent('click',
+                            () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
+                    };
+
+                    _setIconClickEvent();
+                };
+
+                _createIcon();
+                _createFilter();
             };
 
             this.presenter = presenter;
@@ -51,6 +88,12 @@ exports.DashboardCollabV = function (globalVariables) {
         }
 
         display() {
+            drawing.manipulator.set(0, this.manipulator);
+            this._displayHeader("Dashboard");
+            this._displayFormation();
+        }
+
+        _displayFormation(){
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
                     let polygon = util.drawHexagon(this.tileWidth, this.tileHeight, 'V', 1);
@@ -93,7 +136,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         Server.updateSingleFormationStars(formation.formationId, starObject.id, formation._id)
                             .then(data => {
                                 console.log(data);
-                        });
+                            });
                     };
 
                     let onStarHover = starObject => {
@@ -137,24 +180,26 @@ exports.DashboardCollabV = function (globalVariables) {
                 miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
             };
 
-            drawing.manipulator.set(0, this.manipulator);
-            this._displayHeader("Dashboard");
-
             this._moveMiniature(2 * MARGIN + this.tileWidth / 2, this.headHeight + this.tileHeight + 3 * MARGIN);
-            this.getFormations().forEach((formation, i) => {
-                _displayMiniature(formation, i);
+
+            var i = 0;
+            this.getFormations().forEach((formation) => {
+                if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
+                if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
+                if (this.undoneIcon.isInAction() && formation.progress != '') return;
+                _displayMiniature(formation, i++);
             });
         }
 
-        _displayHeader(label){
+        _displayHeader(label) {
             this.header.display(label);
         }
 
-        _getHeaderManipulator(){
+        _getHeaderManipulator() {
             return this.header.getManipulator();
         }
 
-        _moveMiniature(x, y){
+        _moveMiniature(x, y) {
             this.miniaturesManipulator.move(x, y);
         }
 

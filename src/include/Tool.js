@@ -205,6 +205,18 @@ exports.Tool = function (globalVariables, classContainer) {
             /*svg.addEvent(this.border, eventName, handler);
              (this.content) && svg.addEvent(this.content, eventName, handler);*/
         }
+
+        changeStatusActionIcon(){
+            this.action = !this.action;
+        }
+
+        cancelActionIcon(){
+            this.action = false;
+        }
+
+        isInAction(){
+            return this.action;
+        }
     }
 
     class IconCreator {
@@ -308,6 +320,10 @@ exports.Tool = function (globalVariables, classContainer) {
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
+        }
+
+        static getRadiusContent(){
+            return ICON_SIZE;
         }
     }
 

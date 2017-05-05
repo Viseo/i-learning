@@ -8,9 +8,17 @@ exports.Models = function(globalVariables){
 
         sync(){
             return util.Server.getAllFormations().then(data=>{
+                var _sortFormationsList = () => {
+                    const sortAlphabetical = function (array) {
+                        return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
+                    };
+                    this._formations = sortAlphabetical(this._formations);
+                };
+
                 this._formations = [];
                 let formation = JSON.parse(data).myCollection;
                 formation.forEach(form => this._formations.push(new Formation(form)));
+                _sortFormationsList();
             });
         }
 
