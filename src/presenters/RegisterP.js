@@ -7,8 +7,7 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
         runtime = globalVariables.runtime,
-        Server = globalVariables.util.Server,
-        drawing = globalVariables.drawing;
+        Server = globalVariables.util.Server;
 
     class RegisterP {
         constructor(parent) {
@@ -67,13 +66,9 @@ exports.RegisterP = function (globalVariables) {
             _declareTextFields();
         }
 
-        displayView() {
-            this.view.display();
-        }
-
         goToConnection() {
-            drawing.manipulator.flush();
-            this.parent.displayView();
+            this.flush();
+            this.fromReturn();
         }
 
         registerNewUser() {
@@ -105,6 +100,15 @@ exports.RegisterP = function (globalVariables) {
             }
         }
 
+        displayView() {
+            this.view.display();
+        }
+        flush(){
+            this.view.flush();
+        }
+        fromReturn(){
+            this.parent.fromReturn();
+        }
         getFields() {
             return this._fields;
         }

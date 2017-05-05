@@ -52,6 +52,10 @@ exports.ConnectionV = function (globalVariables) {
             drawing.manipulator.flush();
         }
 
+        fromReturn(){
+            this.display();
+        }
+
         display() {
             var _displayHeader = () => {
                 let headerManipulator = this.header.getManipulator();

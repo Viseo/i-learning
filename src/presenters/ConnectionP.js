@@ -38,28 +38,6 @@ exports.ConnectionP = function(globalVariables) {
             _declareTextFields();
             this.view = new connectionView(this);
         }
-        displayView(){
-            this.view.display();
-        }
-
-        getFields () {
-            return this._fields;
-        }
-        setValid(field, valid){
-            let index = this._fields.indexOf(field);
-            if(index != -1){
-                this._fields[index].valid = valid;
-            }
-        }
-        setFieldText(field, text){
-            let index = this._fields.indexOf(field);
-            if(index != -1){
-                this._fields[index].text = text;
-            }
-        }
-        setStayConnected(isStay){
-            this._stayConnected = !!isStay;
-        }
 
         onConnected(handler){
             this._onConnected = handler;
@@ -86,12 +64,41 @@ exports.ConnectionP = function(globalVariables) {
         }
 
         goToRegister(){
-            this.view.flush();
+            this.flush();
             let registerP = new globalVariables.RegisterP(this);
             registerP.displayView();
         }
         forgotPWD(){
             return Server.resetPassword({mailAddress: this._fields[0].text});
+        }
+
+        flush(){
+            this.view.flush();
+        }
+        fromReturn(){
+            this.view.fromReturn();
+        }
+        displayView(){
+            this.view.display();
+        }
+
+        getFields () {
+            return this._fields;
+        }
+        setValid(field, valid){
+            let index = this._fields.indexOf(field);
+            if(index != -1){
+                this._fields[index].valid = valid;
+            }
+        }
+        setFieldText(field, text){
+            let index = this._fields.indexOf(field);
+            if(index != -1){
+                this._fields[index].text = text;
+            }
+        }
+        setStayConnected(isStay){
+            this._stayConnected = !!isStay;
         }
     }
     return ConnectionP;

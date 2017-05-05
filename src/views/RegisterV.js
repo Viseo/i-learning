@@ -29,7 +29,6 @@ exports.RegisterV = function (globalVariables) {
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
                 this.header = new globalVariables.domain.HeaderVue();
-                this.fieldsTextFields = [];
                 this.fieldsManip = new Manipulator(this);
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.saveButtonManipulator.component.mark('saveButton');
@@ -43,6 +42,10 @@ exports.RegisterV = function (globalVariables) {
 
             _initV();
             _declareManipulator();
+        }
+
+        flush(){
+            drawing.manipulator.flush();
         }
 
         display() {
