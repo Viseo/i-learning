@@ -7,12 +7,40 @@ const Domain = require('./Domain').Domain,
     presenterFactory = require('../presenters/PresenterFactory').PresenterFactory;
 
 
-function main(svg, runtime, dbListener, ImageRuntime,param) {
+function main(svg, runtime, dbListener, ImageRuntime, param) {
+    var _onConnected = (data) => {
+        /* drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+         data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+         formations.sync().then(() => {
+         let dashboardP;
+         if(globalVariables.admin){
+         dashboardP = new globalVariables.dashboardAdminP(formations);
+         }else {
+         dashboardP = new globalVariables.dashboardCollabP(formations);
+         }
+         dashboardP.displayView();
+         })*/
+
+
+        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+        data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+        formations.sync().then(() => {
+            let dashboardP;
+            if (globalVariables.admin) {
+                dashboardP = new globalVariables.dashboardAdminP(formations);
+            } else {
+                let user = new models.User(data.user);
+                dashboardP = new globalVariables.DashboardCollabP(user, formations);
+            }
+            dashboardP.displayView();
+        })
+    }
+
     let domain, util, gui, drawing, drawings;
-    let globalVariables = { svg, runtime, dbListener, ImageRuntime };
+    let globalVariables = {svg, runtime, dbListener, ImageRuntime};
 
     svgPolyfill(svg);
-    gui = svggui(svg, { speed: 5, step: 100 });
+    gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
     globalVariables.main = main;
 
@@ -37,33 +65,25 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
     let formations = new models.Formations();
 
     let redirect;
-    if(param){
+    if (param) {
         redirect = param.redirect;
     }
 
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
-        let user = new models.User(data.user);
 
-        if(redirect){
+        if (redirect) {
             password.display(param.ID);
             redirect = false;
         }
         else {
             if (data.ack === 'OK') {
-                drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
-                formations.sync().then(() => {
-                    let dashboardP;
-                    if(globalVariables.admin){
-                        dashboardP = new globalVariables.dashboardAdminP(formations);
-                    }else {
-                        dashboardP = new globalVariables.DashboardCollabP(user, formations);
-                    }
-                    dashboardP.displayView();
-                })
+                _onConnected(data);
             } else {
                 globalVariables.admin = false;
+                let connectionP = new globalVariables.ConnectionP();
+                connectionP.onConnected(_onConnected);
+                connectionP.displayView();
             }
         }
     });

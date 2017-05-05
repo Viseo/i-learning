@@ -171,12 +171,16 @@ exports.Tool = function (globalVariables, classContainer) {
             _createContent(contentProperties);
 
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
-            (borderProperties.layer && borderProperties >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
+            (borderProperties.layer && borderProperties.layer >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
                 : manipulator.add(this.manipulator);
         }
 
         getSize(){
             return this.iconSetting.borderProperties.size;
+        }
+
+        getContentSize(){
+            return this.iconSetting.contentProperties.size;
         }
 
         position(x, y) {
@@ -322,8 +326,17 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
-        static getRadiusContent(){
+        static getRadiusContent() {
             return ICON_SIZE;
+        }
+
+        static createImageIcon(src, manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setPictureContent(src, ICON_SIZE*2);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
         }
     }
 
