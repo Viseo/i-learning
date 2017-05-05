@@ -91,7 +91,7 @@ exports.DashboardAdmin = function(globalVariables){
                 addButton.back.corners(5,5);
                 this.addFormationField = addFormationTextArea;
                 this.addFormationManipulator.set(1, addButton.component);
-                svg.addEvent(addButton.component, 'click', this.addFormationHandler.bind(this));
+                addButton.onClick(this.addFormationHandler.bind(this));
             }
             addFormationDisplay();
             addIconCaption();
@@ -174,9 +174,12 @@ exports.DashboardAdmin = function(globalVariables){
         miniatureClickHandler(formation){
             this.presenter.miniatureClickHandler(formation);
         }
+        fromReturn(){
+            drawing.manipulator.set(0,this.manipulator);
+        }
 
         flush(){
-            this.manipulator.flush();
+            drawing.manipulator.unset(0);
         }
     }
     return DashboardAdmin;

@@ -62,9 +62,13 @@ exports.DashboardAdminP = function(globalVariables) {
             this.formationsList = this.formations.getFormations();
         }
 
+        fromReturn(){
+            this.view.fromReturn();
+        }
+
         miniatureClickHandler(formation){
             this.formations.loadFormation(formation);
-            let formationPresenter = new globalVariables.FormationsAdminP(formation);
+            let formationPresenter = new globalVariables.FormationsAdminP(this, formation);
             this.view.flush();
             formationPresenter.displayView();
         }

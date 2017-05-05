@@ -4,9 +4,10 @@ exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables);
 
     class FormationsAdminP{
-        constructor(formation){
+        constructor(parentPresenter, formation){
             this.formation = formation;
             this.view = new FormationAdminV(this);
+            this.parentPresenter = parentPresenter;
         }
         displayView(){
             this.view.display();
@@ -16,9 +17,8 @@ exports.FormationAdminP = function(globalVariables){
         }
 
         returnHandler(){
-            let dashboardAP = new globalVariables.dashboardAdminP();
             this.view.flush();
-            dashboardAP.displayView();
+            this.parentPresenter.fromReturn();
         }
     }
 

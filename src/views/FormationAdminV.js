@@ -14,6 +14,7 @@ exports.FormationAdminV = function(globalVariables) {
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
                 this.returnButton = new gui.Button(300, 30, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton.onClick(this.returnHandler.bind(this));
                 this.returnButton.back.corners(5,5);
                 this.returnButton.text.font('Arial', 20).position(0,6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
@@ -23,11 +24,39 @@ exports.FormationAdminV = function(globalVariables) {
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
             }
+            let createNameFieldFormation = () => {
+                this.inputSize = {width: 400, height:30};
+                this.buttonSize= {width:40, height:30};
+                let nameFieldFormation = new gui.TextField(0,0, this.inputSize.width, this.inputSize.height, 'Ajouter une formation')
+                nameFieldFormation.font('Arial', 15).color(myColors.grey);
+                nameFieldFormation.text.position(-this.inputSize.width/2 + MARGIN, 7.5);
+                nameFieldFormation.control.placeHolder('Ajouter une formation');
+                nameFieldFormation.onInput((oldMessage, message, valid)=>{
+                    if (!message || !oldMessage){
+                        nameFieldFormation.text.message('Ajouter une formation');
+                    }
+                    nameFieldFormation.text.position(-this.inputSize.width/2+MARGIN, 7.5);
+                });
+                nameFieldFormation.color([myColors.lightgrey, 1, myColors.black]);
+                this.headHeight += 30 + MARGIN;
+                this.nameFieldManipulator.add(nameFieldFormation.component);
+                this.nameFieldManipulator.move(MARGIN + this.inputSize.width/2, this.header.height + MARGIN + this.inputSize.height/2);
+
+                let addButton = new gui.Button(this.buttonSize.width,this.buttonSize.height, [myColors.grey, 0, myColors.none], '+');
+                addButton.position(this.inputSize.width/2 + this.buttonSize.width/2 + MARGIN, 0);
+                addButton.text.color(myColors.white, 0, myColors.none).font('Arial', 30).position(0,10);
+                addButton.back.corners(5,5);
+                this.addFormationField = nameFieldFormation;
+            }
             this.presenter = presenter;
             this.manipulator = new Manipulator(this);
+            this.nameFieldManipulator = new Manipulator(this);
             this.header = new globalVariables.domain.HeaderVue();
             this.label = this.getLabel();
+            this.manipulator
+                .add(this.nameFieldManipulator);
             createReturnButton();
+            createNameFieldFormation();
         }
         getLabel(){
             return this.presenter.getLabel();
@@ -38,7 +67,7 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         flush(){
-          drawing.manipulator.flush();
+          drawing.manipulator.unset(0);
         }
 
         display(){
