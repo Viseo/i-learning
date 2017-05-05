@@ -62,14 +62,13 @@ exports.RegisterP = function (globalVariables) {
                         pattern: /^[ -~]{6,63}$/
                     }
                 ];
-                this.focusedField = null;
             };
 
             _declareTextFields();
         }
 
-        getFields() {
-            return this._fields;
+        displayView() {
+            this.view.display();
         }
 
         goToConnection() {
@@ -78,12 +77,13 @@ exports.RegisterP = function (globalVariables) {
         }
 
         registerNewUser() {
-
             var _checkInputs = () => {
-                return this._fields.reduce((o, n) => o && n.valid, true);
+                let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
+                let allValid = this._fields.reduce((o, n) => o && n.valid, true)
+                return isPasswordConfirmed && allValid;
             };
-            if (_checkInputs()) {
 
+            if (_checkInputs()) {
                 let tempObject = {
                     lastName: this._fields[0].text,
                     firstName: this._fields[1].text,
@@ -101,29 +101,26 @@ exports.RegisterP = function (globalVariables) {
                         }
                     })
             } else {
-                return Promise.reject("Veuillez remplir tous les champs")
+                return Promise.reject("Veuillez remplir correctement tous les champs")
             }
         }
 
+        getFields() {
+            return this._fields;
+        }
         setValid(field, valid) {
             let index = this._fields.indexOf(field);
             if (index != -1) {
                 this._fields[index].valid = valid;
             }
         }
-
         setFieldText(field, text) {
             let index = this._fields.indexOf(field);
             if (index != -1) {
                 this._fields[index].text = text;
             }
         }
-
-        displayView() {
-            this.view.display();
-        }
     }
 
     return RegisterP;
-
 }

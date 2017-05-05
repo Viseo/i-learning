@@ -70,7 +70,6 @@ exports.ConnectionP = function(globalVariables) {
             }
 
             if(_checkInputs()){
-                //TODO faire stayConnected
                 return Server.connect(this._fields[0].text, this._fields[1].text, this._stayConnected).then(data => {
                     if(!data) throw 'Connexion refusée';
                     data = JSON.parse(data);

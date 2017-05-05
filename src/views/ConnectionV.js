@@ -277,11 +277,12 @@ exports.ConnectionV = function (globalVariables) {
 
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
-                let isPrevious = !!event.shiftKey;
+                let isPrevious = event.shiftKey;
                 _focusField(isPrevious);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
                 this.tryLogin();
+                this.selectedInput.hideControl();
             }
         }
 

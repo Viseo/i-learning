@@ -129,40 +129,13 @@ exports.RegisterV = function (globalVariables) {
 
             };
             var _displaySaveButton = () => {
-                var _setClickHandler = () => {
-                    this.registerNewUser().then(() => {
-                        let message = new svg.Text("Votre compte a bien été créé !")
-                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                            .position(0, -MARGIN - BUTTON_HEIGHT)
-                            .color(myColors.green)
-                            .font(FONT, FONT_SIZE_INPUT)
-                            .mark('successMessage');
-                        this.saveButtonManipulator.add(message);
-                        setTimeout(() => {
-                            this.saveButtonManipulator.remove(message);
-                            this.goToConnection();
-                        }, 3000);
-                    }).catch((message) => {
-                        let error = new svg.Text(message)
-                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                            .position(0, -(INPUT_HEIGHT + MARGIN))
-                            .color(myColors.red)
-                            .font(FONT, FONT_SIZE_INPUT)
-                            .mark("msgFieldError");
-                        this.saveButtonManipulator.add(error);
-                        svg.timeout(() => {
-                            this.saveButtonManipulator.remove(error);
-                        }, 5000);
-                    });
-                }
-
                 let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Inscription');
                 saveButton.text.color(myColors.lightgrey, 0, myColors.white);
                 saveButton.activeShadow();
                 this.saveButtonManipulator
                     .add(saveButton.component)
                     .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
-                this.saveButtonManipulator.addEvent('click', _setClickHandler);
+                this.saveButtonManipulator.addEvent('click', () => this.tryRegister.call(this));
             };
             var _displayConnectionLabel = () => {
                 let connexionText = new svg.Text("Vous êtes déjà inscrit ? Se connecter")
@@ -187,72 +160,84 @@ exports.RegisterV = function (globalVariables) {
 
         }
 
-        getFields() {
-            return this.presenter.getFields();
-        }
-
-        goToConnection(){
-            this.presenter.goToConnection();
-        }
-
-        focusField(isPrevious) {
-            var _previousIndex = (currentIndex) => {
-                if (currentIndex != -1) {
-                    if (currentIndex === 0) {
-                        return (this.inputs.length - 1);
-                    } else {
-                        return currentIndex - 1;
-                    }
-                } else {
-                    return 0;
-                }
-            }
-            var _nextIndex = (currentIndex) => {
-                if (currentIndex != -1) {
-                    if (currentIndex === (this.inputs.length - 1)) {
-                        return 0;
-                    } else {
-                        return currentIndex + 1;
-                    }
-                } else {
-                    return 0;
-                }
-            }
-
-            let currentIndex = this.inputs.indexOf(this.selectedInput);
-            let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
-            svg.event(this.inputs[newIndex].glass, 'click');
-            this.selectedInput = this.inputs[newIndex];
-
+        tryRegister(){
+            this.registerNewUser().then(() => {
+                let message = new svg.Text("Votre compte a bien été créé !")
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .position(0, -MARGIN - BUTTON_HEIGHT)
+                    .color(myColors.green)
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .mark('successMessage');
+                this.saveButtonManipulator.add(message);
+                setTimeout(() => {
+                    this.saveButtonManipulator.remove(message);
+                    this.goToConnection();
+                }, 3000);
+            }).catch((message) => {
+                let error = new svg.Text(message)
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .position(0, -(INPUT_HEIGHT + MARGIN))
+                    .color(myColors.red)
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .mark("msgFieldError");
+                this.saveButtonManipulator.add(error);
+                svg.timeout(() => {
+                    this.saveButtonManipulator.remove(error);
+                }, 5000);
+            });
         }
 
         keyDown(event) {
+            var _focusField = (isPrevious) => {
+                var _previousIndex = (currentIndex) => {
+                    if (currentIndex != -1) {
+                        if (currentIndex === 0) {
+                            return (this.inputs.length - 1);
+                        } else {
+                            return currentIndex - 1;
+                        }
+                    } else {
+                        return 0;
+                    }
+                }
+                var _nextIndex = (currentIndex) => {
+                    if (currentIndex != -1) {
+                        if (currentIndex === (this.inputs.length - 1)) {
+                            return 0;
+                        } else {
+                            return currentIndex + 1;
+                        }
+                    } else {
+                        return 0;
+                    }
+                }
+
+                let currentIndex = this.inputs.indexOf(this.selectedInput);
+                let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
+                svg.event(this.inputs[newIndex].glass, 'click');
+                this.selectedInput = this.inputs[newIndex];
+            }
+
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
-                let isPrevious = !!event.shiftKey;
-                this.focusField(isPrevious);
+                let isPrevious = event.shiftKey;
+                _focusField(isPrevious);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                this.registerNewUser().then(() => {
-                    let message = new svg.Text("Votre compte a bien été créé !")
-                        .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                        .position(0, -MARGIN - BUTTON_HEIGHT)
-                        .color(myColors.green)
-                        .font(FONT, FONT_SIZE_INPUT)
-                        .mark('successMessage');
-                    this.saveButtonManipulator.add(message);
-                    setTimeout(() => {
-                        this.saveButtonManipulator.remove(message);
-                        this.goToConnection();
-                    }, 3000);
-                });
+                this.tryRegister();
+                this.selectedInput.hideControl();
             }
         }
 
+        getFields() {
+            return this.presenter.getFields();
+        }
+        goToConnection(){
+            this.presenter.goToConnection();
+        }
         registerNewUser() {
             return this.presenter.registerNewUser();
         }
-
         setValid(field, valid) {
             this.presenter.setValid(field, valid);
         }
@@ -262,5 +247,4 @@ exports.RegisterV = function (globalVariables) {
     }
 
     return RegisterV;
-
 }
