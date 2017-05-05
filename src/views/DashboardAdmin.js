@@ -39,11 +39,10 @@ exports.DashboardAdmin = function(globalVariables){
                     .position(this.panel.width/2, this.panel.height/2)
                     .color(myColors.white, 0, myColors.none);
                 this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-                this.panelComponent = this.panel.component;
             }
             createBack();
             let manipulatorAdding = ()=>{
-                this.manipulator.add(this.panelComponent)
+                this.manipulator.add(this.panel.component)
                     .add(this.titleBack)
                     .add(this.title)
                     .add(this.addFormationManipulator);
