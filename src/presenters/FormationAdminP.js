@@ -52,6 +52,10 @@ exports.FormationAdminP = function(globalVariables){
             this.formation.moveGame(game,level,column);
         }
 
+        addLevel(level){
+            this.formation.addLevel(level);
+        }
+
         flushView(){
             this.view.flush();
         }

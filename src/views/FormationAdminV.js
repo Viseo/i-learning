@@ -134,6 +134,10 @@ exports.FormationAdminV = function(globalVariables) {
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
                 this.graphManipulator.set(1,this.titleGraphBack);
+                this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(1);
+                this.graphPanel.content.add(this.graphMiniatureManipulator.first);
+                this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
+                this.graphMiniatureManipulator.set(0, new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none))
             }
             let createButtons = ()=>{
                 this.buttonsManipulator = new Manipulator(this);
@@ -168,8 +172,28 @@ exports.FormationAdminV = function(globalVariables) {
                 }
                 miniature.conf = {
                     drag: (what, x, y) => {
-                        //updateAllLinks();
-                        return {x:x, y:y};
+                        // let point; //TODO : miniature should not get out of graph
+                        // point = what.component.parent.globalPoint(what.x, what.y);
+                        //
+                        // //point = {x: x, y: y};
+                        // if (point.x < MINIATURE_WIDTH/2 + this.librarySize.width + MARGIN){
+                        //     x = MINIATURE_WIDTH/2 + MARGIN;
+                        // }
+                        // if(point.x + MINIATURE_WIDTH/2 > drawing.width - 2*MARGIN){
+                        //     point.x  = drawing.width - MINIATURE_WIDTH/2 - 2*MARGIN;
+                        // }
+                        // if(point.y > this.graphSize.height - MINIATURE_HEIGHT/2 + 2*MARGIN + this.header.height){
+                        //     point.y = this.graphSize.height - MINIATURE_HEIGHT/2 + 2*MARGIN + this.header.height;
+                        // }
+                        // if (point.y < MINIATURE_HEIGHT/2 ){
+                        //     point.y = MINIATURE_HEIGHT/2 + this.header.height;
+                        // }
+                        return{x:x,y:y};
+                    },
+
+                    drop: (what, whatParent, finalX, finalY)=>{
+                        let {x:X, y:Y} = miniature.conf.drag(what,finalX,finalY);
+                        return{x: X, y: Y, parent: whatParent};
                     },
                     clicked : (what) => {
                         what.parentObject.miniature.miniatureClickHandler();
@@ -180,7 +204,7 @@ exports.FormationAdminV = function(globalVariables) {
                         return true;
                     }
                 };
-                installDnD(miniature.manipulator,  drawings.component.glass.parent.manipulator.last, miniature.conf);
+                installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);
@@ -193,7 +217,7 @@ exports.FormationAdminV = function(globalVariables) {
                     whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158,5)
                 }
             }
-            this.graphManipulator.add(levelManipulator);
+            this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
             levelManipulator.set(0,levelMiniature.line)
                 .set(1,levelMiniature.text)
@@ -257,7 +281,7 @@ exports.FormationAdminV = function(globalVariables) {
             // }
             let column = getColumn(dropLocation, level);
             // if (game && !item.addNew) {
-                this.moveGame(item, level, column);
+            this.moveGame(item, level, column);
                 // if(this.levelsTab[lastLevel].gamesTab.length == 0){
                 //     this.levelsTab[lastLevel].redCrossClickHandler();
                 // }
@@ -269,6 +293,10 @@ exports.FormationAdminV = function(globalVariables) {
             //     game.levelIndex == lastLevel || game.miniature.removeAllLinks();
             // }
             this.displayGraph();
+        }
+
+        addNewLevel(level){
+            this.presenter.addLevel(level);
         }
         moveGame(game, level, column){
             this.presenter.moveGame(game,level,column);

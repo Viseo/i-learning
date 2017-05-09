@@ -249,12 +249,13 @@ exports.Models = function (globalVariables) {
         };
 
         moveGame(game,level,column){
-            this.levelsTab[game.levelIndex].gamesTab.forEach(g => {
+            let lastLevel = game.levelIndex;
+            this.levelsTab[lastLevel].gamesTab.forEach(g => {
                 if (g.index > game.index){
                     g.index--;
                 }
             });
-            this.levelsTab[game.levelIndex].gamesTab.splice(game.index, 1);
+            this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
             game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
                 column-1 ;
             this.levelsTab[level].gamesTab.forEach(g => {
@@ -264,6 +265,21 @@ exports.Models = function (globalVariables) {
             })
             this.levelsTab[level].gamesTab.splice(column-1, 0, game);
             game.levelIndex = level;
+            if(this.levelsTab[lastLevel].gamesTab.length == 0){
+                this.levelsTab.forEach(l => {
+                    if(l.index > lastLevel){
+                        l.index --;
+                        l.gamesTab.forEach(g=>{
+                            g.levelIndex--;
+                        })
+                    }
+                })
+                this.levelsTab.splice(lastLevel, 1);
+            }
+        }
+
+        addLevel(level){
+            this.levelsTab.push(new Level([], level));
         }
     }
 
