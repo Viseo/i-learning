@@ -233,6 +233,18 @@ exports.Models = function(globalVariables){
             this.id = quiz.id;
             this.label = quiz.label;
             this.questions = quiz.questions;
+            this.answered = [];
+        }
+
+        selectAnswer(questionIndex, answerIndex){
+            let question = this.questions[questionIndex];
+            if(question){
+                let answer = question.answers[answerIndex];
+                if(answer){
+                    this.answered[questionIndex] = {index: answerIndex, correct: !!answer.correct};
+                }
+            }
+            console.log(this.answered)
         }
 
         getLabel(){
@@ -243,6 +255,12 @@ exports.Models = function(globalVariables){
         }
         getAnswers(questionIndex){
             return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
+        }
+        getNbQuestions(){
+            return this.questions.length;
+        }
+        getAnswered(questionIndex){
+            return this.answered[questionIndex];
         }
     }
 
