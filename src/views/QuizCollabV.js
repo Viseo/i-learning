@@ -207,6 +207,9 @@ exports.QuizCollabV = function (globalVariables) {
                 let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.none, 3, myColors.green).corners(10, 10);
                 answerManip.set(1, colorRect);
             }
+            var _removeClickEvents = () => {
+                this.answers.forEach((manip)=> manip.removeEvent('click'))
+            }
 
             let answered = this.getCurrentAnswered();
             _cleanManipulators();
@@ -219,6 +222,7 @@ exports.QuizCollabV = function (globalVariables) {
                 let correctAnswerIndex = this.getCorrectAnswerIndex();
                 _displayCorrect(correctAnswerIndex);
             }
+            _removeClickEvents();
         }
 
         returnHandler() {
