@@ -63,14 +63,6 @@ exports.DashboardAdminP = function(globalVariables) {
             this.formationsList = this.formations.getFormations();
         }
 
-        fromReturn(){
-            this.formations.sync().then(()=> {
-                    this.getFormations();
-                    this.view.fromReturn();
-                }
-            )
-        }
-
         flushView(){
             this.view.flush();
         }

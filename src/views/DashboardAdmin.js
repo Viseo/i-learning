@@ -173,9 +173,6 @@ exports.DashboardAdmin = function(globalVariables){
         miniatureClickHandler(formation){
             this.presenter.miniatureClickHandler(formation);
         }
-        fromReturn(){
-            this.display()
-        }
 
         flush(){
             drawing.manipulator.flush();

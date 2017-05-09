@@ -18,8 +18,6 @@ exports.Models = function (globalVariables) {
                     this.loadPresenterDashboard(this.user); break;
                 case "ConnectionP":
                     this.loadPresenterConnection(); break;
-                case "RegisterP":
-                    this.loadPresenterRegister(); break;
                 default: break;
             }
         }
@@ -93,8 +91,6 @@ exports.Models = function (globalVariables) {
         }
 
         loadPresenterConnection(){
-            this._addPageToStack();
-
             this.currentPresenter && this.currentPresenter.flushView();
             this.currentPresenter = new globalVariables.ConnectionP(this);
             this.currentPresenter.displayView();

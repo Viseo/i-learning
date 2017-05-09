@@ -66,10 +66,6 @@ exports.RegisterP = function (globalVariables) {
             _declareTextFields();
         }
 
-        goToConnection() {
-            this.fromReturn();
-        }
-
         registerNewUser() {
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
@@ -105,9 +101,11 @@ exports.RegisterP = function (globalVariables) {
         flushView(){
             this.view.flush();
         }
-        fromReturn(){
+
+        returnToOldPage(){
             this.state.returnToOldPage();
         }
+
         getFields() {
             return this._fields;
         }

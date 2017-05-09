@@ -65,10 +65,6 @@ exports.ConnectionP = function(globalVariables) {
             return Server.resetPassword({mailAddress: this._fields[0].text});
         }
 
-        fromReturn(){
-            this.state.returnToOldPage();
-        }
-
         displayView(){
             this.view.display();
         }
