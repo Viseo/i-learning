@@ -12,14 +12,19 @@ exports.Models = function (globalVariables) {
         }
 
         returnToOldPage() {
-            return this.stackPage.pop();
+            let presenterName = this.stackPage.pop();
+            switch(presenterName){
+                case "DashboardAdminP":
+                    this.loadPresenterDashboard(this.user); break;
+                default: break;
+            }
         }
 
-        addPageToStack(presenter) {
-            this.stackPage.push(presenter);
+        _addPageToStack() {
+            this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
         }
 
-        loadCookie(redirect) {
+        tryLoadCookieForPresenter(redirect) {
             util.Server.checkCookie().then(data => {
                 data = data && JSON.parse(data);
                 if (redirect) {
@@ -27,7 +32,7 @@ exports.Models = function (globalVariables) {
                     redirect = false;
                 } else {
                     if (data.ack === 'OK') {
-                        this.loadDashboard(data.user);
+                        this.loadPresenterDashboard(data.user);
                     } else {
                         globalVariables.admin = false;
                         this.currentPresenter = new globalVariables.ConnectionP(this);
@@ -38,31 +43,46 @@ exports.Models = function (globalVariables) {
         }
 
 
-        connectWith(login, pwd, stayConnected){
+        tryConnectForPresenterDashboard(login, pwd, stayConnected){
             return Server.connect(login, pwd, stayConnected).then(data => {
                 if(!data) throw 'Connexion refusée';
                 data = JSON.parse(data);
                 if (data.ack === 'OK') {
-                    this.loadDashboard(data.user);
+                    this.loadPresenterDashboard(data.user);
                 } else {
                     throw 'adresse e-mail ou mot de passe invalide';
                 }
             });
         }
 
-        loadDashboard(user){
+        loadPresenterDashboard(user){
+            this._addPageToStack();
+
             this.user = new User(user);
             drawing.username = `${user.firstName} ${user.lastName}`;
             user.admin ? globalVariables.admin = true : globalVariables.admin = false;
             this.formations.sync().then(() => {
                 this.currentPresenter && this.currentPresenter.flushView();
                 if (globalVariables.admin) {
-                    this.currentPresenter = new globalVariables.dashboardAdminP(this.formations);
+                    this.currentPresenter = new globalVariables.dashboardAdminP(this, this.formations);
                 } else {
                     this.currentPresenter = new globalVariables.DashboardCollabP(this.user, this.formations);
                 }
                 this.currentPresenter.displayView();
             })
+        }
+
+        loadPresenterFormationAdmin(formation){
+            this._addPageToStack();
+
+            this._loadFormation(formation);
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.FormationsAdminP(this, formation);
+            this.currentPresenter.displayView();
+        }
+
+        _loadFormation(formation){
+            this.formations.loadFormation(formation);
         }
 
     }
@@ -225,6 +245,7 @@ exports.Models = function (globalVariables) {
             this.lastName = user.lastName;
             this.firstName = user.firstName;
             this.lastAction = new LastAction(user.lastAction);
+            this.admin = (user.admin) ? user.admin : false;
         }
 
         hasLastAction() {

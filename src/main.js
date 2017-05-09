@@ -42,7 +42,7 @@ function main(svg, runtime, dbListener, ImageRuntime, param) {
 
     //todo
     let state = new models.State();
-    state.loadCookie(redirect);
+    state.tryLoadCookieForPresenter(redirect);
 
     return globalVariables;
 };

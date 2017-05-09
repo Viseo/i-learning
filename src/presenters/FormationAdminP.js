@@ -4,11 +4,11 @@ exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
     TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
     class FormationsAdminP{
-        constructor(parentPresenter, formation){
+        constructor(state, formation){
             this.formation = formation;
             this.view = new FormationAdminV(this);
-            this.parentPresenter = parentPresenter;
             this.regex = TITLE_FORMATION_REGEX;
+            this.state = state;
         }
         displayView(){
             this.view.display();
@@ -18,8 +18,7 @@ exports.FormationAdminP = function(globalVariables){
         }
 
         returnHandler(){
-            this.view.flush();
-            this.parentPresenter.fromReturn();
+            this.state.returnToOldPage();
         }
         renameFormation(label){
             this.formation.setLabel(label);
@@ -45,6 +44,10 @@ exports.FormationAdminP = function(globalVariables){
                 return Promise.resolve(false);
             }
 
+        }
+
+        flushView(){
+            this.view.flush();
         }
     }
 

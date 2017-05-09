@@ -7,10 +7,11 @@ exports.DashboardAdminP = function(globalVariables) {
 
 
     class DashboardAdminP {
-        constructor(formations) {
+        constructor(state, formations) {
             this.view = new DashboardView(this);
             this.formations = formations;
             this.formationsList = formations.getFormations();
+            this.state = state;
         }
         getLabels(){
             return this.formations.getFormations().map(f => f.label);
@@ -70,11 +71,12 @@ exports.DashboardAdminP = function(globalVariables) {
             )
         }
 
-        miniatureClickHandler(formation){
-            this.formations.loadFormation(formation);
-            let formationPresenter = new globalVariables.FormationsAdminP(this, formation);
+        flushView(){
             this.view.flush();
-            formationPresenter.displayView();
+        }
+
+        miniatureClickHandler(formation){
+            this.state.loadPresenterFormationAdmin(formation);
         }
     }
     return DashboardAdminP;

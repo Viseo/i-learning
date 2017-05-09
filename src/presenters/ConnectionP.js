@@ -40,13 +40,8 @@ exports.ConnectionP = function(globalVariables) {
             this.state = state;
         }
 
-        _onConnected(user){
-            //this.view.flush();
-            this.state.loadDashboard(user);
-        }
-
         _connectWith(login, pwd, stayConnected){
-            return this.state.connectWith(login, pwd, stayConnected);
+            return this.state.tryConnectForPresenterDashboard(login, pwd, stayConnected);
         }
 
         logIn(){
