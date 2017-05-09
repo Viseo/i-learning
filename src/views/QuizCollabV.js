@@ -13,7 +13,7 @@ exports.QuizCollabV = function (globalVariables) {
     const
         FONT = "Arial",
         FONT_SIZE = 20,
-        HEXAGON_HEIGHT_RATIO = 1/6,
+        HEXAGON_HEIGHT_RATIO = 1 / 6,
         INPUT_WIDTH = 300,
         INPUT_HEIGHT = 30,
         CHEVRON_WIDTH = 50,
@@ -25,6 +25,7 @@ exports.QuizCollabV = function (globalVariables) {
     class QuizCollabV {
         constructor(presenter) {
             this.presenter = presenter;
+            this.answers = [];
             this.manipulator = new Manipulator(this);
             this.header = new globalVariables.domain.HeaderVue();
             this.questionManipulator = new Manipulator(this).addOrdonator(4);
@@ -33,12 +34,14 @@ exports.QuizCollabV = function (globalVariables) {
             this.rightChevronManipulator = new Manipulator(this);
             this.answersManipulator = new Manipulator(this);
             this.helpManipulator = new Manipulator(this).addOrdonator(1);
+            this.scoreManipulator = new Manipulator(this);
         }
 
         display() {
             var _cleanManipulators = () => {
                 this.returnButtonManipulator.flush();
                 this.answersManipulator.flush();
+                this.answers = [];
             }
             var _attachManipulators = () => {
                 let headerManipulator = this.header.getManipulator();
@@ -56,20 +59,20 @@ exports.QuizCollabV = function (globalVariables) {
             };
             var _displayReturnButton = () => {
                 let returnButton = new gui.Button(INPUT_WIDTH, INPUT_HEIGHT, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
-                returnButton.back.corners(5,5);
-                returnButton.text.font(FONT, 20).position(0,6.6);
+                returnButton.back.corners(5, 5);
+                returnButton.text.font(FONT, 20).position(0, 6.6);
                 returnButton.onClick(this.returnHandler.bind(this));
-                let chevron = new svg.Chevron(10,20,3,'W').color(myColors.grey);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
                 chevron.position(-130, 0);
                 this.returnButtonManipulator
                     .add(returnButton.component)
                     .add(chevron)
 
-                this.returnButtonManipulator.move(returnButton.width/2 + MARGIN, currentY + returnButton.height/2);
-                currentY += returnButton.height + 2*MARGIN;
+                this.returnButtonManipulator.move(returnButton.width / 2 + MARGIN, currentY + returnButton.height / 2);
+                currentY += returnButton.height + MARGIN;
             }
             var _displayQuestionTitle = () => {
-                let border = util.drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO*drawing.height, 'H', 0.65)
+                let border = util.drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
                 this.questionManipulator.set(1, border);
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
@@ -86,9 +89,9 @@ exports.QuizCollabV = function (globalVariables) {
                     this.questionManipulator,
                     2
                 );
-                formationTitle.text.position(-drawing.width/2 + formationTitle.finalWidth/2 + MARGIN, -MARGIN);
-                this.questionManipulator.move(drawing.width / 2, currentY + border.height/2);
-                currentY += border.height + 2*MARGIN;
+                formationTitle.text.position(-drawing.width / 2 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
+                this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
+                currentY += border.height + 2 * MARGIN;
             }
             var _displayChevrons = () => {
                 var _displayLeftChevron = () => {
@@ -97,14 +100,14 @@ exports.QuizCollabV = function (globalVariables) {
                     }
 
                     let leftChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "W");
-                    if(this.isFirstQuestion()){
+                    if (this.isFirstQuestion()) {
                         leftChevron.color(myColors.grey, 1, myColors.grey);
-                    }else {
+                    } else {
                         leftChevron.color(myColors.black, 1, myColors.black)
                         this.leftChevronManipulator.addEvent('click', _leftChevronHandler);
                     }
                     this.leftChevronManipulator.add(leftChevron);
-                    this.leftChevronManipulator.move(MARGIN + dimensions.width/2, (drawing.height + currentY)/2);
+                    this.leftChevronManipulator.move(MARGIN + dimensions.width / 2, (drawing.height + currentY) / 2);
                 }
                 var _displayRightChevron = () => {
                     var _rightChevronHandler = () => {
@@ -112,14 +115,14 @@ exports.QuizCollabV = function (globalVariables) {
                     }
 
                     let rightChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "E");
-                    if(this.isLastAnsweredQuestion()){
+                    if (this.isLastAnsweredQuestion()) {
                         rightChevron.color(myColors.grey, 1, myColors.grey);
-                    }else {
+                    } else {
                         rightChevron.color(myColors.black, 1, myColors.black)
                         this.rightChevronManipulator.addEvent('click', _rightChevronHandler);
                     }
                     this.rightChevronManipulator.add(rightChevron);
-                    this.rightChevronManipulator.move(drawing.width - MARGIN - dimensions.width/2, (drawing.height + currentY)/2);
+                    this.rightChevronManipulator.move(drawing.width - MARGIN - dimensions.width / 2, (drawing.height + currentY) / 2);
                 }
 
                 let dimensions = {
@@ -137,35 +140,36 @@ exports.QuizCollabV = function (globalVariables) {
                     }
 
                     let manip = new Manipulator(this).addOrdonator(3); //keep one layer for color answer
-                    let border = new svg.Rect(answerWidth, ANSWER_HEIGHT).color(myColors.white, 1, myColors.black).corners(10, 10)
+                    let border = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.white, 1, myColors.black).corners(10, 10)
                     let title = new svg.Text(answer.label).font(FONT, FONT_SIZE)
-                    let indexX = Math.floor(index%ANSWERS_PER_LINE);
-                    let indexY = Math.floor(index/ANSWERS_PER_LINE);
+                    let indexX = Math.floor(index % ANSWERS_PER_LINE);
+                    let indexY = Math.floor(index / ANSWERS_PER_LINE);
                     manip
                         .set(0, border)
                         .set(2, title);
-                    manip.move(indexX*(answerWidth + MARGIN), indexY*(ANSWER_HEIGHT + MARGIN));
+                    manip.move(indexX * (this.answerWidth + MARGIN), indexY * (ANSWER_HEIGHT + MARGIN));
                     manip.addEvent('click', _answerHandler);
                     return manip;
                 }
 
                 let dimensions = {
-                    width: drawing.width*3/5,
+                    width: drawing.width * 3 / 5,
                     height: drawing.height - currentY
                 }
-                let answerWidth = dimensions.width/ANSWERS_PER_LINE;
+                this.answerWidth = dimensions.width / ANSWERS_PER_LINE;
 
                 this.getCurrentAnswers().forEach((answer, index) => {
                     let answerManip = _displayAnswer(answer, index);
+                    this.answers.push(answerManip);
                     this.answersManipulator.add(answerManip);
                 });
 
-                this.answersManipulator.move(drawing.width/5 + answerWidth/2 - (ANSWERS_PER_LINE/2)*MARGIN, currentY + ANSWER_HEIGHT/2);
+                this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2 - (ANSWERS_PER_LINE / 2) * MARGIN, currentY + ANSWER_HEIGHT / 2);
             }
             var _displayHelpText = () => {
                 let helpText = new svg.Text("cliquez sur une réponse pour passer à la question suivante").font(FONT, FONT_SIZE);
                 this.helpManipulator.set(0, helpText);
-                this.helpManipulator.move(drawing.width/2, drawing.height - FONT_SIZE - MARGIN);
+                this.helpManipulator.move(drawing.width / 2, drawing.height - FONT_SIZE - MARGIN);
             }
 
             drawing.manipulator.set(0, this.manipulator);
@@ -174,62 +178,95 @@ exports.QuizCollabV = function (globalVariables) {
             _attachManipulators();
             _displayHeader();
             _displayReturnButton();
+            currentY += FONT_SIZE + MARGIN;
             _displayQuestionTitle();
             _displayChevrons()
             _displayAnswers();
             _displayHelpText();
         }
 
-        displayResult(){
+        displayResult() {
+            var _cleanManipulators = () => {
+                this.scoreManipulator.flush();
+            }
+            var _attachManipulators = () => {
+                this.manipulator.add(this.scoreManipulator);
+            }
             var _displayText = () => {
-
+                let scoreText = new svg.Text(this.getScore().message).font(FONT, FONT_SIZE);
+                this.scoreManipulator.add(scoreText);
+                this.scoreManipulator.move(drawing.width/2, this.header.height + MARGIN + FONT_SIZE/2 + INPUT_HEIGHT + MARGIN);
             }
             var _displayAnswered = () => {
-               let answerManip = this.answersManipulator.components[answered.index];
-               console.log(answerManip.width)
-               // let colorRect = new svg.Rect(answerManip.width, answerManip.height)
-               // answerManip.set(1, colorRect)
+                let answerManip = this.answers[answered.index];
+                let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
+                answerManip.set(0, colorRect);
             }
-            var _displayCorrect = () => {
-
+            var _displayCorrect = (correctAnswerIndex) => {
+                let answerManip = this.answers[correctAnswerIndex];
+                let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.none, 3, myColors.green).corners(10, 10);
+                answerManip.set(1, colorRect);
             }
 
             let answered = this.getCurrentAnswered();
+            _cleanManipulators();
+            _attachManipulators();
             _displayText();
             _displayAnswered();
-            _displayCorrect();
+            if(answered.correct){
+                _displayCorrect(answered.index);
+            }else {
+                let correctAnswerIndex = this.getCorrectAnswerIndex();
+                _displayCorrect(correctAnswerIndex);
+            }
         }
 
-        returnHandler(){
+        returnHandler() {
             this.presenter.returnHandler();
         }
-        nextQuestion(){
+
+        nextQuestion() {
             this.presenter.nextQuestion();
         }
-        previousQuestion(){
+
+        previousQuestion() {
             this.presenter.previousQuestion();
         }
-        selectAnswer(index){
+
+        selectAnswer(index) {
             this.presenter.selectAnswer(index);
         }
 
         getLabel() {
             return this.presenter.getLabel();
         }
-        isFirstQuestion(){
+
+        isFirstQuestion() {
             return this.presenter.isFirstQuestion();
         }
-        isLastAnsweredQuestion(){
+
+        isLastAnsweredQuestion() {
             return this.presenter.isLastAnsweredQuestion();
         }
-        getCurrentQuestionLabel(){
+
+        getCurrentQuestionLabel() {
             return this.presenter.getCurrentQuestionLabel();
         }
-        getCurrentAnswers(){
+
+        getCurrentAnswers() {
             return this.presenter.getCurrentAnswers();
         }
-        getCurrentAnswered(){
+
+        getCurrentAnswered() {
             return this.presenter.getCurrentAnswered();
+        }
+
+        getCorrectAnswerIndex(){
+            return this.presenter.getCorrectAnswerIndex();
+        }
+
+        getScore(){
+            return this.presenter.getScore();
         }
     }
 

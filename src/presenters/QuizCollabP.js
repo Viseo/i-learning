@@ -19,7 +19,8 @@ exports.QuizCollabP = function (globalVariable) {
         displayView() {
             this.view.display();
         }
-        displayResultView(){
+
+        displayResultView() {
             this.displayView();
             this.view.displayResult();
         }
@@ -28,49 +29,102 @@ exports.QuizCollabP = function (globalVariable) {
             this.view.flush();
             this.parent.fromReturn();
         }
-        previousQuestion(){
-            if(this.currentQuestionIndex > 0){
+
+        previousQuestion() {
+            if (this.currentQuestionIndex > 0) {
                 this.currentQuestionIndex--;
                 this.displayView();
             }
         }
-        nextQuestion(){
-            if(this.currentQuestionIndex < this.getNbQuestions() - 1){
+
+        nextQuestion() {
+            if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
                 this.currentQuestionIndex++;
+                if (this.lastAnsweredIndex < this.currentQuestionIndex) this.lastAnsweredIndex = this.currentQuestionIndex;
                 this.displayView();
             }
         }
-        selectAnswer(index){
+
+        selectAnswer(index) {
             this.model.selectAnswer(this.currentQuestionIndex, index);
-            if(this.lastAnsweredIndex < index) this.lastAnsweredIndex = index;
-            if(this.currentQuestionIndex < this.getNbQuestions() - 1){
+            if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
                 this.nextQuestion();
-            }else {
+            } else {
                 //TODO call state to show score presenter
-                this.displayResultView();
+                this.displayResultView(); //only for test
             }
         }
 
         getLabel() {
             return this.model.getLabel();
         }
-        getNbQuestions(){
+
+        getNbQuestions() {
             return this.model.getNbQuestions();
         }
-        getCurrentQuestionLabel(){
+
+        getNbCorrect(){
+            return this.model.getNbCorrect();
+        }
+
+        getCurrentQuestionLabel() {
             return this.model.getQuestionLabel(this.currentQuestionIndex);
         }
-        isFirstQuestion(){
+
+        isFirstQuestion() {
             return this.currentQuestionIndex === 0;
         }
-        isLastAnsweredQuestion(){
+
+        isLastAnsweredQuestion() {
             return this.currentQuestionIndex === this.lastAnsweredIndex;
         }
-        getCurrentAnswers(){
+
+        getCurrentAnswers() {
             return this.model.getAnswers(this.currentQuestionIndex);
         }
-        getCurrentAnswered(){
+
+        getCurrentAnswered() {
             return this.model.getAnswered(this.currentQuestionIndex);
+        }
+
+        getCorrectAnswerIndex() {
+            return this.model.getCorrectAnswerIndex(this.currentQuestionIndex);
+        }
+
+        getScore() {
+            let nbQuestions = this.getNbQuestions();
+            let nbCorrect = this.getNbCorrect();
+            let color, str1, str2;
+            switch (nbCorrect) {
+                case nbQuestions:
+                    str1 = 'Impressionant !';
+                    str2 = 'et toutes sont justes !';
+                    color = [100, 255, 100];
+                    break;
+                case 0:
+                    str1 = 'Votre niveau est désolant... Mais gardez espoir !';
+                    str2 = "dont aucune n'est juste !";
+                    color = [255, 17, 0];
+                    break;
+                case (nbQuestions - 1):
+                    str1 = 'Pas mal du tout !';
+                    str2 = 'et toutes (sauf une...) sont justes !';
+                    color = [200, 255, 0];
+                    break;
+                case 1:
+                    str1 = 'Vous avez encore de nombreux progrès à faire.';
+                    str2 = 'dont une seule est juste.';
+                    color = [255, 100, 0];
+                    break;
+                default:
+                    str1 = 'Correct, mais ne relachez pas vos efforts !';
+                    str2 = `dont ${nbCorrect} sont justes !`;
+                    color = [220, 255, 0];
+                    break;
+            }
+            let message = `${str1} Vous avez répondu à ${nbQuestions} questions, ${str2}`;
+
+            return {message, color};
         }
     }
 
