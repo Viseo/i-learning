@@ -212,7 +212,7 @@ exports.QuizAdminV = function (globalVariables) {
                             var _displayAnswerBlock = (question, answer, index) => {
                                 var _newAnswerObject = () => {
                                     var _initManipulators = () => {
-                                        answer.manipulator = new Manipulator(this).addOrdonator(3);
+                                        answer.manipulator = new Manipulator(this).addOrdonator(4);
                                     }
                                     var _initInfos = () => {
                                         answer.index = index;
@@ -226,6 +226,45 @@ exports.QuizAdminV = function (globalVariables) {
                                         answer.linesManipulator = new Manipulator(this);
                                         answer.penManipulator = new Manipulator(this);
                                         var _toggleExplanation = () => {
+                                            var _createPopInExplanation = (editable) => {
+                                                let popInExplanation = {label: " "};
+                                                var _initManipulators = () => {
+                                                    popInExplanation.manipulator = new Manipulator(this);
+                                                    popInExplanation.closeButtonManipulator = new Manipulator(this);
+                                                    // popInExplanation.manipulator.set(2, popInExplanation.closeButtonManipulator);
+                                                    popInExplanation.panelManipulator = new Manipulator(this);
+                                                    popInExplanation.textManipulator = new Manipulator(this);
+                                                    // popInExplanation.panelManipulator.set(1, popInExplanation.textManipulator);
+                                                    popInExplanation.manipulator.add(popInExplanation.panelManipulator);
+                                                };
+                                                var _initExplanation = () => {
+                                                    // popInExplanation.answer = answer;
+                                                    popInExplanation.editable = editable;
+                                                    if (popInExplanation.editable) {
+                                                        popInExplanation.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
+                                                        popInExplanation.defaultLabel = "Cliquer ici pour ajouter du texte";
+                                                    }
+                                                    if (answer.explanation && answer.explanation.label) {
+                                                        popInExplanation.label = answer.explanation.label;
+                                                    }
+                                                    if (answer.explanation && answer.explanation.image) {
+                                                        popInExplanation.image = answer.explanation.image;
+                                                    }
+                                                    if (answer.explanation && answer.explanation.video) {
+                                                        popInExplanation.video = answer.explanation.video;
+                                                    }
+                                                    answer.filled = popInExplanation.image || popInExplanation.video || popInExplanation.label;
+                                                }
+
+
+                                                _initManipulators();
+                                                _initExplanation();
+                                                popInExplanation.display = () => {
+
+                                                }
+
+                                                return popInExplanation;
+                                            }
                                             // if (answer.explanation) {                           // modele or state
                                             //     // answer.checkBoxManipulator.remove(checked);
                                             //     answer.explanation = false;                     // modele or state
@@ -237,14 +276,21 @@ exports.QuizAdminV = function (globalVariables) {
                                             //     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                                             //     this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                                             //     questionCreator.explanation = this.popIn;
-                                            if (!answer.explanation) answer.explanation = {};
-                                            console.log(answer.explanation + 'help me !');
+                                            if (!answer.explanation.label) {
+                                                answer.explanation = _createPopInExplanation(true);    // modele or state
+                                            }
+                                            // console.log(answer.explanation + 'help me !');
+                                            answer.manipulator.set(3, answer.explanation.manipulator);
                                         }
                                         let fontColor = answer.filled ? myColors.darkerGreen : myColors.black,    // object.filled == la réponse dispose d'une explication remplie
-                                            square = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 1, myColors.black),
-                                            tipEnd = new svg.Triangle(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 5, "S").color(myColors.white, 1, fontColor).position(0, CHECKBOX_SIZE / 3),
-                                            end = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 10).color(myColors.fontColor, 1, fontColor).position(0, -CHECKBOX_SIZE / 3),
-                                            body = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2).color(fontColor).position(0, 0),
+                                            square = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE)
+                                                .color(myColors.white, 1, myColors.black),
+                                            tipEnd = new svg.Triangle(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 5, "S")
+                                                .color(myColors.white, 1, fontColor).position(0, CHECKBOX_SIZE / 3),
+                                            end = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 10)
+                                                .color(myColors.fontColor, 1, fontColor).position(0, -CHECKBOX_SIZE / 3),
+                                            body = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2)
+                                                .color(fontColor).position(0, 0),
                                             line1 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
                                                 -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
                                                 -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
