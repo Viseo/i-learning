@@ -163,7 +163,7 @@ exports.Models = function (globalVariables) {
             this.links = [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
-            this.gamesCounter = formation.gamesCounter;
+            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -412,9 +412,9 @@ exports.Models = function (globalVariables) {
                     type: 'Quiz',
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
-                            title: 'Quiz ' + counter.quizz,
+                            title: 'Quiz ' + (counter ? counter.quizz : 0),
                             gameIndex: column ,
-                            id: 'quizz'+counter.quizz,
+                            id: 'quizz'+(counter ? counter.quizz : 0),
                             levelIndex : level
                         });
                         return newQuiz;
