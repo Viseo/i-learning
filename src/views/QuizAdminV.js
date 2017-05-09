@@ -53,7 +53,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.flush();
                 this.questionDetailsManipulator.flush();
                 drawing.manipulator.set(0, this.manipulator);
-                // drawing.manipulator.set(1, this.manipulator);
                 this.questions = [];
                 this.width = drawing.width - 2 * MARGIN;
                 this.height = drawing.height - drawing.height * HEADER_SIZE;
@@ -62,7 +61,6 @@ exports.QuizAdminV = function (globalVariables) {
                 let buttonSize = 20;
                 let formationLabel = this.getFormationLabel();
                 this.header.display(formationLabel + " - " + this.label);
-                // globalVariables.header.display(this.formation.label + " - " + this.quizInfos.label);
                 this.returnButton.display(0, buttonSize / 2 + currentY, buttonSize, buttonSize);
                 currentY += buttonSize + MARGIN;
             }
@@ -132,7 +130,6 @@ exports.QuizAdminV = function (globalVariables) {
             }
             var _displayQuestions = () => {
                 var _displayQuestionBlock = (question, index) => {
-                    // let question = {};
                     var _createBlock = (question, index) => {
                         var _newQuestionObject = () => {
                             var _initManipulators = () => {
@@ -142,17 +139,7 @@ exports.QuizAdminV = function (globalVariables) {
                                 question.answersManipulator = new Manipulator(this);
                             };
                             var _initInfos = () => {
-                                // this.quiz = quiz;
                                 question.index = index;
-                                // if(question){
-                                //     this.load(question);
-                                // }else {
-                                //     this.load({
-                                //         label: "",
-                                //         multipleChoice: false,
-                                //         tabAnswers : []
-                                //     });
-                                // }
                             };
 
                             _initManipulators();
@@ -228,24 +215,13 @@ exports.QuizAdminV = function (globalVariables) {
                                         answer.manipulator = new Manipulator(this).addOrdonator(3);
                                     }
                                     var _initInfos = () => {
-                                        // this.question = question;
                                         answer.index = index;
-                                        // if(answerInfos){
-                                        //     this.load(answerInfos);
-                                        // }else {
-                                        //     this.load({
-                                        //         label: "",
-                                        //         correct: false,
-                                        //         explanation: {}
-                                        //     });
-                                        // }
                                     }
                                     _initManipulators();
                                     _initInfos();
                                 };
                                 var _displayTextArea = () => {
                                     var _addExplanationPen = () => {
-                                        // displayPen = function (x, y, size, object, handler) {
                                         answer.explanationPenManipulator = new Manipulator(this);
                                         answer.linesManipulator = new Manipulator(this);
                                         answer.penManipulator = new Manipulator(this);
@@ -281,28 +257,14 @@ exports.QuizAdminV = function (globalVariables) {
                                             line4 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
                                                 -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5, -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 7,
                                                 -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey);
-                                        // elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
-                                        // square.mark("explanationSquare" + object.model.parentQuestion.tabAnswer.indexOf(object));
-                                        // answer.explanationPenManipulator.set(6, square);
-                                        // answer.linesManipulator.move(0, 0);
-                                        // answer.linesManipulator.set(0, line1);
-                                        // answer.linesManipulator.set(1, line2);
-                                        // answer.linesManipulator.set(2, line3);
-                                        // answer.linesManipulator.set(3, line4);
                                         answer.explanationPenManipulator.add(square);
                                         answer.linesManipulator.add(line1).add(line2).add(line3).add(line4);
-                                        // answer.penManipulator.set(1, tipEnd);
-                                        // answer.penManipulator.set(2, end);
-                                        // answer.penManipulator.set(3, body);
                                         answer.penManipulator.add(tipEnd).add(end).add(body).rotate(40);
-                                        // answer.penManipulator.move(x + size / 8, y - size / 8);
                                         answer.explanationPenManipulator.addEvent('click', _toggleExplanation);
                                         answer.explanationPenManipulator.add(answer.linesManipulator)
                                             .add(answer.penManipulator)
                                             .move(dimensions.width / 2 - CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2)
                                         answer.manipulator.set(1, answer.explanationPenManipulator);
-                                        // handler && elementsTab.forEach(element => svg.addEvent(element, "click", handler));
-                                        // };
                                     }
                                     var _addValidCheckbox = () => {
                                         answer.checkBoxManipulator = new Manipulator(this);
@@ -335,10 +297,6 @@ exports.QuizAdminV = function (globalVariables) {
                                     answer.textArea.font('Arial', 15);
                                     answer.textArea.anchor('center');
                                     answer.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                                    // answer.manipulator.move(
-                                    //     -question.answersDimension.width/2 + dimensions.width/2 + answer.index*(dimensions.width + MARGIN),
-                                    //     -question.answersDimension.height/2 + dimensions.height/2
-                                    // answer.manipulator.move(x + answer.index * (dimensions.width + MARGIN), y * indexY);
                                     answer.manipulator.move(x + indexX * (dimensions.width + MARGIN), y * indexY + (dimensions.height + MARGIN) * indexY);
                                     _addExplanationPen();
                                     _addValidCheckbox();
@@ -346,17 +304,11 @@ exports.QuizAdminV = function (globalVariables) {
 
                                 _newAnswerObject();
                                 _displayTextArea();
-
-
                                 return answer;
                             }
                             question.answers.forEach((answer, index) => {
                                 let answerDisplayElement = _displayAnswerBlock(question, answer, index);
-                                // question.answers.push(answer);
                                 question.answersManipulator.add(answerDisplayElement.manipulator);
-                                // let vue = new AnswerVue(this, answer, index);
-                                // this.answers.push(vue);
-                                // question.answersManipulator.add(vue.manipulator);
                             });
                         }
 
@@ -374,21 +326,13 @@ exports.QuizAdminV = function (globalVariables) {
                     return _createBlock(question, index);
                 }
                 let questions = this.getQuestions();
-                this.numberQuestions = questions.length;
+                // this.numberQuestions = questions.length;
                 questions.forEach((question, i) => {
-                    // this.questionsBlockManipulator.add(_displayQuestionBlock(question, i));
                     let questionDisplayElement = _displayQuestionBlock(question, i);
                     this.questions.push(question);
                     this.questionsBlockManipulator.add(questionDisplayElement.blockManipulator);
                 });
-                // this.quizInfos.tabQuestions.forEach((question, index) => {
-                //     let vue = new QuestionVue(this, question, index);
-                //     this.questions.push(vue);
-                //     if (index === 0) vue.select();
-                //     this.questionsBlockManipulator.add(vue.blockManipulator);
-                // });
             }
-            // var _displayAnswers = ()
 
             var currentY = drawing.height * HEADER_SIZE + MARGIN;
             _resetDrawings();

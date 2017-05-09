@@ -6,8 +6,8 @@ const QuizAdminV = require('./QuizAdminV').QuizAdminV;
 exports.QuizAdminP = function (globalVariables) {
     const QuizAdminView = QuizAdminV(globalVariables);
     class QuizAdminP {
-        constructor(parentPresenter, quiz) {
-            this.quiz = quiz;
+        constructor(parentPresenter, model) {
+            this.model = model;
             this.view = new QuizAdminView(this);
             this.parentPresenter = parentPresenter;
 
@@ -26,10 +26,10 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         getLabel() {
-            return this.quiz.label;
+            return this.model.label;
         }
         getQuestions() {
-            return this.quiz.questions;
+            return this.model.questions;
         }
     }
 
