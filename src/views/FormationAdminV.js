@@ -6,7 +6,10 @@ exports.FormationAdminV = function(globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.domain.IconCreator;
+        IconCreator = globalVariables.domain.IconCreator,
+        LEVEL_HEIGHT = 150,
+        MINIATURE_WIDTH = 150,
+        MINIATURE_HEIGHT = 75;
 
 
     class FormationAdminV{
@@ -20,15 +23,19 @@ exports.FormationAdminV = function(globalVariables) {
             this.label = this.getLabel();
             this.graphSize = {
                 width: drawing.width-this.inputSize.width-3*MARGIN,
-                height: drawing.height - this.header.height - 4*MARGIN - this.buttonSize.height
+                height: drawing.height - this.header.height - 4*MARGIN - this.buttonSize.height,
             };
             this.librarySize = {
                 width: this.inputSize.width,
                 height : drawing.height - this.header.height - 7*MARGIN - 2*this.buttonSize.height
             }
 
-
         }
+
+        getFormation(){
+            return this.presenter.getFormation();
+        }
+
         getLabel(){
             return this.presenter.getLabel();
         }
@@ -137,6 +144,50 @@ exports.FormationAdminV = function(globalVariables) {
             createGraphPanel();
             createGameLibrary();
             createButtons();
+            this.displayGraph();
+        }
+
+        displayGraph(){
+            let formation = this.getFormation();
+            formation.levelsTab.forEach(level =>{
+                this.displayLevel(level);
+            });
+
+        }
+
+        displayLevel(level){
+            let createGameMiniature = (game)=>{
+                let miniature = {
+                    border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
+                    content: new svg.Text(game.label).font('Arial', 15).position(0,5),
+                    manipulator : new Manipulator(this)
+                }
+                return miniature;
+            };
+            let levelManipulator = new Manipulator(this).addOrdonator(4);
+            let levelIndex = level.index;
+            let levelMiniature = {
+                line : new svg.Line(0,5,150,5).color(myColors.black, 1, myColors.black),
+                text: new svg.Text('Level : ' + (levelIndex+1)).font('Arial', 15).anchor('left'),
+                icon : {
+                    rect : new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10,10),
+                    whiteRect: new svg.Rect(20, 110).color(myColors.white, 0, myColors.none).position(158,5)
+                }
+            }
+            this.graphManipulator.add(levelManipulator);
+            levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
+            levelManipulator.set(0,levelMiniature.line)
+                .set(1,levelMiniature.text)
+                .set(2,levelMiniature.icon.rect)
+                .set(3, levelMiniature.icon.whiteRect);
+            level.gamesTab.forEach(game => {
+                let gameMiniature = createGameMiniature(game);
+                gameMiniature.manipulator.add(gameMiniature.border)
+                    .add(gameMiniature.content);
+                levelManipulator.add(gameMiniature.manipulator);
+                gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
+                    , 5);
+            });
         }
 
         renameFormation(){

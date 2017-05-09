@@ -16,6 +16,9 @@ exports.FormationAdminP = function(globalVariables){
         getLabel(){
             return this.formation.label;
         }
+        getFormation(){
+            return this.formation;
+        }
 
         returnHandler(){
             this.state.returnToOldPage();

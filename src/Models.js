@@ -128,7 +128,7 @@ exports.Models = function (globalVariables) {
                     game.tabQuestions && gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
-                formation.levelsTab.push(new Level(formation, gamesTab, globalVariables.playerMode));
+                formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
             });
         }
     }
@@ -144,7 +144,7 @@ exports.Models = function (globalVariables) {
             }
             this.labelDefault = "Entrer le nom de la formation";
             // HEIGHT
-            this.levelsTab = [];
+            this.levelsTab = formation.levelsTab || [];
             this.label = formation.label ? formation.label : "";
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
         }
@@ -234,9 +234,10 @@ exports.Models = function (globalVariables) {
         };
     }
 
-    class Level {
-        constructor(gamesTab) {
+    class Level{
+        constructor(gamesTab, index){
             this.gamesTab = gamesTab;
+            this.index = index;
         }
     }
 
@@ -313,14 +314,19 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class Game {
+    class Game{
+        constructor(game){
 
+        }
 
     }
 
     class Quiz {
-        constructor(game) {
-            this.label = game.label;
+        constructor(game){
+            this.label = game.title;
+            this.index = game.gameIndex;
+            this.id = game.id;
+            this.levelIndex = game.levelIndex;
         }
     }
 
