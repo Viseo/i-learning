@@ -10,9 +10,9 @@ exports.RegisterP = function (globalVariables) {
         Server = globalVariables.util.Server;
 
     class RegisterP {
-        constructor(parent) {
+        constructor(state) {
             this.view = new registerView(this);
-            this.parent = parent;
+            this.state = state;
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -67,7 +67,6 @@ exports.RegisterP = function (globalVariables) {
         }
 
         goToConnection() {
-            this.flush();
             this.fromReturn();
         }
 
@@ -103,11 +102,11 @@ exports.RegisterP = function (globalVariables) {
         displayView() {
             this.view.display();
         }
-        flush(){
+        flushView(){
             this.view.flush();
         }
         fromReturn(){
-            this.parent.fromReturn();
+            this.state.returnToOldPage();
         }
         getFields() {
             return this._fields;

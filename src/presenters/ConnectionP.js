@@ -58,20 +58,17 @@ exports.ConnectionP = function(globalVariables) {
         }
 
         goToRegister(){
-            this.flush();
-            let registerP = new globalVariables.RegisterP(this);
-            registerP.displayView();
+            this.state.loadPresenterRegister();
         }
+
         forgotPWD(){
             return Server.resetPassword({mailAddress: this._fields[0].text});
         }
 
-        flush(){
-            this.view.flush();
-        }
         fromReturn(){
-            this.view.fromReturn();
+            this.state.returnToOldPage();
         }
+
         displayView(){
             this.view.display();
         }

@@ -16,6 +16,10 @@ exports.Models = function (globalVariables) {
             switch(presenterName){
                 case "DashboardAdminP":
                     this.loadPresenterDashboard(this.user); break;
+                case "ConnectionP":
+                    this.loadPresenterConnection(); break;
+                case "RegisterP":
+                    this.loadPresenterRegister(); break;
                 default: break;
             }
         }
@@ -35,8 +39,7 @@ exports.Models = function (globalVariables) {
                         this.loadPresenterDashboard(data.user);
                     } else {
                         globalVariables.admin = false;
-                        this.currentPresenter = new globalVariables.ConnectionP(this);
-                        this.currentPresenter.displayView();
+                        this.loadPresenterConnection();
                     }
                 }
             });
@@ -78,6 +81,22 @@ exports.Models = function (globalVariables) {
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
             this.currentPresenter = new globalVariables.FormationsAdminP(this, formation);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterRegister(){
+            this._addPageToStack();
+
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.RegisterP(this);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterConnection(){
+            this._addPageToStack();
+
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.ConnectionP(this);
             this.currentPresenter.displayView();
         }
 
