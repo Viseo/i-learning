@@ -6,10 +6,12 @@ exports.FormationAdminV = function(globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
+        drawings = globalVariables.drawings,
         IconCreator = globalVariables.domain.IconCreator,
         LEVEL_HEIGHT = 150,
         MINIATURE_WIDTH = 150,
-        MINIATURE_HEIGHT = 75;
+        MINIATURE_HEIGHT = 75,
+        installDnD = globalVariables.gui.installDnD;
 
 
     class FormationAdminV{
@@ -92,21 +94,6 @@ exports.FormationAdminV = function(globalVariables) {
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
             }
-            let createGraphPanel = ()=>{
-                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
-                this.graphManipulator = new Manipulator(this).addOrdonator(3);
-                this.graphManipulator.set(0, this.graphPanel.component);
-                this.manipulator.add(this.graphManipulator);
-                this.graphManipulator.move(-this.graphSize.width/2 + drawing.width - MARGIN,
-                    this.header.height + 2*MARGIN + this.graphSize.height/2);
-                this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-                this.titleGraph = new svg.Text('Formation : ' +  this.label).font('Arial', 25).color(myColors.grey).anchor('left');
-                this.titleGraph.position(-0.85*this.graphSize.width/2, -this.graphSize.height/2 + 8.3);
-                this.graphManipulator.set(2,this.titleGraph);
-                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
-                this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
-                this.graphManipulator.set(1,this.titleGraphBack);
-            }
             let createGameLibrary = ()=>{
                 this.gamePanel = new gui.Panel(this.librarySize.width, this.librarySize.height);
                 this.gamePanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
@@ -123,6 +110,31 @@ exports.FormationAdminV = function(globalVariables) {
                 this.gameLibraryManipulator.set(1,this.titleLibraryBack);
 
             }
+
+            manipulatorAdding();
+            createNameFieldFormation();
+            createReturnButton();
+            createGameLibrary();
+            this.displayGraph();
+        }
+
+        displayGraph(){
+            this.graphManipulator && this.graphManipulator.flush();
+            let createGraphPanel = ()=>{
+                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
+                this.graphManipulator = new Manipulator(this).addOrdonator(3);
+                this.graphManipulator.set(0, this.graphPanel.component);
+                this.manipulator.add(this.graphManipulator);
+                this.graphManipulator.move(-this.graphSize.width/2 + drawing.width - MARGIN,
+                    this.header.height + 2*MARGIN + this.graphSize.height/2);
+                this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                this.titleGraph = new svg.Text('Formation : ' +  this.label).font('Arial', 25).color(myColors.grey).anchor('left');
+                this.titleGraph.position(-0.85*this.graphSize.width/2, -this.graphSize.height/2 + 8.3);
+                this.graphManipulator.set(2,this.titleGraph);
+                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
+                this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
+                this.graphManipulator.set(1,this.titleGraphBack);
+            }
             let createButtons = ()=>{
                 this.buttonsManipulator = new Manipulator(this);
                 this.saveButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Enregistrer');
@@ -138,16 +150,8 @@ exports.FormationAdminV = function(globalVariables) {
                 this.buttonsManipulator.add(this.publishButton.component);
                 this.manipulator.add(this.buttonsManipulator);
             }
-            manipulatorAdding();
-            createNameFieldFormation();
-            createReturnButton();
             createGraphPanel();
-            createGameLibrary();
             createButtons();
-            this.displayGraph();
-        }
-
-        displayGraph(){
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
@@ -162,6 +166,21 @@ exports.FormationAdminV = function(globalVariables) {
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
                     manipulator : new Manipulator(this)
                 }
+                miniature.conf = {
+                    drag: (what, x, y) => {
+                        //updateAllLinks();
+                        return {x:x, y:y};
+                    },
+                    clicked : (what) => {
+                        what.parentObject.miniature.miniatureClickHandler();
+                    },
+                    moved: (what) => {
+                        let point = what.component.parent.globalPoint(what.x,what.y);
+                        this.dropAction(point.x,point.y, game);
+                        return true;
+                    }
+                };
+                installDnD(miniature.manipulator,  drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);
@@ -171,7 +190,7 @@ exports.FormationAdminV = function(globalVariables) {
                 text: new svg.Text('Level : ' + (levelIndex+1)).font('Arial', 15).anchor('left'),
                 icon : {
                     rect : new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10,10),
-                    whiteRect: new svg.Rect(20, 110).color(myColors.white, 0, myColors.none).position(158,5)
+                    whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158,5)
                 }
             }
             this.graphManipulator.add(levelManipulator);
@@ -199,6 +218,66 @@ exports.FormationAdminV = function(globalVariables) {
                     this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
                 }
             });
+        }
+
+        dropAction(x, y, item) {
+            //this.selectedGame && this.selectedGame.removeRedCross();
+            let formation = this.getFormation();
+            let game;
+            if (item && item.parentObject) {
+                game = item.parentObject;
+            }
+            else{
+                game = null;
+            }
+            let getDropLocation = (x,y) => {
+                let dropLocation = this.graphPanel.content.localPoint(x,y);
+                return dropLocation;
+            };
+            let getLevel = (dropLocation) => {
+                let level = -1;
+                level = Math.floor(dropLocation.y/LEVEL_HEIGHT);
+                if (level >= formation.levelsTab.length) {
+                    level = formation.levelsTab.length;
+                    this.addNewLevel(level);
+                }
+                return level;
+            };
+            let getColumn = (dropLocation, level) => {
+                level = formation.levelsTab[level];
+                let column = Math.floor(dropLocation.x / (MINIATURE_WIDTH + MARGIN));
+                column = column == 0 ? 1 : column > level.gamesTab.length ? level.gamesTab.length+1 : column;
+                return column;
+            };
+
+            let dropLocation = getDropLocation(x,y);
+            let level = getLevel(dropLocation);
+            // if (game instanceof GameVue){
+            //     var lastLevel = game.levelIndex;
+            // }
+            let column = getColumn(dropLocation, level);
+            // if (game && !item.addNew) {
+                this.moveGame(item, level, column);
+                // if(this.levelsTab[lastLevel].gamesTab.length == 0){
+                //     this.levelsTab[lastLevel].redCrossClickHandler();
+                // }
+                //game.levelIndex = level;
+            // } else {
+            //     this.addNewGame(level, column)
+            // }
+            // if(lastLevel ==0 || lastLevel){
+            //     game.levelIndex == lastLevel || game.miniature.removeAllLinks();
+            // }
+            this.displayGraph();
+        }
+        moveGame(game, level, column){
+            this.presenter.moveGame(game,level,column);
+            // this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
+            // this.levelsTab[level].gamesTab.splice(column, 0, game);
+            // game.levelIndex = level;
+            //if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1){
+            //    this.levelsTab.splice(game.levelIndex, 1);
+            //}
         }
 
         displayMessage(message){

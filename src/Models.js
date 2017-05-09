@@ -247,6 +247,24 @@ exports.Models = function (globalVariables) {
                     }
                 })
         };
+
+        moveGame(game,level,column){
+            this.levelsTab[game.levelIndex].gamesTab.forEach(g => {
+                if (g.index > game.index){
+                    g.index--;
+                }
+            });
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.index, 1);
+            game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
+                column-1 ;
+            this.levelsTab[level].gamesTab.forEach(g => {
+                if (g.index >= game.index){
+                    g.index++;
+                }
+            })
+            this.levelsTab[level].gamesTab.splice(column-1, 0, game);
+            game.levelIndex = level;
+        }
     }
 
     class Level{
