@@ -59,6 +59,10 @@ exports.FormationAdminP = function(globalVariables){
         flushView(){
             this.view.flush();
         }
+
+        getGamesLibrary(){
+            return this.state.getGamesLibrary();
+        }
     }
 
     return FormationsAdminP;

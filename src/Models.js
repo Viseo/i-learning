@@ -106,6 +106,10 @@ exports.Models = function (globalVariables) {
             this.formations.loadFormation(formation);
         }
 
+        getGamesLibrary(){
+            return new GamesLibrary();
+        }
+
     }
 
     class Formations {
@@ -159,6 +163,7 @@ exports.Models = function (globalVariables) {
             this.links = [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
+            this.gamesCounter = formation.gamesCounter;
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -255,13 +260,18 @@ exports.Models = function (globalVariables) {
         };
 
         moveGame(game,level,column){
+            let newGame = false;
+            if (game.index == undefined){
+                game = this.addNewGame(game, level, column);
+                newGame = true;
+            }
             let lastLevel = game.levelIndex;
-            this.levelsTab[lastLevel].gamesTab.forEach(g => {
+            !newGame && this.levelsTab[lastLevel].gamesTab.forEach(g => {
                 if (g.index > game.index){
                     g.index--;
                 }
             });
-            this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
+            !newGame && this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
             game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
                 column-1 ;
             this.levelsTab[level].gamesTab.forEach(g => {
@@ -271,7 +281,7 @@ exports.Models = function (globalVariables) {
             })
             this.levelsTab[level].gamesTab.splice(column-1, 0, game);
             game.levelIndex = level;
-            if(this.levelsTab[lastLevel].gamesTab.length == 0){
+            if(this.levelsTab[lastLevel].gamesTab.length == 0 && !newGame){
                 this.levelsTab.forEach(l => {
                     if(l.index > lastLevel){
                         l.index --;
@@ -282,6 +292,16 @@ exports.Models = function (globalVariables) {
                 })
                 this.levelsTab.splice(lastLevel, 1);
             }
+        }
+
+        addNewGame(game, level, column){
+            let newGame = game.game.create(this.gamesCounter, level, column);
+            switch(game.game.type){
+                case'Quiz':
+                    this.gamesCounter.quizz ++;
+                    break;
+            }
+            return newGame
         }
 
         addLevel(level){
@@ -382,6 +402,25 @@ exports.Models = function (globalVariables) {
             this.index = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
+        }
+    }
+
+    class GamesLibrary{
+        constructor(){
+            this.list = [
+                {
+                    type: 'Quiz',
+                    create: function (counter, level, column) {
+                        var newQuiz = new Quiz({
+                            title: 'Quiz ' + counter.quizz,
+                            gameIndex: column ,
+                            id: 'quizz'+counter.quizz,
+                            levelIndex : level
+                        });
+                        return newQuiz;
+                    }
+                }
+            ]
         }
     }
 
