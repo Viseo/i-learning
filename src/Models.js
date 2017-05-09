@@ -1,13 +1,79 @@
-exports.Models = function(globalVariables){
-    const util = globalVariables.util;
+exports.Models = function (globalVariables) {
+    const util = globalVariables.util,
+        drawing = globalVariables.drawing,
+        Server = util.Server;
 
-    class Formations{
-        constructor(){
+
+    class State {
+        constructor() {
+            this.stackPage = [];
+            this.formations = new Formations();
+            this.currentPresenter = null;
+        }
+
+        returnToOldPage() {
+            return this.stackPage.pop();
+        }
+
+        addPageToStack(presenter) {
+            this.stackPage.push(presenter);
+        }
+
+        loadCookie(redirect) {
+            util.Server.checkCookie().then(data => {
+                data = data && JSON.parse(data);
+                if (redirect) {
+                    password.display(param.ID);
+                    redirect = false;
+                } else {
+                    if (data.ack === 'OK') {
+                        this.loadDashboard(data.user);
+                    } else {
+                        globalVariables.admin = false;
+                        this.currentPresenter = new globalVariables.ConnectionP(this);
+                        this.currentPresenter.displayView();
+                    }
+                }
+            });
+        }
+
+
+        connectWith(login, pwd, stayConnected){
+            return Server.connect(login, pwd, stayConnected).then(data => {
+                if(!data) throw 'Connexion refusée';
+                data = JSON.parse(data);
+                if (data.ack === 'OK') {
+                    this.loadDashboard(data.user);
+                } else {
+                    throw 'adresse e-mail ou mot de passe invalide';
+                }
+            });
+        }
+
+        loadDashboard(user){
+            this.user = new User(user);
+            drawing.username = `${user.firstName} ${user.lastName}`;
+            user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+            this.formations.sync().then(() => {
+                this.currentPresenter && this.currentPresenter.flushView();
+                if (globalVariables.admin) {
+                    this.currentPresenter = new globalVariables.dashboardAdminP(this.formations);
+                } else {
+                    this.currentPresenter = new globalVariables.DashboardCollabP(this.user, this.formations);
+                }
+                this.currentPresenter.displayView();
+            })
+        }
+
+    }
+
+    class Formations {
+        constructor() {
             this._formations = [];
         }
 
-        sync(){
-            return util.Server.getAllFormations().then(data=>{
+        sync() {
+            return Server.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
                     const sortAlphabetical = function (array) {
                         return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -25,14 +91,15 @@ exports.Models = function(globalVariables){
         getFormations() {
             return this._formations;
         }
-        createFormation(label){
-            let newFormation = new Formation({label:label});
+
+        createFormation(label) {
+            let newFormation = new Formation({label: label});
             this._formations.push(newFormation);
             let result = newFormation.saveNewFormation();
             return result;
         }
 
-        loadFormation(formation){
+        loadFormation(formation) {
             let tmpLevelsTab = formation.levelsTab;
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
@@ -46,7 +113,7 @@ exports.Models = function(globalVariables){
         }
     }
 
-    class Formation{
+    class Formation {
         constructor(formation) {
             this.links = [];
             this._id = (formation._id || null);
@@ -78,7 +145,7 @@ exports.Models = function(globalVariables){
                     if (answer.saved) {
                         this._id = answer.idVersion;
                         this.formationId = answer.id;
-                        return {status: true, formation:this}
+                        return {status: true, formation: this}
                     } else {
                         if (answer.reason === "NameAlreadyUsed") {
                             return {status: false, error: 'Nom déjà utilisé'}
@@ -87,7 +154,7 @@ exports.Models = function(globalVariables){
                 });
         }
 
-        addNewFormation(object){
+        addNewFormation(object) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -108,15 +175,17 @@ exports.Models = function(globalVariables){
                     }
                 })
         }
-        getId(){
-            if (this._id){
+
+        getId() {
+            if (this._id) {
                 return this._id;
             }
-            else{
+            else {
                 return null;
             }
         }
-        setLabel(label){
+
+        setLabel(label) {
             this.label = label;
         }
 
@@ -145,40 +214,40 @@ exports.Models = function(globalVariables){
         };
     }
 
-    class Level{
-        constructor(gamesTab){
+    class Level {
+        constructor(gamesTab) {
             this.gamesTab = gamesTab;
         }
     }
 
     class User {
-        constructor(user){
+        constructor(user) {
             this.lastName = user.lastName;
             this.firstName = user.firstName;
             this.lastAction = new LastAction(user.lastAction);
         }
 
-        hasLastAction(){
+        hasLastAction() {
             return this.lastAction.hasLastAction();
         }
 
-        getLastActionQuestionsAnswered(){
+        getLastActionQuestionsAnswered() {
             return this.lastAction.getQuestionsAnswered();
         }
 
-        getLastActionFormationId(){
+        getLastActionFormationId() {
             return this.lastAction.getFormationId();
         }
 
-        getLastActionFormationVersion(){
+        getLastActionFormationVersion() {
             return this.lastAction.getFormationVersion();
         }
 
-        getLastActionCurrentIndexQuestion(){
+        getLastActionCurrentIndexQuestion() {
             return this.lastAction.getCurrentIndexQuestion();
         }
 
-        getLastActionTypeOfGame(){
+        getLastActionTypeOfGame() {
             return this.lastAction.getTypeOfGame();
         }
 
@@ -186,59 +255,60 @@ exports.Models = function(globalVariables){
 
 
     class LastAction {
-        constructor(lastAction = {}){
-            this.indexQuestion = lastAction.indexQuestion ;
+        constructor(lastAction = {}) {
+            this.indexQuestion = lastAction.indexQuestion;
             this.questionsAnswered = lastAction.questionsAnswered;
             this.game = lastAction.game;
             this.version = lastAction.version;
             this.formation = lastAction.formation;
         }
 
-        hasLastAction(){
+        hasLastAction() {
             var hasLasAction = false;
-            if(this.formation){
+            if (this.formation) {
                 hasLasAction = true;
             }
             return hasLasAction;
         }
 
-        getQuestionsAnswered(){
+        getQuestionsAnswered() {
             return this.questionsAnswered;
         }
 
-        getFormationId(){
+        getFormationId() {
             return this.formation;
         }
 
-        getFormationVersion(){
+        getFormationVersion() {
             return this.version;
         }
 
-        getCurrentIndexQuestion(){
+        getCurrentIndexQuestion() {
             return this.indexQuestion;
         }
 
-        getTypeOfGame(){
+        getTypeOfGame() {
             return this.game;
         }
     }
 
-    class Game{
+    class Game {
 
 
     }
 
     class Quiz {
-        constructor(game){
+        constructor(game) {
             this.label = game.label;
         }
     }
 
-    class Question{
+    class Question {
 
     }
 
     return {
+        State,
         Formations,
         User
     }

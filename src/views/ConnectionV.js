@@ -234,6 +234,7 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         tryLogin(){
+            this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 let error = new svg.Text(message)
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
@@ -286,7 +287,6 @@ exports.ConnectionV = function (globalVariables) {
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
                 this.tryLogin();
-                this.selectedInput.hideControl();
             }
         }
 

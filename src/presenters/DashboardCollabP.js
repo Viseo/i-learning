@@ -11,7 +11,7 @@ exports.DashboardCollabP = function(globalVariables) {
 
             //todo
             if(this.hasLastAction()){
-                alert("Todo Got last action");
+                //alert("Todo Got last action");
             }
         };
 

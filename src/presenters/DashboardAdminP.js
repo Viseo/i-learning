@@ -1,5 +1,5 @@
 const util = require('../Util').Utils;
-const DashboardAdmin = require('./DashboardAdmin').DashboardAdmin;
+const DashboardAdmin = require('./DashboardAdminV').DashboardAdmin;
 
 exports.DashboardAdminP = function(globalVariables) {
     const DashboardView = DashboardAdmin(globalVariables),
@@ -68,7 +68,6 @@ exports.DashboardAdminP = function(globalVariables) {
                     this.view.fromReturn();
                 }
             )
-
         }
 
         miniatureClickHandler(formation){

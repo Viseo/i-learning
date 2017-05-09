@@ -8,7 +8,7 @@ exports.ConnectionP = function(globalVariables) {
     const Server = globalVariables.util.Server;
 
     class ConnectionP {
-        constructor() {
+        constructor(state) {
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -37,27 +37,25 @@ exports.ConnectionP = function(globalVariables) {
 
             _declareTextFields();
             this.view = new connectionView(this);
+            this.state = state;
         }
 
-        onConnected(handler){
-            this.view.flush();
-            this._onConnected = handler;
+        _onConnected(user){
+            //this.view.flush();
+            this.state.loadDashboard(user);
         }
+
+        _connectWith(login, pwd, stayConnected){
+            return this.state.connectWith(login, pwd, stayConnected);
+        }
+
         logIn(){
             var _checkInputs = () => {
                 return this._fields.reduce((o, n) => o && n.valid, true);
-            }
+            };
 
             if(_checkInputs()){
-                return Server.connect(this._fields[0].text, this._fields[1].text, this._stayConnected).then(data => {
-                    if(!data) throw 'Connexion refusée';
-                    data = JSON.parse(data);
-                    if (data.ack === 'OK') {
-                        this._onConnected(data);
-                    } else {
-                        throw 'adresse e-mail ou mot de passe invalide';
-                    }
-                });
+                return this._connectWith(this._fields[0].text, this._fields[1].text, this._stayConnected);
             }else {
                 //TODO changer pour pouvoir mocker pour les tests
                 return Promise.reject("Veuillez remplir correctement tous les champs");
@@ -100,6 +98,10 @@ exports.ConnectionP = function(globalVariables) {
         }
         setStayConnected(isStay){
             this._stayConnected = !!isStay;
+        }
+
+        flushView(){
+            this.view.flush();
         }
     }
     return ConnectionP;
