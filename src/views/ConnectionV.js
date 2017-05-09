@@ -230,7 +230,7 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         tryLogin(){
-            this.selectedInput.hideControl();
+            this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 let error = new svg.Text(message)
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)

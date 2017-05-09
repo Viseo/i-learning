@@ -6,8 +6,9 @@ const ConnectionV = require('../views/ConnectionV').ConnectionV;
 exports.ConnectionP = function(globalVariables) {
     const connectionView = ConnectionV(globalVariables);
     const Server = globalVariables.util.Server;
+    let Presenter = globalVariables.Presenter;
 
-    class ConnectionP {
+    class ConnectionP extends Presenter{
         constructor(state) {
             var _declareTextFields = () => {
                 this._fields = [
@@ -34,10 +35,9 @@ exports.ConnectionP = function(globalVariables) {
                 ];
                 this._stayConnected = true;
             };
-
+            super(state);
             _declareTextFields();
             this.view = new connectionView(this);
-            this.state = state;
         }
 
         _connectWith(login, pwd, stayConnected){
@@ -65,13 +65,10 @@ exports.ConnectionP = function(globalVariables) {
             return Server.resetPassword({mailAddress: this._fields[0].text});
         }
 
-        displayView(){
-            this.view.display();
-        }
-
         getFields () {
             return this._fields;
         }
+
         setValid(field, valid){
             let index = this._fields.indexOf(field);
             if(index != -1){
@@ -84,13 +81,11 @@ exports.ConnectionP = function(globalVariables) {
                 this._fields[index].text = text;
             }
         }
+
         setStayConnected(isStay){
             this._stayConnected = !!isStay;
         }
 
-        flushView(){
-            this.view.flush();
-        }
     }
     return ConnectionP;
 }

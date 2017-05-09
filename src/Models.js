@@ -26,6 +26,12 @@ exports.Models = function (globalVariables) {
             this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
         }
 
+        clearOldPageStackAndLoadPresenterConnection(){
+            this.stackPage = [];
+            this.currentPresenter = null;
+            this.loadPresenterConnection();
+        }
+
         tryLoadCookieForPresenter(redirect) {
             util.Server.checkCookie().then(data => {
                 data = data && JSON.parse(data);

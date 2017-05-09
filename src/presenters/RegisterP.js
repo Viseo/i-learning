@@ -7,12 +7,13 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
         runtime = globalVariables.runtime,
-        Server = globalVariables.util.Server;
+        Server = globalVariables.util.Server,
+        Presenter = globalVariables.Presenter;
 
-    class RegisterP {
+    class RegisterP extends Presenter{
         constructor(state) {
+            super(state);
             this.view = new registerView(this);
-            this.state = state;
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -93,17 +94,6 @@ exports.RegisterP = function (globalVariables) {
             } else {
                 return Promise.reject("Veuillez remplir correctement tous les champs")
             }
-        }
-
-        displayView() {
-            this.view.display();
-        }
-        flushView(){
-            this.view.flush();
-        }
-
-        returnToOldPage(){
-            this.state.returnToOldPage();
         }
 
         getFields() {
