@@ -60,7 +60,7 @@ exports.QuizCollabV = function (globalVariables) {
             var _displayReturnButton = () => {
                 let returnButton = new gui.Button(INPUT_WIDTH, INPUT_HEIGHT, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
                 returnButton.back.corners(5, 5);
-                returnButton.text.font(FONT, 20).position(0, 6.6);
+                returnButton.text.font(FONT, FONT_SIZE).position(0, 6.6);
                 returnButton.onClick(this.returnHandler.bind(this));
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
                 chevron.position(-130, 0);

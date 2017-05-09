@@ -3,31 +3,43 @@
  */
 
 const QuizCollabV = require('../views/QuizCollabV').QuizCollabV;
+const QuizScoreV = require('../views/QuizScoreV').QuizScoreV;
 
 exports.QuizCollabP = function (globalVariable) {
     const QuizCollabView = QuizCollabV(globalVariable);
+    const QuizScoreView = QuizScoreV(globalVariable);
 
     class QuizCollabP {
         constructor(parent, model) {
-            this.view = new QuizCollabView(this);
+            this.questionView = new QuizCollabView(this);
+            this.scoreView = new QuizScoreView(this);
             this.parent = parent;
             this.model = model;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
+            this.isDone = false; //chedk from model if already done
         }
 
         displayView() {
-            this.view.display();
+            if(this.isDone){
+                this.displayScoreView();
+            }else {
+                this.displayQuestionView();
+            }
         }
 
-        displayResultView() {
-            this.displayView();
-            this.view.displayResult();
+        displayQuestionView(){
+            this.questionView.display();
+            if(this.isDone) this.questionView.displayResult();
+        }
+        displayScoreView(){
+            this.scoreView.display();
         }
 
         returnHandler() {
-            this.view.flush();
-            this.parent.fromReturn();
+            //TODO use State
+           //this.questionView.flush();
+            //this.parent.fromReturn();
         }
 
         previousQuestion() {
@@ -50,8 +62,8 @@ exports.QuizCollabP = function (globalVariable) {
             if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
                 this.nextQuestion();
             } else {
-                //TODO call state to show score presenter
-                this.displayResultView(); //only for test
+                this.isDone = true;
+                this.displayScoreView();
             }
         }
 
