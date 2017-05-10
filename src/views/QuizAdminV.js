@@ -28,29 +28,32 @@ exports.QuizAdminV = function (globalVariables) {
                 })
                 this.manipulator.add(this.returnButton.manipulator);
             }
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this);
+                this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
+                this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
+                this.titleManipulator = new Manipulator(this).addOrdonator(1);
+                this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
+                this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
+                this.manipulator
+                    .add(this.questionsBlockManipulator)
+                    .add(this.questionDetailsManipulator)
+                    .add(this.titleManipulator)
+                    .add(this.previewButtonManipulator)
+                    .add(this.saveQuizButtonManipulator)
+                    .add(this.header.getManipulator());
+            };
             var _initMediaLibrary = () => {
                 // this.library = classContainer.createClass('MediaLibraryVue');
             }
 
-            this.manipulator = new Manipulator(this);
             this.label = this.getLabel();
-            this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
-            this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
-            this.titleManipulator = new Manipulator(this).addOrdonator(1);
-            this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
-            this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
-            this.manipulator
-                .add(this.questionsBlockManipulator)
-                .add(this.questionDetailsManipulator)
-                .add(this.titleManipulator)
-                .add(this.previewButtonManipulator)
-                .add(this.saveQuizButtonManipulator);
+            _declareManipulator();
             _createReturnButton();
             _initMediaLibrary();
         }
 
         display() {
-            this.manipulator.add(this.header.getManipulator());
             var _resetDrawings = () => {
                 // main.currentPageDisplayed = "QuizManager";
                 drawings.component.clean();
@@ -95,10 +98,22 @@ exports.QuizAdminV = function (globalVariables) {
                 let dimensions = {
                     width: this.width * 1 / 5 - MARGIN,
                     height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
-                }
-                /** TODO MediaLibrary refonte **/
-                // this.library.display(MARGIN, currentY, dimensions.width, dimensions.height);
-            }
+                };
+
+                this.gamePanel = new gui.Panel(dimensions.width, dimensions.height);
+                this.gamePanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                this.gameLibraryManipulator = new Manipulator(this).addOrdonator(3);
+                this.gameLibraryManipulator.set(0,this.gamePanel.component);
+                this.gameLibraryManipulator.move(this.gamePanel.width/2 + MARGIN, currentY + this.gamePanel.height/2);
+                this.manipulator.add(this.gameLibraryManipulator);
+                this.titleLibrary = new svg.Text('Jeux').color(myColors.grey).font('Arial', 25).anchor('left');
+                this.titleLibrary.position(-0.85*this.gamePanel.width/2, -this.gamePanel.height/2 + 8.33);
+                this.gameLibraryManipulator.set(2,this.titleLibrary);
+                this.titleLibraryBack = new svg.Rect(this.titleLibrary.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
+                this.titleLibraryBack.position(-0.85*this.gamePanel.width/2 + this.titleLibrary.boundingRect().width/2,
+                    -this.gamePanel.height/2);
+                this.gameLibraryManipulator.set(1,this.titleLibraryBack);
+            };
             var _displayQuestionDetails = () => {
                 let dimensions = {
                     width: this.width * 4 / 5,
@@ -107,7 +122,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionDetailsDim = dimensions;
                 let border = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
                 this.questionDetailsManipulator.set(0, border);
-                this.questionDetailsManipulator.move(MARGIN + this.width * 1 / 5 + dimensions.width / 2, currentY + dimensions.height / 2);
+                this.questionDetailsManipulator.move(this.width - dimensions.width/2 + MARGIN, currentY + dimensions.height / 2);
                 currentY += dimensions.height + MARGIN;
             }
             var _displayPreviewButton = () => {
