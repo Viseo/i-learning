@@ -4,9 +4,9 @@
 const ConnectionV = require('../views/ConnectionV').ConnectionV;
 
 exports.ConnectionP = function(globalVariables) {
-    const connectionView = ConnectionV(globalVariables);
-    const Server = globalVariables.util.Server;
-    let Presenter = globalVariables.Presenter;
+    const connectionView = ConnectionV(globalVariables),
+        Server = globalVariables.util.Server,
+        Presenter = globalVariables.Presenter;
 
     class ConnectionP extends Presenter{
         constructor(state) {

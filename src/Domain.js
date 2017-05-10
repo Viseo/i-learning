@@ -155,12 +155,17 @@ exports.Domain = function (globalVariables) {
     classContainer = new Factory({Vue});
 
     class HeaderVue extends Vue {
-        constructor(options) {
+        constructor(options, presenter) {
             super(options);
             this.manipulator.addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
             this.label = "I-learning";
             this.height = HEADER_SIZE * drawing.height;
+            this.presenter = presenter;
+        }
+
+        disconnect(){
+            this.presenter && this.presenter.clearOldPageStackAndLoadPresenterConnection();
         }
 
         render(message) {
@@ -204,7 +209,7 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     drawing.username = null;
                     drawing.manipulator.flush();
-                    main(svg, runtime, dbListener);
+                    this.disconnect();
                 };
                 svg.addEvent(deconnexion.content, "click", deconnexionHandler);
                 svg.addEvent(deconnexion.border, "click", deconnexionHandler);
@@ -223,14 +228,14 @@ exports.Domain = function (globalVariables) {
             if (drawing.username) {
                 displayUser();
                 let returnToListFormation = () => {
-                    drawings.component.clean();
+                    /*drawings.component.clean();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
                         let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
                             : "FormationsManagerVueAdmin";
                         globalVariables.formationsManager = classContainer.createClass(formationManagerVueInstance, myFormations);
                         globalVariables.formationsManager.display();
-                    });
+                    });*/
                 };
                 svg.addEvent(text, 'click', returnToListFormation);
             }

@@ -1,17 +1,17 @@
-const util = require('../Util').Utils;
 const DashboardAdmin = require('./DashboardAdminV').DashboardAdmin;
 
 exports.DashboardAdminP = function(globalVariables) {
     const DashboardView = DashboardAdmin(globalVariables),
+        Presenter = globalVariables.Presenter,
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
 
 
-    class DashboardAdminP {
+    class DashboardAdminP extends Presenter{
         constructor(state, formations) {
+            super(state);
             this.view = new DashboardView(this);
             this.formations = formations;
             this.formationsList = formations.getFormations();
-            this.state = state;
         }
         getLabels(){
             return this.formations.getFormations().map(f => f.label);
@@ -19,9 +19,7 @@ exports.DashboardAdminP = function(globalVariables) {
         getFormations(){
             return this.formations.getFormations();
         }
-        displayView(){
-            this.view.display();
-        }
+
         createFormation(label){
             let checkLabel = (label)=>{
                 if (label == 'Ajouter une formation'){
@@ -61,10 +59,6 @@ exports.DashboardAdminP = function(globalVariables) {
         }
         updateFormations(){
             this.formationsList = this.formations.getFormations();
-        }
-
-        flushView(){
-            this.view.flush();
         }
 
         miniatureClickHandler(formation){

@@ -27,8 +27,13 @@ exports.Models = function (globalVariables) {
         }
 
         clearOldPageStackAndLoadPresenterConnection(){
+            var _cleanPresenter = () => {
+                this.currentPresenter && this.currentPresenter.flushView();
+                this.currentPresenter = null;
+            }
+
             this.stackPage = [];
-            this.currentPresenter = null;
+            _cleanPresenter();
             this.loadPresenterConnection();
         }
 

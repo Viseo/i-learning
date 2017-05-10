@@ -2,6 +2,7 @@
  * Created by minhhuyle on 09/05/2017.
  */
 exports.Presenter = function(globalVariables){
+
     class Presenter {
         constructor(state){
             this.state = state;
@@ -14,6 +15,10 @@ exports.Presenter = function(globalVariables){
          * */
         returnToOldPage(){
             this.state.returnToOldPage();
+        }
+
+        clearOldPageStackAndLoadPresenterConnection(){
+            this.state.clearOldPageStackAndLoadPresenterConnection();
         }
 
 
