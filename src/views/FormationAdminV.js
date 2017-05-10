@@ -233,7 +233,14 @@ exports.FormationAdminV = function(globalVariables) {
                 this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(1);
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
-                this.graphMiniatureManipulator.set(0, new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none))
+                let backRect = new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none);
+                svg.addEvent(backRect, 'click', ()=>{
+                    if(this.miniatureSelected){
+                        this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
+                        this.miniatureSelected.manipulator.unset(3);
+                    }
+                })
+                this.graphMiniatureManipulator.set(0, backRect);
             }
             let createButtons = ()=>{
                 this.buttonsManipulator = new Manipulator(this);
@@ -260,12 +267,29 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         displayLevel(level){
+            let miniatureSelection = (miniature) => {
+                if(this.miniatureSelected){
+                    this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
+                    this.miniatureSelected.manipulator.unset(3);
+                }
+                miniature.border.color(myColors.white, 2, myColors.darkBlue);
+                miniature.manipulator.set(3,miniature.redCrossManipulator);
+                this.miniatureSelected = miniature;
+            }
             let createGameMiniature = (game)=>{
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
-                    manipulator : new Manipulator(this)
+                    manipulator : new Manipulator(this).addOrdonator(4)
                 }
+                miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
+                let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
+                miniature.redCrossManipulator.set(0,redCross);
+                miniature.redCrossManipulator.addEvent('click', ()=>{
+                    this.removeGame(miniature.game);
+                });
+                miniature.manipulator.mini = miniature;
+                miniature.game = game;
                 miniature.conf = {
                     drag: (what, x, y) => {
                         // let point; //TODO : miniature should not get out of graph
@@ -277,14 +301,15 @@ exports.FormationAdminV = function(globalVariables) {
                         return{x: X, y: Y, parent: whatParent};
                     },
                     clicked : (what) => {
-                        what.parentObject.miniature.miniatureClickHandler();
-                    },
+                        miniatureSelection(what.mini);
+                },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);
                         this.dropAction(point.x,point.y, game);
                         return true;
                     }
                 };
+                //miniatureRedCrossHandler(miniature);
                 installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
@@ -300,18 +325,30 @@ exports.FormationAdminV = function(globalVariables) {
             }
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
+            let levelRedCrossManipulator = new Manipulator(this);
+            let levelRedCross = drawRedCross(0,5,18, levelRedCrossManipulator);
+            levelManipulator.add(levelRedCrossManipulator);
+            levelRedCrossManipulator.add(levelRedCross);
+            svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
             levelManipulator.set(0,levelMiniature.line)
                 .set(1,levelMiniature.text)
                 .set(2,levelMiniature.icon.rect)
                 .set(3, levelMiniature.icon.whiteRect);
             level.gamesTab.forEach(game => {
                 let gameMiniature = createGameMiniature(game);
-                gameMiniature.manipulator.add(gameMiniature.border)
-                    .add(gameMiniature.content);
+                gameMiniature.manipulator.set(0,gameMiniature.border)
+                    .set(1,gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator);
                 gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
                     , 5);
             });
+        }
+
+        removeGame(game){
+            this.presenter.removeGame(game);
+        }
+        removeLevel(level){
+            this.presenter.removeLevel(level);
         }
 
         renameFormation(){
@@ -351,8 +388,9 @@ exports.FormationAdminV = function(globalVariables) {
             let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
-            this.moveGame(item, level, column);
-            this.displayGraph();
+            if (dropLocation.x >=0) {
+                this.moveGame(item, level, column);
+            }
         }
 
         addNewLevel(level){

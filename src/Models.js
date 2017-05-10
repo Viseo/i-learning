@@ -316,18 +316,54 @@ exports.Models = function (globalVariables) {
             }
         }
 
+        removeGame(game){
+            this.levelsTab[game.levelIndex].gamesTab.forEach(g => {
+                if (g.index > game.index){
+                    g.index--;
+                }
+            });
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.index, 1);
+            if(this.levelsTab[game.levelIndex].gamesTab.length == 0){
+                this.levelsTab.forEach(l => {
+                    if(l.index > game.levelIndex){
+                        l.index --;
+                        l.gamesTab.forEach(g=>{
+                            g.levelIndex--;
+                        })
+                    }
+                })
+                this.levelsTab.splice(game.levelIndex, 1);
+            }
+        }
+
         addNewGame(game, level, column){
             let newGame = game.game.create(this.gamesCounter, level, column);
-            switch(game.game.type){
-                case'Quiz':
-                    this.gamesCounter.quizz ++;
-                    break;
-            }
+            this.updateGamesCounter(newGame);
             return newGame
         }
 
         addLevel(level){
             this.levelsTab.push(new Level([], level));
+        }
+        removeLevel(level){
+            this.levelsTab.forEach(l => {
+                if(l.index > level.index){
+                    l.index --;
+                    l.gamesTab.forEach(g=>{
+                        g.levelIndex--;
+                    })
+                }
+            })
+            this.levelsTab.splice(level.index, 1);
+        }
+
+        updateGamesCounter(game){
+            let inc =1;
+            switch(game.type){
+                case'Quiz':
+                    this.gamesCounter.quizz += inc;
+                    break;
+            }
         }
     }
 
@@ -424,6 +460,7 @@ exports.Models = function (globalVariables) {
             this.index = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
+            this.type = 'Quiz';
         }
     }
 

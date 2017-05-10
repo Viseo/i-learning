@@ -50,6 +50,15 @@ exports.FormationAdminP = function(globalVariables){
         }
         moveGame(game,level,column){
             this.formation.moveGame(game,level,column);
+            this.view.displayGraph();
+        }
+        removeGame(game){
+            this.formation.removeGame(game);
+            this.view.displayGraph();
+        }
+        removeLevel(level){
+            this.formation.removeLevel(level);
+            this.view.displayGraph();
         }
 
         addLevel(level){
