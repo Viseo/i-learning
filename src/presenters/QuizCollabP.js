@@ -17,6 +17,7 @@ exports.QuizCollabP = function (globalVariable) {
             this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
+            this.selectedAnswers = [];
             this.isDone = false; //chedk from quiz if already done
         }
 
@@ -62,17 +63,37 @@ exports.QuizCollabP = function (globalVariable) {
                 this.currentQuestionIndex++;
                 if (this.lastAnsweredIndex < this.currentQuestionIndex) this.lastAnsweredIndex = this.currentQuestionIndex;
                 this.displayQuestionView();
+            }else {
+                this.isDone = true;
+                this.displayScoreView();
             }
         }
 
         selectAnswer(index) {
-            this.quiz.selectAnswer(this.currentQuestionIndex, index);
-            if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
+            if(this.isMultipleChoice()){
+                let answerIndex = this.selectedAnswers.indexOf(index);
+                if(answerIndex === -1){
+                    this.selectedAnswers.push(index);
+                }else {
+                    this.selectedAnswers.splice(answerIndex, 1);
+                }
+            }else {
+                this.validateQuestion(this.currentQuestionIndex, [index]);
                 this.nextQuestion();
-            } else {
-                this.isDone = true;
-                this.displayScoreView();
             }
+        }
+
+        resetAnswers(){
+            this.selectedAnswers = [];
+        }
+
+        confirmQuestion(){
+            this.validateQuestion(this.currentQuestionIndex, this.selectedAnswers);
+            this.nextQuestion();
+        }
+
+        validateQuestion(questionIndex, answers){
+            this.quiz.validateQuestion(questionIndex, answers);
         }
 
         getLabel() {
@@ -83,12 +104,16 @@ exports.QuizCollabP = function (globalVariable) {
             return this.quiz.getNbQuestions();
         }
 
-        getNbCorrect() {
-            return this.quiz.getNbCorrect();
+        getNbQuestionsCorrect() {
+            return this.quiz.getNbQuestionsCorrect();
         }
 
         getCurrentQuestionLabel() {
             return this.quiz.getQuestionLabel(this.currentQuestionIndex);
+        }
+
+        isMultipleChoice(){
+            return this.quiz.isMultipleChoice(this.currentQuestionIndex);
         }
 
         isFirstQuestion() {
@@ -107,8 +132,8 @@ exports.QuizCollabP = function (globalVariable) {
             return this.quiz.getAnswered(this.currentQuestionIndex);
         }
 
-        getCorrectAnswerIndex() {
-            return this.quiz.getCorrectAnswerIndex(this.currentQuestionIndex);
+        getCorrectAnswersIndex() {
+            return this.quiz.getCorrectAnswersIndex(this.currentQuestionIndex);
         }
 
         getWrongQuestions() {
@@ -117,7 +142,7 @@ exports.QuizCollabP = function (globalVariable) {
 
         getScore() {
             let nbQuestions = this.getNbQuestions();
-            let nbCorrect = this.getNbCorrect();
+            let nbCorrect = this.getNbQuestionsCorrect();
             let color, str1, str2;
             switch (nbCorrect) {
                 case nbQuestions:

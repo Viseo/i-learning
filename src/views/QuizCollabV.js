@@ -22,7 +22,9 @@ exports.QuizCollabV = function (globalVariables) {
         CHEVRON_STROKE = 10,
         ANSWERS_PER_LINE = 2,
         ANSWER_HEIGHT = 100,
-        EXPLANATION_HEIGHT = 200;
+        EXPLANATION_HEIGHT = 200,
+        BUTTON_WIDTH = 200,
+        BUTTON_HEIGHT = 40;
 
     class QuizCollabV {
         constructor(presenter) {
@@ -35,15 +37,15 @@ exports.QuizCollabV = function (globalVariables) {
             this.leftChevronManipulator = new Manipulator(this);
             this.rightChevronManipulator = new Manipulator(this);
             this.answersManipulator = new Manipulator(this);
-            this.helpManipulator = new Manipulator(this).addOrdonator(1);
+            this.helpManipulator = new Manipulator(this);
             this.scoreManipulator = new Manipulator(this);
             this.explanationManipulator = new Manipulator(this);
+            this.buttonsManipulator = new Manipulator(this);
         }
 
         display() {
             var _cleanManipulators = () => {
-                this.returnButtonManipulator.flush();
-                this.answersManipulator.flush();
+                this.manipulator.flush();
                 this.answers = [];
             }
             var _attachManipulators = () => {
@@ -54,8 +56,7 @@ exports.QuizCollabV = function (globalVariables) {
                     .add(this.returnButtonManipulator)
                     .add(this.leftChevronManipulator)
                     .add(this.rightChevronManipulator)
-                    .add(this.answersManipulator)
-                    .add(this.helpManipulator);
+                    .add(this.answersManipulator);
             }
             var _displayHeader = () => {
                 this.header.display(this.getLabel());
@@ -140,12 +141,24 @@ exports.QuizCollabV = function (globalVariables) {
             }
             var _displayAnswers = () => {
                 var _displayAnswer = (answer, index) => {
+                    let _resetAnswer = () => {
+                        manip.set(0, border);
+                        colored = false;
+                    }
                     let _answerHandler = () => {
                         this.selectAnswer(index);
+                        if(colored){
+                            _resetAnswer();
+                        }else {
+                            manip.set(0, colorRect);
+                            colored = true;
+                        }
                     }
 
                     let manip = new Manipulator(this).addOrdonator(3); //keep one layer for color answer
-                    let border = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.white, 1, myColors.black).corners(10, 10)
+                    let border = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.white, 1, myColors.black).corners(10, 10);
+                    let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
+                    let colored = false;
                     let title = new svg.Text(answer.label).font(FONT, FONT_SIZE)
                     let indexX = Math.floor(index % ANSWERS_PER_LINE);
                     let indexY = Math.floor(index / ANSWERS_PER_LINE);
@@ -154,6 +167,7 @@ exports.QuizCollabV = function (globalVariables) {
                         .set(2, title);
                     manip.move(indexX * (this.answerWidth + MARGIN), indexY * (ANSWER_HEIGHT + MARGIN));
                     manip.addEvent('click', _answerHandler);
+                    manip.resetHandler = _resetAnswer;
                     return manip;
                 }
 
@@ -171,10 +185,39 @@ exports.QuizCollabV = function (globalVariables) {
 
                 this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2, currentY + ANSWER_HEIGHT / 2);
             }
+            var _displayMultipleChoiceButtons = () => {
+                var _displayValidateButton = () => {
+                    let _validateAnswers = () => {
+                        this.confirmQuestion();
+                    }
+
+                    let validateButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Valider");
+                    validateButton.position(BUTTON_WIDTH/2 + MARGIN/2, 0);
+                    validateButton.onClick(_validateAnswers);
+                    this.buttonsManipulator.add(validateButton.component)
+                }
+                var _displayResetButton = () => {
+                    let _resetAnswers = () => {
+                        this.resetAnswers();
+                        this.answers.forEach((manip)=> manip.resetHandler());
+                    }
+
+                    let resetButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Réinitialiser")
+                    resetButton.position(-BUTTON_WIDTH/2 - MARGIN/2, 0);
+                    resetButton.onClick(_resetAnswers);
+                    this.buttonsManipulator.add(resetButton.component);
+                }
+
+                _displayValidateButton();
+                _displayResetButton();
+                this.buttonsManipulator.move(drawing.width/2, drawing.height - MARGIN - BUTTON_HEIGHT/2);
+                this.manipulator.add(this.buttonsManipulator);
+            }
             var _displayHelpText = () => {
                 let helpText = new svg.Text("cliquez sur une réponse pour passer à la question suivante").font(FONT, FONT_SIZE);
-                this.helpManipulator.set(0, helpText);
+                this.helpManipulator.add(helpText);
                 this.helpManipulator.move(drawing.width / 2, drawing.height - FONT_SIZE - MARGIN);
+                this.manipulator.add(this.helpManipulator);
             }
 
             drawing.manipulator.set(0, this.manipulator);
@@ -187,13 +230,17 @@ exports.QuizCollabV = function (globalVariables) {
             _displayQuestionTitle();
             _displayChevrons()
             _displayAnswers();
-            _displayHelpText();
+            if(this.isMultipleChoice()){
+                _displayMultipleChoiceButtons();
+            }else {
+                _displayHelpText();
+            }
         }
 
         displayResult() {
-            var _cleanManipulators = () => {
-                this.scoreManipulator.flush();
-                this.explanationManipulator.flush();
+            var _hidebottomElements = () => {
+                this.helpManipulator.flush();
+                this.buttonsManipulator.flush();
             }
             var _attachManipulators = () => {
                 this.manipulator
@@ -240,32 +287,31 @@ exports.QuizCollabV = function (globalVariables) {
                 })
             }
             var _displayAnswered = () => {
-                let answerManip = this.answers[answered.index];
-                let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
-                answerManip.set(0, colorRect);
+                this.getCurrentAnswered().indexes.forEach((answeredIndex) => {
+                    let answerManip = this.answers[answeredIndex];
+                    let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
+                    answerManip.set(0, colorRect);
+                })
+
             }
-            var _displayCorrect = (correctAnswerIndex) => {
-                let answerManip = this.answers[correctAnswerIndex];
-                let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.none, 3, myColors.green).corners(10, 10);
-                answerManip.set(1, colorRect);
+            var _displayCorrects = () => {
+                this.getCorrectAnswersIndex().forEach((answerIndex)=>{
+                    let answerManip = this.answers[answerIndex];
+                    let colorRect = new svg.Rect(this.answerWidth, ANSWER_HEIGHT).color(myColors.none, 3, myColors.green).corners(10, 10);
+                    answerManip.set(1, colorRect);
+                })
             }
             var _removeClickEvents = () => {
                 this.answers.forEach((manip) => manip.removeEvent('click'))
             }
 
-            let answered = this.getCurrentAnswered();
-            _cleanManipulators();
+            _hidebottomElements();
             _attachManipulators();
             _modifyReturnButtonText();
             _displayText();
             _addExplanations();
             _displayAnswered();
-            if (answered.correct) {
-                _displayCorrect(answered.index);
-            } else {
-                let correctAnswerIndex = this.getCorrectAnswerIndex();
-                _displayCorrect(correctAnswerIndex);
-            }
+            _displayCorrects();
             _removeClickEvents();
         }
 
@@ -285,8 +331,20 @@ exports.QuizCollabV = function (globalVariables) {
             this.presenter.selectAnswer(index);
         }
 
+        resetAnswers(){
+            this.presenter.resetAnswers();
+        }
+
+        confirmQuestion(){
+            this.presenter.confirmQuestion();
+        }
+
         getLabel() {
             return this.presenter.getLabel();
+        }
+
+        isMultipleChoice(){
+            return this.presenter.isMultipleChoice();
         }
 
         isFirstQuestion() {
@@ -309,8 +367,8 @@ exports.QuizCollabV = function (globalVariables) {
             return this.presenter.getCurrentAnswered();
         }
 
-        getCorrectAnswerIndex() {
-            return this.presenter.getCorrectAnswerIndex();
+        getCorrectAnswersIndex() {
+            return this.presenter.getCorrectAnswersIndex();
         }
 
         getScore() {
