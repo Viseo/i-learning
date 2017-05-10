@@ -378,35 +378,11 @@ exports.QuizAdminV = function (globalVariables) {
                                             answer.manipulator.set(3, answer.explanation.manipulator);
                                             answer.explanation.display();
                                         }
-                                        let fontColor = answer.filled ? myColors.darkerGreen : myColors.black,    // object.filled == la réponse dispose d'une explication remplie
-                                            square = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE)
-                                                .color(myColors.white, 1, myColors.black),
-                                            tipEnd = new svg.Triangle(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 5, "S")
-                                                .color(myColors.white, 1, fontColor).position(0, CHECKBOX_SIZE / 3),
-                                            end = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 10)
-                                                .color(myColors.fontColor, 1, fontColor).position(0, -CHECKBOX_SIZE / 3),
-                                            body = new svg.Rect(CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2)
-                                                .color(fontColor).position(0, 0),
-                                            line1 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
-                                            line2 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + 2 * CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + 2 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
-                                            line3 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + 3 * CHECKBOX_SIZE / 5, CHECKBOX_SIZE / 2 - CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + 3 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey),
-                                            line4 = new svg.Line(-CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 8,
-                                                -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5, -CHECKBOX_SIZE / 2 + CHECKBOX_SIZE / 7,
-                                                -CHECKBOX_SIZE / 2 + 4 * CHECKBOX_SIZE / 5).color(myColors.grey, 1, myColors.grey);
-                                        answer.explanationPenManipulator.add(square);
-                                        answer.linesManipulator.add(line1).add(line2).add(line3).add(line4);
-                                        answer.penManipulator.add(tipEnd).add(end).add(body).rotate(40);
-                                        answer.explanationPenManipulator.addEvent('click', _toggleExplanation);
-                                        answer.explanationPenManipulator.add(answer.linesManipulator)
-                                            .add(answer.penManipulator)
-                                            .move(dimensions.width / 2 - CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2)
-                                        answer.manipulator.set(1, answer.explanationPenManipulator);
+
+                                        let iconExplanation = IconCreator.createExplanationIcon(answer.manipulator, 1);
+                                        iconExplanation.position(dimensions.width / 2 - iconExplanation.getContentSize()*2/3, dimensions.height/2 - iconExplanation.getContentSize()/2);
+                                        iconExplanation.addEvent('click', _toggleExplanation);
+
                                     }
                                     var _addValidCheckbox = () => {
                                         answer.checkBoxManipulator = new Manipulator(this);
