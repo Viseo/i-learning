@@ -1,13 +1,179 @@
-exports.Models = function(globalVariables){
-    const util = globalVariables.util;
+exports.Models = function (globalVariables) {
+    const util = globalVariables.util,
+        drawing = globalVariables.drawing,
+        Server = util.Server;
 
-    class Formations{
-        constructor(){
+
+    class State {
+        constructor() {
+            this.stackPage = [];
+            this.formations = new Formations();
+            this.currentPresenter = null;
+            this.stackStateFrozen = false;
+        }
+
+        returnToOldPage() {
+            this._putStackPageToFrozen();
+            let presenterName = this.stackPage.pop();
+            switch(presenterName){
+                case "DashboardAdminP":
+                    this.loadPresenterDashboard(this.user); break;
+                case "ConnectionP":
+                    this.loadPresenterConnection(); break;
+                default: break;
+            }
+            this._unFrozenStackPage();
+        }
+
+        _isStackPageIsFrozen(){
+            return this.stackStateFrozen;
+        }
+
+        _putStackPageToFrozen(){
+            this.stackStateFrozen = true;
+        }
+
+        _unFrozenStackPage(){
+            this.stackStateFrozen = false;
+        }
+
+        _addPageToStack() {
+            if(!this._isStackPageIsFrozen()){
+                this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
+            }
+        }
+
+        clearOldPageStackAndLoadPresenterConnection(){
+            var _cleanPresenter = () => {
+                this.currentPresenter && this.currentPresenter.flushView();
+                this.currentPresenter = null;
+            }
+
+            this.stackPage = [];
+            _cleanPresenter();
+            this.loadPresenterConnection();
+        }
+
+        tryLoadCookieForPresenter(redirect) {
+            util.Server.checkCookie().then(data => {
+                data = data && JSON.parse(data);
+                if (redirect) {
+                    password.display(param.ID);
+                    redirect = false;
+                } else {
+                    if (data.ack === 'OK') {
+                        this.loadPresenterDashboard(data.user);
+                    } else {
+                        globalVariables.admin = false;
+                        this.loadPresenterConnection();
+                    }
+                }
+            });
+        }
+
+
+        tryConnectForPresenterDashboard(login, pwd, stayConnected){
+            return Server.connect(login, pwd, stayConnected).then(data => {
+                if(!data) throw 'Connexion refusée';
+                data = JSON.parse(data);
+                if (data.ack === 'OK') {
+                    this.loadPresenterDashboard(data.user);
+                } else {
+                    throw 'adresse e-mail ou mot de passe invalide';
+                }
+            });
+        }
+
+        loadPresenterDashboard(user){
+            this._addPageToStack();
+
+            this.user = new User(user);
+            drawing.username = `${user.firstName} ${user.lastName}`;
+            user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+            this.formations.sync().then(() => {
+                this.currentPresenter && this.currentPresenter.flushView();
+                if (globalVariables.admin) {
+                    this.currentPresenter = new globalVariables.dashboardAdminP(this, this.formations);
+                } else {
+                    this.currentPresenter = new globalVariables.DashboardCollabP(this, this.user, this.formations);
+                }
+                this.currentPresenter.displayView();
+            })
+        }
+
+        loadPresenterFormationAdmin(formation){
+            this._addPageToStack();
+
+            this._loadFormation(formation);
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.FormationsAdminP(this, formation);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterQuizAdmin(quiz){
+            this._addPageToStack();
+
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterQuizCollab(){
+            var testQuiz = new Quiz({
+                id:"quiz1",
+                label: "test quiz",
+                questions: [
+                    {label: "1re question", multipleChoice: true,
+                        answers: [
+                            {label: "oui", correct: true, explanation: {label: "parce que"}},
+                            {label: "non"},
+                            {label: "peut etre"},
+                            {label: "test longueur"},
+                            {label: "a la ligne"}
+                        ]
+                    },
+                    {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]},
+                    {label: "3eme question", answers: [{label: "dfdsgf efzfdsf", correct:true}, {label: "dsdsdfgdsfds"}]}
+                ]
+            });
+            let dashboardP = new globalVariables.QuizCollabP(null, testQuiz);
+
+            dashboardP.displayView();
+        }
+
+        loadPresenterRegister(){
+            this._addPageToStack();
+
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.RegisterP(this);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterConnection(){
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.ConnectionP(this);
+            this.currentPresenter.displayView();
+        }
+
+
+
+        _loadFormation(formation){
+            this.formations.loadFormation(formation);
+        }
+
+        getGamesLibrary(){
+            return new GamesLibrary();
+        }
+
+    }
+
+    class Formations {
+        constructor() {
             this._formations = [];
         }
 
-        sync(){
-            return util.Server.getAllFormations().then(data=>{
+        sync() {
+            return Server.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
                     const sortAlphabetical = function (array) {
                         return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -25,14 +191,15 @@ exports.Models = function(globalVariables){
         getFormations() {
             return this._formations;
         }
-        createFormation(label){
-            let newFormation = new Formation({label:label});
+
+        createFormation(label) {
+            let newFormation = new Formation({label: label});
             this._formations.push(newFormation);
             let result = newFormation.saveNewFormation();
             return result;
         }
 
-        loadFormation(formation){
+        loadFormation(formation) {
             let tmpLevelsTab = formation.levelsTab;
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
@@ -41,25 +208,30 @@ exports.Models = function(globalVariables){
                     game.tabQuestions && gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
-                formation.levelsTab.push(new Level(formation, gamesTab, globalVariables.playerMode));
+                formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
             });
         }
     }
 
-    class Formation{
+    class Formation {
         constructor(formation) {
             this.links = [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
+            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
             }
             this.labelDefault = "Entrer le nom de la formation";
             // HEIGHT
-            this.levelsTab = [];
+            this.levelsTab = formation.levelsTab || [];
             this.label = formation.label ? formation.label : "";
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
+        }
+
+        getLevelsTab() {
+            return this._levelsTab;
         }
 
         saveNewFormation(callback) {
@@ -78,7 +250,7 @@ exports.Models = function(globalVariables){
                     if (answer.saved) {
                         this._id = answer.idVersion;
                         this.formationId = answer.id;
-                        return {status: true, formation:this}
+                        return {status: true, formation: this}
                     } else {
                         if (answer.reason === "NameAlreadyUsed") {
                             return {status: false, error: 'Nom déjà utilisé'}
@@ -87,7 +259,7 @@ exports.Models = function(globalVariables){
                 });
         }
 
-        addNewFormation(object){
+        addNewFormation(object) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -108,15 +280,17 @@ exports.Models = function(globalVariables){
                     }
                 })
         }
-        getId(){
-            if (this._id){
+
+        getId() {
+            if (this._id) {
                 return this._id;
             }
-            else{
+            else {
                 return null;
             }
         }
-        setLabel(label){
+
+        setLabel(label) {
             this.label = label;
         }
 
@@ -130,55 +304,109 @@ exports.Models = function(globalVariables){
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
-                        return messageSave;
+                        return {message: messageSave, status:true};
                     } else {
                         switch (answer.reason) {
                             case "NoModif" :
-                                return messageNoModification;
+                                return {message: messageNoModification, status: false};
                                 break;
                             case "NameAlreadyUsed" :
-                                return messageUsedName;
+                                return {message : messageUsedName, status: false};
                                 break;
                         }
                     }
                 })
         };
+
+        moveGame(game,level,column){
+            let newGame = false;
+            if (game.index == undefined){
+                game = this.addNewGame(game, level, column);
+                newGame = true;
+            }
+            let lastLevel = game.levelIndex;
+            !newGame && this.levelsTab[lastLevel].gamesTab.forEach(g => {
+                if (g.index > game.index){
+                    g.index--;
+                }
+            });
+            !newGame && this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
+            game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
+                column-1 ;
+            this.levelsTab[level].gamesTab.forEach(g => {
+                if (g.index >= game.index){
+                    g.index++;
+                }
+            })
+            this.levelsTab[level].gamesTab.splice(column-1, 0, game);
+            game.levelIndex = level;
+            if(this.levelsTab[lastLevel].gamesTab.length == 0 && !newGame){
+                this.levelsTab.forEach(l => {
+                    if(l.index > lastLevel){
+                        l.index --;
+                        l.gamesTab.forEach(g=>{
+                            g.levelIndex--;
+                        })
+                    }
+                })
+                this.levelsTab.splice(lastLevel, 1);
+            }
+        }
+
+        addNewGame(game, level, column){
+            let newGame = game.game.create(this.gamesCounter, level, column);
+            switch(game.game.type){
+                case'Quiz':
+                    this.gamesCounter.quizz ++;
+                    break;
+            }
+            return newGame
+        }
+
+        addLevel(level){
+            this.levelsTab.push(new Level([], level));
+        }
     }
 
     class Level{
-        constructor(gamesTab){
-            this.gamesTab = gamesTab;
+        constructor(gamesTab, index){
+            this._gamesTab = gamesTab;
+            this.index = index;
+        }
+        getGamesTab() {
+            return this._gamesTab;
         }
     }
 
     class User {
-        constructor(user){
+        constructor(user) {
             this.lastName = user.lastName;
             this.firstName = user.firstName;
             this.lastAction = new LastAction(user.lastAction);
+            this.admin = (user.admin) ? user.admin : false;
         }
 
-        hasLastAction(){
+        hasLastAction() {
             return this.lastAction.hasLastAction();
         }
 
-        getLastActionQuestionsAnswered(){
+        getLastActionQuestionsAnswered() {
             return this.lastAction.getQuestionsAnswered();
         }
 
-        getLastActionFormationId(){
+        getLastActionFormationId() {
             return this.lastAction.getFormationId();
         }
 
-        getLastActionFormationVersion(){
+        getLastActionFormationVersion() {
             return this.lastAction.getFormationVersion();
         }
 
-        getLastActionCurrentIndexQuestion(){
+        getLastActionCurrentIndexQuestion() {
             return this.lastAction.getCurrentIndexQuestion();
         }
 
-        getLastActionTypeOfGame(){
+        getLastActionTypeOfGame() {
             return this.lastAction.getTypeOfGame();
         }
 
@@ -186,45 +414,47 @@ exports.Models = function(globalVariables){
 
 
     class LastAction {
-        constructor(lastAction = {}){
-            this.indexQuestion = lastAction.indexQuestion ;
+        constructor(lastAction = {}) {
+            this.indexQuestion = lastAction.indexQuestion;
             this.questionsAnswered = lastAction.questionsAnswered;
             this.game = lastAction.game;
             this.version = lastAction.version;
             this.formation = lastAction.formation;
         }
 
-        hasLastAction(){
+        hasLastAction() {
             var hasLasAction = false;
-            if(this.formation){
+            if (this.formation) {
                 hasLasAction = true;
             }
             return hasLasAction;
         }
 
-        getQuestionsAnswered(){
+        getQuestionsAnswered() {
             return this.questionsAnswered;
         }
 
-        getFormationId(){
+        getFormationId() {
             return this.formation;
         }
 
-        getFormationVersion(){
+        getFormationVersion() {
             return this.version;
         }
 
-        getCurrentIndexQuestion(){
+        getCurrentIndexQuestion() {
             return this.indexQuestion;
         }
 
-        getTypeOfGame(){
+        getTypeOfGame() {
             return this.game;
         }
     }
 
     class Game{
-
+        constructor(level) {
+            this.levelGame = level;
+        }
 
     }
 
@@ -282,10 +512,47 @@ exports.Models = function(globalVariables){
     }
 
     class Question{
+        constructor(quiz) {
+            this.parentQuiz = quiz;
+            this.answers = [];
+            this.label = "Question par déf";
+            this.multipleChoice = false;
+            // this.media = imgSrc;
 
+        }
+    }
+
+    class Answer {
+        constructor(question) {
+            this.parentQuestion = question;
+            this.label = "Réponse par déf";
+            this.correct = false;
+            this.explanation = {};
+            // this.media = imgSrc;
+        }
+    }
+
+    class GamesLibrary{
+        constructor(){
+            this.list = [
+                {
+                    type: 'Quiz',
+                    create: function (counter, level, column) {
+                        var newQuiz = new Quiz({
+                            title: 'Quiz ' + (counter ? counter.quizz : 0),
+                            gameIndex: column ,
+                            id: 'quizz'+(counter ? counter.quizz : 0),
+                            levelIndex : level
+                        });
+                        return newQuiz;
+                    }
+                }
+            ]
+        }
     }
 
     return {
+        State,
         Formations,
         User,
         Quiz //TODO à retirer après les tests

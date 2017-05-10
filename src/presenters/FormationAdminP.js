@@ -4,11 +4,12 @@ exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
     TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
     class FormationsAdminP{
-        constructor(parentPresenter, formation){
+        constructor(state, formation){
             this.formation = formation;
             this.view = new FormationAdminV(this);
-            this.parentPresenter = parentPresenter;
             this.regex = TITLE_FORMATION_REGEX;
+            this.levelsTab = formation.getLevelsTab();
+            this.state = state;
         }
         displayView(){
             this.view.display();
@@ -16,10 +17,12 @@ exports.FormationAdminP = function(globalVariables){
         getLabel(){
             return this.formation.label;
         }
+        getFormation(){
+            return this.formation;
+        }
 
         returnHandler(){
-            this.view.flush();
-            this.parentPresenter.fromReturn();
+            this.state.returnToOldPage();
         }
         renameFormation(label){
             this.formation.setLabel(label);
@@ -29,19 +32,42 @@ exports.FormationAdminP = function(globalVariables){
                     return {label: this.formation.label};
                 };
                 if (this.formation.getId()){
-                    this.formation.replaceFormation(getObjectToSave()).then(message => {
-                        this.view.displayMessage(message);
+                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
                     });
                 }
                 else{
-                    this.formation.addNewFormation(getObjectToSave()).then(message => {
-                        this.view.displayMessage(message);
+                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
                     })
                 }
             } else {
                 this.view.displayMessage(messageError);
+                return Promise.resolve(false);
             }
 
+        }
+        moveGame(game,level,column){
+            this.formation.moveGame(game,level,column);
+        }
+
+        addLevel(level){
+            this.formation.addLevel(level);
+        }
+
+        flushView(){
+            this.view.flush();
+        }
+
+        loadQuiz(quiz) {
+            // this.quizz.loadQuiz(quizz);
+            this.state.loadPresenterQuizAdmin(quiz);
+        }
+
+        getGamesLibrary(){
+            return this.state.getGamesLibrary();
         }
     }
 

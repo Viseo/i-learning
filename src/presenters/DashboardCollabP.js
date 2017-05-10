@@ -4,14 +4,15 @@ exports.DashboardCollabP = function(globalVariables) {
     const DashboardCollabV = FDashboardCollabV(globalVariables);
 
     class DashboardCollabP {
-        constructor(user, formations){
+        constructor(state, user, formations){
             this.view = new DashboardCollabV(this);
             this.formations = formations;
             this.user = user;
+            this.state = state;
 
             //todo
             if(this.hasLastAction()){
-                alert("Todo Got last action");
+                //alert("Todo Got last action");
             }
         };
 
@@ -27,8 +28,10 @@ exports.DashboardCollabP = function(globalVariables) {
             this.formations.loadFormation(formation)
         }
 
+        //todo
         clickOnFormation(formation){
-            alert(JSON.stringify(formation));
+            this.state.loadPresenterQuizCollab();
+            //alert(JSON.stringify(formation));
         }
 
         getFormations(){

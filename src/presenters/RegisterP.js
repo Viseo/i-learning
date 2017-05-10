@@ -7,12 +7,13 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
         runtime = globalVariables.runtime,
-        Server = globalVariables.util.Server;
+        Server = globalVariables.util.Server,
+        Presenter = globalVariables.Presenter;
 
-    class RegisterP {
-        constructor(parent) {
+    class RegisterP extends Presenter{
+        constructor(state) {
+            super(state);
             this.view = new registerView(this);
-            this.parent = parent;
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -66,11 +67,6 @@ exports.RegisterP = function (globalVariables) {
             _declareTextFields();
         }
 
-        goToConnection() {
-            this.flush();
-            this.fromReturn();
-        }
-
         registerNewUser() {
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
@@ -100,15 +96,6 @@ exports.RegisterP = function (globalVariables) {
             }
         }
 
-        displayView() {
-            this.view.display();
-        }
-        flush(){
-            this.view.flush();
-        }
-        fromReturn(){
-            this.parent.fromReturn();
-        }
         getFields() {
             return this._fields;
         }

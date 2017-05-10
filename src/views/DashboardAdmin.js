@@ -1,30 +1,26 @@
 exports.DashboardAdmin = function(globalVariables){
     const util = globalVariables.util,
         Manipulator = util.Manipulator,
+        View = globalVariables.View,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.domain.IconCreator;
 
 
-    class DashboardAdmin {
+    class DashboardAdminV extends View{
         constructor(presenter){
-
-            this.presenter = presenter;
+            super(presenter);
             this.manipulator = new Manipulator(this).addOrdonator(2);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
-            this.header = new globalVariables.domain.HeaderVue();
             this.tileWidth = 120;
             this.tileHeight = 100;
             this.spaceBetween = 20;
-            this.lineNumber = 0;
             this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
             this.headHeight = this.header.height + MARGIN;
             this.inputSize = {width: 400, height:30};
             this.buttonSize= {width:40, height:30};
-
         }
-
 
         display(){
             let createBack = ()=>{
@@ -39,11 +35,10 @@ exports.DashboardAdmin = function(globalVariables){
                     .position(this.panel.width/2, this.panel.height/2)
                     .color(myColors.white, 0, myColors.none);
                 this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-                this.panelComponent = this.panel.component;
             }
             createBack();
             let manipulatorAdding = ()=>{
-                this.manipulator.add(this.panelComponent)
+                this.manipulator.add(this.panel.component)
                     .add(this.titleBack)
                     .add(this.title)
                     .add(this.addFormationManipulator);
@@ -178,13 +173,6 @@ exports.DashboardAdmin = function(globalVariables){
         miniatureClickHandler(formation){
             this.presenter.miniatureClickHandler(formation);
         }
-        fromReturn(){
-            this.display()
-        }
-
-        flush(){
-            drawing.manipulator.flush();
-        }
     }
-    return DashboardAdmin;
+    return DashboardAdminV;
 }
