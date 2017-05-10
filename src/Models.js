@@ -182,7 +182,7 @@ exports.Models = function (globalVariables) {
 
     class Formation {
         constructor(formation) {
-            this.links = [];
+            this.links = formation.links || [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
             this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
@@ -314,6 +314,30 @@ exports.Models = function (globalVariables) {
                 })
                 this.levelsTab.splice(lastLevel, 1);
             }
+            this.updateLinks();
+        }
+
+        isGameInFormation(game){
+            let result = false;
+            this.levelsTab.forEach(level=>{
+                if(level.gamesTab.some(g=> g===game)){
+                    result = true;
+                }
+            });
+            return result;
+        }
+
+        updateLinks(){
+            let validLink = (link)=>{
+                if(!this.isGameInFormation(link.childGame) || !this.isGameInFormation(link.parentGame)){
+                    return false;
+                }
+                if(link.parentGame.levelIndex>=link.childGame.levelIndex){
+                    return false;
+                }
+                return true;
+            }
+            this.links = this.links.filter(validLink);
         }
 
         removeGame(game){
@@ -334,6 +358,7 @@ exports.Models = function (globalVariables) {
                 })
                 this.levelsTab.splice(game.levelIndex, 1);
             }
+            this.updateLinks();
         }
 
         addNewGame(game, level, column){
@@ -355,6 +380,7 @@ exports.Models = function (globalVariables) {
                 }
             })
             this.levelsTab.splice(level.index, 1);
+            this.updateLinks();
         }
 
         updateGamesCounter(game){
@@ -364,6 +390,24 @@ exports.Models = function (globalVariables) {
                     this.gamesCounter.quizz += inc;
                     break;
             }
+        }
+
+        checkLink(parent,child){
+            if(parent.levelIndex >= child.levelIndex){
+                return false;
+            }
+            if(this.links.some(link=>{link.parentGame === parent && link.childGame === child})){
+                return false;
+            }
+            return true;
+        }
+
+        getLinks(){
+            return this.links;
+        }
+
+        createLink(parent,child){
+            this.links.push({parentGame: parent, childGame: child});
         }
     }
 

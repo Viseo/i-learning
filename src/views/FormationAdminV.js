@@ -32,6 +32,10 @@ exports.FormationAdminV = function(globalVariables) {
                 width: this.inputSize.width,
                 height : drawing.height - this.header.height - 7*MARGIN - 2*this.buttonSize.height
             }
+            this.arrowMode = false;
+            this.mainManip = new Manipulator(this).addOrdonator(2);
+            this.arrowsManipulator = new Manipulator(this);
+            this.mainManip.set(1,this.arrowsManipulator);
 
         }
 
@@ -52,7 +56,8 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         display(){
-            drawing.manipulator.set(0,this.manipulator);
+            drawing.manipulator.set(0,this.mainManip);
+            this.mainManip.set(0,this.manipulator);
             this.manipulator.add(this.header.getManipulator());
             this.header.display(this.label);
             let manipulatorAdding = () => {
@@ -170,6 +175,31 @@ exports.FormationAdminV = function(globalVariables) {
                 this.titleLibraryBack.position(-0.85*this.gamePanel.width/2 + this.titleLibrary.boundingRect().width/2,
                     -this.gamePanel.height/2);
                 this.gameLibraryManipulator.set(1,this.titleLibraryBack);
+                let createArrowMode = ()=>{
+                    let arrowRect = {
+                        border : new svg.Line(-this.librarySize.width/2,0, this.librarySize.width/2, 1).color(myColors.grey, 1 , myColors.grey),
+                        title : new svg.Text('Dépendances : ').font('Arial', 20).color(myColors.grey).position(0,6.6),
+                        backTitle : new svg.Rect(150, 3).color(myColors.white,0,myColors.none).position(0,0),
+                        manipulator : new Manipulator(this)
+                    }
+                    arrowRect.manipulator.add(arrowRect.border)
+                        .add(arrowRect.backTitle)
+                        .add(arrowRect.title);
+                    arrowRect.manipulator.move(0, this.librarySize.height*0.7/2)
+                    this.gameLibraryManipulator.add(arrowRect.manipulator);
+                    let arrowStraight = drawStraightArrow(-0.3 * this.librarySize.width, 0, 0.3 * this.librarySize.width, 0);
+                    let arrowManip = new Manipulator(this);
+                    this.gameLibraryManipulator.add(arrowManip);
+                    let arrowBorder = new svg.Rect(0.8*this.librarySize.width, 50)
+                        .color(myColors.white, 1, myColors.grey)
+                        .corners(10,10);
+                    arrowManip.add(arrowBorder);
+                    arrowManip.add(arrowStraight).move(0, this.librarySize.height*0.85/2);
+                    svg.addEvent(arrowBorder, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
+                    svg.addEvent(arrowStraight, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
+
+                }
+                createArrowMode();
             }
             createGameLibrary();
             let games = this.getGamesLibrary();
@@ -210,8 +240,21 @@ exports.FormationAdminV = function(globalVariables) {
 
         }
 
+        toggleArrowMode(arrowBorder){
+            this.arrowMode = !this.arrowMode;
+            this.arrowMode && arrowBorder.color(myColors.blue, 1, myColors.none);
+            !this.arrowMode && arrowBorder.color(myColors.white, 1, myColors.grey);
+        }
+
         getGamesLibrary(){
             return this.presenter.getGamesLibrary();
+        }
+
+        unselectMiniature(){
+            if(this.miniatureSelected){
+                this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
+                this.miniatureSelected.manipulator.unset(3);
+            }
         }
 
         displayGraph(){
@@ -235,10 +278,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
                 let backRect = new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none);
                 svg.addEvent(backRect, 'click', ()=>{
-                    if(this.miniatureSelected){
-                        this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
-                        this.miniatureSelected.manipulator.unset(3);
-                    }
+                    this.unselectMiniature();
                 })
                 this.graphMiniatureManipulator.set(0, backRect);
             }
@@ -263,15 +303,13 @@ exports.FormationAdminV = function(globalVariables) {
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
             });
+            this.updateAllLinks();
 
         }
 
         displayLevel(level){
             let miniatureSelection = (miniature) => {
-                if(this.miniatureSelected){
-                    this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
-                    this.miniatureSelected.manipulator.unset(3);
-                }
+                this.unselectMiniature();
                 miniature.border.color(myColors.white, 2, myColors.darkBlue);
                 miniature.manipulator.set(3,miniature.redCrossManipulator);
                 this.miniatureSelected = miniature;
@@ -280,7 +318,7 @@ exports.FormationAdminV = function(globalVariables) {
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
-                    manipulator : new Manipulator(this).addOrdonator(4)
+                    manipulator : new Manipulator(this).addOrdonator(4),
                 }
                 miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
                 let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
@@ -290,15 +328,41 @@ exports.FormationAdminV = function(globalVariables) {
                 });
                 miniature.manipulator.mini = miniature;
                 miniature.game = game;
+                game.miniature = miniature;
                 miniature.conf = {
                     drag: (what, x, y) => {
-                        // let point; //TODO : miniature should not get out of graph
-                        return{x:x,y:y};
+                        if(this.arrowMode) {
+                            if (what.component.parent == drawings.component.glass.parent.manipulator.last) {
+                                this.currentParentMiniature = what.mini;
+                                return what.lastParent.localPoint(what.x, what.y);
+                            }
+                            else {
+                                this.currentParentMiniature = what.mini;
+                                what.lastParent = what.component.parent;
+                                return {x: x, y: y};
+                            }
+                        }
+                        else{
+                            this.updateAllLinks();
+                            return{x:x,y:y};
+                        }
                     },
 
                     drop: (what, whatParent, finalX, finalY)=>{
-                        let {x:X, y:Y} = miniature.conf.drag(what,finalX,finalY);
-                        return{x: X, y: Y, parent: whatParent};
+                        if(this.arrowMode){
+                            let point = whatParent.globalPoint(finalX,finalY);
+                            let target = this.graphManipulator.last.getTarget(point.x,point.y);
+                            if(what.mini != target.parentManip.mini && target.parentManip.mini) {
+                                let childMiniature = target.parentManip.mini;
+                                this.createLink(this.currentParentMiniature.game, childMiniature.game);
+                            }
+                            let {x:X, y:Y} = miniature.conf.drag(what, finalX, finalY);
+                            return {x: X, y: Y, parent: whatParent};
+                        }
+                        else {
+                            let {x:X, y:Y} = miniature.conf.drag(what, finalX, finalY);
+                            return {x: X, y: Y, parent: whatParent};
+                        }
                     },
                     clicked : (what) => {
                         miniatureSelection(what.mini);
@@ -342,6 +406,22 @@ exports.FormationAdminV = function(globalVariables) {
                 gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
                     , 5);
             });
+        }
+        createLink(parentGame, childGame) {
+            this.currentParentMiniature = null;
+            this.presenter.createLink(parentGame, childGame);
+        }
+
+        updateAllLinks(){
+            this.arrowsManipulator.flush();
+            let links = this.getLinks();
+            links.forEach(link=>{
+                this.arrow(link.parentGame,link.childGame)
+            })
+        }
+
+        getLinks(){
+            return this.presenter.getLinks();
         }
 
         removeGame(game){
@@ -407,6 +487,59 @@ exports.FormationAdminV = function(globalVariables) {
             svg.timeout(()=>{
                 this.manipulator.remove(messageText);
             }, 3000);
+        }
+
+        arrow(parent,child){
+            this.arrowsManipulator.move(this.graphManipulator.x, this.graphManipulator.y)
+            let parentGlobalPoint = parent.miniature.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
+                parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
+                childGlobalPoint = child.miniature.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
+                childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+            this.redCrossManipulator = new Manipulator(this);
+            let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
+            redCross.mark('redCross');
+            this.redCrossManipulator.add(redCross);
+            // this.redraw = () => {
+            //     let childGlobalPoint = child.miniature.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
+            //         childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y),
+            //         parentGlobalPoint = parent.miniature.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
+            //         parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+            //     this.arrowsManipulator.remove(this.arrowPath);
+            //     this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+            //     this.arrowsManipulator.add(this.arrowPath);
+            // };
+            // this.redCrossClickHandler = () => {
+            //     formation.removeLink(parent, child);
+            //     formation.arrowsManipulator.remove(this.arrowPath);
+            //     formation.arrowsManipulator.remove(this.redCrossManipulator);
+            //     formation.selectedArrow = null;
+            // };
+            //svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+            this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+            this.arrowsManipulator.add(this.arrowPath);
+            this.selected = false;
+            // let arrowClickHandler = () => {
+            //     //formation.selectedGame && formation.clicAction();//selectedGame.miniature.manipulator.ordonator.children[0].component.listeners.mouseup();
+            //     if (!this.selected) {
+            //         if (formation.selectedArrow) {
+            //             formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
+            //             formation.selectedArrow.selected = false;
+            //             formation.arrowsManipulator.remove(formation.selectedArrow.redCrossManipulator);
+            //         }
+            //         formation.selectedArrow = this;
+            //         formation.arrowsManipulator.add(this.redCrossManipulator);
+            //         this.arrowPath.color(myColors.blue, 2, myColors.black);
+            //     } else {
+            //         this.arrowPath.color(myColors.black, 1, myColors.black);
+            //         formation.arrowsManipulator.remove(this.redCrossManipulator);
+            //         formation.selectedArrow = null;
+            //     }
+            //     this.selected = !this.selected;
+            // };
+            // !playerMode && svg.addEvent(this.arrowPath, 'click', arrowClickHandler);
+            this.arrowPath.color(myColors.black, 0, myColors.black);
+            return this;
+
         }
     }
 

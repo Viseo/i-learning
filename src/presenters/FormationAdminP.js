@@ -60,7 +60,18 @@ exports.FormationAdminP = function(globalVariables){
             this.formation.removeLevel(level);
             this.view.displayGraph();
         }
-
+        checkLink(parentGame, childGame){
+            return this.formation.checkLink(parentGame, childGame);
+        }
+        createLink(parent, child){
+            if (this.checkLink(parent,child)){
+                this.formation.createLink(parent,child);
+            }
+            this.view.updateAllLinks();
+        }
+        getLinks(){
+            return this.formation.getLinks();
+        }
         addLevel(level){
             this.formation.addLevel(level);
         }
