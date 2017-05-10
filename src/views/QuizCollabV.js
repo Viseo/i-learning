@@ -8,6 +8,7 @@ exports.QuizCollabV = function (globalVariables) {
         gui = globalVariables.gui,
         util = globalVariables.util,
         Manipulator = util.Manipulator,
+        IconCreator = globalVariables.domain.IconCreator,
         drawing = globalVariables.drawing;
 
     const
@@ -20,7 +21,8 @@ exports.QuizCollabV = function (globalVariables) {
         CHEVRON_HEIGHT = 75,
         CHEVRON_STROKE = 10,
         ANSWERS_PER_LINE = 2,
-        ANSWER_HEIGHT = 100;
+        ANSWER_HEIGHT = 100,
+        EXPLANATION_HEIGHT = 200;
 
     class QuizCollabV {
         constructor(presenter) {
@@ -35,6 +37,7 @@ exports.QuizCollabV = function (globalVariables) {
             this.answersManipulator = new Manipulator(this);
             this.helpManipulator = new Manipulator(this).addOrdonator(1);
             this.scoreManipulator = new Manipulator(this);
+            this.explanationManipulator = new Manipulator(this);
         }
 
         display() {
@@ -190,9 +193,12 @@ exports.QuizCollabV = function (globalVariables) {
         displayResult() {
             var _cleanManipulators = () => {
                 this.scoreManipulator.flush();
+                this.explanationManipulator.flush();
             }
             var _attachManipulators = () => {
-                this.manipulator.add(this.scoreManipulator);
+                this.manipulator
+                    .add(this.scoreManipulator)
+                    .add(this.explanationManipulator)
             }
             var _modifyReturnButtonText = () => {
                 this.returnButton.text.message("Retour aux résultats");
@@ -201,6 +207,37 @@ exports.QuizCollabV = function (globalVariables) {
                 let scoreText = new svg.Text(this.getScore().message).font(FONT, FONT_SIZE);
                 this.scoreManipulator.add(scoreText);
                 this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_HEIGHT + MARGIN);
+            }
+            var _addExplanations = () => {
+                var _toggleExplanation = (explanation) => {
+                    var _hideExplanation = () => {
+                        this.explanationManipulator.flush();
+                        displayed = false;
+                    }
+
+                    if(displayed === explanation){
+                        _hideExplanation()
+                    }else {
+                        let border = new svg.Rect(drawing.width - 2*MARGIN, EXPLANATION_HEIGHT).color(myColors.white, 1, myColors.black).corners(5, 5);
+                        let text = new svg.Text(explanation.label).font(FONT, FONT_SIZE);
+                        this.explanationManipulator.add(border).add(text);
+                        let redCross = IconCreator.createRedCrossIcon(this.explanationManipulator);
+                        redCross.position(drawing.width/2 - MARGIN, -EXPLANATION_HEIGHT/2);
+                        redCross.addEvent('click', _hideExplanation);
+                        this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + EXPLANATION_HEIGHT/2);
+                        displayed = explanation;
+                    }
+                }
+
+                let displayed = false;
+                this.getCurrentAnswers().forEach((answer, index) => {
+                    if(answer.explanation){
+                        let manip = this.answers[index];
+                        let icon = IconCreator.createExplanationIcon(manip);
+                        icon.position(this.answerWidth/2 - MARGIN - 25, ANSWER_HEIGHT/2 - 25 - MARGIN)
+                        icon.addEvent("click", () => _toggleExplanation(answer.explanation));
+                    }
+                })
             }
             var _displayAnswered = () => {
                 let answerManip = this.answers[answered.index];
@@ -221,6 +258,7 @@ exports.QuizCollabV = function (globalVariables) {
             _attachManipulators();
             _modifyReturnButtonText();
             _displayText();
+            _addExplanations();
             _displayAnswered();
             if (answered.correct) {
                 _displayCorrect(answered.index);

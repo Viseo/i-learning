@@ -10,14 +10,14 @@ exports.QuizCollabP = function (globalVariable) {
     const QuizScoreView = QuizScoreV(globalVariable);
 
     class QuizCollabP {
-        constructor(parent, model) {
+        constructor(parent, quiz) {
             this.questionView = new QuizCollabView(this);
             this.scoreView = new QuizScoreView(this);
             this.parent = parent;
-            this.model = model;
+            this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
-            this.isDone = false; //chedk from model if already done
+            this.isDone = false; //chedk from quiz if already done
         }
 
         displayView() {
@@ -66,7 +66,7 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         selectAnswer(index) {
-            this.model.selectAnswer(this.currentQuestionIndex, index);
+            this.quiz.selectAnswer(this.currentQuestionIndex, index);
             if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
                 this.nextQuestion();
             } else {
@@ -76,19 +76,19 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getLabel() {
-            return this.model.getLabel();
+            return this.quiz.getLabel();
         }
 
         getNbQuestions() {
-            return this.model.getNbQuestions();
+            return this.quiz.getNbQuestions();
         }
 
         getNbCorrect() {
-            return this.model.getNbCorrect();
+            return this.quiz.getNbCorrect();
         }
 
         getCurrentQuestionLabel() {
-            return this.model.getQuestionLabel(this.currentQuestionIndex);
+            return this.quiz.getQuestionLabel(this.currentQuestionIndex);
         }
 
         isFirstQuestion() {
@@ -100,19 +100,19 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getCurrentAnswers() {
-            return this.model.getAnswers(this.currentQuestionIndex);
+            return this.quiz.getAnswers(this.currentQuestionIndex);
         }
 
         getCurrentAnswered() {
-            return this.model.getAnswered(this.currentQuestionIndex);
+            return this.quiz.getAnswered(this.currentQuestionIndex);
         }
 
         getCorrectAnswerIndex() {
-            return this.model.getCorrectAnswerIndex(this.currentQuestionIndex);
+            return this.quiz.getCorrectAnswerIndex(this.currentQuestionIndex);
         }
 
         getWrongQuestions() {
-            return this.model.getWrongQuestions();
+            return this.quiz.getWrongQuestions();
         }
 
         getScore() {

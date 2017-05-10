@@ -128,7 +128,7 @@ exports.Models = function (globalVariables) {
                             {label: "oui", correct: true, explanation: {label: "parce que"}},
                             {label: "non"},
                             {label: "peut etre"},
-                            {label: "test longueur"},
+                            {label: "test longueur", explanation: {label: "parce que fdgoregbreogoeruguiregfr"}},
                             {label: "a la ligne"}
                         ]
                     },

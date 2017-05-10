@@ -188,6 +188,11 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
+        rotate(rotation){
+            this.manipulator.rotate(rotation);
+            return this;
+        }
+
         showActualBorder() {
             (this.action) ? this.showBorderActionColor() : this.showBorderDefaultColor();
         }
@@ -295,7 +300,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
-        createPlusIcon(manipulator, layer) {
+        static createPlusIcon(manipulator, layer) {
             var _getPathPlus = (size) => {
                 var strokePlus = size / 5;
                 var sizePlus = size*2/3;
@@ -310,12 +315,18 @@ exports.Tool = function (globalVariables, classContainer) {
             };
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
-                .setBorderDefaultColor(myColors.black, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.white, 1, myColors.none);
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.red, 1, myColors.black);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         };
+
+        static createRedCrossIcon(manipulator, layer){
+            let icon = this.createPlusIcon(manipulator, layer);
+            icon.rotate(45);
+            return icon;
+        }
 
         createSettingIcon(manipulator, layer){
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
