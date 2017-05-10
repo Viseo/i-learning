@@ -15,7 +15,7 @@ exports.FormationAdminV = function(globalVariables) {
         installDnD = globalVariables.gui.installDnD;
 
 
-    class FormationAdminV{
+    class FormationAdminV {
         constructor(presenter){
             this.buttonSize= {width:150, height:50};
             this.inputSize = {width: 300, height:30};
@@ -279,6 +279,7 @@ exports.FormationAdminV = function(globalVariables) {
                     }
                 ]
             }
+            //todo TO REMOVE
             this.testLoadQuiz(testTarget);
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{

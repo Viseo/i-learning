@@ -110,6 +110,14 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
+        loadPresenterQuizAdmin(quiz){
+            this._addPageToStack();
+
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
+            this.currentPresenter.displayView();
+        }
+
         loadPresenterRegister(){
             this._addPageToStack();
 

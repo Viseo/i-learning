@@ -4,32 +4,33 @@
 const QuizAdminV = require('./QuizAdminV').QuizAdminV;
 
 exports.QuizAdminP = function (globalVariables) {
-    const QuizAdminView = QuizAdminV(globalVariables);
-    class QuizAdminP {
-        constructor(parentPresenter, model) {
-            this.model = model;
+    const QuizAdminView = QuizAdminV(globalVariables),
+        Presenter = globalVariables.Presenter;
+
+    class QuizAdminP extends Presenter {
+        constructor(state, quiz) {
+            super(state);
+            this.quiz = quiz;
             this.view = new QuizAdminView(this);
-            this.parentPresenter = parentPresenter;
+            //this.parentPresenter = parentPresenter;
 
         }
 
-        displayParentFormation() {
+        /*displayParentFormation() {
             this.parentPresenter.displayView();
-        }
-
-        displayView() {
-            this.view.display();
-        }
+        }*/
 
         getFormationLabel() {
-            return this.parentPresenter.getLabel();
+            //return this.parentPresenter.getLabel();
+            return "RIEN";
         }
 
         getLabel() {
-            return this.model.label;
+            return this.quiz.label;
         }
+
         getQuestions() {
-            return this.model.questions;
+            return this.quiz.questions;
         }
     }
 

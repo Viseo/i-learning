@@ -14,6 +14,10 @@ exports.View = function(globalVariables){
         flush(){
             drawing.manipulator.flush();
         }
+
+        returnToOldPage(){
+            this.presenter.returnToOldPage();
+        }
     };
 
 

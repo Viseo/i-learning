@@ -3,6 +3,7 @@
  */
 exports.QuizAdminV = function (globalVariables) {
     const util = globalVariables.util,
+        View = globalVariables.View,
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
@@ -16,20 +17,18 @@ exports.QuizAdminV = function (globalVariables) {
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15;
 
-    class QuizAdminV {
+    class QuizAdminV extends View {
         constructor(presenter) {
+            super(presenter);
             var _createReturnButton = () => {
                 this.returnButton = new ReturnButton(this, "Retour à la formation");
                 this.returnButton.setHandler(() => {
                     // this.formation.display();
-                    this.displayParentFormation();
+                    this.returnToOldPage();
                 })
                 this.manipulator.add(this.returnButton.manipulator);
             }
-
-            this.presenter = presenter;
             this.manipulator = new Manipulator(this);
-            this.header = new globalVariables.domain.HeaderVue();
             this.label = this.getLabel();
             this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
             this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
@@ -392,13 +391,6 @@ exports.QuizAdminV = function (globalVariables) {
             _displayQuestions();
         }
 
-        displayParentFormation() {
-            this.presenter.displayParentFormation();
-        }
-
-        flush() {
-            drawing.manipulator.unset(0);
-        }
 
         getFormationLabel() {
             return this.presenter.getFormationLabel();

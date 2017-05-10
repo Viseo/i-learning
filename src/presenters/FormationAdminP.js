@@ -63,9 +63,7 @@ exports.FormationAdminP = function(globalVariables){
 
         loadQuiz(quiz) {
             // this.quizz.loadQuiz(quizz);
-            let quizPresenter = new globalVariables.QuizAdminP(this, quiz);
-            this.view.flush();
-            quizPresenter.displayView();
+            this.state.loadPresenterQuizAdmin(quiz);
         }
 
         getGamesLibrary(){
