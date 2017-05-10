@@ -1,18 +1,18 @@
 exports.DashboardAdmin = function(globalVariables){
     const util = globalVariables.util,
         Manipulator = util.Manipulator,
+        View = globalVariables.View,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.domain.IconCreator;
 
 
-    class DashboardAdminV {
+    class DashboardAdminV extends View{
         constructor(presenter){
-            this.presenter = presenter;
+            super(presenter);
             this.manipulator = new Manipulator(this).addOrdonator(2);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
-            this.header = new globalVariables.domain.HeaderVue();
             this.tileWidth = 120;
             this.tileHeight = 100;
             this.spaceBetween = 20;
@@ -172,10 +172,6 @@ exports.DashboardAdmin = function(globalVariables){
 
         miniatureClickHandler(formation){
             this.presenter.miniatureClickHandler(formation);
-        }
-
-        flush(){
-            drawing.manipulator.flush();
         }
     }
     return DashboardAdminV;

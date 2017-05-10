@@ -9,8 +9,9 @@ exports.FormationAdminV = function(globalVariables) {
         drawings = globalVariables.drawings,
         IconCreator = globalVariables.domain.IconCreator,
         LEVEL_HEIGHT = 150,
-        MINIATURE_WIDTH = 150,
+        MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
+        MINIATURE_FONT_SIZE = 15,
         installDnD = globalVariables.gui.installDnD;
 
 
@@ -94,6 +95,67 @@ exports.FormationAdminV = function(globalVariables) {
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
             }
+
+            manipulatorAdding();
+            createNameFieldFormation();
+            createReturnButton();
+            this.displayLibrary();
+            this.displayGraph();
+        }
+
+        displayLibrary(){
+            let conf = {
+                drop: (what, whatParent, x, y) => {
+                    this.dropAction(what.x, what.y, what);
+                    return {x: what.x, y: what.y, parent: what.component.parent};
+                },
+                moved: (what) => {
+                    this.draggedObject = null;
+                    what.flush();
+                    return true;
+                },
+                clicked: (item) => {
+                    if (!this.gameSelected) {
+                        this.gameSelected = this.draggedObject;
+                        item.flush();
+
+                        for (let it in this.itemsTab) {
+                            if (this.itemsTab[it].label == this.draggedObject.label) {
+                                this.miniatureSelected = this.itemsTab[it];
+                                this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
+                                this.miniatureSelected.miniature.border.mark('miniatureSelected');
+                                this.miniatureSelected.miniature.content.mark('miniatureSelected');
+                            }
+                        }
+                        let clickPanelToAdd = (event) => {
+                            if (this.gameSelected && this.formation) {
+                                this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
+                                this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                                this.miniatureSelected = null;
+                                this.gameSelected = null;
+                            }
+                            svg.removeEvent(this.formation.panel.back, 'click');
+                        }
+                        this.draggedObject.manipulator.mark('');
+                        this.draggedObject = null;
+                        svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
+                    }
+                    else {
+                        for (let it in this.itemsTab) {
+                            if (this.itemsTab[it].label == this.draggedObject.label) {
+                                this.miniatureSelected = null;
+                                this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
+                                this.itemsTab[it].miniature.border.mark('miniInLibrary' + this.itemsTab[it].label + 'Border');
+                                this.itemsTab[it].miniature.content.mark('miniInLibrary' + this.itemsTab[it].label + 'Content');
+                            }
+                        }
+                        this.gameSelected = null;
+                        this.draggedObject.manipulator.mark('');
+                        this.draggedObject = null;
+                        item.flush();
+                    }
+                }
+            };
             let createGameLibrary = ()=>{
                 this.gamePanel = new gui.Panel(this.librarySize.width, this.librarySize.height);
                 this.gamePanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
@@ -108,14 +170,48 @@ exports.FormationAdminV = function(globalVariables) {
                 this.titleLibraryBack.position(-0.85*this.gamePanel.width/2 + this.titleLibrary.boundingRect().width/2,
                     -this.gamePanel.height/2);
                 this.gameLibraryManipulator.set(1,this.titleLibraryBack);
-
             }
-
-            manipulatorAdding();
-            createNameFieldFormation();
-            createReturnButton();
             createGameLibrary();
-            this.displayGraph();
+            let games = this.getGamesLibrary();
+            let count = 0;
+            games.list.forEach(game => {
+                let createMiniature = ()=> {
+                    let miniature = {
+                        border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).color(myColors.white, 1, myColors.grey).corners(10, 10),
+                        content: new svg.Text(game.type).font('Arial', MINIATURE_FONT_SIZE),
+                        manipulator: new Manipulator(this)
+                    }
+                    return miniature
+                };
+                let miniature = createMiniature();
+                miniature.manipulator.move(0, (2*MARGIN + MINIATURE_HEIGHT/2)+ count*(MINIATURE_HEIGHT + 2*MARGIN) - this.librarySize.height/2);
+                miniature.manipulator.add(miniature.border)
+                    .add(miniature.content);
+                this.gameLibraryManipulator.add(miniature.manipulator);
+                let createDraggableCopy = () => {
+                    let manipulator = new Manipulator(this).addOrdonator(2);
+                    drawings.piste.add(manipulator);
+                    let point = miniature.border.globalPoint(0, 0);
+                    manipulator.move(point.x, point.y);
+                    this.draggedObject = createMiniature();
+                    this.draggedObject.manipulator = manipulator;
+                    manipulator.game = game;
+                    manipulator.set(0, this.draggedObject.border);
+                    manipulator.set(1, this.draggedObject.content);
+                    installDnD(this.draggedObject.manipulator, drawings.component.glass.parent.manipulator.last, conf);
+                    svg.event(drawings.component.glass, "mousedown", event);
+                    svg.event(this.draggedObject.border, 'mousedown', event);
+                    svg.event(this.draggedObject.content, "mousedown", event);
+                    this.draggedObject.manipulator.mark("draggedGameCadre");
+                };
+                miniature.manipulator.addEvent('mousedown', createDraggableCopy);
+                count++;
+            })
+
+        }
+
+        getGamesLibrary(){
+            return this.presenter.getGamesLibrary();
         }
 
         displayGraph(){
@@ -202,21 +298,6 @@ exports.FormationAdminV = function(globalVariables) {
                 miniature.conf = {
                     drag: (what, x, y) => {
                         // let point; //TODO : miniature should not get out of graph
-                        // point = what.component.parent.globalPoint(what.x, what.y);
-                        //
-                        // //point = {x: x, y: y};
-                        // if (point.x < MINIATURE_WIDTH/2 + this.librarySize.width + MARGIN){
-                        //     x = MINIATURE_WIDTH/2 + MARGIN;
-                        // }
-                        // if(point.x + MINIATURE_WIDTH/2 > drawing.width - 2*MARGIN){
-                        //     point.x  = drawing.width - MINIATURE_WIDTH/2 - 2*MARGIN;
-                        // }
-                        // if(point.y > this.graphSize.height - MINIATURE_HEIGHT/2 + 2*MARGIN + this.header.height){
-                        //     point.y = this.graphSize.height - MINIATURE_HEIGHT/2 + 2*MARGIN + this.header.height;
-                        // }
-                        // if (point.y < MINIATURE_HEIGHT/2 ){
-                        //     point.y = MINIATURE_HEIGHT/2 + this.header.height;
-                        // }
                         return{x:x,y:y};
                     },
 
@@ -240,7 +321,7 @@ exports.FormationAdminV = function(globalVariables) {
             let levelIndex = level.index;
             let levelMiniature = {
                 line : new svg.Line(0,5,150,5).color(myColors.black, 1, myColors.black),
-                text: new svg.Text('Level : ' + (levelIndex+1)).font('Arial', 15).anchor('left'),
+                text: new svg.Text('Level : ' + (levelIndex+1)).font('Arial', MINIATURE_FONT_SIZE).anchor('left'),
                 icon : {
                     rect : new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10,10),
                     whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158,5)
@@ -274,15 +355,7 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         dropAction(x, y, item) {
-            //this.selectedGame && this.selectedGame.removeRedCross();
             let formation = this.getFormation();
-            let game;
-            if (item && item.parentObject) {
-                game = item.parentObject;
-            }
-            else{
-                game = null;
-            }
             let getDropLocation = (x,y) => {
                 let dropLocation = this.graphPanel.content.localPoint(x,y);
                 return dropLocation;
@@ -294,6 +367,7 @@ exports.FormationAdminV = function(globalVariables) {
                     level = formation.levelsTab.length;
                     this.addNewLevel(level);
                 }
+                level = level < 0 ? 0 : level;
                 return level;
             };
             let getColumn = (dropLocation, level) => {
@@ -305,22 +379,8 @@ exports.FormationAdminV = function(globalVariables) {
 
             let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
-            // if (game instanceof GameVue){
-            //     var lastLevel = game.levelIndex;
-            // }
             let column = getColumn(dropLocation, level);
-            // if (game && !item.addNew) {
             this.moveGame(item, level, column);
-                // if(this.levelsTab[lastLevel].gamesTab.length == 0){
-                //     this.levelsTab[lastLevel].redCrossClickHandler();
-                // }
-                //game.levelIndex = level;
-            // } else {
-            //     this.addNewGame(level, column)
-            // }
-            // if(lastLevel ==0 || lastLevel){
-            //     game.levelIndex == lastLevel || game.miniature.removeAllLinks();
-            // }
             this.displayGraph();
         }
 
@@ -329,12 +389,6 @@ exports.FormationAdminV = function(globalVariables) {
         }
         moveGame(game, level, column){
             this.presenter.moveGame(game,level,column);
-            // this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
-            // this.levelsTab[level].gamesTab.splice(column, 0, game);
-            // game.levelIndex = level;
-            //if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1){
-            //    this.levelsTab.splice(game.levelIndex, 1);
-            //}
         }
 
         displayMessage(message){

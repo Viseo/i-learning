@@ -1,3 +1,5 @@
+const FPresenter = require('./Presenter').Presenter;
+const FView = require('../views/View').View;
 const dashboard = require('./DashboardAdminP').DashboardAdminP;
 const FDashboardCollabP = require('./DashboardCollabP').DashboardCollabP;
 const FFormationAdminP = require('./FormationsdminP').FormationAdminP;
@@ -6,6 +8,8 @@ const register = require('./RegisterP').RegisterP;
 const FQuizAdminP = require('./QuizAdminP').QuizAdminP;
 
 exports.PresenterFactory = function(globalvariables){
+    globalvariables.Presenter = FPresenter(globalvariables).Presenter;
+    globalvariables.View = FView(globalvariables).View;
     globalvariables.dashboardAdminP = dashboard(globalvariables);
     globalvariables.DashboardCollabP = FDashboardCollabP(globalvariables);
     globalvariables.FormationsAdminP = FFormationAdminP(globalvariables);

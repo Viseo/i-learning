@@ -9,9 +9,11 @@ exports.Models = function (globalVariables) {
             this.stackPage = [];
             this.formations = new Formations();
             this.currentPresenter = null;
+            this.stackStateFrozen = false;
         }
 
         returnToOldPage() {
+            this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
             switch(presenterName){
                 case "DashboardAdminP":
@@ -20,10 +22,36 @@ exports.Models = function (globalVariables) {
                     this.loadPresenterConnection(); break;
                 default: break;
             }
+            this._unFrozenStackPage();
+        }
+
+        _isStackPageIsFrozen(){
+            return this.stackStateFrozen;
+        }
+
+        _putStackPageToFrozen(){
+            this.stackStateFrozen = true;
+        }
+
+        _unFrozenStackPage(){
+            this.stackStateFrozen = false;
         }
 
         _addPageToStack() {
-            this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
+            if(!this._isStackPageIsFrozen()){
+                this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
+            }
+        }
+
+        clearOldPageStackAndLoadPresenterConnection(){
+            var _cleanPresenter = () => {
+                this.currentPresenter && this.currentPresenter.flushView();
+                this.currentPresenter = null;
+            }
+
+            this.stackPage = [];
+            _cleanPresenter();
+            this.loadPresenterConnection();
         }
 
         tryLoadCookieForPresenter(redirect) {
@@ -100,6 +128,10 @@ exports.Models = function (globalVariables) {
             this.formations.loadFormation(formation);
         }
 
+        getGamesLibrary(){
+            return new GamesLibrary();
+        }
+
     }
 
     class Formations {
@@ -153,6 +185,7 @@ exports.Models = function (globalVariables) {
             this.links = [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
+            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -253,13 +286,18 @@ exports.Models = function (globalVariables) {
         };
 
         moveGame(game,level,column){
+            let newGame = false;
+            if (game.index == undefined){
+                game = this.addNewGame(game, level, column);
+                newGame = true;
+            }
             let lastLevel = game.levelIndex;
-            this.levelsTab[lastLevel].gamesTab.forEach(g => {
+            !newGame && this.levelsTab[lastLevel].gamesTab.forEach(g => {
                 if (g.index > game.index){
                     g.index--;
                 }
             });
-            this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
+            !newGame && this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
             game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
                 column-1 ;
             this.levelsTab[level].gamesTab.forEach(g => {
@@ -269,7 +307,7 @@ exports.Models = function (globalVariables) {
             })
             this.levelsTab[level].gamesTab.splice(column-1, 0, game);
             game.levelIndex = level;
-            if(this.levelsTab[lastLevel].gamesTab.length == 0){
+            if(this.levelsTab[lastLevel].gamesTab.length == 0 && !newGame){
                 this.levelsTab.forEach(l => {
                     if(l.index > lastLevel){
                         l.index --;
@@ -280,6 +318,16 @@ exports.Models = function (globalVariables) {
                 })
                 this.levelsTab.splice(lastLevel, 1);
             }
+        }
+
+        addNewGame(game, level, column){
+            let newGame = game.game.create(this.gamesCounter, level, column);
+            switch(game.game.type){
+                case'Quiz':
+                    this.gamesCounter.quizz ++;
+                    break;
+            }
+            return newGame
         }
 
         addLevel(level){
@@ -408,7 +456,25 @@ exports.Models = function (globalVariables) {
             this.explanation = {};
             // this.media = imgSrc;
         }
+    }
 
+    class GamesLibrary{
+        constructor(){
+            this.list = [
+                {
+                    type: 'Quiz',
+                    create: function (counter, level, column) {
+                        var newQuiz = new Quiz({
+                            title: 'Quiz ' + (counter ? counter.quizz : 0),
+                            gameIndex: column ,
+                            id: 'quizz'+(counter ? counter.quizz : 0),
+                            levelIndex : level
+                        });
+                        return newQuiz;
+                    }
+                }
+            ]
+        }
     }
 
     return {

@@ -3,6 +3,7 @@
  */
 exports.ConnectionV = function (globalVariables) {
     const util = globalVariables.util,
+        View = globalVariables.View,
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
@@ -20,15 +21,14 @@ exports.ConnectionV = function (globalVariables) {
         BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white];
 
-    class ConnectionV {
+    class ConnectionV extends View{
         constructor(presenter) {
+            super(presenter);
             var _initV = () => {
-                this.presenter = presenter;
                 this.inputs = [];
             }
             var _declareManipulators = () => {
                 this.manipulator = new Manipulator(this);
-                this.header = new globalVariables.domain.HeaderVue();
                 this.fieldsManip = new Manipulator(this);
                 this.cookieManipulator = new Manipulator(this);
                 this.cookieManipulator.component.mark("cookieManipulator");
@@ -46,10 +46,6 @@ exports.ConnectionV = function (globalVariables) {
 
             _initV();
             _declareManipulators();
-        }
-
-        flush(){
-            drawing.manipulator.flush();
         }
 
         display() {
@@ -230,7 +226,7 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         tryLogin(){
-            this.selectedInput.hideControl();
+            this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 let error = new svg.Text(message)
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)

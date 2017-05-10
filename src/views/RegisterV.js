@@ -4,6 +4,7 @@
 
 exports.RegisterV = function (globalVariables) {
     const util = globalVariables.util,
+        View = globalVariables.View,
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
@@ -20,15 +21,14 @@ exports.RegisterV = function (globalVariables) {
         BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white];
 
-    class RegisterV {
+    class RegisterV extends View {
         constructor(presenter) {
+            super(presenter);
             var _initV = () => {
-                this.presenter = presenter;
                 this.inputs = [];
             }
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
-                this.header = new globalVariables.domain.HeaderVue();
                 this.fieldsManip = new Manipulator(this);
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.saveButtonManipulator.component.mark('saveButton');
@@ -42,10 +42,6 @@ exports.RegisterV = function (globalVariables) {
 
             _initV();
             _declareManipulator();
-        }
-
-        flush(){
-            drawing.manipulator.flush();
         }
 
         display() {
