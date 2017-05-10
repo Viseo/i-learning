@@ -99,6 +99,7 @@ exports.QuizCollabV = function (globalVariables) {
                         this.previousQuestion();
                     }
 
+                    let glass = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 0, myColors.white);
                     let leftChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "W");
                     if (this.isFirstQuestion()) {
                         leftChevron.color(myColors.grey, 1, myColors.grey);
@@ -106,7 +107,7 @@ exports.QuizCollabV = function (globalVariables) {
                         leftChevron.color(myColors.black, 1, myColors.black)
                         this.leftChevronManipulator.addEvent('click', _leftChevronHandler);
                     }
-                    this.leftChevronManipulator.add(leftChevron);
+                    this.leftChevronManipulator.add(glass).add(leftChevron);
                     this.leftChevronManipulator.move(MARGIN + dimensions.width / 2, (drawing.height + currentY) / 2);
                 }
                 var _displayRightChevron = () => {
@@ -114,6 +115,7 @@ exports.QuizCollabV = function (globalVariables) {
                         this.nextQuestion();
                     }
 
+                    let glass = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 0, myColors.white);
                     let rightChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "E");
                     if (this.isLastAnsweredQuestion()) {
                         rightChevron.color(myColors.grey, 1, myColors.grey);
@@ -121,7 +123,7 @@ exports.QuizCollabV = function (globalVariables) {
                         rightChevron.color(myColors.black, 1, myColors.black)
                         this.rightChevronManipulator.addEvent('click', _rightChevronHandler);
                     }
-                    this.rightChevronManipulator.add(rightChevron);
+                    this.rightChevronManipulator.add(glass).add(rightChevron);
                     this.rightChevronManipulator.move(drawing.width - MARGIN - dimensions.width / 2, (drawing.height + currentY) / 2);
                 }
 
