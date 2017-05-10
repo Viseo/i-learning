@@ -21,31 +21,39 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         displayView() {
-            if(this.isDone){
+            if (this.isDone) {
                 this.displayScoreView();
-            }else {
-                this.displayQuestionView();
+            } else {
+                this.displayQuestionView(0);
             }
         }
 
-        displayQuestionView(){
+        displayQuestionView(questionIndex) {
+            this.displayed = "question";
+            if (questionIndex !== undefined) {
+                this.currentQuestionIndex = questionIndex;
+            }
             this.questionView.display();
-            if(this.isDone) this.questionView.displayResult();
+            if (this.isDone) this.questionView.displayResult();
         }
-        displayScoreView(){
+
+        displayScoreView() {
+            this.displayed = "score";
             this.scoreView.display();
         }
 
         returnHandler() {
-            //TODO use State
-           //this.questionView.flush();
-            //this.parent.fromReturn();
+            if (this.isDone && this.displayed === "question") {
+                this.displayScoreView();
+            } else {
+                //TODO handler state
+            }
         }
 
         previousQuestion() {
             if (this.currentQuestionIndex > 0) {
                 this.currentQuestionIndex--;
-                this.displayView();
+                this.displayQuestionView();
             }
         }
 
@@ -53,7 +61,7 @@ exports.QuizCollabP = function (globalVariable) {
             if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
                 this.currentQuestionIndex++;
                 if (this.lastAnsweredIndex < this.currentQuestionIndex) this.lastAnsweredIndex = this.currentQuestionIndex;
-                this.displayView();
+                this.displayQuestionView();
             }
         }
 
@@ -75,7 +83,7 @@ exports.QuizCollabP = function (globalVariable) {
             return this.model.getNbQuestions();
         }
 
-        getNbCorrect(){
+        getNbCorrect() {
             return this.model.getNbCorrect();
         }
 
@@ -101,6 +109,10 @@ exports.QuizCollabP = function (globalVariable) {
 
         getCorrectAnswerIndex() {
             return this.model.getCorrectAnswerIndex(this.currentQuestionIndex);
+        }
+
+        getWrongQuestions() {
+            return this.model.getWrongQuestions();
         }
 
         getScore() {

@@ -14,7 +14,10 @@ exports.QuizScoreV = function (globalVariables) {
         FONT = "Arial",
         FONT_SIZE = 20,
         INPUT_WIDTH = 300,
-        INPUT_HEIGHT = 30;
+        INPUT_HEIGHT = 30,
+        QUESTION_HEIGHT = 50,
+        QUESTIONS_PER_LINE = 3,
+        BUTTON_HEIGHT = 50;
 
     class QuizScoreV {
         constructor(presenter) {
@@ -22,6 +25,9 @@ exports.QuizScoreV = function (globalVariables) {
             this.manipulator = new Manipulator(this);
             this.header = new globalVariables.domain.HeaderVue();
             this.returnButtonManipulator = new Manipulator(this);
+            this.titleManipulator = new Manipulator(this).addOrdonator(2);
+            this.questionsManipulator = new Manipulator(this);
+            this.resultButtonManipulator = new Manipulator(this);
         }
 
         display() {
@@ -33,7 +39,9 @@ exports.QuizScoreV = function (globalVariables) {
                 this.manipulator
                     .add(headerManipulator)
                     .add(this.returnButtonManipulator)
-
+                    .add(this.titleManipulator)
+                    .add(this.questionsManipulator)
+                    .add(this.resultButtonManipulator)
             }
             var _displayHeader = () => {
                 this.header.display(this.getLabel());
@@ -52,7 +60,58 @@ exports.QuizScoreV = function (globalVariables) {
                 this.returnButtonManipulator.move(returnButton.width / 2 + MARGIN, currentY + returnButton.height / 2);
                 currentY += returnButton.height + MARGIN;
             }
+            var _displayTitle = () => {
+                let dimensions = {
+                    width: drawing.width - 2 * MARGIN,
+                    height: drawing.height / 5
+                }
+                let score = this.getScore();
+                let rect = new svg.Rect(dimensions.width, dimensions.height).color(score.color, 1, myColors.black).corners(5, 5);
+                let text = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                this.titleManipulator.set(0, rect).set(1, text);
+                this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
+                currentY += dimensions.height + MARGIN;
+            }
+            var _displayWrongQuestions = () => {
+                var _displayWrongQuestion = (question, index) => {
+                    var _loadQuestionCorrection = () => {
+                        this.displayQuestionView(question.index);
+                    }
+
+                    let manip = new Manipulator(this).addOrdonator(2);
+                    let border = new svg.Rect(questionWidth, QUESTION_HEIGHT).color(myColors.white, 1, myColors.black).corners(5, 5);
+                    let text = new svg.Text(question.label).font(FONT, FONT_SIZE);
+                    let indexX = Math.floor(index % QUESTIONS_PER_LINE);
+                    let indexY = Math.floor(index / QUESTIONS_PER_LINE);
+                    manip.set(0, border).set(1, text);
+                    manip.move(indexX * (questionWidth + MARGIN), indexY * (MARGIN + QUESTION_HEIGHT));
+                    manip.addEvent("click", _loadQuestionCorrection)
+                    return manip;
+                }
+
+                let dimensions = {
+                    width: drawing.width - 2 * MARGIN,
+                    height: drawing.height - currentY - MARGIN - BUTTON_HEIGHT
+                }
+                let questionWidth = dimensions.width / QUESTIONS_PER_LINE - (QUESTIONS_PER_LINE - 1) / QUESTIONS_PER_LINE * MARGIN;
+                this.getWrongQuestions().forEach((question, index) => {
+                    let manip = _displayWrongQuestion(question, index);
+                    this.questionsManipulator.add(manip);
+                });
+                this.questionsManipulator.move(MARGIN + questionWidth / 2, currentY + QUESTION_HEIGHT / 2);
+            }
             var _displayResultButton = () => {
+                let _loadQuestionResult = () => {
+                    this.displayQuestionView(0);
+                }
+                let dimensions = {
+                    width: drawing.width / 3,
+                    height: BUTTON_HEIGHT
+                }
+                let button = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Voir les réponses et les explications");
+                button.onClick(_loadQuestionResult);
+                this.resultButtonManipulator.add(button.component);
+                this.resultButtonManipulator.move(drawing.width / 2, drawing.height - MARGIN - dimensions.height / 2);
 
             }
 
@@ -62,6 +121,8 @@ exports.QuizScoreV = function (globalVariables) {
             _attachManipulators();
             _displayHeader();
             _displayReturnButton();
+            _displayTitle();
+            _displayWrongQuestions();
             _displayResultButton();
         }
 
@@ -69,12 +130,20 @@ exports.QuizScoreV = function (globalVariables) {
             this.presenter.returnHandler();
         }
 
+        displayQuestionView(questionIndex) {
+            this.presenter.displayQuestionView(questionIndex);
+        }
+
         getLabel() {
             return this.presenter.getLabel();
         }
 
-        getScore(){
+        getScore() {
             return this.presenter.getScore();
+        }
+
+        getWrongQuestions() {
+            return this.presenter.getWrongQuestions();
         }
     }
 

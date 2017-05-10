@@ -255,13 +255,23 @@ exports.Models = function(globalVariables){
         getAnswers(questionIndex){
             return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
         }
+        getWrongQuestions(){
+            let wrongQuestions = [];
+            this.answered.forEach((answered, index) => {
+                if(!answered.correct){
+                    wrongQuestions.push({
+                        index,
+                        label: this.getQuestionLabel(index)
+                    });
+                }
+            });
+            return wrongQuestions;
+        }
         getNbQuestions(){
             return this.questions.length;
         }
         getNbCorrect(){
-            return this.answered.reduce((nb, answered)=>{
-                return answered.correct ? nb+1 : nb;
-            }, 0);
+            return this.answered.reduce((nb, answered)=>answered.correct ? nb+1 : nb, 0);
         }
         getAnswered(questionIndex){
             return this.answered[questionIndex];
