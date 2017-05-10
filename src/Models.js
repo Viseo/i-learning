@@ -9,9 +9,11 @@ exports.Models = function (globalVariables) {
             this.stackPage = [];
             this.formations = new Formations();
             this.currentPresenter = null;
+            this.stackStateFrozen = false;
         }
 
         returnToOldPage() {
+            this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
             switch(presenterName){
                 case "DashboardAdminP":
@@ -20,10 +22,25 @@ exports.Models = function (globalVariables) {
                     this.loadPresenterConnection(); break;
                 default: break;
             }
+            this._unFrozenStackPage();
+        }
+
+        _isStackPageIsFrozen(){
+            return this.stackStateFrozen;
+        }
+
+        _putStackPageToFrozen(){
+            this.stackStateFrozen = true;
+        }
+
+        _unFrozenStackPage(){
+            this.stackStateFrozen = false;
         }
 
         _addPageToStack() {
-            this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
+            if(!this._isStackPageIsFrozen()){
+                this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
+            }
         }
 
         clearOldPageStackAndLoadPresenterConnection(){
