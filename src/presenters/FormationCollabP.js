@@ -1,21 +1,19 @@
 const FormationCollab = require('../views/FormationCollabV').FormationCollabV;
 
 exports.FormationCollabP = function(globalVariables){
-    const FormationsCollabV = FormationCollab(globalVariables);
+    const FormationsCollabV = FormationCollab(globalVariables),
+        Presenter = globalVariables.Presenter;
 
 
-    class FormationCollabP {
+    class FormationCollabP extends Presenter{
 
         constructor(state, formation,user){
+            super(state);
             this.formation = formation;
             this.view = new FormationsCollabV(this);
-            this.state = state;
             this.user = user;
         }
 
-        displayView(){
-            this.view.display();
-        }
         getLabel(){
             return this.formation.label;
         }
@@ -24,9 +22,6 @@ exports.FormationCollabP = function(globalVariables){
         }
         returnHandler(){
             this.state.returnToOldPage();
-        }
-        flushView(){
-            this.view.flush();
         }
 
         getFormationWithProgress (id) {

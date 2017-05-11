@@ -9,7 +9,8 @@ exports.QuizQuestionV = function (globalVariables) {
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         IconCreator = globalVariables.domain.IconCreator,
-        drawing = globalVariables.drawing;
+        drawing = globalVariables.drawing,
+        View = globalVariables.View;
 
     const
         FONT = "Arial",
@@ -25,12 +26,11 @@ exports.QuizQuestionV = function (globalVariables) {
         BUTTON_WIDTH = 200,
         BUTTON_HEIGHT = 40;
 
-    class QuizQuestionV  {
+    class QuizQuestionV  extends View{
         constructor(presenter) {
             var _initVariables = () => {
-                this.presenter = presenter;
+                super(presenter);
                 this.answers = [];
-                this.header = new globalVariables.domain.HeaderVue();
             }
             var _defineManipulators = () => {
                 this.manipulator = new Manipulator(this);

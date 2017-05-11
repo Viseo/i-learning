@@ -9,7 +9,8 @@ exports.QuizScoreV = function (globalVariables) {
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.domain.IconCreator;
+        IconCreator = globalVariables.domain.IconCreator,
+        View = globalVariables.View;
 
     const
         FONT = "Arial",
@@ -20,11 +21,10 @@ exports.QuizScoreV = function (globalVariables) {
         QUESTIONS_PER_LINE = 3,
         BUTTON_HEIGHT = 50;
 
-    class QuizScoreV {
+    class QuizScoreV extends View{
         constructor(presenter) {
-            this.presenter = presenter;
+            super(presenter);
             this.manipulator = new Manipulator(this);
-            this.header = new globalVariables.domain.HeaderVue();
             this.returnButtonManipulator = new Manipulator(this);
             this.titleManipulator = new Manipulator(this).addOrdonator(2);
             this.questionsManipulator = new Manipulator(this);

@@ -7,13 +7,14 @@ const QuizScoreV = require('../views/QuizScoreV').QuizScoreV;
 
 exports.QuizCollabP = function (globalVariable) {
     const QuizCollabView = QuizCollabV(globalVariable);
-    const QuizScoreView = QuizScoreV(globalVariable);
+    const QuizScoreView = QuizScoreV(globalVariable),
+        Presenter = globalVariable.Presenter;
 
-    class QuizCollabP {
+    class QuizCollabP extends Presenter{
         constructor(state, quiz) {
+            super(state);
             this.questionView = new QuizCollabView(this);
             this.scoreView = new QuizScoreView(this);
-            this.state = state;
             this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;

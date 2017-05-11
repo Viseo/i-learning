@@ -1,15 +1,16 @@
 const FDashboardCollabV = require('../views/DashboardCollabV').DashboardCollabV;
 
 exports.DashboardCollabP = function(globalVariables) {
-    const DashboardCollabV = FDashboardCollabV(globalVariables);
+    const DashboardCollabV = FDashboardCollabV(globalVariables),
+        Presenter = globalVariables.Presenter;
 
-    class DashboardCollabP {
+    class DashboardCollabP extends Presenter{
 
         constructor(state,user, formations){
+            super(state);
             this.view = new DashboardCollabV(this);
             this.formations = formations;
             this.user = user;
-            this.state=state;
 
             //todo
             if(this.hasLastAction()){
@@ -19,10 +20,6 @@ exports.DashboardCollabP = function(globalVariables) {
 
         hasLastAction(){
             return this.user.hasLastAction();
-        }
-
-        displayView(){
-            this.view.display();
         }
 
         loadFormation(formation){
@@ -37,9 +34,7 @@ exports.DashboardCollabP = function(globalVariables) {
         getFormations(){
             return this.formations.getFormations();
         }
-        flushView(){
-            this.view.flush();
-        }
+
 
     }
     return DashboardCollabP;

@@ -12,17 +12,17 @@ exports.FormationAdminV = function(globalVariables) {
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
         MINIATURE_FONT_SIZE = 15,
-        installDnD = globalVariables.gui.installDnD;
+        installDnD = globalVariables.gui.installDnD,
+        View = globalVariables.View;
 
 
-    class FormationAdminV {
+    class FormationAdminV extends View{
         constructor(presenter){
+            super(presenter);
             this.buttonSize= {width:150, height:50};
             this.inputSize = {width: 300, height:30};
-            this.presenter = presenter;
             this.manipulator = new Manipulator(this);
             this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
-            this.header = new globalVariables.domain.HeaderVue();
             this.label = this.getLabel();
             this.graphSize = {
                 width: drawing.width-this.inputSize.width-3*MARGIN,
@@ -47,13 +47,6 @@ exports.FormationAdminV = function(globalVariables) {
             return this.presenter.getLabel();
         }
 
-        returnHandler(){
-            this.presenter.returnHandler();
-        }
-
-        flush(){
-          drawing.manipulator.flush();
-        }
 
         display(){
             drawing.manipulator.set(0,this.mainManip);
@@ -90,7 +83,7 @@ exports.FormationAdminV = function(globalVariables) {
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
                 this.returnButton = new gui.Button(this.inputSize.width, this.inputSize.height, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
-                this.returnButton.onClick(this.returnHandler.bind(this));
+                this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5,5);
                 this.returnButton.text.font('Arial', 20).position(0,6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)

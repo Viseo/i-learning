@@ -2,18 +2,17 @@ const FormationAdmin = require('../views/FormationAdminV').FormationAdminV;
 
 exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
-    TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
-    class FormationsAdminP{
+    TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g,
+        Presenter = globalVariables.Presenter;
+    class FormationsAdminP extends Presenter{
         constructor(state, formation){
+            super(state);
             this.formation = formation;
             this.view = new FormationAdminV(this);
             this.regex = TITLE_FORMATION_REGEX;
             this.levelsTab = formation.getLevelsTab();
-            this.state = state;
         }
-        displayView(){
-            this.view.display();
-        }
+
         getLabel(){
             return this.formation.label;
         }
@@ -21,9 +20,6 @@ exports.FormationAdminP = function(globalVariables){
             return this.formation;
         }
 
-        returnHandler(){
-            this.state.returnToOldPage();
-        }
         renameFormation(label){
             this.formation.setLabel(label);
             const messageError = "Vous devez remplir correctement le nom de la formation.";
@@ -143,10 +139,6 @@ exports.FormationAdminP = function(globalVariables){
             } else {
                 //this.displayPublicationMessage(message[0]);
             }
-        }
-
-        flushView(){
-            this.view.flush();
         }
 
         loadQuiz(quiz) {

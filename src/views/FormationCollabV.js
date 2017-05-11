@@ -2,6 +2,7 @@ exports.FormationCollabV = function(globalVariables) {
 
     const util = globalVariables.util,
         Manipulator = util.Manipulator,
+        View = globalVariables.View;
 
         svg = globalVariables.svg,
         gui = globalVariables.gui,
@@ -14,17 +15,15 @@ exports.FormationCollabV = function(globalVariables) {
 
 
 
-    class FormationCollabV {
+    class FormationCollabV extends View {
 
         constructor(presenter){
-
+            super(presenter);
             this.buttonSize= {width:150, height:50};
             this.inputSize = {width: 300, height:30};
-            this.presenter = presenter;
             this.manipulator = new Manipulator(this);
             this.graphMiniatureManipulator = new Manipulator(this);
             this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
-            this.header = new globalVariables.domain.HeaderVue();
             this.label = this.getLabel();
             this.graphSize = {
                 width: drawing.width-2*MARGIN,
@@ -50,14 +49,6 @@ exports.FormationCollabV = function(globalVariables) {
         getLabel(){
             return this.presenter.getLabel();
         }
-        returnHandler(){
-            this.presenter.returnHandler();
-        }
-        flush(){
-            drawing.manipulator.flush();
-        }
-
-
 
         display(){
 
@@ -78,7 +69,7 @@ exports.FormationCollabV = function(globalVariables) {
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
                 this.returnButton = new gui.Button(this.inputSize.width, this.inputSize.height, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
-                this.returnButton.onClick(this.returnHandler.bind(this));
+                this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5,5);
                 this.returnButton.text.font('Arial', 20).position(0,5);
                 this.returnButtonManipulator.add(this.returnButton.component)

@@ -4,14 +4,16 @@ exports.DashboardCollabV = function (globalVariables) {
         Server = util.Server,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        drawing = globalVariables.drawing;
-    HeaderVue = globalVariables.domain.HeaderVue;
-    IconCreator = globalVariables.domain.IconCreator;
-    createRating = globalVariables.domain.createRating;
+        drawing = globalVariables.drawing,
+        HeaderVue = globalVariables.domain.HeaderVue,
+        IconCreator = globalVariables.domain.IconCreator,
+        createRating = globalVariables.domain.createRating,
+        View = globalVariables.View;
 
 
-    class DashboardCollabV {
+    class DashboardCollabV extends View{
         constructor(presenter) {
+            super(presenter);
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
@@ -79,9 +81,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 _createFilter();
             };
 
-            this.presenter = presenter;
-            this.header = new HeaderVue();
-
             _declareDimension();
             _declareManipulator();
             _declareIcons();
@@ -92,9 +91,7 @@ exports.DashboardCollabV = function (globalVariables) {
             this._displayHeader("Dashboard");
             this._displayFormation();
         }
-        flush(){
-            drawing.manipulator.flush();
-        }
+
         _displayFormation(){
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
