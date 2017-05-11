@@ -103,29 +103,29 @@ exports.QuizAdminV = function (globalVariables) {
                     height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
                 };
                 let mediasPanel = new gui.Panel(dimensions.width, dimensions.height);
-                mediasPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                mediasPanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
                 let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
-                titleLibrary.position(-0.85*mediasPanel.width/2, -mediasPanel.height/2 + 8.33);
+                titleLibrary.position(-0.85 * mediasPanel.width / 2, -mediasPanel.height / 2 + 8.33);
                 this.mediasLibraryManipulator.set(2, titleLibrary);
-                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
-                titleLibraryBack.position(-0.85*mediasPanel.width/2 + titleLibrary.boundingRect().width/2,
-                    -mediasPanel.height/2);
+                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
+                titleLibraryBack.position(-0.85 * mediasPanel.width / 2 + titleLibrary.boundingRect().width / 2,
+                    -mediasPanel.height / 2);
                 this.mediasLibraryManipulator.set(0, mediasPanel.component);
                 this.mediasLibraryManipulator.set(1, titleLibraryBack);
-                this.mediasLibraryManipulator.move(mediasPanel.width/2 + MARGIN, currentY + mediasPanel.height/2);
+                this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN, currentY + mediasPanel.height / 2);
 
-                let imageWidth = (dimensions.width - 2*MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1)/IMAGES_PER_LINE*MARGIN;
+                let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
                 let imagesManipulator = new Manipulator(this);
                 this.mediasLibraryManipulator.add(imagesManipulator);
-                imagesManipulator.move(- dimensions.width/2 + imageWidth/2 + MARGIN, -dimensions.height/2 + imageWidth/2 + MARGIN)
-                this.getImages().then((images)=> {
-                    images.forEach((image, index)=>{
+                imagesManipulator.move(-dimensions.width / 2 + imageWidth / 2 + MARGIN, -dimensions.height / 2 + imageWidth / 2 + MARGIN)
+                this.getImages().then((images) => {
+                    images.forEach((image, index) => {
                         let indexX = Math.floor(index % IMAGES_PER_LINE);
                         let indexY = Math.floor(index / IMAGES_PER_LINE);
                         let picture = new svg.Image(image.imgSrc);
                         picture
                             .dimension(imageWidth, imageWidth)
-                            .position(indexX*(imageWidth + MARGIN), indexY*(imageWidth + MARGIN))
+                            .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
                         imagesManipulator.add(picture);
                     })
                 })
@@ -193,7 +193,7 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
 
-        _displayQuestionBlock(){
+        _displayQuestionBlock() {
             var _loadOneQuestionInBlock = (question, questionIndex) => {
                 let questionBlock = {};
 
@@ -227,8 +227,8 @@ exports.QuizAdminV = function (globalVariables) {
 
                 //todo deplacer questionsDetails
                 this.questionsBlock.splice(questionIndex, 0, questionBlock);
-                if(questionIndex <= this.questionsBlock.length){
-                    for(let i = questionIndex + 1 ; i < this.questionsBlock.length; i++){
+                if (questionIndex <= this.questionsBlock.length) {
+                    for (let i = questionIndex + 1; i < this.questionsBlock.length; i++) {
                         this.questionsBlock[i].index = i;
                         this.questionsBlock[i].manipulator
                             .move(MARGIN - this.width / 2 + dimensions.width / 2 + i * (dimensions.width + MARGIN), 0);
@@ -318,7 +318,7 @@ exports.QuizAdminV = function (globalVariables) {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
                     height: this.questionDetailsDim.height * 1 / 6 - 2 * MARGIN
                 }
-                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + (index+1));
+                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + (index + 1));
                 questionGui.textAreaManipulator.set(0, questionGui.textArea.component);
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
@@ -423,10 +423,10 @@ exports.QuizAdminV = function (globalVariables) {
                         width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
                         height: 70
                     },
-                    indexX : Math.floor(index % ANSWERS_PER_LINE),
-                    indexY : Math.floor(index / ANSWERS_PER_LINE),
-                    y : 70 / 2,
-                    x : MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
+                    indexX: Math.floor(index % ANSWERS_PER_LINE),
+                    indexY: Math.floor(index / ANSWERS_PER_LINE),
+                    y: 70 / 2,
+                    x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
                 };
 
                 _initGui(answerGui, index);
@@ -532,12 +532,14 @@ exports.QuizAdminV = function (globalVariables) {
             let popInExplanation = {};
             var _initManipulators = () => {
                 popInExplanation.manipulator = new Manipulator(this).addOrdonator(1);
-                popInExplanation.closeButtonManipulator = new Manipulator(this);
                 // popInExplanation.manipulator.set(2, popInExplanation.closeButtonManipulator);
-                popInExplanation.panelManipulator = new Manipulator(this);
+                popInExplanation.closeButtonManipulator = new Manipulator(this);
                 popInExplanation.textManipulator = new Manipulator(this).addOrdonator(1);
-                // popInExplanation.panelManipulator.set(1, popInExplanation.textManipulator);
+                popInExplanation.mediaManipulator = new Manipulator(this);
+                // popInExplanation.mediaManipulator.set(1, popInExplanation.textManipulator);
                 popInExplanation.manipulator.add(popInExplanation.textManipulator);
+                popInExplanation.manipulator.add(popInExplanation.mediaManipulator);
+
             };
             var _initExplanation = () => {
                 // popInExplanation.answer = answer;
@@ -572,30 +574,31 @@ exports.QuizAdminV = function (globalVariables) {
                         // });
                     }
                     let explanationRect = new svg.Rect(this.width * 4 / 5 - MARGIN, this.height * 2 / 5 - MARGIN)
-                        // const rect = new svg.Rect(dimensions.width, dimensions.height)
                             .color(myColors.white, 1, myColors.black),
-                        // popInExplanation.manipulator.move(0, y);
                         answerAreaWidth = answerGui.textArea.width + MARGIN,
                         answerAreaHeight = answerGui.textArea.height + MARGIN + answerGui.textArea.height / 2;
                     explanationRect._acceptDrop = popInExplanation.editable;
-                    // parent.manipulator.add(this.manipulator);
                     popInExplanation.manipulator.set(0, explanationRect);
                     popInExplanation.manipulator.move(explanationRect.width / 2 - answerGui.textArea.width / 2 - MARGIN - answerAreaWidth * answerGui.indexX,
                         explanationRect.height / 2 - answerGui.textArea.height - MARGIN - answerAreaHeight * answerGui.indexY);
-                    // popInExplanation.manipulator.move(-dimensions.width /8, 0);
                     _removeSetupVideo();
                 };
                 var _displayExplanation = () => {
-                    var _definePanel = () => {
+                    var _defineMediaPlaceholder = () => {
                         // let panelWidth = (dimensions.width - 2 * MARGIN) * 3 / 4, panelHeight = dimensions.height - 2 * MARGIN;
-                        let panelWidth = this.width * 4 / 5 - MARGIN, panelHeight = dimensions.height - 2 * MARGIN;
-                        popInExplanation.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-                        popInExplanation.panel.border.color([], 1, [0, 0, 0]);
-                        popInExplanation.panel.back.mark('explanationPanel');
-                        popInExplanation.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-                        // popInExplanation.panelManipulator.add(popInExplanation.panel.component);
-                        popInExplanation.panelManipulator.move(dimensions.width * 1 / 8, 0);
-                        popInExplanation.panelManipulator.move(0, 0);
+                        // let panelWidth = this.width * 4 / 5 - MARGIN, panelHeight = dimensions.height - 2 * MARGIN;
+                        popInExplanation.dndPlaceholder = new svg.Text(popInExplanation.draganddropText)
+                            .font("Arial", 20)
+                            .dimension((this.width * 4 / 5 - MARGIN) * 3 / 5, this.height * 1 / 3 - MARGIN);
+                        popInExplanation.mediaManipulator.add(popInExplanation.dndPlaceholder);
+                        popInExplanation.mediaManipulator.move(-(this.width * 4 / 5 - MARGIN) * 2 / 5 - MARGIN + popInExplanation.dndPlaceholder.width / 2, 0);
+
+                        // popInExplanation.panel.border.color([], 1, [0, 0, 0]);
+                        // popInExplanation.panel.back.mark('explanationPanel');
+                        // popInExplanation.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+                        // popInExplanation.mediaManipulator.add(popInExplanation.panel.component);
+                        // popInExplanation.mediaManipulator.move(dimensions.width * 1 / 8, 0);
+                        // popInExplanation.mediaManipulator.move(0, 0);
                     };
                     var _displayText = () => {
                         let textToDisplay = popInExplanation.label ? popInExplanation.label : popInExplanation.defaultLabel;
@@ -607,7 +610,6 @@ exports.QuizAdminV = function (globalVariables) {
                         popInExplanation.textManipulator.set(0, popInExplanation.text);
                     }
                     var _displayTextArea = () => {
-                        // let panelWidth = (dimensions.width - 2 * MARGIN) * 3 / 4, panelHeight = dimensions.height - 2 * MARGIN;
                         let panelWidth = (this.width * 4 / 5 - MARGIN) * 3 / 5, panelHeight = this.height * 1 / 3 - MARGIN; // width et height de explanationRect
                         let textToDisplay = popInExplanation.label ? popInExplanation.label : popInExplanation.defaultLabel;
                         popInExplanation.text = new gui.TextArea(0, 0, panelWidth, panelHeight, textToDisplay)
@@ -617,16 +619,15 @@ exports.QuizAdminV = function (globalVariables) {
                         // this.text.text.parentObject = this.text;
                         popInExplanation.text.text.mark('textExplanation');
                         popInExplanation.textManipulator.set(0, popInExplanation.text.component);
-                        popInExplanation.textManipulator.move((this.width * 4 / 5 - MARGIN) / 5 - MARGIN,0);
-                        // popInExplanation.textManipulator.move(panelWidth/2,0);
+                        popInExplanation.textManipulator.move((this.width * 4 / 5 - MARGIN) / 5 - MARGIN, 0);
                         popInExplanation.text.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
                         popInExplanation.text.onInput((oldMessage, message) => {
-                            // popInExplanation.label = message;
-                            // popInExplanation.display();
+                            popInExplanation.label = message;
+                            popInExplanation.display();
                         })
                     }
 
-                    // _definePanel();
+                    _defineMediaPlaceholder();
                     if (popInExplanation.editable) {
                         _displayTextArea();
                     } else {
@@ -689,7 +690,7 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLabel();
         }
 
-        getImages(){
+        getImages() {
             return this.presenter.getImages();
         }
 
