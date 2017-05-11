@@ -143,7 +143,8 @@ exports.QuizCollabP = function (globalVariable) {
         getScore() {
             let nbQuestions = this.getNbQuestions();
             let nbCorrect = this.getNbQuestionsCorrect();
-            let color, str1, str2;
+            let percentGoodQuestion = nbCorrect / nbQuestions;
+            let message, color, emojiSrc, str1, str2;
             switch (nbCorrect) {
                 case nbQuestions:
                     str1 = 'Impressionant !';
@@ -171,9 +172,15 @@ exports.QuizCollabP = function (globalVariable) {
                     color = [220, 255, 0];
                     break;
             }
-            let message = `${str1} Vous avez répondu à ${nbQuestions} questions, ${str2}`;
-
-            return {message, color};
+            message = `${str1} Vous avez répondu à ${nbQuestions} questions, ${str2}`;
+            if(percentGoodQuestion == 0.5){
+                emojiSrc = '/images/emoji/meh.png';
+            }else if(percentGoodQuestion > 0.5){
+                emojiSrc = '/images/emoji/smile.png';
+            }else {
+                emojiSrc = '/images/emoji/angry.png';
+            }
+            return {message, color, emojiSrc};
         }
     }
 

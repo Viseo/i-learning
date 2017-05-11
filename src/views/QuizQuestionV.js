@@ -248,9 +248,12 @@ exports.QuizQuestionV = function (globalVariables) {
                 this.returnButton.text.message("Retour aux résultats");
             }
             var _displayText = () => {
-                let scoreText = new svg.Text(this.getScore().message).font(FONT, FONT_SIZE);
+                let score = this.getScore();
+                let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                let icon = IconCreator.createImageIcon(score.emojiSrc, this.scoreManipulator);
                 this.scoreManipulator.add(scoreText);
-                this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_HEIGHT + MARGIN);
+                icon.position(-scoreText.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
+                this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_HEIGHT + 2*MARGIN);
             }
             var _addExplanations = () => {
                 var _toggleExplanation = (explanation) => {
