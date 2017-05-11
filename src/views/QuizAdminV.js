@@ -194,19 +194,12 @@ exports.QuizAdminV = function (globalVariables) {
 
 
         _displayQuestionBlock(){
-            this.questionsBlock = [];
-            let questions = this.getQuestions();
-            let dimensions = {
-                width: this.width / QUESTIONS_PER_LINE,
-                height: this.height * 1 / 6 - 2 * MARGIN
-            };
-
-            questions.forEach((itQuestion, i) => {
+            var _loadOneQuestionInBlock = (question, questionIndex) => {
                 let questionBlock = {};
 
-                var _initQuestionBlock = (questionGui) => {
+                var _initQuestionBlock = (questionGui, index) => {
                     questionGui.manipulator = new Manipulator(this).addOrdonator(2);
-                    questionGui.index = i;
+                    questionGui.index = index;
                     questionGui.unselect = () => {
                         if (questionGui.selected) {
                             questionGui.selected = false;
@@ -221,19 +214,63 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                     };
                 }
-                var _initGuiBlock = (questionGui) => {
-                    questionGui.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], questionGui.label || "Question " + questionGui.index);
+                var _initGuiBlock = (questionGui, question) => {
+                    questionGui.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], question.label || "Question " + questionGui.index);
                     questionGui.questionButton.back.corners(5, 5);
                     questionGui.questionButton.onClick(() => questionGui.select());
                     questionGui.manipulator.add(questionGui.questionButton.component);
                     questionGui.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + questionGui.index * (dimensions.width + MARGIN), 0);
                 };
-                _initQuestionBlock(questionBlock);
-                _initGuiBlock(questionBlock);
+                _initQuestionBlock(questionBlock, questionIndex);
+                _initGuiBlock(questionBlock, question);
 
-                this.questionsBlock.add(questionBlock);
+                //todo deplacer questionsDetails
+                this.questionsBlock.splice(questionIndex, 0, questionBlock);
+                if(questionIndex <= this.questionsBlock.length){
+                    for(let i = questionIndex + 1 ; i < this.questionsBlock.length; i++){
+                        this.questionsBlock[i].index = i;
+                        this.questionsBlock[i].manipulator
+                            .move(MARGIN - this.width / 2 + dimensions.width / 2 + i * (dimensions.width + MARGIN), 0);
+                    }
+                }
                 this.questionsBlockManipulator.add(questionBlock.manipulator);
+            };
+
+            var _createAddNewQuestion = () => {
+                let onClickOnAddNewQuestion = () => {
+                    let question = {label: ""};
+                    _loadOneQuestionInBlock(question, this.questionsBlock.length - 1);
+                };
+
+                let addNewQuestion = {};
+                addNewQuestion.manipulator = new Manipulator(this).addOrdonator(2);
+                addNewQuestion.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], "");
+                addNewQuestion.questionButton.back.corners(5, 5);
+                this.questionsBlock.splice(this.questionsBlock.length, 0, addNewQuestion);
+
+                addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
+
+                addNewQuestion.manipulator.set(0, addNewQuestion.questionButton.component);
+                addNewQuestion.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + questions.length * (dimensions.width + MARGIN), 0);
+                IconCreator.createPlusIcon(addNewQuestion.manipulator, 1);
+
+
+                this.questionsBlockManipulator.add(addNewQuestion.manipulator);
+            };
+
+
+            this.questionsBlock = [];
+            let questions = this.getQuestions();
+            let dimensions = {
+                width: this.width / QUESTIONS_PER_LINE,
+                height: this.height * 1 / 6 - 2 * MARGIN
+            };
+
+            questions.forEach((itQuestion, i) => {
+                _loadOneQuestionInBlock(itQuestion, i);
             });
+            _createAddNewQuestion();
+
         }
 
 
@@ -276,7 +313,7 @@ exports.QuizAdminV = function (globalVariables) {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
                     height: this.questionDetailsDim.height * 1 / 6 - 2 * MARGIN
                 }
-                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + index);
+                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + (index+1));
                 questionGui.textAreaManipulator.set(0, questionGui.textArea.component);
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');

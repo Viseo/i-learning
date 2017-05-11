@@ -55,6 +55,12 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
+        changeContentColor(fillColor, strokeWidth, strokeColor){
+            this.contentProperties.fillColor = fillColor;
+            this.contentProperties.strokeWidth = strokeWidth;
+            this.contentProperties.strokeColor = strokeColor;
+        }
+
         setPathContent(path, size, fillColor, strokeWidth, strokeColor) {
             this.contentProperties.type = "Path";
             this.contentProperties.path = path;
@@ -173,6 +179,13 @@ exports.Tool = function (globalVariables, classContainer) {
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
             (borderProperties.layer && borderProperties.layer >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
                 : manipulator.add(this.manipulator);
+        }
+
+        changeContentPollygonColor(fillColor, strokeWidth, strokeColor){
+            if(this.iconSetting.contentProperties.type == "Polygon"){
+                this.iconSetting.changeContentColor(fillColor, strokeWidth, strokeColor);
+                this.content.color(fillColor, strokeWidth, strokeColor);
+            }
         }
 
         getSize(){
@@ -316,7 +329,7 @@ exports.Tool = function (globalVariables, classContainer) {
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.red, 1, myColors.black);
+                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.blue, 2, myColors.black);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
@@ -324,6 +337,7 @@ exports.Tool = function (globalVariables, classContainer) {
 
         static createRedCrossIcon(manipulator, layer){
             let icon = this.createPlusIcon(manipulator, layer);
+            icon.changeContentPollygonColor(myColors.red, 1, myColors.black);
             icon.rotate(45);
             return icon;
         }
