@@ -75,6 +75,69 @@ exports.FormationAdminP = function(globalVariables){
         addLevel(level){
             this.formation.addLevel(level);
         }
+        saveFormation() {
+            const messageError = "Vous devez remplir correctement le nom de la formation.";
+
+            if (this.formation.label && this.formation.label !== this.formation.labelDefault && this.formation.label.match(this.regex)) {
+                const getObjectToSave = () => {
+                    if (this.imageSrc) {
+                        return {
+                            label: this.formation.label,
+                            gamesCounter: this.formation.gamesCounter,
+                            links: this.formation.links,
+                            levelsTab: this.formation.levelsTab,
+                            imageSrc: this.formation.imageSrc,
+                            status: this.formation.status
+                        }
+                    }
+                    else {
+                        return {
+                            label: this.formation.label,
+                            gamesCounter: this.formation.gamesCounter,
+                            links: this.formation.links,
+                            levelsTab: this.formation.levelsTab,
+                            status: this.formation.status
+                        };
+                    }
+                };
+
+                if (this.formation.getId()) {
+                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
+                    });
+                }
+                else {
+                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
+                    })
+                }
+            } else {
+                this.view.displayMessage(messageError);
+                return Promise.resolve(false);
+            }
+        }
+        publishFormation(){
+            const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
+
+            if (this.formation.levelsTab.length === 0) {
+                this.view.displayMessage(messageErrorNoGame);
+                return;
+            }
+            if (!this.formation.label || this.formation.label === this.formation.labelDefault || !this.formation.label.match(this.regex)) {
+                this.view.displayMessage(messageErrorNoNameFormation);
+                return;
+            }
+            let check = this.formation.checkAllGameValidity();
+            if (check) {
+                this.formation.status = 'Published'
+                this.saveFormation();
+            } else {
+                //this.displayPublicationMessage(message[0]);
+            }
+        }
 
         flushView(){
             this.view.flush();

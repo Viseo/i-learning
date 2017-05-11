@@ -172,7 +172,7 @@ exports.Models = function (globalVariables) {
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
-                    game.tabQuestions && gamesTab.push(new Quiz(game, false, formation));
+                    gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
@@ -263,7 +263,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.replaceFormation(this._id, object, status, ignoredData)
+            return util.Server.replaceFormation(this._id, object, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -409,6 +409,29 @@ exports.Models = function (globalVariables) {
         createLink(parent,child){
             this.links.push({parentGame: parent, childGame: child});
         }
+
+        checkAllGameValidity(){
+            // this.formation.levelsTab.forEach(level => {
+            //     level.gamesTab.forEach(game => {
+            //         game.questions.forEach(question => {
+            //             if (!(classContainer.isInstanceOf("AddEmptyElementVue", question))) {
+            //                 question.questionType && question.questionType.validationTab.forEach(funcEl => {
+            //                     var result = funcEl && funcEl(question);
+            //                     if (result && (!result.isValid)) {
+            //                         message.push("Un ou plusieurs jeu(x) ne sont pas complet(s)");
+            //                         arrayOfUncorrectQuestions.push(question.questionNum - 1);
+            //                     }
+            //                     result && (checkQuiz.isValid = checkQuiz.isValid && result.isValid);
+            //                 });
+            //             }
+            //             allQuizValid = allQuizValid && checkQuiz.isValid;
+            //         });
+            //         checkQuiz.isValid
+            //         || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+            //     });
+            // });
+            return true;
+        }
     }
 
     class Level{
@@ -500,11 +523,12 @@ exports.Models = function (globalVariables) {
 
     class Quiz {
         constructor(game){
-            this.label = game.title;
-            this.index = game.gameIndex;
+            this.label = game.label;
+            this.index = game.index;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
+            this.questions = game.questions || [];
         }
     }
 
@@ -515,8 +539,8 @@ exports.Models = function (globalVariables) {
                     type: 'Quiz',
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
-                            title: 'Quiz ' + (counter ? counter.quizz : 0),
-                            gameIndex: column ,
+                            label: 'Quiz ' + (counter ? counter.quizz : 0),
+                            index: column ,
                             id: 'quizz'+(counter ? counter.quizz : 0),
                             levelIndex : level
                         });

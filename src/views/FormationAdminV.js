@@ -287,6 +287,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.saveButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Enregistrer');
                 this.saveButton.position(0.4*this.graphPanel.width, 0);
                 this.saveButton.back.corners(5,5);
+                this.saveButton.onClick(this.saveFormation.bind(this));
                 this.buttonsManipulator.add(this.saveButton.component);
                 this.manipulator.add(this.buttonsManipulator);
                 this.buttonsManipulator.move(this.gamePanel.width + MARGIN*2,
@@ -294,6 +295,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.publishButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Publier');
                 this.publishButton.position(this.graphPanel.width*0.6, 0);
                 this.publishButton.back.corners(5,5);
+                this.publishButton.onClick(this.publishFormation.bind(this));
                 this.buttonsManipulator.add(this.publishButton.component);
                 this.manipulator.add(this.buttonsManipulator);
             }
@@ -305,6 +307,13 @@ exports.FormationAdminV = function(globalVariables) {
             });
             this.updateAllLinks();
 
+        }
+        saveFormation(){
+            this.presenter.saveFormation();
+        }
+
+        publishFormation(){
+            this.presenter.publishFormation();
         }
 
         displayLevel(level){

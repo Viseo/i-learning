@@ -2058,8 +2058,8 @@ exports.Util = function (globalVariables) {
         static getVersionById(id) {
             return dbListener.httpGetAsync("/formations/" + id)
         }
-        static replaceFormation(id, newFormation, status, ignoredData) {
-            newFormation.status = status;
+        static replaceFormation(id, newFormation, ignoredData) {
+            //newFormation.status = status;
             return dbListener.httpPostAsync("/formations/" + id, newFormation, ignoredData)
         }
         static insertFormation(newFormation, status, ignoredData) {
