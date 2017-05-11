@@ -29,15 +29,15 @@ exports.FormationCollabP = function(globalVariables){
             this.view.flush();
         }
 
-        getFormationWithProgress ( id) {
+        getFormationWithProgress (id) {
             return this.user.getFormationWithProgress(id).then(data=> {
-              data = JSON.parse( data);
-              return data;
+                this.formation.loadFormationFromUser(data.formation);
+              return this.formation
            })
         }
 
-        onClickGame(quiz){
-            this.state.loadPresenterQuizCollab(quiz);
+        onClickGame(game){
+            this.state.loadPresenterGameCollab(game);
         }
 
     };

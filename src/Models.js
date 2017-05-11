@@ -101,16 +101,16 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
+        //
+        // loadPresenterQuAdmin(quiz){
+        //     this._addPageToStack();
+        //
+        //     this.currentPresenter && this.currentPresenter.flushView();
+        //     this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
+        //     this.currentPresenter.displayView();
+        // }
 
-        loadPresenterQuizAdmin(quiz){
-            this._addPageToStack();
-
-            this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
-            this.currentPresenter.displayView();
-        }
-
-        loadPresenterQuizCollab(quiz){
+        loadPresenterGameCollab(game){
             /*var testQuiz = new Quiz({
                 id:"quiz1",
                 label: "test quiz",
@@ -133,7 +133,10 @@ exports.Models = function (globalVariables) {
             this._addPageToStack();
 
             this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.QuizCollabP(this, quiz);
+            switch(game.type){
+                case'Quiz':
+                    this.currentPresenter = new globalVariables.QuizCollabP(this, game);
+            }
             this.currentPresenter.displayView();
         }
 
@@ -152,6 +155,8 @@ exports.Models = function (globalVariables) {
         }
 
         loadPresenterGameAdmin(game){
+
+
             this.currentPresenter && this.currentPresenter.flushView();
             switch(game.type){
                 case'Quiz':
@@ -482,6 +487,18 @@ exports.Models = function (globalVariables) {
             // });
             return true;
         }
+        loadFormationFromUser(formation) {
+            let tmpLevelsTab = formation.levelsTab;
+            this.levelsTab = [];
+            tmpLevelsTab.forEach(level => {
+                var gamesTab = [];
+                level._gamesTab.forEach(game => {
+                    gamesTab.push(new Quiz(game, false, this));
+                    gamesTab[gamesTab.length - 1].id = game.id;
+                });
+                this.levelsTab.push(new Level(gamesTab, this.levelsTab.length));
+            });
+        }
     }
 
     class Level{
@@ -502,8 +519,11 @@ exports.Models = function (globalVariables) {
             this.admin = (user.admin) ? user.admin : false;
         }
 
-        getFormationWithProgress (id ) {
-            return util.Server.getFormationsProgress(id);
+        getFormationWithProgress (id) {
+            return util.Server.getFormationsProgress(id).then(data=>{
+                data = JSON.parse(data);
+                return data;
+            });
         }
 
 

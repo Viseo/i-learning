@@ -69,8 +69,8 @@ exports.FormationCollabV = function(globalVariables) {
              let  levels =   formation.levelsTab ;
 
 
-             this.presenter.getFormationWithProgress(formation._id).then(data => {
-                 data.formation.levelsTab.forEach((level )=> {
+             this.presenter.getFormationWithProgress(formation._id).then(formation => {
+                 formation.levelsTab.forEach((level )=> {
                      this.displayLevel( level );
                  });
              })
