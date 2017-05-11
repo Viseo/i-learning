@@ -436,7 +436,7 @@ exports.FormationAdminV = function(globalVariables) {
                 .set(1,levelMiniature.text)
                 .set(2,levelMiniature.icon.rect)
                 .set(3, levelMiniature.icon.whiteRect);
-            level.gamesTab.forEach(game => {
+            level.getGamesTab().forEach(game => {
                 let gameMiniature = createGameMiniature(game);
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
@@ -499,7 +499,7 @@ exports.FormationAdminV = function(globalVariables) {
             let getColumn = (dropLocation, level) => {
                 level = formation.levelsTab[level];
                 let column = Math.floor(dropLocation.x / (MINIATURE_WIDTH + MARGIN));
-                column = column == 0 ? 1 : column > level.gamesTab.length ? level.gamesTab.length+1 : column;
+                column = column == 0 ? 1 : column > level.getGamesTab().length ? level.getGamesTab().length+1 : column;
                 return column;
             };
 

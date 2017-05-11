@@ -202,7 +202,7 @@ exports.Models = function (globalVariables) {
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
-                level.gamesTab.forEach(game => {
+                level._gamesTab.forEach(game => {
                     gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
@@ -325,26 +325,26 @@ exports.Models = function (globalVariables) {
                 newGame = true;
             }
             let lastLevel = game.levelIndex;
-            !newGame && this.levelsTab[lastLevel].gamesTab.forEach(g => {
+            !newGame && this.levelsTab[lastLevel].getGamesTab().forEach(g => {
                 if (g.index > game.index){
                     g.index--;
                 }
             });
-            !newGame && this.levelsTab[lastLevel].gamesTab.splice(game.index, 1);
-            game.index = column-1 > this.levelsTab[level].gamesTab.length ? this.levelsTab[level].gamesTab.length :
+            !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.index, 1);
+            game.index = column-1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
                 column-1 ;
-            this.levelsTab[level].gamesTab.forEach(g => {
+            this.levelsTab[level].getGamesTab().forEach(g => {
                 if (g.index >= game.index){
                     g.index++;
                 }
             })
-            this.levelsTab[level].gamesTab.splice(column-1, 0, game);
+            this.levelsTab[level].getGamesTab().splice(column-1, 0, game);
             game.levelIndex = level;
-            if(this.levelsTab[lastLevel].gamesTab.length == 0 && !newGame){
+            if(this.levelsTab[lastLevel].getGamesTab().length == 0 && !newGame){
                 this.levelsTab.forEach(l => {
                     if(l.index > lastLevel){
                         l.index --;
-                        l.gamesTab.forEach(g=>{
+                        l.getGamesTab().forEach(g=>{
                             g.levelIndex--;
                         })
                     }
@@ -357,7 +357,7 @@ exports.Models = function (globalVariables) {
         isGameInFormation(game){
             let result = false;
             this.levelsTab.forEach(level=>{
-                if(level.gamesTab.some(g=> g===game)){
+                if(level.getGamesTab().some(g=> g===game)){
                     result = true;
                 }
             });
@@ -378,17 +378,17 @@ exports.Models = function (globalVariables) {
         }
 
         removeGame(game){
-            this.levelsTab[game.levelIndex].gamesTab.forEach(g => {
+            this.levelsTab[game.levelIndex].getGamesTab().forEach(g => {
                 if (g.index > game.index){
                     g.index--;
                 }
             });
-            this.levelsTab[game.levelIndex].gamesTab.splice(game.index, 1);
-            if(this.levelsTab[game.levelIndex].gamesTab.length == 0){
+            this.levelsTab[game.levelIndex].getGamesTab().splice(game.index, 1);
+            if(this.levelsTab[game.levelIndex].getGamesTab().length == 0){
                 this.levelsTab.forEach(l => {
                     if(l.index > game.levelIndex){
                         l.index --;
-                        l.gamesTab.forEach(g=>{
+                        l.getGamesTab().forEach(g=>{
                             g.levelIndex--;
                         })
                     }
@@ -415,7 +415,7 @@ exports.Models = function (globalVariables) {
             this.levelsTab.forEach(l => {
                 if(l.index > level.index){
                     l.index --;
-                    l.gamesTab.forEach(g=>{
+                    l.getGamesTab().forEach(g=>{
                         g.levelIndex--;
                     })
                 }
