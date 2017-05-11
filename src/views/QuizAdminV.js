@@ -430,12 +430,6 @@ exports.QuizAdminV = function (globalVariables) {
                 _addExplanationPen(answerGui);
                 _addValidCheckbox(answerGui);
             });
-            /*questionDetail.
-
-             var _initManipulators = () => {
-             questionDetail.answer.manipulator = new Manipulator(this).addOrdonator(4);
-             }*/
-
         }
 
         newAnswerBlock(question, answer, index) {
@@ -538,7 +532,6 @@ exports.QuizAdminV = function (globalVariables) {
 
             };
             var _initExplanation = () => {
-                // popInExplanation.answer = answer;
                 popInExplanation.editable = editable;
                 if (popInExplanation.editable) {
                     popInExplanation.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
@@ -581,20 +574,11 @@ exports.QuizAdminV = function (globalVariables) {
                 };
                 var _displayExplanation = () => {
                     var _defineMediaPlaceholder = () => {
-                        // let panelWidth = (dimensions.width - 2 * MARGIN) * 3 / 4, panelHeight = dimensions.height - 2 * MARGIN;
-                        // let panelWidth = this.width * 4 / 5 - MARGIN, panelHeight = dimensions.height - 2 * MARGIN;
                         popInExplanation.dndPlaceholder = new svg.Text(popInExplanation.draganddropText)
                             .font("Arial", 20)
                             .dimension((this.width * 4 / 5 - MARGIN) * 3 / 5, this.height * 1 / 3 - MARGIN);
                         popInExplanation.mediaManipulator.add(popInExplanation.dndPlaceholder);
                         popInExplanation.mediaManipulator.move(-(this.width * 4 / 5 - MARGIN) * 2 / 5 - MARGIN + popInExplanation.dndPlaceholder.width / 2, 0);
-
-                        // popInExplanation.panel.border.color([], 1, [0, 0, 0]);
-                        // popInExplanation.panel.back.mark('explanationPanel');
-                        // popInExplanation.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-                        // popInExplanation.mediaManipulator.add(popInExplanation.panel.component);
-                        // popInExplanation.mediaManipulator.move(dimensions.width * 1 / 8, 0);
-                        // popInExplanation.mediaManipulator.move(0, 0);
                     };
                     var _displayText = () => {
                         let textToDisplay = popInExplanation.label ? popInExplanation.label : popInExplanation.defaultLabel;
@@ -659,11 +643,6 @@ exports.QuizAdminV = function (globalVariables) {
                         (event.keyCode === 27) && _crossHandler();
                     });
                 };
-
-                let dimensions = {
-                    width: this.width / QUESTIONS_PER_LINE,
-                    height: this.height * 1 / 6 - 2 * MARGIN
-                }
 
                 _initPopIn();
                 _displayExplanation();
