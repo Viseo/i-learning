@@ -8,7 +8,8 @@ exports.QuizScoreV = function (globalVariables) {
         gui = globalVariables.gui,
         util = globalVariables.util,
         Manipulator = util.Manipulator,
-        drawing = globalVariables.drawing;
+        drawing = globalVariables.drawing,
+        IconCreator = globalVariables.domain.IconCreator;
 
     const
         FONT = "Arial",
@@ -68,7 +69,9 @@ exports.QuizScoreV = function (globalVariables) {
                 let score = this.getScore();
                 let rect = new svg.Rect(dimensions.width, dimensions.height).color(score.color, 1, myColors.black).corners(5, 5);
                 let text = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                let icon = IconCreator.createImageIcon(score.emojiSrc, this.titleManipulator);
                 this.titleManipulator.set(0, rect).set(1, text);
+                icon.position(-text.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
                 this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
                 currentY += dimensions.height + MARGIN;
             }

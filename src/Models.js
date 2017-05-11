@@ -127,9 +127,11 @@ exports.Models = function (globalVariables) {
                         answers: [
                             {label: "oui", correct: true, explanation: {label: "parce que"}},
                             {label: "non"},
-                            {label: "peut etre"},
-                            {label: "test longueur"},
-                            {label: "a la ligne"}
+                            {label: "peut etre", correct: true},
+                            {label: "test longueur", explanation: {label: "parce que fdgoregbreogoeruguiregfr"}},
+                            {label: "a la ligne"},
+                            {label: "a la ligne 2"},
+                            {label: "test max ligne"}
                         ]
                     },
                     {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]},
@@ -466,13 +468,21 @@ exports.Models = function (globalVariables) {
             this.answered = quiz.answered || [];
         }
 
-        selectAnswer(questionIndex, answerIndex){
-            let question = this.questions[questionIndex];
+        validateQuestion(questionIndex, answers){
+            let question = this.questions[questionIndex],
+                result = {indexes: [], correct: true},
+                nbCorrectAnswers = 0;
             if(question){
-                let answer = question.answers[answerIndex];
-                if(answer){
-                    this.answered[questionIndex] = {index: answerIndex, correct: !!answer.correct};
-                }
+                answers.forEach((answerIndex)=>{
+                    let answer = question.answers[answerIndex];
+                    if(answer){
+                        result.indexes.push(answerIndex);
+                        result.correct = answer.correct && result.correct;
+                        if(answer.correct) nbCorrectAnswers++;
+                    }
+                })
+                result.correct = result.correct && this.getNbAnswersCorrect(questionIndex) === nbCorrectAnswers;
+                this.answered[questionIndex] = result;
             }
         }
 
@@ -497,17 +507,29 @@ exports.Models = function (globalVariables) {
             });
             return wrongQuestions;
         }
+        isMultipleChoice(questionIndex){
+            return this.questions[questionIndex] ? !!this.questions[questionIndex].multipleChoice : false;
+        }
         getNbQuestions(){
             return this.questions.length;
         }
-        getNbCorrect(){
+        getNbQuestionsCorrect(){
             return this.answered.reduce((nb, answered)=>answered.correct ? nb+1 : nb, 0);
+        }
+        getNbAnswersCorrect(questionsIndex){
+            return this.questions[questionsIndex].answers.reduce((nb, answer)=>answer.correct ? nb+1 : nb, 0);
         }
         getAnswered(questionIndex){
             return this.answered[questionIndex];
         }
-        getCorrectAnswerIndex(questionIndex){
-            return this.getAnswers(questionIndex).findIndex((answer)=>answer.correct);
+        getCorrectAnswersIndex(questionIndex){
+            let correctAnswers = [];
+            this.getAnswers(questionIndex).forEach((answer, index)=>{
+                if(answer.correct){
+                    correctAnswers.push(index);
+                }
+            })
+            return correctAnswers;
         }
     }
 

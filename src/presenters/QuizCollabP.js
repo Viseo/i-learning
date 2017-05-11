@@ -2,7 +2,7 @@
  * Created by TBE3610 on 05/05/2017.
  */
 
-const QuizCollabV = require('../views/QuizCollabV').QuizCollabV;
+const QuizCollabV = require('../views/QuizQuestionV').QuizQuestionV;
 const QuizScoreV = require('../views/QuizScoreV').QuizScoreV;
 
 exports.QuizCollabP = function (globalVariable) {
@@ -10,14 +10,15 @@ exports.QuizCollabP = function (globalVariable) {
     const QuizScoreView = QuizScoreV(globalVariable);
 
     class QuizCollabP {
-        constructor(parent, model) {
+        constructor(parent, quiz) {
             this.questionView = new QuizCollabView(this);
             this.scoreView = new QuizScoreView(this);
             this.parent = parent;
-            this.model = model;
+            this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
-            this.isDone = false; //chedk from model if already done
+            this.selectedAnswers = [];
+            this.isDone = false; //chedk from quiz if already done
         }
 
         displayView() {
@@ -62,33 +63,57 @@ exports.QuizCollabP = function (globalVariable) {
                 this.currentQuestionIndex++;
                 if (this.lastAnsweredIndex < this.currentQuestionIndex) this.lastAnsweredIndex = this.currentQuestionIndex;
                 this.displayQuestionView();
-            }
-        }
-
-        selectAnswer(index) {
-            this.model.selectAnswer(this.currentQuestionIndex, index);
-            if (this.currentQuestionIndex < this.getNbQuestions() - 1) {
-                this.nextQuestion();
-            } else {
+            }else {
                 this.isDone = true;
                 this.displayScoreView();
             }
         }
 
+        selectAnswer(index) {
+            if(this.isMultipleChoice()){
+                let answerIndex = this.selectedAnswers.indexOf(index);
+                if(answerIndex === -1){
+                    this.selectedAnswers.push(index);
+                }else {
+                    this.selectedAnswers.splice(answerIndex, 1);
+                }
+            }else {
+                this.validateQuestion(this.currentQuestionIndex, [index]);
+                this.nextQuestion();
+            }
+        }
+
+        resetAnswers(){
+            this.selectedAnswers = [];
+        }
+
+        confirmQuestion(){
+            this.validateQuestion(this.currentQuestionIndex, this.selectedAnswers);
+            this.nextQuestion();
+        }
+
+        validateQuestion(questionIndex, answers){
+            this.quiz.validateQuestion(questionIndex, answers);
+        }
+
         getLabel() {
-            return this.model.getLabel();
+            return this.quiz.getLabel();
         }
 
         getNbQuestions() {
-            return this.model.getNbQuestions();
+            return this.quiz.getNbQuestions();
         }
 
-        getNbCorrect() {
-            return this.model.getNbCorrect();
+        getNbQuestionsCorrect() {
+            return this.quiz.getNbQuestionsCorrect();
         }
 
         getCurrentQuestionLabel() {
-            return this.model.getQuestionLabel(this.currentQuestionIndex);
+            return this.quiz.getQuestionLabel(this.currentQuestionIndex);
+        }
+
+        isMultipleChoice(){
+            return this.quiz.isMultipleChoice(this.currentQuestionIndex);
         }
 
         isFirstQuestion() {
@@ -100,25 +125,26 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getCurrentAnswers() {
-            return this.model.getAnswers(this.currentQuestionIndex);
+            return this.quiz.getAnswers(this.currentQuestionIndex);
         }
 
         getCurrentAnswered() {
-            return this.model.getAnswered(this.currentQuestionIndex);
+            return this.quiz.getAnswered(this.currentQuestionIndex);
         }
 
-        getCorrectAnswerIndex() {
-            return this.model.getCorrectAnswerIndex(this.currentQuestionIndex);
+        getCorrectAnswersIndex() {
+            return this.quiz.getCorrectAnswersIndex(this.currentQuestionIndex);
         }
 
         getWrongQuestions() {
-            return this.model.getWrongQuestions();
+            return this.quiz.getWrongQuestions();
         }
 
         getScore() {
             let nbQuestions = this.getNbQuestions();
-            let nbCorrect = this.getNbCorrect();
-            let color, str1, str2;
+            let nbCorrect = this.getNbQuestionsCorrect();
+            let percentGoodQuestion = nbCorrect / nbQuestions;
+            let message, color, emojiSrc, str1, str2;
             switch (nbCorrect) {
                 case nbQuestions:
                     str1 = 'Impressionant !';
@@ -146,9 +172,15 @@ exports.QuizCollabP = function (globalVariable) {
                     color = [220, 255, 0];
                     break;
             }
-            let message = `${str1} Vous avez répondu à ${nbQuestions} questions, ${str2}`;
-
-            return {message, color};
+            message = `${str1} Vous avez répondu à ${nbQuestions} questions, ${str2}`;
+            if(percentGoodQuestion == 0.5){
+                emojiSrc = '/images/emoji/meh.png';
+            }else if(percentGoodQuestion > 0.5){
+                emojiSrc = '/images/emoji/smile.png';
+            }else {
+                emojiSrc = '/images/emoji/angry.png';
+            }
+            return {message, color, emojiSrc};
         }
     }
 

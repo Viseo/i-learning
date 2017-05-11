@@ -325,6 +325,8 @@ exports.Util = function (globalVariables) {
 
         unset(layer) {
             delete this.ordonator.children[layer].parentManip;
+            let index = this.components.indexOf(this.ordonator.get(layer));
+            if(index !== -1) this.components.splice(index, 1);
             this.ordonator.unset(layer);
             return this;
         }
@@ -354,6 +356,8 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) !== -1) {
                 this.last.remove(component);
                 delete component.parentManip;
+                let index = this.components.indexOf(component);
+                if(index !== -1) this.components.splice(index, 1);
             }
             return this;
         }
