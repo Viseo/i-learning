@@ -10,10 +10,10 @@ exports.QuizCollabP = function (globalVariable) {
     const QuizScoreView = QuizScoreV(globalVariable);
 
     class QuizCollabP {
-        constructor(parent, quiz) {
+        constructor(state, quiz) {
             this.questionView = new QuizCollabView(this);
             this.scoreView = new QuizScoreView(this);
-            this.parent = parent;
+            this.state = state;
             this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;

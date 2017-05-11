@@ -59,8 +59,6 @@ exports.FormationCollabV = function(globalVariables) {
 
 
 
-
-
         display(){
 
             drawing.manipulator.set(0,this.manipulator);
@@ -71,28 +69,11 @@ exports.FormationCollabV = function(globalVariables) {
              let  levels =   formation.levelsTab ;
 
 
-
              this.presenter.getFormationWithProgress(formation._id).then(data => {
-
-
                  data.formation.levelsTab.forEach((level )=> {
-
                      this.displayLevel( level );
-
-
-
                  });
-
              })
-
-
-
-
-
-
-
-
-
 
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
@@ -128,14 +109,10 @@ exports.FormationCollabV = function(globalVariables) {
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
                 this.graphManipulator.set(1,this.titleGraphBack);
-
             }
 
             createGraphPanel();
-
-
         }
-
 
 
         displayLevel(level){
@@ -158,26 +135,28 @@ exports.FormationCollabV = function(globalVariables) {
                     rect : new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10,10),
                     whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158,5)
                 }
-            }
+            };
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
             levelManipulator.set(0,levelMiniature.line)
                 .set(1,levelMiniature.text)
                 .set(2,levelMiniature.icon.rect)
                 .set(3, levelMiniature.icon.whiteRect);
-            level.gamesTab.forEach(game => {
+
+            level._gamesTab.forEach(game => {
                 let gameMiniature = createGameMiniature(game);
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
-
                 levelManipulator.add(gameMiniature.manipulator);
-                gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
-                    , 5);
+                gameMiniature.manipulator.addEvent('click', () => this.onClickGame(game));
+
+                gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2, 5);
             });
         }
 
-
-
+        onClickGame(game){
+            this.presenter.onClickGame(game);
+        }
 
 
     }

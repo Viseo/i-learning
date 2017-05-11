@@ -20,8 +20,6 @@ exports.FormationCollabP = function(globalVariables){
             return this.formation.label;
         }
         getFormation(){
-
-
             return this.formation;
         }
         returnHandler(){
@@ -32,19 +30,15 @@ exports.FormationCollabP = function(globalVariables){
         }
 
         getFormationWithProgress ( id) {
-
             return this.user.getFormationWithProgress(id).then(data=> {
               data = JSON.parse( data);
               return data;
-
-
-
            })
-
-
         }
 
-
+        onClickGame(quiz){
+            this.state.loadPresenterQuizCollab(quiz);
+        }
 
     };
 

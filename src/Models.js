@@ -110,8 +110,8 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
-        loadPresenterQuizCollab(){
-            var testQuiz = new Quiz({
+        loadPresenterQuizCollab(quiz){
+            /*var testQuiz = new Quiz({
                 id:"quiz1",
                 label: "test quiz",
                 questions: [
@@ -129,10 +129,12 @@ exports.Models = function (globalVariables) {
                     {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]},
                     {label: "3eme question", answers: [{label: "dfdsgf efzfdsf", correct:true}, {label: "dsdsdfgdsfds"}]}
                 ]
-            });
-            let dashboardP = new globalVariables.QuizCollabP(null, testQuiz);
+            });*/
+            this._addPageToStack();
 
-            dashboardP.displayView();
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.QuizCollabP(this, quiz);
+            this.currentPresenter.displayView();
         }
 
         loadPresenterRegister(){
@@ -495,9 +497,6 @@ exports.Models = function (globalVariables) {
 
         getFormationWithProgress (id ) {
             return util.Server.getFormationsProgress(id);
-
-
-
         }
 
 

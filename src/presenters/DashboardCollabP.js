@@ -32,8 +32,6 @@ exports.DashboardCollabP = function(globalVariables) {
         //todo
         clickOnFormation(formation){
             this.state.loadPresenterFormationCollab(formation,this.user);
-            //this.state.loadPresenterQuizCollab();
-            alert(JSON.stringify(formation));
         }
 
         getFormations(){
