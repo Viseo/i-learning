@@ -164,19 +164,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.saveQuizButtonManipulator.move(this.width / 2 + dimensions.width / 2 + MARGIN, currentY + dimensions.height / 2);
             }
 
-            var _displayQuestions = () => {
-                let questions = this.getQuestions();
-                // this.numberQuestions = questions.length;
-                questions.forEach((question, i) => {
-
-                    let questionDisplayElement = this.newQuestionBlock(question, i);
-                    this.questions.push(question);
-                    this.questionsBlockManipulator.add(questionDisplayElement.blockManipulator);
-                });
-
-                questions.length > 0 && questions[0].select();
-            }
-
             var currentY = drawing.height * HEADER_SIZE + MARGIN;
             _resetDrawings();
             _updateHeader();
@@ -207,7 +194,7 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                     };
                     questionGui.select = () => {
-                        this._loadQuestionDetail();
+                        //this._loadQuestionDetail();
                         if (!questionGui.selected) {
                             questionGui.selected = true;
                             questionGui.questionButton.color([[43, 120, 228], 1, myColors.black]);
@@ -240,7 +227,10 @@ exports.QuizAdminV = function (globalVariables) {
             var _createAddNewQuestion = () => {
                 let onClickOnAddNewQuestion = () => {
                     let question = {label: ""};
-                    _loadOneQuestionInBlock(question, this.questionsBlock.length - 1);
+                    let index = this.questionsBlock.length - 1;
+                    _loadOneQuestionInBlock(question, index);
+                    let questionInDetail = this._loadOneQuestionInDetail(question, index);
+                    this.questionsDetail.splice(index, 0, questionInDetail);
                 };
 
                 let addNewQuestion = {};
@@ -274,8 +264,14 @@ exports.QuizAdminV = function (globalVariables) {
 
         }
 
+        _loadOneQuestionInDetail(question, index){
+            let questionDetail = {};
 
-        _loadQuestionDetail(){
+            questionDetail.answersDimension = {
+                width: this.questionDetailsDim.width - 2 * MARGIN,
+                height: this.questionDetailsDim.height - 2 * MARGIN
+            };
+
             var _declareManipulatorQuestionDetail = (questionGui) => {
                 questionGui.typeManipulator = new Manipulator(this).addOrdonator(2);
                 questionGui.textAreaManipulator = new Manipulator(this).addOrdonator(1);
@@ -323,20 +319,20 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.answersDimension.height -= dimensions.height;
             };
 
+            _declareManipulatorQuestionDetail(questionDetail);
+            _displayToggleTypeResponse(questionDetail, question);
+            _displayTextArea(questionDetail, index, question);
+
+
+            return questionDetail;
+        }
+
+        _loadQuestionDetail(){
             this.questionsDetail = [];
             let questions = this.getQuestions();
 
             questions.forEach((itQuestion, i) => {
-                let questionDetail = {};
-
-                questionDetail.answersDimension = {
-                    width: this.questionDetailsDim.width - 2 * MARGIN,
-                    height: this.questionDetailsDim.height - 2 * MARGIN
-                };
-
-                _declareManipulatorQuestionDetail(questionDetail);
-                _displayToggleTypeResponse(questionDetail, itQuestion);
-                _displayTextArea(questionDetail, i, itQuestion);
+                let questionDetail = this._loadOneQuestionInDetail(itQuestion, i);
                 this._loadAnswerBlock(questionDetail, i, itQuestion);
                 this.questionsDetail.add(questionDetail);
             });
