@@ -30,7 +30,7 @@ exports.DashboardCollabP = function(globalVariables) {
         }
 
         clickOnFormation(formation){
-            this.state.loadPresenterFormationCollab(formation);
+            this.state.loadPresenterFormationCollab(formation,this.user);
         }
 
         getFormations(){

@@ -6,10 +6,11 @@ exports.FormationCollabP = function(globalVariables){
 
     class FormationCollabP {
 
-        constructor(state, formation){
+        constructor(state, formation,user){
             this.formation = formation;
             this.view = new FormationsCollabV(this);
             this.state = state;
+            this.user = user;
         }
 
         displayView(){
@@ -29,6 +30,20 @@ exports.FormationCollabP = function(globalVariables){
         flushView(){
             this.view.flush();
         }
+
+        getFormationWithProgress ( id) {
+
+            return this.user.getFormationWithProgress(id).then(data=> {
+              data = JSON.parse( data);
+              return data;
+
+
+
+           })
+
+
+        }
+
 
 
     };

@@ -92,12 +92,12 @@ exports.Models = function (globalVariables) {
         }
 
 
-        loadPresenterFormationCollab (formation){
+        loadPresenterFormationCollab (formation,user){
             this._addPageToStack();
 
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.FormationCollabP(this,formation);
+            this.currentPresenter = new globalVariables.FormationCollabP(this,formation,user);
             this.currentPresenter.displayView();
         }
 
@@ -215,6 +215,8 @@ exports.Models = function (globalVariables) {
                     }
                 });
         }
+
+
 
         addNewFormation(object) {
             const
@@ -446,6 +448,14 @@ exports.Models = function (globalVariables) {
             this.lastAction = new LastAction(user.lastAction);
             this.admin = (user.admin) ? user.admin : false;
         }
+
+        getFormationWithProgress (id ) {
+            return util.Server.getFormationsProgress(id);
+
+
+
+        }
+
 
         hasLastAction() {
             return this.lastAction.hasLastAction();

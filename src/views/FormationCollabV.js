@@ -5,7 +5,12 @@ exports.FormationCollabV = function(globalVariables) {
 
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        drawing = globalVariables.drawing;
+        drawing = globalVariables.drawing,
+    drawings = globalVariables.drawings,
+    MINIATURE_FONT_SIZE = 20,
+        MINIATURE_WIDTH = 200,
+        MINIATURE_HEIGHT = 75,
+    LEVEL_HEIGHT = 150;
 
 
 
@@ -60,24 +65,28 @@ exports.FormationCollabV = function(globalVariables) {
 
             drawing.manipulator.set(0,this.manipulator);
             this.manipulator.add(this.header.getManipulator());
-            this.manipulator.add(this.graphMiniatureManipulator);
             this.header.display(this.label);
             this.displayGraphCollab();
              let formation =   this.presenter.getFormation();
              let  levels =   formation.levelsTab ;
 
 
-             levels.forEach((level )=> {
 
-                 this.displayLevel( level );
-
+             this.presenter.getFormationWithProgress(formation._id).then(data => {
 
 
+                 data.formation.levelsTab.forEach((level )=> {
+
+                     this.displayLevel( level );
 
 
 
+                 });
 
-             });
+             })
+
+
+
 
 
 
@@ -108,14 +117,14 @@ exports.FormationCollabV = function(globalVariables) {
                 this.graphManipulator = new Manipulator(this).addOrdonator(3);
                 this.manipulator.add(this.graphManipulator);
                 this.graphManipulator.set(0, this.graphPanel.component);
-
+                this.graphPanel.content.add(this.graphMiniatureManipulator.first);
+                this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
                 this.graphManipulator.move(-this.graphSize.width/2 + drawing.width - MARGIN,
-                    this.header.height + 2*MARGIN + this.graphSize.height/2);
+                    this.header.height + 2*MARGIN + this.graphSize.height/2 + this.buttonSize.height);
                 this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
                 this.titleGraph = new svg.Text('Formation : ' +  this.label).font('Arial', 25).color(myColors.grey).anchor('left');
                 this.titleGraph.position(-0.85*this.graphSize.width/2, -this.graphSize.height/2 + 8.3);
                 this.graphManipulator.set(2,this.titleGraph);
-              //   this.graphManipulator.move(750+2*MARGIN, 400+ MARGIN);
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85*this.graphSize.width/2 + this.titleGraph.boundingRect().width/2, -this.graphSize.height/2);
                 this.graphManipulator.set(1,this.titleGraphBack);
@@ -130,50 +139,14 @@ exports.FormationCollabV = function(globalVariables) {
 
 
         displayLevel(level){
-            let miniatureSelection = (miniature) => {
-                if(this.miniatureSelected){
-                    this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
-                    this.miniatureSelected.manipulator.unset(3);
-                }
-                miniature.border.color(myColors.white, 2, myColors.darkBlue);
-                miniature.manipulator.set(3,miniature.redCrossManipulator);
-                this.miniatureSelected = miniature;
-            }
             let createGameMiniature = (game)=>{
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial',15).position(0,5),
                     manipulator : new Manipulator(this).addOrdonator(4)
                 }
-                miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
-                let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
-                miniature.redCrossManipulator.set(0,redCross);
-                miniature.redCrossManipulator.addEvent('click', ()=>{
-                    this.removeGame(miniature.game);
-                });
                 miniature.manipulator.mini = miniature;
                 miniature.game = game;
-                miniature.conf = {
-                    drag: (what, x, y) => {
-                        // let point; //TODO : miniature should not get out of graph
-                        return{x:x,y:y};
-                    },
-
-                    drop: (what, whatParent, finalX, finalY)=>{
-                        let {x:X, y:Y} = miniature.conf.drag(what,finalX,finalY);
-                        return{x: X, y: Y, parent: whatParent};
-                    },
-                    clicked : (what) => {
-                        miniatureSelection(what.mini);
-                    },
-                    moved: (what) => {
-                        let point = what.component.parent.globalPoint(what.x,what.y);
-                        this.dropAction(point.x,point.y, game);
-                        return true;
-                    }
-                };
-                //miniatureRedCrossHandler(miniature);
-                installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);
@@ -188,11 +161,6 @@ exports.FormationCollabV = function(globalVariables) {
             }
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
-            let levelRedCrossManipulator = new Manipulator(this);
-            let levelRedCross = drawRedCross(0,5,18, levelRedCrossManipulator);
-            levelManipulator.add(levelRedCrossManipulator);
-            levelRedCrossManipulator.add(levelRedCross);
-            svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
             levelManipulator.set(0,levelMiniature.line)
                 .set(1,levelMiniature.text)
                 .set(2,levelMiniature.icon.rect)
