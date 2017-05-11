@@ -301,33 +301,33 @@ exports.FormationAdminV = function(globalVariables) {
             }
             createGraphPanel();
             createButtons();
-            let testTarget = {
-                id: "quizz1",
-                label: "test de quiz",
-                questions: [
-                    {
-                        label: "question 1",
-                        multipleChoice: false,
-                        answers: [
-                            {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
-                            {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
-                        ],
-                        media: "../images/bidon.png"
-                    },
-                    {
-                        label: "question 2",
-                        multipleChoice: true,
-                        answers: [
-                            {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
-                            {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-                            {label:"réponse 3", correct: false, explanation:{}, media: "../images/bidon.png"},
-                            {label:"réponse 4", correct: false, explanation:{}, media: "../images/bidon.png"},
-                            {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
-                        ],
-                        media: "../images/bidon.png"
-                    }
-                ]
-            }
+            // let testTarget = {
+            //     id: "quizz1",
+            //     label: "test de quiz",
+            //     questions: [
+            //         {
+            //             label: "question 1",
+            //             multipleChoice: false,
+            //             answers: [
+            //                 {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
+            //                 {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
+            //             ],
+            //             media: "../images/bidon.png"
+            //         },
+            //         {
+            //             label: "question 2",
+            //             multipleChoice: true,
+            //             answers: [
+            //                 {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
+            //                 {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+            //                 {label:"réponse 3", correct: false, explanation:{}, media: "../images/bidon.png"},
+            //                 {label:"réponse 4", correct: false, explanation:{}, media: "../images/bidon.png"},
+            //                 {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
+            //             ],
+            //             media: "../images/bidon.png"
+            //         }
+            //     ]
+            // }
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
@@ -411,7 +411,12 @@ exports.FormationAdminV = function(globalVariables) {
                         return true;
                     }
                 };
-                //miniatureRedCrossHandler(miniature);
+                svg.addEvent(miniature.border, 'dblclick', ()=>{
+                    this.dbClickMiniature(miniature)
+                });
+                svg.addEvent(miniature.content, 'dblclick', ()=>{
+                    this.dbClickMiniature(miniature)
+                });
                 installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
@@ -456,6 +461,10 @@ exports.FormationAdminV = function(globalVariables) {
             links.forEach(link=>{
                 this.arrow(link.parentGame,link.childGame)
             })
+        }
+
+        dbClickMiniature(miniature){
+            this.presenter.loadPresenterGameAdmin(miniature.game);
         }
 
         getLinks(){
@@ -538,22 +547,7 @@ exports.FormationAdminV = function(globalVariables) {
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
             redCross.mark('redCross');
             this.redCrossManipulator.add(redCross);
-            // this.redraw = () => {
-            //     let childGlobalPoint = child.miniature.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
-            //         childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y),
-            //         parentGlobalPoint = parent.miniature.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
-            //         parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-            //     this.arrowsManipulator.remove(this.arrowPath);
-            //     this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-            //     this.arrowsManipulator.add(this.arrowPath);
-            // };
-            // this.redCrossClickHandler = () => {
-            //     formation.removeLink(parent, child);
-            //     formation.arrowsManipulator.remove(this.arrowPath);
-            //     formation.arrowsManipulator.remove(this.redCrossManipulator);
-            //     formation.selectedArrow = null;
-            // };
-            //svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             this.arrowsManipulator.add(this.arrowPath);
             this.selected = false;

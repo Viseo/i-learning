@@ -151,7 +151,14 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
-
+        loadPresenterGameAdmin(game){
+            this.currentPresenter && this.currentPresenter.flushView();
+            switch(game.type){
+                case'Quiz':
+                    this.currentPresenter = new globalVariables.QuizAdminP(this,game);
+            }
+            this.currentPresenter.displayView();
+        }
 
         _loadFormation(formation){
             this.formations.loadFormation(formation);

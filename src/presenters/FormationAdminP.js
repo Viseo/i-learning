@@ -119,6 +119,11 @@ exports.FormationAdminP = function(globalVariables){
                 return Promise.resolve(false);
             }
         }
+
+        loadPresenterGameAdmin(game){
+            this.state.loadPresenterGameAdmin(game);
+        }
+
         publishFormation(){
             const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";

@@ -189,7 +189,7 @@ exports.QuizAdminV = function (globalVariables) {
             //_displayQuestions();
             this._displayQuestionBlock();
             this._loadQuestionDetail();
-            this.questionsBlock.length > 0 && this.questionsBlock[0].select();
+            this.questionsBlock.length > 1 && this.questionsBlock[0].select();
         }
 
 
@@ -207,6 +207,7 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                     };
                     questionGui.select = () => {
+                        this._loadQuestionDetail();
                         if (!questionGui.selected) {
                             questionGui.selected = true;
                             questionGui.questionButton.color([[43, 120, 228], 1, myColors.black]);
