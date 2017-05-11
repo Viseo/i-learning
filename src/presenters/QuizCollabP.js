@@ -2,7 +2,7 @@
  * Created by TBE3610 on 05/05/2017.
  */
 
-const QuizCollabV = require('../views/QuizCollabV').QuizCollabV;
+const QuizCollabV = require('../views/QuizQuestionV').QuizQuestionV;
 const QuizScoreV = require('../views/QuizScoreV').QuizScoreV;
 
 exports.QuizCollabP = function (globalVariable) {

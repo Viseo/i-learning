@@ -2,7 +2,7 @@
  * Created by TBE3610 on 05/05/2017.
  */
 
-exports.QuizCollabV = function (globalVariables) {
+exports.QuizQuestionV = function (globalVariables) {
     const
         svg = globalVariables.svg,
         gui = globalVariables.gui,
@@ -25,7 +25,7 @@ exports.QuizCollabV = function (globalVariables) {
         BUTTON_WIDTH = 200,
         BUTTON_HEIGHT = 40;
 
-    class QuizCollabV {
+    class QuizQuestionV {
         constructor(presenter) {
             var _initVariables = () => {
                 this.presenter = presenter;
@@ -373,5 +373,5 @@ exports.QuizCollabV = function (globalVariables) {
         }
     }
 
-    return QuizCollabV;
+    return QuizQuestionV;
 }
