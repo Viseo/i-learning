@@ -15,7 +15,7 @@ exports.FormationAdminV = function(globalVariables) {
         installDnD = globalVariables.gui.installDnD;
 
 
-    class FormationAdminV{
+    class FormationAdminV {
         constructor(presenter){
             this.buttonSize= {width:150, height:50};
             this.inputSize = {width: 300, height:30};
@@ -301,6 +301,33 @@ exports.FormationAdminV = function(globalVariables) {
             }
             createGraphPanel();
             createButtons();
+            let testTarget = {
+                id: "quizz1",
+                label: "test de quiz",
+                questions: [
+                    {
+                        label: "question 1",
+                        multipleChoice: false,
+                        answers: [
+                            {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
+                            {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
+                        ],
+                        media: "../images/bidon.png"
+                    },
+                    {
+                        label: "question 2",
+                        multipleChoice: true,
+                        answers: [
+                            {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
+                            {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"réponse 3", correct: false, explanation:{}, media: "../images/bidon.png"},
+                            {label:"réponse 4", correct: false, explanation:{}, media: "../images/bidon.png"},
+                            {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
+                        ],
+                        media: "../images/bidon.png"
+                    }
+                ]
+            }
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
@@ -315,6 +342,8 @@ exports.FormationAdminV = function(globalVariables) {
         publishFormation(){
             this.presenter.publishFormation();
         }
+
+
 
         displayLevel(level){
             let miniatureSelection = (miniature) => {
@@ -498,7 +527,8 @@ exports.FormationAdminV = function(globalVariables) {
             }, 3000);
         }
 
-        arrow(parent,child){
+
+        arrow(parent,child) {
             this.arrowsManipulator.move(this.graphManipulator.x, this.graphManipulator.y)
             let parentGlobalPoint = parent.miniature.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
                 parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
@@ -549,6 +579,11 @@ exports.FormationAdminV = function(globalVariables) {
             this.arrowPath.color(myColors.black, 0, myColors.black);
             return this;
 
+        }
+
+        testLoadQuiz(quizIntel) {
+            // let selectedQuiz = new Quiz
+            this.presenter.loadQuiz(quizIntel);
         }
     }
 

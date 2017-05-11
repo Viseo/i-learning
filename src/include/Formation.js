@@ -171,7 +171,7 @@ exports.Formation = function (globalVariables, classContainer) {
 
             this.library = classContainer.createClass("GamesLibraryVue", myLibraryGames);
             this.library.formation = this;
-            this.quizManager = classContainer.createClass("QuizManagerVue", null, this);
+            this.quizManager = classContainer.createClass("QuizManagerVue", this);
             this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
@@ -242,13 +242,36 @@ exports.Formation = function (globalVariables, classContainer) {
             let dblclickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                 let displayQuizManager = () => {
-                    this.quizManager.loadQuiz(target);
+                    let testTarget = {
+                        label: "test de quiz",
+                        tabQuestions: [
+                            {
+                                label: "question 1",
+                                multipleChoice: false,
+                                tabAnswers: [
+                                    {label:"réponse 1", correct: true, explanation:{}},
+                                    {label:"reponse 2", correct: false, explanation:{label:"parce que !"}}
+                                ]
+                            },
+                            {
+                                label: "question 2",
+                                multipleChoice: true,
+                                tabAnswers: [
+                                    {label:"réponse 1", correct: true, explanation:{}},
+                                    {label:"reponse 2", correct: true, explanation:{label:"parce que !"}},
+                                    {label:"réponse 3", correct: false, explanation:{}}
+                                ]
+                            }
+                        ]
+                    }
+                    this.quizManager.loadQuiz(testTarget);
                     this.quizDisplayed = target;
-                    this.quizManager.display();
+                    //this.quizManager.display();
                     this.selectedArrow = null;
                     this.selectedGame = null;
                 };
-                this.saveFormation(displayQuizManager);
+                displayQuizManager();
+                //this.saveFormation(displayQuizManager);
                 //svg.removeSelection();
             };
 

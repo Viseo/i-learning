@@ -6,8 +6,8 @@ const FFormationAdminP = require('./FormationsdminP').FormationAdminP;
 const FFormationCollabP = require('./FormationsCollabP').FormationCollabP;
 const connection = require('./ConnectionP').ConnectionP;
 const register = require('./RegisterP').RegisterP;
-// const FQuizCollab = require('./QuizCollabP').QuizCollabP;
-// const FQuizAdminP = require('./QuizAdminP').QuizAdminP;
+const FQuizCollab = require('./QuizCollabP').QuizCollabP;
+const FQuizAdminP = require('./QuizAdminP').QuizAdminP;
 
 exports.PresenterFactory = function(globalvariables){
     globalvariables.Presenter = FPresenter(globalvariables).Presenter;
@@ -18,6 +18,6 @@ exports.PresenterFactory = function(globalvariables){
     globalvariables.FormationCollabP = FFormationCollabP(globalvariables);
     globalvariables.ConnectionP = connection(globalvariables);
     globalvariables.RegisterP = register(globalvariables);
-    // globalvariables.QuizCollabP = FQuizCollab(globalvariables);
-    // globalvariables.QuizAdminP = FQuizAdminP(globalvariables);
+    globalvariables.QuizCollabP = FQuizCollab(globalvariables);
+    globalvariables.QuizAdminP = FQuizAdminP(globalvariables);
 };

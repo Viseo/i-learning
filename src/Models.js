@@ -102,7 +102,38 @@ exports.Models = function (globalVariables) {
         }
 
 
+        loadPresenterQuizAdmin(quiz){
+            this._addPageToStack();
 
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
+            this.currentPresenter.displayView();
+        }
+
+        loadPresenterQuizCollab(){
+            var testQuiz = new Quiz({
+                id:"quiz1",
+                label: "test quiz",
+                questions: [
+                    {label: "1re question", multipleChoice: true,
+                        answers: [
+                            {label: "oui", correct: true, explanation: {label: "parce que"}},
+                            {label: "non"},
+                            {label: "peut etre", correct: true},
+                            {label: "test longueur", explanation: {label: "parce que fdgoregbreogoeruguiregfr"}},
+                            {label: "a la ligne"},
+                            {label: "a la ligne 2"},
+                            {label: "test max ligne"}
+                        ]
+                    },
+                    {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]},
+                    {label: "3eme question", answers: [{label: "dfdsgf efzfdsf", correct:true}, {label: "dsdsdfgdsfds"}]}
+                ]
+            });
+            let dashboardP = new globalVariables.QuizCollabP(null, testQuiz);
+
+            dashboardP.displayView();
+        }
 
         loadPresenterRegister(){
             this._addPageToStack();
@@ -118,12 +149,18 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
+
+
         _loadFormation(formation){
             this.formations.loadFormation(formation);
         }
 
         getGamesLibrary(){
             return new GamesLibrary();
+        }
+
+        getMediasLibrary(){
+            return new MediasLibrary();
         }
 
     }
@@ -189,6 +226,10 @@ exports.Models = function (globalVariables) {
             this.levelsTab = formation.levelsTab || [];
             this.label = formation.label ? formation.label : "";
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
+        }
+
+        getLevelsTab() {
+            return this._levelsTab;
         }
 
         saveNewFormation(callback) {
@@ -436,8 +477,11 @@ exports.Models = function (globalVariables) {
 
     class Level{
         constructor(gamesTab, index){
-            this.gamesTab = gamesTab;
+            this._gamesTab = gamesTab;
             this.index = index;
+        }
+        getGamesTab() {
+            return this._gamesTab;
         }
     }
 
@@ -523,20 +567,105 @@ exports.Models = function (globalVariables) {
     }
 
     class Game{
-        constructor(game){
-
+        constructor(level) {
+            this.levelGame = level;
         }
 
     }
 
     class Quiz {
-        constructor(game){
+        constructor(game) {
             this.label = game.label;
             this.index = game.index;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
+        }
+
+        validateQuestion(questionIndex, answers){
+            let question = this.questions[questionIndex],
+                result = {indexes: [], correct: true},
+                nbCorrectAnswers = 0;
+            if(question){
+                answers.forEach((answerIndex)=>{
+                    let answer = question.answers[answerIndex];
+                    if(answer){
+                        result.indexes.push(answerIndex);
+                        result.correct = answer.correct && result.correct;
+                        if(answer.correct) nbCorrectAnswers++;
+                    }
+                })
+                result.correct = result.correct && this.getNbAnswersCorrect(questionIndex) === nbCorrectAnswers;
+                this.answered[questionIndex] = result;
+            }
+        }
+
+        getLabel(){
+            return this.label;
+        }
+        getQuestionLabel(index){
+            return this.questions[index] ? this.questions[index].label : "";
+        }
+        getAnswers(questionIndex){
+            return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
+        }
+        getWrongQuestions(){
+            let wrongQuestions = [];
+            this.answered.forEach((answered, index) => {
+                if(!answered.correct){
+                    wrongQuestions.push({
+                        index,
+                        label: this.getQuestionLabel(index)
+                    });
+                }
+            });
+            return wrongQuestions;
+        }
+        isMultipleChoice(questionIndex){
+            return this.questions[questionIndex] ? !!this.questions[questionIndex].multipleChoice : false;
+        }
+        getNbQuestions(){
+            return this.questions.length;
+        }
+        getNbQuestionsCorrect(){
+            return this.answered.reduce((nb, answered)=>answered.correct ? nb+1 : nb, 0);
+        }
+        getNbAnswersCorrect(questionsIndex){
+            return this.questions[questionsIndex].answers.reduce((nb, answer)=>answer.correct ? nb+1 : nb, 0);
+        }
+        getAnswered(questionIndex){
+            return this.answered[questionIndex];
+        }
+        getCorrectAnswersIndex(questionIndex){
+            let correctAnswers = [];
+            this.getAnswers(questionIndex).forEach((answer, index)=>{
+                if(answer.correct){
+                    correctAnswers.push(index);
+                }
+            })
+            return correctAnswers;
+        }
+    }
+
+    class Question{
+        constructor(quiz) {
+            this.parentQuiz = quiz;
+            this.answers = [];
+            this.label = "Question par déf";
+            this.multipleChoice = false;
+            // this.media = imgSrc;
+
+        }
+    }
+
+    class Answer {
+        constructor(question) {
+            this.parentQuestion = question;
+            this.label = "Réponse par déf";
+            this.correct = false;
+            this.explanation = {};
+            // this.media = imgSrc;
         }
     }
 
@@ -559,13 +688,45 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class Question {
+    class MediasLibrary{
+        constructor(){
 
+        }
+
+        uppload(file, onProgress){
+            return Server.upload(file, onProgress);
+        }
+
+        getImages(){
+            return Server.getImages().then(data=>JSON.parse(data));
+        }
+
+        deleteImage(_id){
+            return Server.deleteImage(_id).then(()=>{
+                let imageIndex = this.images.findIndex((image)=>image._id === _id);
+                if(imageIndex !== -1) this.images.splice(imageIndex, 1);
+            });
+        }
+
+        getVideos() {
+            return Server.getVideos().then((videos)=>{
+                this.videos = videos;
+                return videos;
+            });
+        }
+
+        deleteVideo(_id) {
+            return Server.deleteVideo(_id).then(()=>{
+                let videoIndex = this.videos.findIndex((video)=>video._id === _id);
+                if(videoIndex !== -1) this.videos.splice(videoIndex, 1);
+            });
+        }
     }
 
     return {
         State,
         Formations,
-        User
+        User,
+        Quiz //TODO à retirer après les tests
     }
 }
