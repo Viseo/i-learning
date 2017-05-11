@@ -9,48 +9,29 @@ exports.Models = function (globalVariables) {
             this.stackPage = [];
             this.formations = new Formations();
             this.currentPresenter = null;
-            this.stackStateFrozen = false;
+
         }
 
         returnToOldPage() {
-            this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
             switch(presenterName){
                 case "DashboardAdminP":
+                    this.loadPresenterDashboard(this.user); break;
+                case "DashboardCollabP":
                     this.loadPresenterDashboard(this.user); break;
                 case "ConnectionP":
                     this.loadPresenterConnection(); break;
                 default: break;
             }
-            this._unFrozenStackPage();
-        }
-
-        _isStackPageIsFrozen(){
-            return this.stackStateFrozen;
-        }
-
-        _putStackPageToFrozen(){
-            this.stackStateFrozen = true;
-        }
-
-        _unFrozenStackPage(){
-            this.stackStateFrozen = false;
         }
 
         _addPageToStack() {
-            if(!this._isStackPageIsFrozen()){
-                this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
-            }
+            this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
         }
 
         clearOldPageStackAndLoadPresenterConnection(){
-            var _cleanPresenter = () => {
-                this.currentPresenter && this.currentPresenter.flushView();
-                this.currentPresenter = null;
-            }
-
             this.stackPage = [];
-            _cleanPresenter();
+            this.currentPresenter = null;
             this.loadPresenterConnection();
         }
 
@@ -95,7 +76,7 @@ exports.Models = function (globalVariables) {
                 if (globalVariables.admin) {
                     this.currentPresenter = new globalVariables.dashboardAdminP(this, this.formations);
                 } else {
-                    this.currentPresenter = new globalVariables.DashboardCollabP(this.user, this.formations);
+                    this.currentPresenter = new globalVariables.DashboardCollabP(this, this.user, this.formations);
                 }
                 this.currentPresenter.displayView();
             })
@@ -109,6 +90,19 @@ exports.Models = function (globalVariables) {
             this.currentPresenter = new globalVariables.FormationsAdminP(this, formation);
             this.currentPresenter.displayView();
         }
+
+
+        loadPresenterFormationCollab (formation){
+            this._addPageToStack();
+
+            this._loadFormation(formation);
+            this.currentPresenter && this.currentPresenter.flushView();
+            this.currentPresenter = new globalVariables.FormationCollabP(this,formation);
+            this.currentPresenter.displayView();
+        }
+
+
+
 
         loadPresenterRegister(){
             this._addPageToStack();
@@ -363,7 +357,11 @@ exports.Models = function (globalVariables) {
 
         addNewGame(game, level, column){
             let newGame = game.game.create(this.gamesCounter, level, column);
-            this.updateGamesCounter(newGame);
+            switch(game.game.type){
+                case'Quiz':
+                    this.gamesCounter.quizz ++;
+                    break;
+            }
             return newGame
         }
 
@@ -561,6 +559,3 @@ exports.Models = function (globalVariables) {
         User
     }
 }
-
-
-

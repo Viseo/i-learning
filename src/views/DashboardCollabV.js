@@ -92,7 +92,9 @@ exports.DashboardCollabV = function (globalVariables) {
             this._displayHeader("Dashboard");
             this._displayFormation();
         }
-
+        flush(){
+            drawing.manipulator.flush();
+        }
         _displayFormation(){
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
@@ -132,7 +134,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     let factor = 5;
                     let onStarClick = starObject => {
                         starMiniatures.showStarDefaultColor();
-                        //todo doit afficher une couleur Quand on a voter
+                        //todo doit afficher une couleur Quand on a voter 
                         Server.updateSingleFormationStars(formation.formationId, starObject.id, formation._id)
                             .then(data => {
                                 console.log(data);
