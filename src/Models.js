@@ -167,6 +167,10 @@ exports.Models = function (globalVariables) {
             return new GamesLibrary();
         }
 
+        getMediasLibrary(){
+            return new MediasLibrary();
+        }
+
     }
 
     class Formations {
@@ -570,6 +574,41 @@ exports.Models = function (globalVariables) {
                     }
                 }
             ]
+        }
+    }
+
+    class MediasLibrary{
+        constructor(){
+
+        }
+
+        uppload(file, onProgress){
+            return Server.upload(file, onProgress);
+        }
+
+        getImages(){
+            return Server.getImages().then(data=>JSON.parse(data));
+        }
+
+        deleteImage(_id){
+            return Server.deleteImage(_id).then(()=>{
+                let imageIndex = this.images.findIndex((image)=>image._id === _id);
+                if(imageIndex !== -1) this.images.splice(imageIndex, 1);
+            });
+        }
+
+        getVideos() {
+            return Server.getVideos().then((videos)=>{
+                this.videos = videos;
+                return videos;
+            });
+        }
+
+        deleteVideo(_id) {
+            return Server.deleteVideo(_id).then(()=>{
+                let videoIndex = this.videos.findIndex((video)=>video._id === _id);
+                if(videoIndex !== -1) this.videos.splice(videoIndex, 1);
+            });
         }
     }
 

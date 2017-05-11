@@ -15,7 +15,8 @@ exports.QuizAdminV = function (globalVariables) {
         BUTTON_HEIGHT = 30,
         QUESTIONS_PER_LINE = 6,
         ANSWERS_PER_LINE = 4,
-        CHECKBOX_SIZE = 15;
+        CHECKBOX_SIZE = 15,
+        IMAGES_PER_LINE = 3;
 
     class QuizAdminV extends View {
         constructor(presenter) {
@@ -33,12 +34,14 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
                 this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
                 this.titleManipulator = new Manipulator(this).addOrdonator(1);
+                this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(3);
                 this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
                 this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
                 this.manipulator
                     .add(this.questionsBlockManipulator)
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
+                    .add(this.mediasLibraryManipulator)
                     .add(this.previewButtonManipulator)
                     .add(this.saveQuizButtonManipulator)
                     .add(this.header.getManipulator());
@@ -99,20 +102,33 @@ exports.QuizAdminV = function (globalVariables) {
                     width: this.width * 1 / 5 - MARGIN,
                     height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
                 };
+                let mediasPanel = new gui.Panel(dimensions.width, dimensions.height);
+                mediasPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
+                titleLibrary.position(-0.85*mediasPanel.width/2, -mediasPanel.height/2 + 8.33);
+                this.mediasLibraryManipulator.set(2, titleLibrary);
+                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
+                titleLibraryBack.position(-0.85*mediasPanel.width/2 + titleLibrary.boundingRect().width/2,
+                    -mediasPanel.height/2);
+                this.mediasLibraryManipulator.set(0, mediasPanel.component);
+                this.mediasLibraryManipulator.set(1, titleLibraryBack);
+                this.mediasLibraryManipulator.move(mediasPanel.width/2 + MARGIN, currentY + mediasPanel.height/2);
 
-                this.gamePanel = new gui.Panel(dimensions.width, dimensions.height);
-                this.gamePanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-                this.gameLibraryManipulator = new Manipulator(this).addOrdonator(3);
-                this.gameLibraryManipulator.set(0,this.gamePanel.component);
-                this.gameLibraryManipulator.move(this.gamePanel.width/2 + MARGIN, currentY + this.gamePanel.height/2);
-                this.manipulator.add(this.gameLibraryManipulator);
-                this.titleLibrary = new svg.Text('Jeux').color(myColors.grey).font('Arial', 25).anchor('left');
-                this.titleLibrary.position(-0.85*this.gamePanel.width/2, -this.gamePanel.height/2 + 8.33);
-                this.gameLibraryManipulator.set(2,this.titleLibrary);
-                this.titleLibraryBack = new svg.Rect(this.titleLibrary.boundingRect().width + 2*MARGIN, 3).color(myColors.white);
-                this.titleLibraryBack.position(-0.85*this.gamePanel.width/2 + this.titleLibrary.boundingRect().width/2,
-                    -this.gamePanel.height/2);
-                this.gameLibraryManipulator.set(1,this.titleLibraryBack);
+                let imageWidth = (dimensions.width - 2*MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1)/IMAGES_PER_LINE*MARGIN;
+                let imagesManipulator = new Manipulator(this);
+                this.mediasLibraryManipulator.add(imagesManipulator);
+                imagesManipulator.move(- dimensions.width/2 + imageWidth/2 + MARGIN, -dimensions.height/2 + imageWidth/2 + MARGIN)
+                this.getImages().then((images)=> {
+                    images.forEach((image, index)=>{
+                        let indexX = Math.floor(index % IMAGES_PER_LINE);
+                        let indexY = Math.floor(index / IMAGES_PER_LINE);
+                        let picture = new svg.Image(image.imgSrc);
+                        picture
+                            .dimension(imageWidth, imageWidth)
+                            .position(indexX*(imageWidth + MARGIN), indexY*(imageWidth + MARGIN))
+                        imagesManipulator.add(picture);
+                    })
+                })
             };
             var _displayQuestionDetails = () => {
                 let dimensions = {
@@ -556,6 +572,10 @@ exports.QuizAdminV = function (globalVariables) {
 
         getLabel() {
             return this.presenter.getLabel();
+        }
+
+        getImages(){
+            return this.presenter.getImages();
         }
 
         getQuestions() {

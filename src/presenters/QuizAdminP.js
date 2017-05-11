@@ -12,6 +12,7 @@ exports.QuizAdminP = function (globalVariables) {
             super(state);
             this.quiz = quiz;
             this.view = new QuizAdminView(this);
+            this.mediaLibrary = state.getMediasLibrary();
             //this.parentPresenter = parentPresenter;
 
         }
@@ -27,6 +28,10 @@ exports.QuizAdminP = function (globalVariables) {
 
         getLabel() {
             return this.quiz.label;
+        }
+
+        getImages(){
+            return this.mediaLibrary.getImages();
         }
 
         getQuestions() {
