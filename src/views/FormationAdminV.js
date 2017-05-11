@@ -301,33 +301,34 @@ exports.FormationAdminV = function(globalVariables) {
             }
             createGraphPanel();
             createButtons();
-            // let testTarget = {
-            //     id: "quizz1",
-            //     label: "test de quiz",
-            //     questions: [
-            //         {
-            //             label: "question 1",
-            //             multipleChoice: false,
-            //             answers: [
-            //                 {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
-            //                 {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
-            //             ],
-            //             media: "../images/bidon.png"
-            //         },
-            //         {
-            //             label: "question 2",
-            //             multipleChoice: true,
-            //             answers: [
-            //                 {label:"réponse 1", correct: true, explanation:{}, media: "../images/bidon.png"},
-            //                 {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"réponse 3", correct: false, explanation:{}, media: "../images/bidon.png"},
-            //                 {label:"réponse 4", correct: false, explanation:{}, media: "../images/bidon.png"},
-            //                 {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
-            //             ],
-            //             media: "../images/bidon.png"
-            //         }
-            //     ]
-            // }
+            let testTarget = {
+                id: "quizz1",
+                label: "test de quiz",
+                questions: [
+                    {
+                        label: "question 1",
+                        multipleChoice: false,
+                        answers: [
+                            {label:"réponse 1", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
+                        ],
+                        media: "../images/bidon.png"
+                    },
+                    {
+                        label: "question 2",
+                        multipleChoice: true,
+                        answers: [
+                            {label:"réponse 1", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"réponse 3", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"réponse 4", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
+                            {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
+                        ],
+                        media: "../images/bidon.png"
+                    }
+                ]
+            }
+            this.testLoadQuiz(testTarget);
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
