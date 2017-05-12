@@ -358,18 +358,17 @@ exports.FormationAdminV = function(globalVariables) {
                 miniature.redCrossManipulator.addEvent('click', ()=>{
                     this.removeGame(miniature.game);
                 });
-                miniature.manipulator.mini = miniature;
-                miniature.game = game;
-                game.miniature = miniature;
+                miniature.manipulator.game = game;
+                game.miniatureGame = miniature;
                 miniature.conf = {
                     drag: (what, x, y) => {
                         if(this.arrowMode) {
                             if (what.component.parent == drawings.component.glass.parent.manipulator.last) {
-                                this.currentParentMiniature = what.mini;
+                                this.currentParent = what.game;
                                 return what.lastParent.localPoint(what.x, what.y);
                             }
                             else {
-                                this.currentParentMiniature = what.mini;
+                                this.currentParent = what.game;
                                 what.lastParent = what.component.parent;
                                 return {x: x, y: y};
                             }
@@ -384,9 +383,9 @@ exports.FormationAdminV = function(globalVariables) {
                         if(this.arrowMode){
                             let point = whatParent.globalPoint(finalX,finalY);
                             let target = this.graphManipulator.last.getTarget(point.x,point.y);
-                            if(what.mini != target.parentManip.mini && target.parentManip.mini) {
-                                let childMiniature = target.parentManip.mini;
-                                this.createLink(this.currentParentMiniature.game, childMiniature.game);
+                            if(what.game.miniatureGame != target.parentManip.game.miniatureGame && target.parentManip.game.miniatureGame) {
+                                let child = target.parentManip.game;
+                                this.createLink(this.currentParent, child);
                             }
                             let {x:X, y:Y} = miniature.conf.drag(what, finalX, finalY);
                             return {x: X, y: Y, parent: whatParent};
@@ -397,7 +396,7 @@ exports.FormationAdminV = function(globalVariables) {
                         }
                     },
                     clicked : (what) => {
-                        miniatureSelection(what.mini);
+                        miniatureSelection(what.game.miniature);
                 },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);
@@ -453,8 +452,15 @@ exports.FormationAdminV = function(globalVariables) {
             this.arrowsManipulator.flush();
             let links = this.getLinks();
             links.forEach(link=>{
+                if(!link.parentGame.manipulator || !link.childGame.manipulator){
+                    link.parentGame = this.getGameById(link.parentGame.id);
+                    link.childGame = this.getGameById(link.childGame.id);
+                }
                 this.arrow(link.parentGame,link.childGame)
             })
+        }
+        getGameById(id){
+            return this.presenter.getGameById(id);
         }
 
         dbClickMiniature(miniature){
@@ -533,9 +539,9 @@ exports.FormationAdminV = function(globalVariables) {
 
         arrow(parent,child) {
             this.arrowsManipulator.move(this.graphManipulator.x, this.graphManipulator.y)
-            let parentGlobalPoint = parent.miniature.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
+            let parentGlobalPoint = parent.miniatureGame.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
                 parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
-                childGlobalPoint = child.miniature.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
+                childGlobalPoint = child.miniatureGame.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
                 childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
             this.redCrossManipulator = new Manipulator(this);
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);

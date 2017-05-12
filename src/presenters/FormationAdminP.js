@@ -45,6 +45,9 @@ exports.FormationAdminP = function(globalVariables){
             }
 
         }
+        getGameById(id){
+            return this.formation.getGameById(id);
+        }
         moveGame(game,level,column){
             this.formation.moveGame(game,level,column);
             this.view.displayGraph();

@@ -506,6 +506,18 @@ exports.Models = function (globalVariables) {
                 this.levelsTab.push(new Level(gamesTab, this.levelsTab.length));
             });
         }
+
+        getGameById(id){
+            let result = null;
+            this.levelsTab.forEach(level=>{
+                level.getGamesTab().forEach(game=>{
+                    if (game.id == id){
+                        result = game;
+                    }
+                });
+            });
+            return result;
+        }
     }
 
     class Level{
