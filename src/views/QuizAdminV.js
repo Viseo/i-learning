@@ -360,7 +360,6 @@ exports.QuizAdminV = function (globalVariables) {
                 };
                 return answerGui;
             }
-
             var _loadOneAnswerBlock = (answer, index) => {
                 var _initGui = (answerGui, index) => {
                     var _initManipulators = () => {
@@ -443,16 +442,34 @@ exports.QuizAdminV = function (globalVariables) {
             };
 
             var _createAddNewResponse = () => {
+                var clickOnAddNewResponse = () => {
+                    if(questionGui.answersGui.length < 8){
+                        let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
+                        questionGui.answersGui.push(answerGui);
+
+                        if(questionGui.answersGui.length == 8){
+                            questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
+                        }else{
+                            answerGui = _createDimension(questionGui.answersGui.length);
+                            questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
+                                answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                        }
+                    }
+                };
+
                 questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
                 let answerGui = _createDimension(questionGui.answersGui.length);
+
                 let addNewResponseButton
                     = new gui.Button(answerGui.dimensions.width, answerGui.dimensions.height, [myColors.white, 1, myColors.black], "");
                 questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
 
                 questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
                     answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
 
                 questionGui.answersManipulator.add(questionGui.addNewResponseManip);
+                questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
             };
 
             if(!question.answers || question.answers.length < 1){
@@ -468,92 +485,6 @@ exports.QuizAdminV = function (globalVariables) {
             _createAddNewResponse();
 
 
-        }
-
-        newAnswerBlock(question, answer, index) {
-            var _newAnswerObject = () => {
-                var _initManipulators = () => {
-                    answer.manipulator = new Manipulator(this).addOrdonator(4);
-                }
-                var _initInfos = () => {
-                    answer.index = index;
-                }
-                _initManipulators();
-                _initInfos();
-            };
-            var _displayTextArea = () => {
-                var _addExplanationPen = () => {
-                    answer.explanationPenManipulator = new Manipulator(this);
-                    answer.linesManipulator = new Manipulator(this);
-                    answer.penManipulator = new Manipulator(this);
-                    var _toggleExplanation = () => {
-                        var _hideAnswers = () => {
-
-                        }
-                        // if (answer.explanation) {                           // modele or state
-                        //     // answer.checkBoxManipulator.remove(checked);
-                        //     answer.explanation = false;                     // modele or state
-                        // } else {
-                        //     // answer.checkBoxManipulator.add(checked);
-                        //     answer.explanation = true;                      // modele or state
-                        // }
-                        //     if (!answer.explanation) answer.explanation = classContainer.createClass("PopInVue", this, true);
-                        //     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                        //     this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                        //     questionCreator.explanation = this.popIn;
-                        if (!answer.explanation.label || !answer.explanation.manipulator) {
-                            answer.explanation = this.newPopInExplanation(answer, true, indexX, indexY);    // modele or state
-                        }
-                        // console.log(answer.explanation + 'help me !');
-                        answer.manipulator.set(3, answer.explanation.manipulator);
-                        _hideAnswers();
-                        answer.explanation.display();
-                    }
-
-                    let iconExplanation = IconCreator.createExplanationIcon(answer.manipulator, 1);
-                    iconExplanation.position(dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3, dimensions.height / 2 - iconExplanation.getContentSize() / 2);
-                    iconExplanation.addEvent('click', _toggleExplanation);
-
-                }
-                var _addValidCheckbox = () => {
-                    answer.checkBoxManipulator = new Manipulator(this);
-                    var _toggleChecked = () => {
-                        if (answer.checked) {                           // modele or state
-                            answer.checkBoxManipulator.remove(checked);
-                            answer.checked = false;                     // modele or state
-                        } else {
-                            answer.checkBoxManipulator.add(checked);
-                            answer.checked = true;                      // modele or state
-                        }
-                    }
-                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
-                    answer.checkBoxManipulator.addEvent('click', _toggleChecked);
-                    answer.checkBoxManipulator.add(checkbox).move(-dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
-                    answer.manipulator.set(2, answer.checkBoxManipulator);
-                }
-                let dimensions = {
-                        width: question.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                        height: 70
-                    },
-                    indexX = Math.floor(index % ANSWERS_PER_LINE),
-                    indexY = Math.floor(index / ANSWERS_PER_LINE),
-                    y = dimensions.height / 2,
-                    x = MARGIN / 2 + dimensions.width / 2 - question.answersDimension.width / 2;
-
-                answer.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, answer.label || "Réponse");
-                answer.manipulator.set(0, answer.textArea.component);
-                answer.textArea.font('Arial', 15);
-                answer.textArea.anchor('center');
-                answer.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                answer.manipulator.move(x + indexX * (dimensions.width + MARGIN), y * indexY + (dimensions.height + MARGIN) * indexY);
-                _addExplanationPen();
-                _addValidCheckbox();
-            }
-
-            _newAnswerObject();
-            _displayTextArea();
-            return answer;
         }
 
         newPopInExplanation(answerGui, editable) {
@@ -694,7 +625,6 @@ exports.QuizAdminV = function (globalVariables) {
             return popInExplanation;
         }
 
-
         getFormationLabel() {
             return this.presenter.getFormationLabel();
         }
@@ -716,9 +646,6 @@ exports.QuizAdminV = function (globalVariables) {
             this.selectedQuestionIndex = index;
             this.questionDetailsManipulator
                 .set(1, this.questionsDetail[index].guiManipulator);
-            // .set(1, this.questionsDetail[index].typeManipulator)
-            // .set(2, this.questionsDetail[index].textAreaManipulator)
-            // .set(3, this.questionsDetail[index].answersManipulator);
         }
 
         refresh() {
