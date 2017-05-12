@@ -35,7 +35,6 @@ exports.FormationAdminV = function(globalVariables) {
             this.arrowMode = false;
             this.mainManip = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
-            this.mainManip.set(1,this.arrowsManipulator);
 
         }
 
@@ -543,7 +542,7 @@ exports.FormationAdminV = function(globalVariables) {
 
 
         arrow(parent,child) {
-            this.arrowsManipulator.move(this.graphManipulator.x, this.graphManipulator.y)
+            this.graphMiniatureManipulator.add(this.arrowsManipulator);
             let parentGlobalPoint = parent.miniatureGame.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
                 parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
                 childGlobalPoint = child.miniatureGame.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
