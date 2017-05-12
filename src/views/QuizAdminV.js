@@ -340,7 +340,6 @@ exports.QuizAdminV = function (globalVariables) {
 
             questions.forEach((itQuestion, i) => {
                 let questionDetail = this._loadOneQuestionInDetail(itQuestion, i);
-                this._loadAnswerBlockForOneQuestion(questionDetail, i, itQuestion);
                 this.questionsDetail.add(questionDetail);
             });
         }
@@ -372,14 +371,6 @@ exports.QuizAdminV = function (globalVariables) {
                     _initInfos();
                 };
                 var _initAnswerTextArea = (answerGui, answerLabel) => {
-                    // let dimensions = {
-                    //         width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                    //         height: 70
-                    //     },
-                    //     indexX = Math.floor(answerGui.index % ANSWERS_PER_LINE),
-                    //     indexY = Math.floor(answerGui.index / ANSWERS_PER_LINE),
-                    //     y = dimensions.height / 2,
-                    //     x = MARGIN / 2 + dimensions.width / 2 - questionGui.answersDimension.width / 2;
                     answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
                     answerGui.manipulator.set(0, answerGui.textArea.component);
                     answerGui.textArea.font('Arial', 15);
