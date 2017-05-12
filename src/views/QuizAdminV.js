@@ -68,7 +68,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.flush();
                 this.questionDetailsManipulator.flush();
                 drawing.manipulator.set(0, this.manipulator);
-                this.questions = [];
                 this.width = drawing.width - 2 * MARGIN;
                 this.height = drawing.height - drawing.height * HEADER_SIZE;
             }
@@ -163,7 +162,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 let saveButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
                 saveButton.glass.mark('saveButtonQuiz');
-                saveButton.onClick(this._saveQuiz);
+                saveButton.onClick(this._updateQuizData.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
                 this.saveQuizButtonManipulator.move(this.width / 2 + dimensions.width / 2 + MARGIN, currentY + dimensions.height / 2);
             }
@@ -625,12 +624,24 @@ exports.QuizAdminV = function (globalVariables) {
             return popInExplanation;
         }
 
+        createQuiz(quizData) {
+            return this.presenter.createQuiz(quizData);
+        }
+
         getFormationLabel() {
             return this.presenter.getFormationLabel();
         }
 
         getLabel() {
             return this.presenter.getLabel();
+        }
+
+        getNewLabel() {
+            return this.label;
+        }
+
+        getNewQuestions() {
+            let questions = this.questionsDetail;
         }
 
         getImages() {
@@ -641,8 +652,13 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getQuestions();
         }
 
-        _saveQuiz() {
-            
+        _updateQuizData() {
+            let quizData = {
+                label : this.getNewLabel(),
+                questions : this.getNewQuestions()
+            }
+            this.createQuiz(quizData);
+
         }
 
         selectQuestion(index) {
