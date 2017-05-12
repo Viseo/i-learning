@@ -163,7 +163,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 let saveButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
                 saveButton.glass.mark('saveButtonQuiz');
-                saveButton.onClick(this.saveQuiz);
+                saveButton.onClick(this._saveQuiz);
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
                 this.saveQuizButtonManipulator.move(this.width / 2 + dimensions.width / 2 + MARGIN, currentY + dimensions.height / 2);
             }
@@ -639,6 +639,10 @@ exports.QuizAdminV = function (globalVariables) {
 
         getQuestions() {
             return this.presenter.getQuestions();
+        }
+
+        _saveQuiz() {
+            
         }
 
         selectQuestion(index) {
