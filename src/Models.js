@@ -21,6 +21,10 @@ exports.Models = function (globalVariables) {
                     this.loadPresenterDashboard(this.user); break;
                 case "ConnectionP":
                     this.loadPresenterConnection(); break;
+                case'FormationCollabP':
+                    this.loadPresenterFormationCollab(this.formation);break;
+                case'FormationAdminP':
+                    this.loadPresenterFormationAdmin(this.formation); break;
                 default: break;
             }
         }
@@ -85,9 +89,11 @@ exports.Models = function (globalVariables) {
         loadPresenterFormationAdmin(formation){
             this._addPageToStack();
 
+            this.formation = formation;
+
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.FormationsAdminP(this, formation);
+            this.currentPresenter = new globalVariables.FormationAdminP(this, formation);
             this.currentPresenter.displayView();
         }
 
@@ -95,6 +101,7 @@ exports.Models = function (globalVariables) {
         loadPresenterFormationCollab (formation,user){
             this._addPageToStack();
 
+            this.formation = formation;
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
             this.currentPresenter = new globalVariables.FormationCollabP(this,formation,user);
@@ -111,25 +118,7 @@ exports.Models = function (globalVariables) {
         // }
 
         loadPresenterGameCollab(game){
-            /*var testQuiz = new Quiz({
-                id:"quiz1",
-                label: "test quiz",
-                questions: [
-                    {label: "1re question", multipleChoice: true,
-                        answers: [
-                            {label: "oui", correct: true, explanation: {label: "parce que"}},
-                            {label: "non"},
-                            {label: "peut etre", correct: true},
-                            {label: "test longueur", explanation: {label: "parce que fdgoregbreogoeruguiregfr"}},
-                            {label: "a la ligne"},
-                            {label: "a la ligne 2"},
-                            {label: "test max ligne"}
-                        ]
-                    },
-                    {label: "2eme question", answers: [{label: "patate", correct:true}, {label: "yoho"}]},
-                    {label: "3eme question", answers: [{label: "dfdsgf efzfdsf", correct:true}, {label: "dsdsdfgdsfds"}]}
-                ]
-            });*/
+           this.game = game;
             this._addPageToStack();
 
             this.currentPresenter && this.currentPresenter.flushView();
@@ -155,7 +144,9 @@ exports.Models = function (globalVariables) {
         }
 
         loadPresenterGameAdmin(game){
+            this._addPageToStack();
 
+            this.game = game;
 
             this.currentPresenter && this.currentPresenter.flushView();
             switch(game.type){

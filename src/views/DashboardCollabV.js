@@ -20,7 +20,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
 
                 this.manipulator
-                    .add(this.miniaturesManipulator)
                     .add(this._getHeaderManipulator())
                     .add(this.toggleFormationsManipulator);
             };
@@ -88,6 +87,25 @@ exports.DashboardCollabV = function (globalVariables) {
 
         display() {
             drawing.manipulator.set(0, this.manipulator);
+            let createBack = ()=>{
+                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
+                this.panel.position(this.panel.width/2 +MARGIN ,
+                    this.panel.height/2 + this.headHeight + 2*MARGIN + 2*this.doneIcon.getSize());
+                this.backRect = new svg.Rect(5000, 5000) //TODO
+                    .position(this.panel.width/2, this.panel.height/2)
+                    .color(myColors.white, 0, myColors.none);
+                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
+                this.title.position(200, this.headHeight + 2*MARGIN + 8.3  + 2*this.doneIcon.getSize())
+                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
+                this.titleBack.position(200, this.headHeight + 2*MARGIN  + 2*this.doneIcon.getSize());
+                this.manipulator.add(this.panel.component)
+                    .add(this.titleBack)
+                    .add(this.title)
+                this.panel.content.add(this.backRect);
+                this.panel.content.add(this.miniaturesManipulator.first);
+            }
+            createBack();
             this._displayHeader("Dashboard");
             this._displayFormation();
         }
@@ -179,7 +197,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
             };
 
-            this._moveMiniature(2 * MARGIN + this.tileWidth / 2, this.headHeight + this.tileHeight + 3 * MARGIN);
+            this._moveMiniature(2 * MARGIN + this.tileWidth / 2,  this.tileHeight + 3 * MARGIN);
 
             var i = 0;
             this.getFormations().forEach((formation) => {

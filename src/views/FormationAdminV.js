@@ -111,48 +111,48 @@ exports.FormationAdminV = function(globalVariables) {
                     this.draggedObject = null;
                     what.flush();
                     return true;
-                },
-                clicked: (item) => {
-                    if (!this.gameSelected) {
-                        this.gameSelected = this.draggedObject;
-                        item.flush();
-
-                        for (let it in this.itemsTab) {
-                            if (this.itemsTab[it].label == this.draggedObject.label) {
-                                this.miniatureSelected = this.itemsTab[it];
-                                this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
-                                this.miniatureSelected.miniature.border.mark('miniatureSelected');
-                                this.miniatureSelected.miniature.content.mark('miniatureSelected');
-                            }
-                        }
-                        let clickPanelToAdd = (event) => {
-                            if (this.gameSelected && this.formation) {
-                                this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
-                                this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
-                                this.miniatureSelected = null;
-                                this.gameSelected = null;
-                            }
-                            svg.removeEvent(this.formation.panel.back, 'click');
-                        }
-                        this.draggedObject.manipulator.mark('');
-                        this.draggedObject = null;
-                        svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
-                    }
-                    else {
-                        for (let it in this.itemsTab) {
-                            if (this.itemsTab[it].label == this.draggedObject.label) {
-                                this.miniatureSelected = null;
-                                this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
-                                this.itemsTab[it].miniature.border.mark('miniInLibrary' + this.itemsTab[it].label + 'Border');
-                                this.itemsTab[it].miniature.content.mark('miniInLibrary' + this.itemsTab[it].label + 'Content');
-                            }
-                        }
-                        this.gameSelected = null;
-                        this.draggedObject.manipulator.mark('');
-                        this.draggedObject = null;
-                        item.flush();
-                    }
                 }
+                // clicked: (item) => {
+                //     if (!this.gameSelected) {
+                //         this.gameSelected = this.draggedObject;
+                //         item.flush();
+                //
+                //         for (let it in this.itemsTab) {
+                //             if (this.itemsTab[it].label == this.draggedObject.label) {
+                //                 this.miniatureSelected = this.itemsTab[it];
+                //                 this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
+                //                 this.miniatureSelected.miniature.border.mark('miniatureSelected');
+                //                 this.miniatureSelected.miniature.content.mark('miniatureSelected');
+                //             }
+                //         }
+                //         let clickPanelToAdd = (event) => {
+                //             if (this.gameSelected && this.formation) {
+                //                 this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
+                //                 this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                //                 this.miniatureSelected = null;
+                //                 this.gameSelected = null;
+                //             }
+                //             svg.removeEvent(this.formation.panel.back, 'click');
+                //         }
+                //         this.draggedObject.manipulator.mark('');
+                //         this.draggedObject = null;
+                //         svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
+                //     }
+                //     else {
+                //         for (let it in this.itemsTab) {
+                //             if (this.itemsTab[it].label == this.draggedObject.label) {
+                //                 this.miniatureSelected = null;
+                //                 this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
+                //                 this.itemsTab[it].miniature.border.mark('miniInLibrary' + this.itemsTab[it].label + 'Border');
+                //                 this.itemsTab[it].miniature.content.mark('miniInLibrary' + this.itemsTab[it].label + 'Content');
+                //             }
+                //         }
+                //         this.gameSelected = null;
+                //         this.draggedObject.manipulator.mark('');
+                //         this.draggedObject = null;
+                //         item.flush();
+                //     }
+                // }
             };
             let createGameLibrary = ()=>{
                 this.gamePanel = new gui.Panel(this.librarySize.width, this.librarySize.height);

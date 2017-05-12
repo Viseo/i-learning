@@ -4,7 +4,7 @@ exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
     TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g,
         Presenter = globalVariables.Presenter;
-    class FormationsAdminP extends Presenter{
+    class FormationAdminP extends Presenter{
         constructor(state, formation){
             super(state);
             this.formation = formation;
@@ -151,5 +151,5 @@ exports.FormationAdminP = function(globalVariables){
         }
     }
 
-    return FormationsAdminP;
+    return FormationAdminP;
 }

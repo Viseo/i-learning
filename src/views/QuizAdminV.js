@@ -21,13 +21,18 @@ exports.QuizAdminV = function (globalVariables) {
     class QuizAdminV extends View {
         constructor(presenter) {
             super(presenter);
-            var _createReturnButton = () => {
-                this.returnButton = new ReturnButton(this, "Retour à la formation");
-                this.returnButton.setHandler(() => {
-                    // this.formation.display();
-                    this.returnToOldPage();
-                })
-                this.manipulator.add(this.returnButton.manipulator);
+            let _createReturnButton = () => {
+                this.returnButtonManipulator = new Manipulator(this);
+                this.returnButton = new gui.Button(BUTTON_WIDTH + 2*MARGIN, BUTTON_HEIGHT-5 , [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton.onClick(this.returnToOldPage.bind(this));
+                this.returnButton.back.corners(5,5);
+                this.returnButton.text.font('Arial', 20).position(0,6.6);
+                this.returnButtonManipulator.add(this.returnButton.component)
+                    .move(this.returnButton.width/2 + MARGIN,this.header.height + this.returnButton.height/2 + MARGIN);
+                let chevron = new svg.Chevron(10,20,3,'W').color(myColors.grey);
+                chevron.position(-BUTTON_WIDTH/2 , 0);
+                this.returnButtonManipulator.add(chevron);
+                this.manipulator.add(this.returnButtonManipulator);
             }
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
@@ -71,7 +76,6 @@ exports.QuizAdminV = function (globalVariables) {
                 let buttonSize = 20;
                 let formationLabel = this.getFormationLabel();
                 this.header.display(formationLabel + " - " + this.label);
-                this.returnButton.display(0, buttonSize / 2 + currentY, buttonSize, buttonSize);
                 currentY += buttonSize + MARGIN;
             }
             var _displayTitleArea = () => {
@@ -117,9 +121,9 @@ exports.QuizAdminV = function (globalVariables) {
                 let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
                 let imagesManipulator = new Manipulator(this);
                 this.mediasLibraryManipulator.add(imagesManipulator);
-                imagesManipulator.move(-dimensions.width / 2 + imageWidth / 2 + MARGIN, -dimensions.height / 2 + imageWidth / 2 + MARGIN)
-                this.getImages().then((images) => {
-                    images.forEach((image, index) => {
+                imagesManipulator.move(- dimensions.width/2 + imageWidth/2 + MARGIN, -dimensions.height/2 + imageWidth/2 + MARGIN)
+                this.getImages().then((images)=> {
+                    images.images.forEach((image, index)=>{
                         let indexX = Math.floor(index % IMAGES_PER_LINE);
                         let indexY = Math.floor(index / IMAGES_PER_LINE);
                         let picture = new svg.Image(image.imgSrc);
