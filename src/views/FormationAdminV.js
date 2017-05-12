@@ -234,6 +234,7 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         toggleArrowMode(arrowBorder){
+            this.unselectMiniature();
             this.arrowMode = !this.arrowMode;
             this.arrowMode && arrowBorder.color(myColors.blue, 1, myColors.none);
             !this.arrowMode && arrowBorder.color(myColors.white, 1, myColors.grey);
@@ -270,6 +271,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
                 let backRect = new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none);
+                backRect.notTarget = true;
                 svg.addEvent(backRect, 'click', ()=>{
                     this.unselectMiniature();
                 })
@@ -341,10 +343,12 @@ exports.FormationAdminV = function(globalVariables) {
 
         displayLevel(level){
             let miniatureSelection = (miniature) => {
-                this.unselectMiniature();
-                miniature.border.color(myColors.white, 2, myColors.darkBlue);
-                miniature.manipulator.set(3,miniature.redCrossManipulator);
-                this.miniatureSelected = miniature;
+                if(!this.arrowMode) {
+                    this.unselectMiniature();
+                    miniature.border.color(myColors.white, 2, myColors.darkBlue);
+                    miniature.manipulator.set(3, miniature.redCrossManipulator);
+                    this.miniatureSelected = miniature;
+                }
             }
             let createGameMiniature = (game)=>{
                 let miniature = {
@@ -383,7 +387,8 @@ exports.FormationAdminV = function(globalVariables) {
                         if(this.arrowMode){
                             let point = whatParent.globalPoint(finalX,finalY);
                             let target = this.graphManipulator.last.getTarget(point.x,point.y);
-                            if(what.game.miniatureGame != target.parentManip.game.miniatureGame && target.parentManip.game.miniatureGame) {
+                            if(target && !target.notTarget && what.game.miniatureGame != target.parentManip.game.miniatureGame
+                                && target.parentManip.game.miniatureGame) {
                                 let child = target.parentManip.game;
                                 this.createLink(this.currentParent, child);
                             }
@@ -396,7 +401,7 @@ exports.FormationAdminV = function(globalVariables) {
                         }
                     },
                     clicked : (what) => {
-                        miniatureSelection(what.game.miniature);
+                        miniatureSelection(what.game.miniatureGame);
                 },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);
@@ -464,7 +469,7 @@ exports.FormationAdminV = function(globalVariables) {
         }
 
         dbClickMiniature(miniature){
-            this.presenter.loadPresenterGameAdmin(miniature.game);
+            !this.arrowMode && this.presenter.loadPresenterGameAdmin(miniature.manipulator.game);
         }
 
         getLinks(){
