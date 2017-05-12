@@ -326,7 +326,7 @@ exports.QuizAdminV = function (globalVariables) {
             _declareManipulatorQuestionDetail(questionDetail);
             _displayToggleTypeResponse(questionDetail, question);
             _displayTextArea(questionDetail, index, question);
-
+            this._loadAnswerBlockForOneQuestion(questionDetail, index, question);
 
             return questionDetail;
         }
@@ -337,83 +337,85 @@ exports.QuizAdminV = function (globalVariables) {
 
             questions.forEach((itQuestion, i) => {
                 let questionDetail = this._loadOneQuestionInDetail(itQuestion, i);
-                this._loadAnswerBlock(questionDetail, i, itQuestion);
+                this._loadAnswerBlockForOneQuestion(questionDetail, i, itQuestion);
                 this.questionsDetail.add(questionDetail);
             });
         }
 
-        _loadAnswerBlock(questionGui, questionIndex, question) {
-            var _initGui = (answerGui, index) => {
-                var _initManipulators = () => {
-                    answerGui.manipulator = new Manipulator(this).addOrdonator(4);
-                    questionGui.answersManipulator.add(answerGui.manipulator);
-                }
-                var _initInfos = () => {
-                    answerGui.index = index;
-                }
-                _initManipulators();
-                _initInfos();
-            };
-            var _initAnswerTextArea = (answerGui, answerLabel) => {
-                // let dimensions = {
-                //         width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                //         height: 70
-                //     },
-                //     indexX = Math.floor(answerGui.index % ANSWERS_PER_LINE),
-                //     indexY = Math.floor(answerGui.index / ANSWERS_PER_LINE),
-                //     y = dimensions.height / 2,
-                //     x = MARGIN / 2 + dimensions.width / 2 - questionGui.answersDimension.width / 2;
-                answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
-                answerGui.manipulator.set(0, answerGui.textArea.component);
-                answerGui.textArea.font('Arial', 15);
-                answerGui.textArea.anchor('center');
-                answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                    answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
-            };
-            var _addExplanationPen = (answerGui) => {
-                answerGui.explanationPenManipulator = new Manipulator(this);
-                answerGui.linesManipulator = new Manipulator(this);
-                answerGui.penManipulator = new Manipulator(this);
-                var _toggleExplanation = () => {
-                    var _hideAnswers = () => {
-
+        _loadAnswerBlockForOneQuestion(questionGui, questionIndex, question) {
+            var _loadOneAnswerBlock = (answer, index) => {
+                var _initGui = (answerGui, index) => {
+                    var _initManipulators = () => {
+                        answerGui.manipulator = new Manipulator(this).addOrdonator(4);
+                        questionGui.answersManipulator.add(answerGui.manipulator);
                     }
-                    // if (!answerGui.explanation.label || !answerGui.explanation.manipulator) {
-                    if (!answerGui.explanation) {
-                        answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
+                    var _initInfos = () => {
+                        answerGui.index = index;
                     }
-                    // console.log(answer.explanation + 'help me !');
-                    answerGui.manipulator.set(3, answerGui.explanation.manipulator);
-                    _hideAnswers();
-                    answerGui.explanation.display();
-                }
+                    _initManipulators();
+                    _initInfos();
+                };
 
-                let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
-                    answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
-                iconExplanation.addEvent('click', _toggleExplanation);
+                var _initAnswerTextArea = (answerGui, answerLabel) => {
+                    // let dimensions = {
+                    //         width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                    //         height: 70
+                    //     },
+                    //     indexX = Math.floor(answerGui.index % ANSWERS_PER_LINE),
+                    //     indexY = Math.floor(answerGui.index / ANSWERS_PER_LINE),
+                    //     y = dimensions.height / 2,
+                    //     x = MARGIN / 2 + dimensions.width / 2 - questionGui.answersDimension.width / 2;
+                    answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
+                    answerGui.manipulator.set(0, answerGui.textArea.component);
+                    answerGui.textArea.font('Arial', 15);
+                    answerGui.textArea.anchor('center');
+                    answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                    answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
+                        answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                };
 
-            };
-            var _addValidCheckbox = (answerGui) => {
-                answerGui.checkBoxManipulator = new Manipulator(this);
-                var _toggleChecked = () => {
-                    if (answerGui.checked) {                           // modele or state
-                        answerGui.checkBoxManipulator.remove(checked);
-                        answerGui.checked = false;                     // modele or state
-                    } else {
-                        answerGui.checkBoxManipulator.add(checked);
-                        answerGui.checked = true;                      // modele or state
+                var _addExplanationPen = (answerGui) => {
+                    answerGui.explanationPenManipulator = new Manipulator(this);
+                    answerGui.linesManipulator = new Manipulator(this);
+                    answerGui.penManipulator = new Manipulator(this);
+                    var _toggleExplanation = () => {
+                        var _hideAnswers = () => {
+
+                        }
+                        // if (!answerGui.explanation.label || !answerGui.explanation.manipulator) {
+                        if (!answerGui.explanation) {
+                            answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
+                        }
+                        // console.log(answer.explanation + 'help me !');
+                        answerGui.manipulator.set(3, answerGui.explanation.manipulator);
+                        _hideAnswers();
+                        answerGui.explanation.display();
                     }
-                }
-                let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
-                answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
-                answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
-                answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
-            };
 
-            question.answers.forEach((answer, index) => {
+                    let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
+                    iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
+                        answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
+                    iconExplanation.addEvent('click', _toggleExplanation);
+
+                };
+                var _addValidCheckbox = (answerGui) => {
+                    answerGui.checkBoxManipulator = new Manipulator(this);
+                    var _toggleChecked = () => {
+                        if (answerGui.checked) {                           // modele or state
+                            answerGui.checkBoxManipulator.remove(checked);
+                            answerGui.checked = false;                     // modele or state
+                        } else {
+                            answerGui.checkBoxManipulator.add(checked);
+                            answerGui.checked = true;                      // modele or state
+                        }
+                    }
+                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                    answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
+                    answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                    answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
+                };
+
                 let answerGui = {
                     dimensions: {
                         width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
@@ -429,6 +431,14 @@ exports.QuizAdminV = function (globalVariables) {
                 _initAnswerTextArea(answerGui, answer.label);
                 _addExplanationPen(answerGui);
                 _addValidCheckbox(answerGui);
+            }
+
+            if(!question.answers || question.answers.length < 1){
+                question.answers = [{label: ""}, {label: ""}]
+            }
+
+            question.answers.forEach((answer, index) => {
+                _loadOneAnswerBlock(answer, index);
             });
         }
 
