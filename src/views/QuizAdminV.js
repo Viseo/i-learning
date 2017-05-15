@@ -266,8 +266,6 @@ exports.QuizAdminV = function (globalVariables) {
 
         }
 
-
-
         _loadOneQuestionInDetail(question, index){
             let questionDetail = {};
 
@@ -328,23 +326,24 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.answersDimension.height -= dimensions.height;
             };
             var _loadAnswerBlockForOneQuestion = (questionGui, questionIndex, question) => {
-                var _createDimension = (index) => {
-                    let answerGui = {
-                        dimensions: {
+                var _calculatePositionAnswer = (questionGui, indexReponse) => {
+                    let pos = {
                             width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                            height: 70
-                        },
-                        indexX: Math.floor(index % ANSWERS_PER_LINE),
-                        indexY: Math.floor(index / ANSWERS_PER_LINE),
-                        y: 70 / 2,
-                        x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
-                    };
-                    return answerGui;
+                            height: 70,
+                            indexX: Math.floor(indexReponse % ANSWERS_PER_LINE),
+                            indexY: Math.floor(indexReponse / ANSWERS_PER_LINE),
+                            y: 70 / 2,
+                            x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2
+                                - questionGui.answersDimension.width / 2
+                        }
+                    let realPos = {x: pos.x + pos.indexX * (pos.width + MARGIN),
+                     y : pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY}
+                    return realPos;
                 }
                 var _loadOneAnswerBlock = (answer, index) => {
                     var _initGui = (answerGui, index) => {
                         var _initManipulators = () => {
-                            answerGui.manipulator = new Manipulator(this).addOrdonator(4);
+                            answerGui.manipulator = new Manipulator(this).addOrdonator(5);
                             questionGui.answersManipulator.add(answerGui.manipulator);
                         }
                         var _initInfos = () => {
@@ -353,15 +352,37 @@ exports.QuizAdminV = function (globalVariables) {
                         _initManipulators();
                         _initInfos();
                     };
-                    var _initAnswerTextArea = (answerGui, answerLabel) => {
-                        answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
+                    var _initAnswerTextArea = (answerGui, answerLabel, index) => {
+                        answerGui.textArea = new gui.TextArea(0, 0, dimensions.w, dimensions.h, answerLabel || "Réponse");
                         answerGui.manipulator.set(0, answerGui.textArea.component);
-                        answerGui.textArea.font('Arial', 15);
-                        answerGui.textArea.anchor('center');
+                        //answerGui.iconRedCross.addEvent('click', answerGui.iconRedCross.onClickRedCross);
+
+                        answerGui.textArea.font('Arial', 15).anchor('center');
                         answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                        answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                            answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                        let pos = _calculatePositionAnswer(questionGui, index);
+                        answerGui.manipulator.move(pos.x, pos.y);
                     };
+                    var _initRedCross = (answerGui) =>{
+                        answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
+                        answerGui.iconRedCross.position(dimensions.w/2, -dimensions.h/2);
+                        answerGui.iconRedCross.onClickRedCross = () => {
+                            let indexAnswer = answerGui.index;
+                            questionGui.answersManipulator.remove(answerGui.manipulator);
+                            questionGui.answersGui.splice(indexAnswer, 1);
+                            for(var i = indexAnswer; i< questionGui.answersGui.length; i++){
+                                questionGui.answersGui[i].index = i;
+                            }
+
+                            questionGui.answersGui.forEach( (ele, index) => {
+                                let pos = _calculatePositionAnswer(questionGui, index);
+                                ele.manipulator.move(pos.x, pos.y);
+                            });
+                            let posAddNewReponse = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                            questionGui.addNewResponseManip.move(posAddNewReponse.x, posAddNewReponse.y);
+                            _attachRedCrossForAnswer(questionGui.answersGui);
+                        };
+                    }
+
                     var _addExplanationPen = (answerGui) => {
                         answerGui.explanationPenManipulator = new Manipulator(this);
                         answerGui.linesManipulator = new Manipulator(this);
@@ -375,14 +396,14 @@ exports.QuizAdminV = function (globalVariables) {
                                 answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
                             }
                             // console.log(answer.explanation + 'help me !');
-                            answerGui.manipulator.set(3, answerGui.explanation.manipulator);
+                            answerGui.manipulator.set(4, answerGui.explanation.manipulator);
                             _hideAnswers();
                             answerGui.explanation.display();
                         }
 
                         let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                        iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
-                            answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
+                        iconExplanation.position(dimensions.w / 2 - iconExplanation.getContentSize() * 2 / 3,
+                            dimensions.h / 2 - iconExplanation.getContentSize() / 2);
                         iconExplanation.addEvent('click', _toggleExplanation);
 
                     };
@@ -400,49 +421,65 @@ exports.QuizAdminV = function (globalVariables) {
                         let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
                         let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                         answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
-                        answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                        answerGui.checkBoxManipulator.add(checkbox).move(-dimensions.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
                         answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
                     };
 
-                    let answerGui = _createDimension(index);
+                    let answerGui = {};
 
                     _initGui(answerGui, index);
-                    _initAnswerTextArea(answerGui, answer.label);
+                    _initAnswerTextArea(answerGui, answer.label, index);
+                    _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
 
                     return answerGui;
                 };
-
                 var _createAddNewResponse = () => {
                     var clickOnAddNewResponse = () => {
                         if(questionGui.answersGui.length < 8){
                             let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
                             questionGui.answersGui.push(answerGui);
+                            _attachRedCrossForAnswer(questionGui.answersGui);
 
                             if(questionGui.answersGui.length == 8){
                                 questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
                             }else{
-                                answerGui = _createDimension(questionGui.answersGui.length);
-                                questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                                    answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                                let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                                questionGui.addNewResponseManip.move(pos.x, pos.y);
                             }
                         }
                     };
 
                     questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
-                    let answerGui = _createDimension(questionGui.answersGui.length);
+                    let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
 
                     let addNewResponseButton
-                        = new gui.Button(answerGui.dimensions.width, answerGui.dimensions.height, [myColors.white, 1, myColors.black], "");
+                        = new gui.Button(dimensions.w, dimensions.h, [myColors.white, 1, myColors.black], "");
                     questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
 
-                    questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                        answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                    questionGui.addNewResponseManip.move(pos.x, pos.y);
                     IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
 
                     questionGui.answersManipulator.add(questionGui.addNewResponseManip);
                     questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
+                };
+                var _attachRedCrossForAnswer = (answersGui) =>{
+                    if(answersGui.length >= 3){
+                        answersGui.forEach(ele => {
+                            ele.iconRedCross.addEvent('click', ele.iconRedCross.onClickRedCross);
+                            ele.manipulator.set(3, ele.iconRedCross.manipulator);
+                        });
+                    }else{
+                        answersGui.forEach(ele => {
+                            ele.manipulator.unset(3);
+                        });
+                    }
+                }
+
+                let dimensions =  {
+                    w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                    h: 70
                 };
 
                 if(!question.answers || question.answers.length < 1){
@@ -456,7 +493,7 @@ exports.QuizAdminV = function (globalVariables) {
                 });
 
                 _createAddNewResponse();
-
+                _attachRedCrossForAnswer(questionGui.answersGui);
 
             }
 
