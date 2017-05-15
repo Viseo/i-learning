@@ -380,6 +380,11 @@ exports.QuizAdminV = function (globalVariables) {
                             let posAddNewReponse = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
                             questionGui.addNewResponseManip.move(posAddNewReponse.x, posAddNewReponse.y);
                             _attachRedCrossForAnswer(questionGui.answersGui);
+                            if(questionGui.answersGui.length < 8){
+                                questionGui.answersManipulator.add(questionGui.addNewResponseManip);
+                                let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                                questionGui.addNewResponseManip.move(pos.x, pos.y);
+                            }
                         };
                     }
 
@@ -495,7 +500,7 @@ exports.QuizAdminV = function (globalVariables) {
                 _createAddNewResponse();
                 _attachRedCrossForAnswer(questionGui.answersGui);
 
-            }
+            };
 
 
             _declareManipulatorQuestionDetail(questionDetail);
