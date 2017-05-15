@@ -5,7 +5,12 @@ exports.DashboardAdmin = function(globalVariables){
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.domain.IconCreator;
+        IconCreator = globalVariables.domain.IconCreator,
+        ClipPath = globalVariables.clipPath;
+    const TILE_SIZE = {w: 440, h: 100},
+        INPUT_SIZE = {w: 400, h: 30},
+        BUTTON_SIZE = {w: 40, h: 30},
+        IMAGE_SIZE = 90;
 
 
     class DashboardAdminV extends View{
@@ -13,24 +18,21 @@ exports.DashboardAdmin = function(globalVariables){
             super(presenter);
             this.manipulator = new Manipulator(this).addOrdonator(2);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
-            this.tileWidth = 120;
-            this.tileHeight = 100;
-            this.spaceBetween = 20;
+            this.spaceBetween = 0;
             this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
             this.headHeight = this.header.height + MARGIN;
-            this.inputSize = {width: 400, height:30};
             this.buttonSize= {width:40, height:30};
         }
 
         display(){
             let createBack = ()=>{
                 this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
-                this.title.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN + 8.3)
+                this.title.position(INPUT_SIZE.w/2 + MARGIN, this.headHeight + INPUT_SIZE.h + 2*MARGIN + 8.3)
                 this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
-                this.titleBack.position(this.inputSize.width/2 + MARGIN, this.headHeight + this.inputSize.height + 2*MARGIN);
-                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
+                this.titleBack.position(INPUT_SIZE.w/2 + MARGIN, this.headHeight + INPUT_SIZE.h + 2*MARGIN);
+                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - TILE_SIZE.h + 2*MARGIN, myColors.none);
                 this.panel.position(this.panel.width/2 +MARGIN ,
-                    this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
+                    this.panel.height/2 + this.headHeight + INPUT_SIZE.h + 2*MARGIN);
                 this.backRect = new svg.Rect(5000, 5000) //TODO
                     .position(this.panel.width/2, this.panel.height/2)
                     .color(myColors.white, 0, myColors.none);
@@ -70,22 +72,22 @@ exports.DashboardAdmin = function(globalVariables){
             }
 
             let addFormationDisplay = ()=>{
-                let addFormationTextArea = new gui.TextField(0,0, this.inputSize.width, this.inputSize.height, 'Ajouter une formation')
+                let addFormationTextArea = new gui.TextField(0,0, INPUT_SIZE.w, INPUT_SIZE.h, 'Ajouter une formation')
                 addFormationTextArea.font('Arial', 15).color(myColors.grey);
-                addFormationTextArea.text.position(-this.inputSize.width/2 + MARGIN, 7.5);
+                addFormationTextArea.text.position(-INPUT_SIZE.w/2 + MARGIN, 7.5);
                 addFormationTextArea.control.placeHolder('Ajouter une formation');
                 addFormationTextArea.onInput((oldMessage, message, valid)=>{
                     if (!message || !oldMessage){
                         addFormationTextArea.text.message('Ajouter une formation');
                     }
-                    addFormationTextArea.text.position(-this.inputSize.width/2+MARGIN, 7.5);
+                    addFormationTextArea.text.position(-INPUT_SIZE.w/2+MARGIN, 7.5);
                 });
                 addFormationTextArea.color([myColors.lightgrey, 1, myColors.black]);
                 this.addFormationManipulator.add(addFormationTextArea.component);
-                this.addFormationManipulator.move(MARGIN + this.inputSize.width/2, this.header.height + MARGIN + this.inputSize.height/2);
+                this.addFormationManipulator.move(MARGIN + INPUT_SIZE.w/2, this.header.height + MARGIN + INPUT_SIZE.h/2);
 
-                let addButton = new gui.Button(this.buttonSize.width,this.buttonSize.height, [myColors.grey, 0, myColors.none], '+');
-                addButton.position(this.inputSize.width/2 + this.buttonSize.width/2 + MARGIN, 0);
+                let addButton = new gui.Button(BUTTON_SIZE.w,BUTTON_SIZE.h, [myColors.grey, 0, myColors.none], '+');
+                addButton.position(INPUT_SIZE.w/2 + BUTTON_SIZE.w/2 + MARGIN, 0);
                 addButton.text.color(myColors.white, 0, myColors.none).font('Arial', 30).position(0,10);
                 addButton.back.corners(5,5);
                 this.addFormationField = addFormationTextArea;
@@ -95,7 +97,7 @@ exports.DashboardAdmin = function(globalVariables){
             addFormationDisplay();
             addIconCaption();
 
-            this.miniaturesManipulator.move(2*MARGIN + this.tileWidth/2, this.tileHeight + 3*MARGIN);
+            this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
             let formations = this.getFormations();
             this.numberFormation = formations.length;
             formations.forEach((formation,i) => {
@@ -116,7 +118,7 @@ exports.DashboardAdmin = function(globalVariables){
 
         displayErrorMessage(message){
             let errorMessage = new svg.Text(message).color(myColors.red, 0, myColors.none);
-            errorMessage.position(this.inputSize.width/2 + this.buttonSize.width + 3*MARGIN, 8.3)
+            errorMessage.position(INPUT_SIZE.w/2 + BUTTON_SIZE.w + 3*MARGIN, 8.3)
                 .font('Arial', 25)
                 .anchor('left');
             this.addFormationManipulator.set(2, errorMessage);
@@ -136,37 +138,59 @@ exports.DashboardAdmin = function(globalVariables){
 
         _displayMiniature(formation, i){
             let createMiniature = (formation)=>{
-                let polygon = util.drawHexagon(this.tileWidth, this.tileHeight, 'V', 1);
-                let content = new svg.Text(formation.label).font('Arial',20);
-                return {border: polygon, content: content};
+                let border =
+                    new svg.Rect(TILE_SIZE.w-IMAGE_SIZE, TILE_SIZE.h)
+                    .corners(2,2)
+                    .color(myColors.lightgrey, 0.5, myColors.grey)
+                    .position(IMAGE_SIZE/2, 0);
+                let clip = new ClipPath('image' + formation.label);
+                clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
+                let manipulator = new Manipulator(this).addOrdonator(4);
+                let picture;
+                if(formation.imageSrc){
+                    picture = new util.Picture(formation.imageSrc, false, this)
+                }
+                else{
+                    picture = new util.Picture('../../images/viseo.png', false, this, '', null);
+                }
+                picture.draw(-TILE_SIZE.w/2 + IMAGE_SIZE, 0, IMAGE_SIZE,IMAGE_SIZE,manipulator, 3);
+                picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
+                let backCircle = new svg.Circle(IMAGE_SIZE/2 +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0);
+                manipulator.set(0,border).set(1,backCircle).add(clip);
+                let content = new svg.Text(formation.label)
+                    .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
+                    .font('Arial', 20);
+                manipulator.add(content);
+                return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
             }
             let placeMiniature = (miniature, i)=>{
-                let elementPerLine = Math.floor((drawing.width-this.tileWidth/2)/(this.tileWidth + this.spaceBetween));
-                let line = Math.floor(i/elementPerLine);
-                let y = line*(this.tileWidth*1.5);
-                let x = line%2 == 0 ? (i-line*elementPerLine)*(this.tileWidth+this.spaceBetween) : (i-line*elementPerLine)*(this.tileWidth + this.spaceBetween) + this.tileWidth/2 + MARGIN;
+                let elementPerLine = Math.floor((drawing.width-2*MARGIN)/(TILE_SIZE.w + this.spaceBetween));
+                elementPerLine = elementPerLine ? elementPerLine : 1;
+                let line = Math.floor(i/elementPerLine)
+                let y = line*(TILE_SIZE.h*1.5);
+                let x = (i-line*elementPerLine)*(TILE_SIZE.w+this.spaceBetween)
                 miniature.manipulator.move(x,y);
             }
             let drawIcon = (formation)=>{
                 let iconCreator = new IconCreator();
                 let icon = iconCreator.createIconByName(formation.status, miniature.manipulator, 2);
-                icon && icon.position(this.tileWidth / 4, -this.tileHeight * 2 / 3 - icon.getSize())
+                icon && icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - icon.getSize()/2)
             }
             let miniature = createMiniature(formation);
-            miniature.manipulator = new Manipulator(this).addOrdonator(3);
-            miniature.manipulator.set(0,miniature.border).set(1,miniature.content);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
             drawIcon(formation);
 
-            let onMouseOverSelect = manipulator => {
-                manipulator.get(0).color([130, 180, 255], 3, myColors.black);
-                manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature.manipulator));
+            let onMouseOverSelect = miniature => {
+                miniature.border.color([130, 180, 255], 1, myColors.black);
+                miniature.backCircle.color([130, 180, 255], 1, myColors.black);
+                miniature.manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature));
             };
-            let onMouseOutSelect = manipulator => {
-                manipulator.get(0).color([250, 250, 250], 1, myColors.grey);
+            let onMouseOutSelect = miniature => {
+                miniature.backCircle.color(myColors.lightgrey, 0.5, myColors.grey);
+                miniature.border.color(myColors.lightgrey, 0.5, myColors.grey);
             };
-            miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature.manipulator));
+            miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
             miniature.manipulator.addEvent('click', ()=>{this.miniatureClickHandler(formation)});
         }
 

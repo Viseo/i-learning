@@ -17,7 +17,7 @@ function main(svg, runtime, dbListener, ImageRuntime, param) {
     globalVariables.main = main;
 
     util = Util(globalVariables);
-    guiPolyfill(svg, gui, util);
+    globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
     globalVariables.util = util;
     util.SVGGlobalHandler();
     util.Bdd();

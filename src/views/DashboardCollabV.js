@@ -8,7 +8,12 @@ exports.DashboardCollabV = function (globalVariables) {
         HeaderVue = globalVariables.domain.HeaderVue,
         IconCreator = globalVariables.domain.IconCreator,
         createRating = globalVariables.domain.createRating,
-        View = globalVariables.View;
+        View = globalVariables.View,
+        ClipPath = globalVariables.clipPath;
+    const TILE_SIZE = {w: 440, h: 100},
+        INPUT_SIZE = {w: 400, h: 30},
+        BUTTON_SIZE = {w: 40, h: 30},
+        IMAGE_SIZE = 90;
 
 
     class DashboardCollabV extends View{
@@ -113,28 +118,49 @@ exports.DashboardCollabV = function (globalVariables) {
         _displayFormation(){
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
-                    let polygon = util.drawHexagon(this.tileWidth, this.tileHeight, 'V', 1);
-                    let content = new svg.Text(formation.label).font('Arial', 20);
-                    return {border: polygon, content: content};
+                    let border =
+                        new svg.Rect(TILE_SIZE.w-IMAGE_SIZE, TILE_SIZE.h)
+                            .corners(2,2)
+                            .color(myColors.lightgrey, 0.5, myColors.grey)
+                            .position(IMAGE_SIZE/2, 0);
+                    let clip = new ClipPath('image' + formation.label);
+                    clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
+                    let manipulator = new Manipulator(this).addOrdonator(4);
+                    let picture;
+                    if(formation.imageSrc){
+                        picture = new util.Picture(formation.imageSrc, false, this)
+                    }
+                    else{
+                        picture = new util.Picture('../../images/viseo.png', false, this, '', null);
+                    }
+                    picture.draw(-TILE_SIZE.w/2 + IMAGE_SIZE, 0, IMAGE_SIZE,IMAGE_SIZE,manipulator, 3);
+                    picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
+                    let backCircle = new svg.Circle(IMAGE_SIZE/2 +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0);
+                    manipulator.set(0,border).set(1,backCircle).add(clip);
+                    let content = new svg.Text(formation.label)
+                        .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
+                        .font('Arial', 20);
+                    manipulator.add(content);
+                    return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
                 };
+
                 let placeMiniature = (miniature, i) => {
-                    let elementPerLine = Math.floor(drawing.width / (this.tileWidth + this.spaceBetween));
-                    let line = Math.floor(i / elementPerLine);
-                    let y = line * (this.tileWidth * 1.5);
-                    let x = line % 2 == 0 ? (i - line * elementPerLine) * (this.tileWidth + this.spaceBetween)
-                        : (i - line * elementPerLine) * (this.tileWidth + this.spaceBetween) + this.tileWidth / 2 + MARGIN;
-                    miniature.manipulator.move(x, y);
+                    let elementPerLine = Math.floor((drawing.width-2*MARGIN)/(TILE_SIZE.w + this.spaceBetween));
+                    elementPerLine = elementPerLine ? elementPerLine : 1;
+                    let line = Math.floor(i/elementPerLine)
+                    let y = line*(TILE_SIZE.h*1.5);
+                    let x = (i-line*elementPerLine)*(TILE_SIZE.w+this.spaceBetween)
+                    miniature.manipulator.move(x,y);
                 };
+
                 let drawIcon = (formation) => {
                     let iconCreator = new IconCreator();
                     let icon = iconCreator.createIconByName((formation.progress) ? formation.progress : "undone",
                         miniature.manipulator, 2);
-                    icon.position(this.tileWidth / 4, -this.tileHeight * 2 / 3 - icon.getSize());
+                    icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h /2- icon.getSize()/2);
                 };
+
                 let miniature = createMiniature(formation);
-                miniature.manipulator = new Manipulator(this).addOrdonator(4);
-                miniature.manipulator.set(0, miniature.border)
-                    .add(miniature.content);
                 this.miniaturesManipulator.add(miniature.manipulator);
                 placeMiniature(miniature, i);
                 let onMouseOverSelect = manipulator => {
@@ -206,6 +232,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 if (this.undoneIcon.isInAction() && formation.progress != '') return;
                 _displayMiniature(formation, i++);
             });
+            this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
         }
 
         _displayHeader(label) {
