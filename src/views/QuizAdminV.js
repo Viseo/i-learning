@@ -23,14 +23,14 @@ exports.QuizAdminV = function (globalVariables) {
             super(presenter);
             let _createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
-                this.returnButton = new gui.Button(BUTTON_WIDTH + 2*MARGIN, BUTTON_HEIGHT-5 , [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
-                this.returnButton.back.corners(5,5);
-                this.returnButton.text.font('Arial', 20).position(0,6.6);
+                this.returnButton.back.corners(5, 5);
+                this.returnButton.text.font('Arial', 20).position(0, 6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
-                    .move(this.returnButton.width/2 + MARGIN,this.header.height + this.returnButton.height/2 + MARGIN);
-                let chevron = new svg.Chevron(10,20,3,'W').color(myColors.grey);
-                chevron.position(-BUTTON_WIDTH/2 , 0);
+                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
+                chevron.position(-BUTTON_WIDTH / 2, 0);
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
             }
@@ -119,9 +119,9 @@ exports.QuizAdminV = function (globalVariables) {
                 let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
                 let imagesManipulator = new Manipulator(this);
                 this.mediasLibraryManipulator.add(imagesManipulator);
-                imagesManipulator.move(- dimensions.width/2 + imageWidth/2 + MARGIN, -dimensions.height/2 + imageWidth/2 + MARGIN)
-                this.getImages().then((images)=> {
-                    images.images.forEach((image, index)=>{
+                imagesManipulator.move(-dimensions.width / 2 + imageWidth / 2 + MARGIN, -dimensions.height / 2 + imageWidth / 2 + MARGIN)
+                this.getImages().then((images) => {
+                    images.images.forEach((image, index) => {
                         let indexX = Math.floor(index % IMAGES_PER_LINE);
                         let indexY = Math.floor(index / IMAGES_PER_LINE);
                         let picture = new svg.Image(image.imgSrc);
@@ -533,12 +533,12 @@ exports.QuizAdminV = function (globalVariables) {
                 };
                 var _createAddNewResponse = () => {
                     var clickOnAddNewResponse = () => {
-                        if(questionGui.answersGui.length < 8){
+                        if (questionGui.answersGui.length < 8) {
                             let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
                             questionGui.answersGui.push(answerGui);
                             _attachRedCrossForAnswer(questionGui.answersGui);
 
-                            if(questionGui.answersGui.length == 8){
+                            if (questionGui.answersGui.length == 8) {
                                 questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
                             }else{
                                 let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
@@ -625,12 +625,28 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLabel();
         }
 
+        getNewAnswers() {
+            let answers = [];
+            return answers;
+        }
+
         getNewLabel() {
             return this.label;
         }
 
         getNewQuestions() {
-            let questions = this.questionsDetail;
+            let questionsDetail = this.questionsDetail,
+                questions = [];
+            questionsDetail.forEach(question => {
+                questions.push(
+                    {
+                        label: question.textArea.textMessage,
+                        multipleChoice: question.multipleChoice,
+                        answers: this.getNewAnswers()
+                    }
+                );
+            });
+            return questions;
         }
 
         getImages() {
@@ -646,11 +662,10 @@ exports.QuizAdminV = function (globalVariables) {
 
         _updateQuizData() {
             let quizData = {
-                label : this.getNewLabel(),
-                questions : this.getNewQuestions()
+                label: this.getNewLabel(),
+                questions: this.getNewQuestions(),
             }
-            this.createQuiz(quizData);
-
+            this.updateQuiz(quizData);
         }
 
         selectQuestion(index) {
