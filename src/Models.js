@@ -626,6 +626,7 @@ exports.Models = function (globalVariables) {
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
+            this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
         }
 
         validateQuestion(questionIndex, answers){
@@ -648,6 +649,9 @@ exports.Models = function (globalVariables) {
 
         getLabel(){
             return this.label;
+        }
+        getLastQuestionIndex(){
+            return this.lastQuestionIndex;
         }
         getQuestionLabel(index){
             return this.questions[index] ? this.questions[index].label : "";

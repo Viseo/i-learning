@@ -318,15 +318,15 @@ exports.Util = function (globalVariables) {
             }
 
             this.ordonator.set(layer, component);
-            this.components.push(component);
+            this.components.push(svgObject);
             svgObject.parentManip = this;
             return this;
         }
 
         unset(layer) {
-            delete this.ordonator.children[layer].parentManip;
             let index = this.components.indexOf(this.ordonator.get(layer));
             if(index !== -1) this.components.splice(index, 1);
+            delete this.ordonator.children[layer].parentManip;
             this.ordonator.unset(layer);
             return this;
         }
@@ -340,7 +340,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
-                this.components.push(component);
+                this.components.push(svgObject);
                 svgObject.parentManip = this;
             }
             return this;
@@ -356,7 +356,7 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) !== -1) {
                 this.last.remove(component);
                 delete component.parentManip;
-                let index = this.components.indexOf(component);
+                let index = this.components.indexOf(svgObject);
                 if(index !== -1) this.components.splice(index, 1);
             }
             return this;
