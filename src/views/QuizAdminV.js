@@ -266,6 +266,8 @@ exports.QuizAdminV = function (globalVariables) {
 
         }
 
+
+
         _loadOneQuestionInDetail(question, index){
             let questionDetail = {};
 
@@ -325,11 +327,144 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
                 questionGui.answersDimension.height -= dimensions.height;
             };
+            var _loadAnswerBlockForOneQuestion = (questionGui, questionIndex, question) => {
+                var _createDimension = (index) => {
+                    let answerGui = {
+                        dimensions: {
+                            width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                            height: 70
+                        },
+                        indexX: Math.floor(index % ANSWERS_PER_LINE),
+                        indexY: Math.floor(index / ANSWERS_PER_LINE),
+                        y: 70 / 2,
+                        x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
+                    };
+                    return answerGui;
+                }
+                var _loadOneAnswerBlock = (answer, index) => {
+                    var _initGui = (answerGui, index) => {
+                        var _initManipulators = () => {
+                            answerGui.manipulator = new Manipulator(this).addOrdonator(4);
+                            questionGui.answersManipulator.add(answerGui.manipulator);
+                        }
+                        var _initInfos = () => {
+                            answerGui.index = index;
+                        }
+                        _initManipulators();
+                        _initInfos();
+                    };
+                    var _initAnswerTextArea = (answerGui, answerLabel) => {
+                        answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
+                        answerGui.manipulator.set(0, answerGui.textArea.component);
+                        answerGui.textArea.font('Arial', 15);
+                        answerGui.textArea.anchor('center');
+                        answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                        answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
+                            answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                    };
+                    var _addExplanationPen = (answerGui) => {
+                        answerGui.explanationPenManipulator = new Manipulator(this);
+                        answerGui.linesManipulator = new Manipulator(this);
+                        answerGui.penManipulator = new Manipulator(this);
+                        var _toggleExplanation = () => {
+                            var _hideAnswers = () => {
+
+                            }
+                            // if (!answerGui.explanation.label || !answerGui.explanation.manipulator) {
+                            if (!answerGui.explanation) {
+                                answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
+                            }
+                            // console.log(answer.explanation + 'help me !');
+                            answerGui.manipulator.set(3, answerGui.explanation.manipulator);
+                            _hideAnswers();
+                            answerGui.explanation.display();
+                        }
+
+                        let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
+                        iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
+                            answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
+                        iconExplanation.addEvent('click', _toggleExplanation);
+
+                    };
+                    var _addValidCheckbox = (answerGui) => {
+                        answerGui.checkBoxManipulator = new Manipulator(this);
+                        var _toggleChecked = () => {
+                            if (answerGui.checked) {                           // modele or state
+                                answerGui.checkBoxManipulator.remove(checked);
+                                answerGui.checked = false;                     // modele or state
+                            } else {
+                                answerGui.checkBoxManipulator.add(checked);
+                                answerGui.checked = true;                      // modele or state
+                            }
+                        }
+                        let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                        let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                        answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
+                        answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                        answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
+                    };
+
+                    let answerGui = _createDimension(index);
+
+                    _initGui(answerGui, index);
+                    _initAnswerTextArea(answerGui, answer.label);
+                    _addExplanationPen(answerGui);
+                    _addValidCheckbox(answerGui);
+
+                    return answerGui;
+                };
+
+                var _createAddNewResponse = () => {
+                    var clickOnAddNewResponse = () => {
+                        if(questionGui.answersGui.length < 8){
+                            let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
+                            questionGui.answersGui.push(answerGui);
+
+                            if(questionGui.answersGui.length == 8){
+                                questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
+                            }else{
+                                answerGui = _createDimension(questionGui.answersGui.length);
+                                questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
+                                    answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                            }
+                        }
+                    };
+
+                    questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
+                    let answerGui = _createDimension(questionGui.answersGui.length);
+
+                    let addNewResponseButton
+                        = new gui.Button(answerGui.dimensions.width, answerGui.dimensions.height, [myColors.white, 1, myColors.black], "");
+                    questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
+
+                    questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
+                        answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                    IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
+
+                    questionGui.answersManipulator.add(questionGui.addNewResponseManip);
+                    questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
+                };
+
+                if(!question.answers || question.answers.length < 1){
+                    question.answers = [{label: ""}, {label: ""}]
+                }
+
+                questionGui.answersGui = [];
+                question.answers.forEach((answer, index) => {
+                    let answerGui = _loadOneAnswerBlock(answer, index);
+                    questionGui.answersGui.push(answerGui);
+                });
+
+                _createAddNewResponse();
+
+
+            }
+
 
             _declareManipulatorQuestionDetail(questionDetail);
             _displayToggleTypeResponse(questionDetail, question);
             _displayTextArea(questionDetail, index, question);
-            this._loadAnswerBlockForOneQuestion(questionDetail, index, question);
+            _loadAnswerBlockForOneQuestion(questionDetail, index, question);
 
             return questionDetail;
         }
@@ -344,138 +479,7 @@ exports.QuizAdminV = function (globalVariables) {
             });
         }
 
-        _loadAnswerBlockForOneQuestion(questionGui, questionIndex, question) {
-            var _createDimension = (index) => {
-                let answerGui = {
-                    dimensions: {
-                        width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                        height: 70
-                    },
-                    indexX: Math.floor(index % ANSWERS_PER_LINE),
-                    indexY: Math.floor(index / ANSWERS_PER_LINE),
-                    y: 70 / 2,
-                    x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
-                };
-                return answerGui;
-            }
-            var _loadOneAnswerBlock = (answer, index) => {
-                var _initGui = (answerGui, index) => {
-                    var _initManipulators = () => {
-                        answerGui.manipulator = new Manipulator(this).addOrdonator(4);
-                        questionGui.answersManipulator.add(answerGui.manipulator);
-                    }
-                    var _initInfos = () => {
-                        answerGui.index = index;
-                    }
-                    _initManipulators();
-                    _initInfos();
-                };
-                var _initAnswerTextArea = (answerGui, answerLabel) => {
-                    answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
-                    answerGui.manipulator.set(0, answerGui.textArea.component);
-                    answerGui.textArea.font('Arial', 15);
-                    answerGui.textArea.anchor('center');
-                    answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                    answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                        answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
-                };
-                var _addExplanationPen = (answerGui) => {
-                    answerGui.explanationPenManipulator = new Manipulator(this);
-                    answerGui.linesManipulator = new Manipulator(this);
-                    answerGui.penManipulator = new Manipulator(this);
-                    var _toggleExplanation = () => {
-                        var _hideAnswers = () => {
 
-                        }
-                        // if (!answerGui.explanation.label || !answerGui.explanation.manipulator) {
-                        if (!answerGui.explanation) {
-                            answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
-                        }
-                        // console.log(answer.explanation + 'help me !');
-                        answerGui.manipulator.set(3, answerGui.explanation.manipulator);
-                        _hideAnswers();
-                        answerGui.explanation.display();
-                    }
-
-                    let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                    iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
-                        answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
-                    iconExplanation.addEvent('click', _toggleExplanation);
-
-                };
-                var _addValidCheckbox = (answerGui) => {
-                    answerGui.checkBoxManipulator = new Manipulator(this);
-                    var _toggleChecked = () => {
-                        if (answerGui.checked) {                           // modele or state
-                            answerGui.checkBoxManipulator.remove(checked);
-                            answerGui.checked = false;                     // modele or state
-                        } else {
-                            answerGui.checkBoxManipulator.add(checked);
-                            answerGui.checked = true;                      // modele or state
-                        }
-                    }
-                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
-                    answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
-                    answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
-                    answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
-                };
-
-                let answerGui = _createDimension(index);
-
-                _initGui(answerGui, index);
-                _initAnswerTextArea(answerGui, answer.label);
-                _addExplanationPen(answerGui);
-                _addValidCheckbox(answerGui);
-
-                return answerGui;
-            };
-
-            var _createAddNewResponse = () => {
-                var clickOnAddNewResponse = () => {
-                    if(questionGui.answersGui.length < 8){
-                        let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
-                        questionGui.answersGui.push(answerGui);
-
-                        if(questionGui.answersGui.length == 8){
-                            questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
-                        }else{
-                            answerGui = _createDimension(questionGui.answersGui.length);
-                            questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                                answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
-                        }
-                    }
-                };
-
-                questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
-                let answerGui = _createDimension(questionGui.answersGui.length);
-
-                let addNewResponseButton
-                    = new gui.Button(answerGui.dimensions.width, answerGui.dimensions.height, [myColors.white, 1, myColors.black], "");
-                questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
-
-                questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                    answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
-                IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
-
-                questionGui.answersManipulator.add(questionGui.addNewResponseManip);
-                questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
-            };
-
-            if(!question.answers || question.answers.length < 1){
-                question.answers = [{label: ""}, {label: ""}]
-            }
-
-            questionGui.answersGui = [];
-            question.answers.forEach((answer, index) => {
-                let answerGui = _loadOneAnswerBlock(answer, index);
-                questionGui.answersGui.push(answerGui);
-            });
-
-            _createAddNewResponse();
-
-
-        }
 
         newPopInExplanation(answerGui, editable) {
             let popInExplanation = {};

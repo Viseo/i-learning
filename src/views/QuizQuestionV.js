@@ -28,8 +28,8 @@ exports.QuizQuestionV = function (globalVariables) {
 
     class QuizQuestionV  extends View{
         constructor(presenter) {
+            super(presenter);
             var _initVariables = () => {
-                super(presenter);
                 this.answers = [];
             }
             var _defineManipulators = () => {
