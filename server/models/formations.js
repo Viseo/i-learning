@@ -155,7 +155,7 @@ const newVersion = (formation, version) => {
             let versionId = formation.versions[formation.versions.length - 1]._id;
             if (formation.versions[formation.versions.length - 1].status === "NotPublished" && version.status === "Edited") version.status = "NotPublished";
             
-            //rename keys, it will only set fields that are in version object
+            //rename keys, it will only set _fields that are in version object
             //others will remain unchanged
             Object.keys(version).forEach(function(key){
                 version[`versions.$.${key}`] = version[key];

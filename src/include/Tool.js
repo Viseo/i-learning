@@ -12,7 +12,7 @@ exports.Tool = function (globalVariables, classContainer) {
         PopOut = globalVariables.util.PopOut;
 
     const
-        ICON_SIZE = 12.5;
+        ICON_SIZE = 15;
 
 
     class IconSetting {
@@ -53,6 +53,12 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties.strokeWidth = strokeWidth;
             this.contentProperties.strokeColor = strokeColor;
             return this;
+        }
+
+        changeContentColor(fillColor, strokeWidth, strokeColor){
+            this.contentProperties.fillColor = fillColor;
+            this.contentProperties.strokeWidth = strokeWidth;
+            this.contentProperties.strokeColor = strokeColor;
         }
 
         setPathContent(path, size, fillColor, strokeWidth, strokeColor) {
@@ -171,16 +177,32 @@ exports.Tool = function (globalVariables, classContainer) {
             _createContent(contentProperties);
 
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
-            (borderProperties.layer && borderProperties >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
+            (borderProperties.layer && borderProperties.layer >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
                 : manipulator.add(this.manipulator);
+        }
+
+        changeContentPollygonColor(fillColor, strokeWidth, strokeColor){
+            if(this.iconSetting.contentProperties.type == "Polygon"){
+                this.iconSetting.changeContentColor(fillColor, strokeWidth, strokeColor);
+                this.content.color(fillColor, strokeWidth, strokeColor);
+            }
         }
 
         getSize(){
             return this.iconSetting.borderProperties.size;
         }
 
+        getContentSize(){
+            return this.iconSetting.contentProperties.size;
+        }
+
         position(x, y) {
             this.manipulator.move(x, y);
+            return this;
+        }
+
+        rotate(rotation){
+            this.manipulator.rotate(rotation);
             return this;
         }
 
@@ -205,11 +227,48 @@ exports.Tool = function (globalVariables, classContainer) {
             /*svg.addEvent(this.border, eventName, handler);
              (this.content) && svg.addEvent(this.content, eventName, handler);*/
         }
+
+        changeStatusActionIcon(){
+            this.action = !this.action;
+        }
+
+        cancelActionIcon(){
+            this.action = false;
+        }
+
+        isInAction(){
+            return this.action;
+        }
     }
 
     class IconCreator {
         constructor() {
 
+        }
+
+        createIconByName(name, manipulator, layer){
+            switch(name){
+                case'done':
+                    return this.createDoneIcon(manipulator,layer);
+                    break;
+                case'undone':
+                    return this.createUndoneIcon(manipulator,layer);
+                    break;
+                case'inProgress':
+                    return this.createInProgressIcon(manipulator,layer);
+                    break;
+                case'NotPublished':
+                    return null;
+                    break;
+                case'Edited':
+                    return this.createEditedIcon(manipulator,layer);
+                    break;
+                case'Published':
+                    return this.createDoneIcon(manipulator,layer);
+                    break;
+                default:
+                    break;
+            }
         }
 
         createUndoneIcon(manipulator, layer) {
@@ -240,7 +299,7 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.green, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                .setPathContent(_getPathCheckContent(ICON_SIZE * 2), ICON_SIZE * 2, myColors.none, 3, myColors.white);
+                .setPathContent(_getPathCheckContent(ICON_SIZE *1.75), ICON_SIZE * 2, myColors.none, 3, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -254,7 +313,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
-        createPlusIcon(manipulator, layer) {
+        static createPlusIcon(manipulator, layer) {
             var _getPathPlus = (size) => {
                 var strokePlus = size / 5;
                 var sizePlus = size*2/3;
@@ -269,17 +328,48 @@ exports.Tool = function (globalVariables, classContainer) {
             };
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
-                .setBorderDefaultColor(myColors.black, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.white, 1, myColors.none);
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.blue, 2, myColors.black);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         };
 
+        static createRedCrossIcon(manipulator, layer){
+            let icon = this.createPlusIcon(manipulator, layer);
+            icon.changeContentPollygonColor(myColors.red, 1, myColors.black);
+            icon.rotate(45);
+            return icon;
+        }
+
         createSettingIcon(manipulator, layer){
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)
                 .setPictureContent("../images/settings.png", (ICON_SIZE*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
+
+        static createExplanationIcon(manipulator, layer){
+            let radiusSize = 30;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 0, myColors.none)
+                .setPictureContent("../images/quiz/explanation.png", (radiusSize*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
+
+        static getRadiusContent() {
+            return ICON_SIZE;
+        }
+
+        static createImageIcon(src, manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setPictureContent(src, ICON_SIZE*2);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;

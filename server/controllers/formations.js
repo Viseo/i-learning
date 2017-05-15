@@ -122,9 +122,9 @@ module.exports = function (app) {
                 if (formation) {
                     formations.getFormationsByName(req.body.label)
                         .then(data => {
-                            let version1 = data.formation.versions[data.formation.versions.length - 1];
+                            let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
                             let version2 = req.body;
-                            if (req.body.onlyImage){
+                            if (req.body.onlyImage && version1){
                                 formations.updateImage(formation, version1, version2);
                                 res.send({saved: true});
                                 return;
