@@ -26,7 +26,7 @@ exports.FormationCollabP = function(globalVariables){
 
         getFormationWithProgress (id) {
             return this.user.getFormationWithProgress(id).then(data=> {
-                this.formation.loadFormationFromUser(data.formation);
+                this.formation.loadFormationFromUser(data.formation, this.user);
               return this.formation
            })
         }

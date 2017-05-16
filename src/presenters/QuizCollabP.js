@@ -15,6 +15,7 @@ exports.QuizCollabP = function (globalVariable) {
             super(state);
             this.questionView = new QuizCollabView(this);
             this.scoreView = new QuizScoreView(this);
+            this.view;
             this.quiz = quiz;
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
@@ -25,8 +26,10 @@ exports.QuizCollabP = function (globalVariable) {
         displayView() {
             if (this.isDone) {
                 this.displayScoreView();
+                this.view = this.scoreView;
             } else {
                 this.displayQuestionView(0);
+                this.view = this.questionView;
             }
         }
 

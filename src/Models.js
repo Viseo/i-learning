@@ -23,7 +23,7 @@ exports.Models = function (globalVariables) {
                 case "ConnectionP":
                     this.loadPresenterConnection(); break;
                 case'FormationCollabP':
-                    this.loadPresenterFormationCollab(this.formation);break;
+                    this.loadPresenterFormationCollab(this.formation, this.user);break;
                 case'FormationAdminP':
                     this.loadPresenterFormationAdmin(this.formation); break;
                 default: break;
@@ -124,14 +124,6 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
-        //
-        // loadPresenterQuAdmin(quiz){
-        //     this._addPageToStack();
-        //
-        //     this.currentPresenter && this.currentPresenter.flushView();
-        //     this.currentPresenter = new globalVariables.QuizAdminP(this, quiz);
-        //     this.currentPresenter.displayView();
-        // }
 
         loadPresenterGameCollab(game){
            this.game = game;
@@ -494,13 +486,13 @@ exports.Models = function (globalVariables) {
             // });
             return true;
         }
-        loadFormationFromUser(formation) {
+        loadFormationFromUser(formation, user) {
             let tmpLevelsTab = formation.levelsTab;
             this.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
                 level._gamesTab.forEach(game => {
-                    gamesTab.push(new Quiz(game, false, this));
+                    gamesTab.push(new Quiz(game, user));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
                 this.levelsTab.push(new Level(gamesTab, this.levelsTab.length));
@@ -619,13 +611,14 @@ exports.Models = function (globalVariables) {
     }
 
     class Quiz {
-        constructor(game) {
+        constructor(game, user) {
             this.label = game.label;
             this.index = game.index;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
+            this.answered = user.answered || [];
             this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
         }
 

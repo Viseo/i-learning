@@ -163,13 +163,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 let miniature = createMiniature(formation);
                 this.miniaturesManipulator.add(miniature.manipulator);
                 placeMiniature(miniature, i);
-                let onMouseOverSelect = manipulator => {
-                    manipulator.get(0).color([130, 180, 255], 3, myColors.black);
-                    manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature.manipulator));
-                };
-                let onMouseOutSelect = manipulator => {
-                    manipulator.get(0).color([250, 250, 250], 1, myColors.grey);
-                };
 
                 let createStars = () => {
                     let factor = 5;
@@ -218,8 +211,16 @@ exports.DashboardCollabV = function (globalVariables) {
 
                 drawIcon(formation);
                 (formation.progress == 'done') && createStars();
-
-                miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature.manipulator));
+                let onMouseOverSelect = miniature => {
+                    miniature.border.color([130, 180, 255], 1, myColors.black);
+                    miniature.backCircle.color([130, 180, 255], 1, myColors.black);
+                    miniature.manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature));
+                };
+                let onMouseOutSelect = miniature => {
+                    miniature.backCircle.color(myColors.lightgrey, 0.5, myColors.grey);
+                    miniature.border.color(myColors.lightgrey, 0.5, myColors.grey);
+                };
+                miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
                 miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
             };
 
