@@ -16,7 +16,8 @@ exports.QuizAdminV = function (globalVariables) {
         QUESTIONS_PER_LINE = 6,
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
-        IMAGES_PER_LINE = 3;
+        IMAGES_PER_LINE = 3,
+        EXPLANATION_DEFAUT_TEXT = "Cliquer ici pour ajouter du texte";
 
     class QuizAdminV extends View {
         constructor(presenter) {
@@ -449,11 +450,20 @@ exports.QuizAdminV = function (globalVariables) {
                             };
                             var _drawContent = () => {
                                 var _drawTextExplanation = () => {
+                                    var _onModificationText = () => {
+                                        if(popUpExplanation.textExplanation.textMessage != EXPLANATION_DEFAUT_TEXT){
+                                            answerGui.iconExplanation.activeStatusActionIcon();
+                                            answerGui.iconExplanation.showActualBorder();
+                                        }
+                                    };
+
                                     popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w*2/3 - MARGIN,
-                                        dimensionContent.h - MARGIN, "Cliquer ici pour ajouter du texte");
+                                        dimensionContent.h - MARGIN, EXPLANATION_DEFAUT_TEXT);
                                     popUpExplanation.textExplanation.font('Arial', 20)
                                         .frame.color(myColors.white, 0, myColors.black);
                                     popUpExplanation.textExplanation.position(dimensionContent.w/6 - MARGIN, 0);
+                                    popUpExplanation.textExplanation.onBlur(_onModificationText);
+
 
                                     contentManip.add(popUpExplanation.textExplanation.component);
                                 };
@@ -518,11 +528,9 @@ exports.QuizAdminV = function (globalVariables) {
                         answerGui.popUpExplanation =  _createExplanationPopUp();
 
 
-                        let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                        iconExplanation.position(dimensions.w / 2 - iconExplanation.getContentSize() * 2 / 3,
-                            dimensions.h / 2 - iconExplanation.getContentSize() / 2);
-                        iconExplanation.addEvent('click', _toggleExplanation);
-
+                        answerGui.iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
+                        answerGui.iconExplanation.position(dimensions.w / 2 - answerGui.iconExplanation.getContentSize() * 2 / 3, 0);
+                        answerGui.iconExplanation.addEvent('click', _toggleExplanation);
                     };
                     var _addValidCheckbox = (answerGui) => {
                         answerGui.checkBoxManipulator = new Manipulator(this);
