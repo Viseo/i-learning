@@ -15,41 +15,46 @@ exports.Models = function (globalVariables) {
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
-            switch(presenterName){
+            switch (presenterName) {
                 case "DashboardAdminP":
-                    this.loadPresenterDashboard(this.user); break;
+                    this.loadPresenterDashboard(this.user);
+                    break;
                 case "DashboardCollabP":
-                    this.loadPresenterDashboard(this.user); break;
+                    this.loadPresenterDashboard(this.user);
+                    break;
                 case "ConnectionP":
-                    this.loadPresenterConnection(); break;
+                    this.loadPresenterConnection();
+                    break;
                 case'FormationCollabP':
                     this.loadPresenterFormationCollab(this.formation, this.user);break;
                 case'FormationAdminP':
-                    this.loadPresenterFormationAdmin(this.formation); break;
-                default: break;
+                    this.loadPresenterFormationAdmin(this.formation);
+                    break;
+                default:
+                    break;
             }
             this._unFrozenStackPage();
         }
 
         _addPageToStack() {
-            if(!this._isStackPageIsFrozen()){
+            if (!this._isStackPageIsFrozen()) {
                 this.currentPresenter && this.stackPage.push(this.currentPresenter.__proto__.constructor.name);
             }
         }
 
-        _isStackPageIsFrozen(){
+        _isStackPageIsFrozen() {
             return this.stackStateFrozen;
         }
 
-        _putStackPageToFrozen(){
+        _putStackPageToFrozen() {
             this.stackStateFrozen = true;
         }
 
-        _unFrozenStackPage(){
+        _unFrozenStackPage() {
             this.stackStateFrozen = false;
         }
 
-        clearOldPageStackAndLoadPresenterConnection(){
+        clearOldPageStackAndLoadPresenterConnection() {
             this.stackPage = [];
             this.currentPresenter = null;
             this.loadPresenterConnection();
@@ -73,9 +78,9 @@ exports.Models = function (globalVariables) {
         }
 
 
-        tryConnectForPresenterDashboard(login, pwd, stayConnected){
+        tryConnectForPresenterDashboard(login, pwd, stayConnected) {
             return Server.connect(login, pwd, stayConnected).then(data => {
-                if(!data) throw 'Connexion refusée';
+                if (!data) throw 'Connexion refusée';
                 data = JSON.parse(data);
                 if (data.ack === 'OK') {
                     this.loadPresenterDashboard(data.user);
@@ -85,7 +90,7 @@ exports.Models = function (globalVariables) {
             });
         }
 
-        loadPresenterDashboard(user){
+        loadPresenterDashboard(user) {
             this._addPageToStack();
 
             this.user = new User(user);
@@ -102,7 +107,7 @@ exports.Models = function (globalVariables) {
             })
         }
 
-        loadPresenterFormationAdmin(formation){
+        loadPresenterFormationAdmin(formation) {
             this._addPageToStack();
 
             this.formation = formation;
@@ -114,30 +119,30 @@ exports.Models = function (globalVariables) {
         }
 
 
-        loadPresenterFormationCollab (formation,user){
+        loadPresenterFormationCollab(formation, user) {
             this._addPageToStack();
 
             this.formation = formation;
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.FormationCollabP(this,formation,user);
+            this.currentPresenter = new globalVariables.FormationCollabP(this, formation, user);
             this.currentPresenter.displayView();
         }
 
 
-        loadPresenterGameCollab(game){
-           this.game = game;
+        loadPresenterGameCollab(game) {
+            this.game = game;
             this._addPageToStack();
 
             this.currentPresenter && this.currentPresenter.flushView();
-            switch(game.type){
+            switch (game.type) {
                 case'Quiz':
                     this.currentPresenter = new globalVariables.QuizCollabP(this, game);
             }
             this.currentPresenter.displayView();
         }
 
-        loadPresenterRegister(){
+        loadPresenterRegister() {
             this._addPageToStack();
 
             this.currentPresenter && this.currentPresenter.flushView();
@@ -145,34 +150,38 @@ exports.Models = function (globalVariables) {
             this.currentPresenter.displayView();
         }
 
-        loadPresenterConnection(){
+        loadPresenterConnection() {
             this.currentPresenter && this.currentPresenter.flushView();
             this.currentPresenter = new globalVariables.ConnectionP(this);
             this.currentPresenter.displayView();
         }
 
-        loadPresenterGameAdmin(game){
+        loadPresenterGameAdmin(game) {
             this._addPageToStack();
 
             this.game = game;
 
             this.currentPresenter && this.currentPresenter.flushView();
-            switch(game.type){
+            switch (game.type) {
                 case'Quiz':
-                    this.currentPresenter = new globalVariables.QuizAdminP(this,game);
+                    this.currentPresenter = new globalVariables.QuizAdminP(this, game);
             }
             this.currentPresenter.displayView();
         }
 
-        _loadFormation(formation){
+        _loadFormation(formation) {
             this.formations.loadFormation(formation);
         }
 
-        getGamesLibrary(){
+        getFormationId() {
+            return this.formation.getFormationId();
+        }
+
+        getGamesLibrary() {
             return new GamesLibrary();
         }
 
-        getMediasLibrary(){
+        getMediasLibrary() {
             return new MediasLibrary();
         }
 
@@ -215,7 +224,7 @@ exports.Models = function (globalVariables) {
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
-                level._gamesTab.forEach(game => {
+                level.gamesTab.forEach(game => {
                     gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
@@ -229,7 +238,7 @@ exports.Models = function (globalVariables) {
             this.links = formation.links || [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
-            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
+            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz: 0};
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -271,7 +280,6 @@ exports.Models = function (globalVariables) {
         }
 
 
-
         addNewFormation(object) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
@@ -292,6 +300,10 @@ exports.Models = function (globalVariables) {
                         }
                     }
                 })
+        }
+
+        getFormationId() {
+            return this.formationId;
         }
 
         getId() {
@@ -317,47 +329,47 @@ exports.Models = function (globalVariables) {
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
-                        return {message: messageSave, status:true};
+                        return {message: messageSave, status: true};
                     } else {
                         switch (answer.reason) {
                             case "NoModif" :
                                 return {message: messageNoModification, status: false};
                                 break;
                             case "NameAlreadyUsed" :
-                                return {message : messageUsedName, status: false};
+                                return {message: messageUsedName, status: false};
                                 break;
                         }
                     }
                 })
         };
 
-        moveGame(game,level,column){
+        moveGame(game, level, column) {
             let newGame = false;
-            if (game.index == undefined){
+            if (game.index == undefined) {
                 game = this.addNewGame(game, level, column);
                 newGame = true;
             }
             let lastLevel = game.levelIndex;
             !newGame && this.levelsTab[lastLevel].getGamesTab().forEach(g => {
-                if (g.index > game.index){
+                if (g.index > game.index) {
                     g.index--;
                 }
             });
             !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.index, 1);
-            game.index = column-1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
-                column-1 ;
+            game.index = column - 1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
+                column - 1;
             this.levelsTab[level].getGamesTab().forEach(g => {
-                if (g.index >= game.index){
+                if (g.index >= game.index) {
                     g.index++;
                 }
             })
-            this.levelsTab[level].getGamesTab().splice(column-1, 0, game);
+            this.levelsTab[level].getGamesTab().splice(column - 1, 0, game);
             game.levelIndex = level;
-            if(this.levelsTab[lastLevel].getGamesTab().length == 0 && !newGame){
+            if (this.levelsTab[lastLevel].getGamesTab().length == 0 && !newGame) {
                 this.levelsTab.forEach(l => {
-                    if(l.index > lastLevel){
-                        l.index --;
-                        l.getGamesTab().forEach(g=>{
+                    if (l.index > lastLevel) {
+                        l.index--;
+                        l.getGamesTab().forEach(g => {
                             g.levelIndex--;
                         })
                     }
@@ -367,22 +379,22 @@ exports.Models = function (globalVariables) {
             this.updateLinks();
         }
 
-        isGameInFormation(game){
+        isGameInFormation(game) {
             let result = false;
-            this.levelsTab.forEach(level=>{
-                if(level.getGamesTab().some(g=> g===game)){
+            this.levelsTab.forEach(level => {
+                if (level.getGamesTab().some(g => g === game)) {
                     result = true;
                 }
             });
             return result;
         }
 
-        updateLinks(){
-            let validLink = (link)=>{
-                if(!this.isGameInFormation(link.childGame) || !this.isGameInFormation(link.parentGame)){
+        updateLinks() {
+            let validLink = (link) => {
+                if (!this.isGameInFormation(link.childGame) || !this.isGameInFormation(link.parentGame)) {
                     return false;
                 }
-                if(link.parentGame.levelIndex>=link.childGame.levelIndex){
+                if (link.parentGame.levelIndex >= link.childGame.levelIndex) {
                     return false;
                 }
                 return true;
@@ -390,18 +402,18 @@ exports.Models = function (globalVariables) {
             this.links = this.links.filter(validLink);
         }
 
-        removeGame(game){
+        removeGame(game) {
             this.levelsTab[game.levelIndex].getGamesTab().forEach(g => {
-                if (g.index > game.index){
+                if (g.index > game.index) {
                     g.index--;
                 }
             });
             this.levelsTab[game.levelIndex].getGamesTab().splice(game.index, 1);
-            if(this.levelsTab[game.levelIndex].getGamesTab().length == 0){
+            if (this.levelsTab[game.levelIndex].getGamesTab().length == 0) {
                 this.levelsTab.forEach(l => {
-                    if(l.index > game.levelIndex){
-                        l.index --;
-                        l.getGamesTab().forEach(g=>{
+                    if (l.index > game.levelIndex) {
+                        l.index--;
+                        l.getGamesTab().forEach(g => {
                             g.levelIndex--;
                         })
                     }
@@ -411,24 +423,25 @@ exports.Models = function (globalVariables) {
             this.updateLinks();
         }
 
-        addNewGame(game, level, column){
+        addNewGame(game, level, column) {
             let newGame = game.game.create(this.gamesCounter, level, column);
-            switch(game.game.type){
+            switch (game.game.type) {
                 case'Quiz':
-                    this.gamesCounter.quizz ++;
+                    this.gamesCounter.quizz++;
                     break;
             }
             return newGame
         }
 
-        addLevel(level){
+        addLevel(level) {
             this.levelsTab.push(new Level([], level));
         }
-        removeLevel(level){
+
+        removeLevel(level) {
             this.levelsTab.forEach(l => {
-                if(l.index > level.index){
-                    l.index --;
-                    l.getGamesTab().forEach(g=>{
+                if (l.index > level.index) {
+                    l.index--;
+                    l.getGamesTab().forEach(g => {
                         g.levelIndex--;
                     })
                 }
@@ -437,34 +450,36 @@ exports.Models = function (globalVariables) {
             this.updateLinks();
         }
 
-        updateGamesCounter(game){
-            let inc =1;
-            switch(game.type){
+        updateGamesCounter(game) {
+            let inc = 1;
+            switch (game.type) {
                 case'Quiz':
                     this.gamesCounter.quizz += inc;
                     break;
             }
         }
 
-        checkLink(parent,child){
-            if(parent.levelIndex >= child.levelIndex){
+        checkLink(parent, child) {
+            if (parent.levelIndex >= child.levelIndex) {
                 return false;
             }
-            if(this.links.some(link=>{link.parentGame === parent && link.childGame === child})){
+            if (this.links.some(link => {
+                    link.parentGame === parent && link.childGame === child
+                })) {
                 return false;
             }
             return true;
         }
 
-        getLinks(){
+        getLinks() {
             return this.links;
         }
 
-        createLink(parent,child){
+        createLink(parent, child) {
             this.links.push({parentGame: parent, childGame: child});
         }
 
-        checkAllGameValidity(){
+        checkAllGameValidity() {
             // this.formation.levelsTab.forEach(level => {
             //     level.gamesTab.forEach(game => {
             //         game.questions.forEach(question => {
@@ -499,11 +514,11 @@ exports.Models = function (globalVariables) {
             });
         }
 
-        getGameById(id){
+        getGameById(id) {
             let result = null;
-            this.levelsTab.forEach(level=>{
-                level.getGamesTab().forEach(game=>{
-                    if (game.id == id){
+            this.levelsTab.forEach(level => {
+                level.getGamesTab().forEach(game => {
+                    if (game.id == id) {
                         result = game;
                     }
                 });
@@ -512,13 +527,14 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class Level{
-        constructor(gamesTab, index){
-            this._gamesTab = gamesTab;
+    class Level {
+        constructor(gamesTab, index) {
+            this.gamesTab = gamesTab;
             this.index = index;
         }
+
         getGamesTab() {
-            return this._gamesTab;
+            return this.gamesTab;
         }
     }
 
@@ -530,8 +546,8 @@ exports.Models = function (globalVariables) {
             this.admin = (user.admin) ? user.admin : false;
         }
 
-        getFormationWithProgress (id) {
-            return util.Server.getFormationsProgress(id).then(data=>{
+        getFormationWithProgress(id) {
+            return util.Server.getFormationsProgress(id).then(data => {
                 data = JSON.parse(data);
                 return data;
             });
@@ -603,7 +619,7 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class Game{
+    class Game {
         constructor(level) {
             this.levelGame = level;
         }
@@ -613,8 +629,9 @@ exports.Models = function (globalVariables) {
     class Quiz {
         constructor(game, user) {
             this.label = game.label;
+            this.labelDefault = "Titre du quiz";
             this.index = game.index;
-            this.id = game.id;
+            this._id = game._id;
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
@@ -622,17 +639,17 @@ exports.Models = function (globalVariables) {
             this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
         }
 
-        validateQuestion(questionIndex, answers){
+        validateQuestion(questionIndex, answers) {
             let question = this.questions[questionIndex],
                 result = {indexes: [], correct: true},
                 nbCorrectAnswers = 0;
-            if(question){
-                answers.forEach((answerIndex)=>{
+            if (question) {
+                answers.forEach((answerIndex) => {
                     let answer = question.answers[answerIndex];
-                    if(answer){
+                    if (answer) {
                         result.indexes.push(answerIndex);
                         result.correct = answer.correct && result.correct;
-                        if(answer.correct) nbCorrectAnswers++;
+                        if (answer.correct) nbCorrectAnswers++;
                     }
                 })
                 result.correct = result.correct && this.getNbAnswersCorrect(questionIndex) === nbCorrectAnswers;
@@ -640,22 +657,37 @@ exports.Models = function (globalVariables) {
             }
         }
 
-        getLabel(){
+        getId() {
+            if (this._id) {
+                return this._id;
+            }
+            else {
+                return null;
+            }
+        }
+
+        getLabel() {
             return this.label;
         }
         getLastQuestionIndex(){
             return this.lastQuestionIndex;
         }
-        getQuestionLabel(index){
+        getIndex() {
+            return this.index;
+        }
+
+        getQuestionLabel(index) {
             return this.questions[index] ? this.questions[index].label : "";
         }
-        getAnswers(questionIndex){
+
+        getAnswers(questionIndex) {
             return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
         }
-        getWrongQuestions(){
+
+        getWrongQuestions() {
             let wrongQuestions = [];
             this.answered.forEach((answered, index) => {
-                if(!answered.correct){
+                if (!answered.correct) {
                     wrongQuestions.push({
                         index,
                         label: this.getQuestionLabel(index)
@@ -664,33 +696,95 @@ exports.Models = function (globalVariables) {
             });
             return wrongQuestions;
         }
-        isMultipleChoice(questionIndex){
+
+        getLevelIndex() {
+            return this.levelIndex;
+        }
+
+        isMultipleChoice(questionIndex) {
             return this.questions[questionIndex] ? !!this.questions[questionIndex].multipleChoice : false;
         }
-        getNbQuestions(){
+
+        getQuestions() {
+            return this.questions;
+        }
+
+        getNbQuestions() {
             return this.questions.length;
         }
-        getNbQuestionsCorrect(){
-            return this.answered.reduce((nb, answered)=>answered.correct ? nb+1 : nb, 0);
+
+        getNbQuestionsCorrect() {
+            return this.answered.reduce((nb, answered) => answered.correct ? nb + 1 : nb, 0);
         }
-        getNbAnswersCorrect(questionsIndex){
-            return this.questions[questionsIndex].answers.reduce((nb, answer)=>answer.correct ? nb+1 : nb, 0);
+
+        getNbAnswersCorrect(questionsIndex) {
+            return this.questions[questionsIndex].answers.reduce((nb, answer) => answer.correct ? nb + 1 : nb, 0);
         }
-        getAnswered(questionIndex){
+
+        getAnswered(questionIndex) {
             return this.answered[questionIndex];
         }
-        getCorrectAnswersIndex(questionIndex){
+
+        getCorrectAnswersIndex(questionIndex) {
             let correctAnswers = [];
-            this.getAnswers(questionIndex).forEach((answer, index)=>{
-                if(answer.correct){
+            this.getAnswers(questionIndex).forEach((answer, index) => {
+                if (answer.correct) {
                     correctAnswers.push(index);
                 }
             })
             return correctAnswers;
         }
+
+        renameQuiz(quiz) {
+            const
+                completeQuizMessage = "Les modifications ont bien été enregistrées",
+                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
+                errorMessage = "Entrer un nom valide pour enregistrer";
+            return util.Server.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
+                // console.log(data);
+                let answer = JSON.parse(data);
+                if (answer.ack == 'error') {
+                    answer.message = "Il faut enregistrer le quiz avant !";
+                } else if (answer.ack == 'ok') {
+                    answer.message = "Le nom du quiz a été bien modifié";
+                }
+                return answer;
+            })
+        }
+
+        replaceQuiz(object) {
+            const
+                completeQuizMessage = "Les modifications ont bien été enregistrées",
+                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
+                errorMessage = "Entrer un nom valide pour enregistrer";
+            return util.Server.replaceQuiz(object, object.formationID, object.levelIndex, object.gameIndex, ignoredData)
+                .then((data) => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved) {
+                        return {message: completeQuizMessage, status: true};
+                    } else {
+                        // switch (answer.reason) {
+                        //     case "NoModif" :
+                        //         return {message: messageNoModification, status: false};
+                        //         break;
+                        //     case "NameAlreadyUsed" :
+                        //         return {message : messageUsedName, status: false};
+                        //         break;
+                        // }
+                    }
+                })
+        };
+
+        setLabel(label) {
+            this.label = label; // need base de données saving
+        }
+
+        setQuestions(questions) {
+            this.questions = questions; // need base de données saving
+        }
     }
 
-    class Question{
+    class Question {
         constructor(quiz) {
             this.parentQuiz = quiz;
             this.answers = [];
@@ -711,17 +805,17 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class GamesLibrary{
-        constructor(){
+    class GamesLibrary {
+        constructor() {
             this.list = [
                 {
                     type: 'Quiz',
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
                             label: 'Quiz ' + (counter ? counter.quizz : 0),
-                            index: column ,
-                            id: 'quizz'+(counter ? counter.quizz : 0),
-                            levelIndex : level
+                            index: column,
+                            _id: 'quizz' + (counter ? counter.quizz : 0),
+                            levelIndex: level
                         });
                         return newQuiz;
                     }
@@ -730,37 +824,37 @@ exports.Models = function (globalVariables) {
         }
     }
 
-    class MediasLibrary{
-        constructor(){
+    class MediasLibrary {
+        constructor() {
 
         }
 
-        uppload(file, onProgress){
+        uppload(file, onProgress) {
             return Server.upload(file, onProgress);
         }
 
-        getImages(){
-            return Server.getImages().then(data=>JSON.parse(data));
+        getImages() {
+            return Server.getImages().then(data => JSON.parse(data));
         }
 
-        deleteImage(_id){
-            return Server.deleteImage(_id).then(()=>{
-                let imageIndex = this.images.findIndex((image)=>image._id === _id);
-                if(imageIndex !== -1) this.images.splice(imageIndex, 1);
+        deleteImage(_id) {
+            return Server.deleteImage(_id).then(() => {
+                let imageIndex = this.images.findIndex((image) => image._id === _id);
+                if (imageIndex !== -1) this.images.splice(imageIndex, 1);
             });
         }
 
         getVideos() {
-            return Server.getVideos().then((videos)=>{
+            return Server.getVideos().then((videos) => {
                 this.videos = videos;
                 return videos;
             });
         }
 
         deleteVideo(_id) {
-            return Server.deleteVideo(_id).then(()=>{
-                let videoIndex = this.videos.findIndex((video)=>video._id === _id);
-                if(videoIndex !== -1) this.videos.splice(videoIndex, 1);
+            return Server.deleteVideo(_id).then(() => {
+                let videoIndex = this.videos.findIndex((video) => video._id === _id);
+                if (videoIndex !== -1) this.videos.splice(videoIndex, 1);
             });
         }
     }

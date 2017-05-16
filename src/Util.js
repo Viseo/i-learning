@@ -2142,6 +2142,9 @@ exports.Util = function (globalVariables) {
         static deactivateFormation(id, ignoredData) {
             return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
         }
+        static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
+            return dbListener.httpPostAsync('/formations/' + formationId + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
+        }
         static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
             return dbListener.httpPostAsync('/formations/' + id + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
         }

@@ -60,7 +60,7 @@ exports.FormationAdminV = function(globalVariables) {
 
             let createNameFieldFormation = () => {
                 let nameFieldFormation = new gui.TextField(0,0, this.inputSize.width - 25 - MARGIN, this.inputSize.height, this.label)
-                nameFieldFormation.font('Arial', 15).color(myColors.grey);
+                nameFieldFormation.font('Arial', 15);
                 nameFieldFormation.text.position(-nameFieldFormation.width/2 + MARGIN, 7.5);
                 nameFieldFormation.control.placeHolder('Titre de la formation');
                 nameFieldFormation.onInput((oldMessage, message, valid)=>{

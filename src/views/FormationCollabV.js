@@ -142,7 +142,7 @@ exports.FormationCollabV = function(globalVariables) {
                 .set(2,levelMiniature.icon.rect)
                 .set(3, levelMiniature.icon.whiteRect);
 
-            level._gamesTab.forEach(game => {
+            level.gamesTab.forEach(game => {
                 let gameMiniature = createGameMiniature(game);
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);

@@ -38,7 +38,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator = new Manipulator(this);
                 this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
                 this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
-                this.titleManipulator = new Manipulator(this).addOrdonator(1);
+                this.titleManipulator = new Manipulator(this).addOrdonator(2);
                 this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(3);
                 this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
                 this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
@@ -81,12 +81,24 @@ exports.QuizAdminV = function (globalVariables) {
                     width: this.width * 1 / 4,
                     height: BUTTON_HEIGHT
                 }
-                let titleTextArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, this.label);
-
-                this.titleManipulator.set(0, titleTextArea.component);
+                let titleTextArea = new gui.TextField(0, 0, dimensions.width, dimensions.height, this.label);
                 titleTextArea.font('Arial', 15);
-                titleTextArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
+                titleTextArea.control.placeHolder('Titre du quiz');
+                titleTextArea.onInput((oldMessage, message, valid) => {
+                    if (!message || !oldMessage) {
+                        titleTextArea.text.message('Titre du quiz');
+                    }
+                    titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
+                });
+                titleTextArea.color([myColors.lightgrey, 1, myColors.black]);
+                this.titleManipulator.set(0, titleTextArea.component);
                 this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
+                this.quizTitleField = titleTextArea;
+
+                let saveIcon = new util.Picture('../../images/save.png', false, this,'',null);
+                saveIcon.draw(titleTextArea.width/2 + 12.5 + MARGIN, 0, 25,25, this.titleManipulator, 1);
+                svg.addEvent(saveIcon.imageSVG, 'click', this.renameQuiz.bind(this));
                 currentY += dimensions.height + MARGIN;
             }
             var _displayQuestionsHeader = () => {
@@ -178,6 +190,15 @@ exports.QuizAdminV = function (globalVariables) {
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
             this.questionsBlock.length >= 1 && this.questionsBlock[0].select();
+        }
+
+        displayMessage(message){
+            let messageText = new svg.Text(message).font('Arial', 20);
+            messageText.position(drawing.width/2, this.header.height + 20);
+            this.manipulator.add(messageText);
+            svg.timeout(()=>{
+                this.manipulator.remove(messageText);
+            }, 3000);
         }
 
 
@@ -625,13 +646,13 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLabel();
         }
 
-        getNewAnswers() {
-            let answers = [];
-            return answers;
-        }
+        // getNewAnswers() {
+        //     let answers = [];
+        //     return answers;
+        // }
 
         getNewLabel() {
-            return this.label;
+            return this.titleManipulator.get(0).children['1'].getMessageText();
         }
 
         getNewQuestions() {
@@ -642,7 +663,7 @@ exports.QuizAdminV = function (globalVariables) {
                     {
                         label: question.textArea.textMessage,
                         multipleChoice: question.multipleChoice,
-                        answers: this.getNewAnswers()
+                        answers: question.answers
                     }
                 );
             });
@@ -666,6 +687,16 @@ exports.QuizAdminV = function (globalVariables) {
                 questions: this.getNewQuestions(),
             }
             this.updateQuiz(quizData);
+        }
+
+        renameQuiz() {
+            this.presenter.renameQuiz(this.quizTitleField.textMessage).then(status=>{
+                if (status.ack == 'ok'){
+                    let formationLabel = this.getFormationLabel();
+                    this.label = this.getLabel();
+                    this.header.display(formationLabel + " - " + this.label);
+                }
+            });
         }
 
         selectQuestion(index) {
