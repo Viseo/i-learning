@@ -20,7 +20,7 @@ exports.QuizCollabP = function (globalVariable) {
             this.currentQuestionIndex = 0;
             this.lastAnsweredIndex = 0;
             this.selectedAnswers = [];
-            this.isDone = false; //chedk from quiz if already done
+            this.isDone = this.quiz.isDone();
         }
 
         displayView() {
@@ -51,6 +51,10 @@ exports.QuizCollabP = function (globalVariable) {
             } else {
                 this.returnToOldPage();
             }
+        }
+
+        saveProgress(){
+            this.state.saveProgress();
         }
 
         previousQuestion() {
@@ -96,6 +100,7 @@ exports.QuizCollabP = function (globalVariable) {
 
         validateQuestion(questionIndex, answers){
             this.quiz.validateQuestion(questionIndex, answers);
+            this.saveProgress();
         }
 
         getLabel() {

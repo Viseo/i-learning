@@ -4,7 +4,7 @@
 module.exports = function (app) {
     const
         ObjectID = require('mongodb').ObjectID;
-        cookies = require('../cookies'),
+    cookies = require('../cookies'),
         formations = require('../models/formations'),
         users = require('../models/users')
 
@@ -45,40 +45,12 @@ module.exports = function (app) {
             });
     });
 
-    app.get('/formations/:id/progression', function(req, res){
-        let result = {};
-        formations.getVersionById(req.params.id)
-            .then((data) => {
-                result.formation = data.formation;
-            })
-            .catch(console.error)
-        const
-            user = cookies.verify(cookies.get(req)),
-            lastVersions = formations.getLastVersions(),
-            allFormations = formations.getAllFormations();
-
-        Promise.all([user, allFormations, lastVersions])
-            .then((values) => {
-                const [user, allFormations, versions] = values;
-                return users.getPlayerFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection, id);
-            })
-            .then((data) => {
-                for(let i in data.myCollection){
-                    if (data.myCollection[i]._id == req.params.id){
-                        result.progress = data.myCollection[i].progress;
-                    }
-                }
-                res.send(result);
-            })
-            .catch(console.error)
-    });
-
     app.post('/formations/userFormationEval/:id', function (req, res) {
         let userNote = req.body.starId.split('')[req.body.starId.length - 1];
         let result = {};
-        formations.updateNote(req,req.body.versionId, userNote)
-            .then(data =>{
-                if(data.modifiedCount == 1){
+        formations.updateNote(req, req.body.versionId, userNote)
+            .then(data => {
+                if (data.modifiedCount == 1) {
                     res.send({ack: 'OK'})
                 }
             }).catch(err => {
@@ -95,25 +67,18 @@ module.exports = function (app) {
     });
 
     app.get('/formations', (req, res) => {
-        const
-            user = cookies.verify(cookies.get(req)),
-            allFormations = formations.getAllFormations(),
-            lastVersions = formations.getLastVersions();
-
-        Promise.all([user, allFormations, lastVersions])
-            .then((values) => {
-                const [user, allFormations, versions] = values;
-                if(user.admin){
-                    return versions;
-                }else {
-                    return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection);
-                }
-            })
-            .then((data) => {
-                res.send(data)
-            })
-            .catch(console.error)
-
+        cookies.verify(cookies.get(req)).then((user) => {
+            if (user.admin) {
+                return formations.getLastVersions();
+            } else {
+                return users.getFormationsWithProgress(user);
+            }
+        }).then((data) => {
+            res.send(data)
+        }).catch((err) => {
+            console.log(err);
+            res.status(500).send();
+        })
     });
 
     app.post('/formations/:id', function (req, res) {
@@ -124,7 +89,7 @@ module.exports = function (app) {
                         .then(data => {
                             let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
                             let version2 = req.body;
-                            if (req.body.onlyImage && version1){
+                            if (req.body.onlyImage && version1) {
                                 formations.updateImage(formation, version1, version2);
                                 res.send({saved: true});
                                 return;

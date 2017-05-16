@@ -24,13 +24,6 @@ exports.FormationCollabP = function(globalVariables){
             this.state.returnToOldPage();
         }
 
-        getFormationWithProgress (id) {
-            return this.user.getFormationWithProgress(id).then(data=> {
-                this.formation.loadFormationFromUser(data.formation, this.user);
-              return this.formation
-           })
-        }
-
         onClickGame(game){
             this.state.loadPresenterGameCollab(game);
         }

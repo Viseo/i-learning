@@ -168,6 +168,25 @@ exports.Models = function (globalVariables) {
             this.formations.loadFormation(formation);
         }
 
+        saveProgress(){
+            let formationId = this.getFormationId();
+            let versionId = this.getVersionId()
+            let {gameId, answered} = this.getGameProgress();
+
+            return Server.saveProgress({formationId, versionId, gameId, answered});
+        }
+
+        getGameProgress(){
+            return this.game.getProgress();
+        }
+
+        getVersionId(){
+            return this.formation.getId();
+        }
+        getFormationId(){
+            return this.formation.getFormationId();
+        }
+
         getGamesLibrary(){
             return new GamesLibrary();
         }
@@ -227,7 +246,7 @@ exports.Models = function (globalVariables) {
     class Formation {
         constructor(formation) {
             this.links = formation.links || [];
-            this._id = (formation._id || null);
+            this._id = (formation._id || null); //TODO changer en versionId
             this.formationId = (formation.formationId || null);
             this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
             this.progress = formation.progress;
@@ -295,12 +314,11 @@ exports.Models = function (globalVariables) {
         }
 
         getId() {
-            if (this._id) {
-                return this._id;
-            }
-            else {
-                return null;
-            }
+            return this._id;
+        }
+
+        getFormationId(){
+            return this.formationId;
         }
 
         setLabel(label) {
@@ -530,36 +548,8 @@ exports.Models = function (globalVariables) {
             this.admin = (user.admin) ? user.admin : false;
         }
 
-        getFormationWithProgress (id) {
-            return util.Server.getFormationsProgress(id).then(data=>{
-                data = JSON.parse(data);
-                return data;
-            });
-        }
-
-
         hasLastAction() {
             return this.lastAction.hasLastAction();
-        }
-
-        getLastActionQuestionsAnswered() {
-            return this.lastAction.getQuestionsAnswered();
-        }
-
-        getLastActionFormationId() {
-            return this.lastAction.getFormationId();
-        }
-
-        getLastActionFormationVersion() {
-            return this.lastAction.getFormationVersion();
-        }
-
-        getLastActionCurrentIndexQuestion() {
-            return this.lastAction.getCurrentIndexQuestion();
-        }
-
-        getLastActionTypeOfGame() {
-            return this.lastAction.getTypeOfGame();
         }
 
     }
@@ -567,39 +557,17 @@ exports.Models = function (globalVariables) {
 
     class LastAction {
         constructor(lastAction = {}) {
-            this.indexQuestion = lastAction.indexQuestion;
-            this.questionsAnswered = lastAction.questionsAnswered;
-            this.game = lastAction.game;
-            this.version = lastAction.version;
-            this.formation = lastAction.formation;
+            this.gameId = lastAction.gameId;
+            this.versionId = lastAction.versionId;
+            this.formationId = lastAction.formationId;
         }
 
         hasLastAction() {
             var hasLasAction = false;
-            if (this.formation) {
+            if (this.formationId) {
                 hasLasAction = true;
             }
             return hasLasAction;
-        }
-
-        getQuestionsAnswered() {
-            return this.questionsAnswered;
-        }
-
-        getFormationId() {
-            return this.formation;
-        }
-
-        getFormationVersion() {
-            return this.version;
-        }
-
-        getCurrentIndexQuestion() {
-            return this.indexQuestion;
-        }
-
-        getTypeOfGame() {
-            return this.game;
         }
     }
 
@@ -622,6 +590,10 @@ exports.Models = function (globalVariables) {
             this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
         }
 
+        isDone(){
+            return this.answered.length === this.questions.length;
+        }
+
         validateQuestion(questionIndex, answers){
             let question = this.questions[questionIndex],
                 indexes = [];
@@ -636,6 +608,9 @@ exports.Models = function (globalVariables) {
             this.answered[questionIndex] = indexes;
         }
 
+        getProgress(){
+            return {gameId: this.id, answered: this.answered};
+        }
         getLabel(){
             return this.label;
         }
@@ -699,27 +674,6 @@ exports.Models = function (globalVariables) {
                 }
             })
             return correctAnswers;
-        }
-    }
-
-    class Question{
-        constructor(quiz) {
-            this.parentQuiz = quiz;
-            this.answers = [];
-            this.label = "Question par déf";
-            this.multipleChoice = false;
-            // this.media = imgSrc;
-
-        }
-    }
-
-    class Answer {
-        constructor(question) {
-            this.parentQuestion = question;
-            this.label = "Réponse par déf";
-            this.correct = false;
-            this.explanation = {};
-            // this.media = imgSrc;
         }
     }
 

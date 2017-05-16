@@ -76,7 +76,7 @@ const resetPWD = (mailAddress) => {
         let usersCollection = db.get().collection('users');
         usersCollection.find().toArray((err, docs) => {
             if (err) {
-                resolve(404);
+                reject(err);
             }
             let result = docs.find(user => user.mailAddress === mailAddress);
             if (result) {
@@ -95,14 +95,14 @@ const resetPWD = (mailAddress) => {
                         let resultAskResetPWD = docsReset.find(rPWD => rPWD.mailAddress === mailAddress);
                         if (resultAskResetPWD) {
                             resetPWDCollection.updateOne({mailAddress: mailAddress}, generateForgotPWD);
-                            resolve(200);
+                            resolve();
                         } else {
                             insertDemandResetPWD(resetPWDCollection, resolve, generateForgotPWD);
                         }
                     }
                 });
             } else {
-                resolve(200);
+                resolve();
             }
         })
     });
@@ -124,19 +124,20 @@ const checkResetPWD = (id) => {
         let resetPWDCollection = db.get().collection('mdp');
         resetPWDCollection.find().toArray((err, docs) => {
             if (err) {
-                resolve(404);
+                console.error(err);
+                reject(500);
             }
             let result = docs.find(resetPWD => resetPWD.id === id);
 
             if (result) {
                 let now = new Date();
                 if (now.getTime() <= result.expire) {
-                    resolve(200);
+                    resolve();
                 } else {
-                    resolve(403);
+                    reject(403);
                 }
             } else {
-                resolve(404);
+                reject(404)
             }
         });
     });
@@ -163,7 +164,7 @@ const updatePWD = (newPWD) => {
         let resetPWDCollection = db.get().collection('mdp');
         resetPWDCollection.find().toArray((err, docs) => {
             if (err) {
-                resolve(404);
+                reject(err);
             }
             let result = docs.find(resetPWD => resetPWD.id === newPWD.id);
             if (result) {
@@ -172,7 +173,8 @@ const updatePWD = (newPWD) => {
                     let usersCollection = db.get().collection('users');
                     usersCollection.find().toArray((err, userDocs) => {
                         if (err) {
-                            resolve(404);
+                            console.error(err);
+                            reject(500);
                         } else {
                             let resultFindUser = userDocs.find(resetPWD => resetPWD.mailAddress === result.mailAddress);
                             if (resultFindUser) {
@@ -180,17 +182,17 @@ const updatePWD = (newPWD) => {
                                 usersCollection.updateOne({mailAddress: result.mailAddress}, resultFindUser);
 
                                 resetPWDCollection.removeOne({"id": newPWD.id});
-                                resolve(200);
+                                resolve();
                             } else {
-                                resolve(404);
+                                reject(404);
                             }
                         }
                     });
                 } else {
-                    resolve(403);
+                    reject(403);
                 }
             } else {
-                resolve(404);
+                reject(404);
             }
         });
     });

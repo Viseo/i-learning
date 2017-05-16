@@ -7,19 +7,16 @@ const
 
 const
     db = require('../db'),
-    formations = require("./formations");
+    formations = require("./formations"),
     cookies = require('../cookies');
 
 const getUserByEmailAddress = (email) => {
-    return new Promise((resolve, reject) => {
-        let usersCollection = db.get().collection('users');
-        usersCollection.find().toArray((err, docs) => {
-            if(err){
-                reject(err);
-            }
-            let result = docs.find(user => user.mailAddress === email);
-            resolve(result);
-        })
+    return db.get().collection('users').findOne({"mailAddress": email}).then((user) => {
+        if (!user) throw new Error('user not found');
+        return getLastProgress(user).then((lastAction) => {
+            user.lastAction = lastAction;
+            return user;
+        });
     });
 };
 
@@ -27,7 +24,7 @@ const inscription = (user) => {
     return new Promise((resolve, reject) => {
         let usersCollection = db.get().collection('users');
         usersCollection.insertOne(user, (err) => {
-            if(err) {
+            if (err) {
                 reject(err);
             }
             resolve(user);
@@ -35,72 +32,39 @@ const inscription = (user) => {
     })
 };
 
-const getUserById = (id) => {
-    return new Promise((resolve, reject) => {
-        let collection = db.get().collection('users');
-        collection.find().toArray((err, docs) => {
-            if (err) {
-                reject(err);
-            }
-            let user = id;
-            let result = docs.find(x=> x._id.toString() === user);
-            resolve(result);
-        })
-    })
-};
+const getProgresses = (user) => {
+    return db.get().collection('progress').find({"userId": user._id}).toArray();
+}
+
+const getLastProgress = (user) => {
+    return db.get().collection('progress').find({"userId": user._id}).sort({"ts": -1}).limit(1).toArray().then((data) => data[0]);
+}
 
 const saveProgress = (body, user) => {
+    let progress = {
+        formationId: body.formationId,
+        versionId: body.versionId,
+        gameId: body.gameId
+    }
+    return db.get().collection('progress').updateOne(
+        {
+            "userId": new ObjectID(user._id),
+            "formationId": new ObjectID(progress.formationId),
+            "versionId": new ObjectID(progress.versionId),
+            "gameId": progress.gameId
+        },
+        {
+            $set: {
+                "answered": body.answered,
+                "ts": new Date()
+            }
+        },
+        {upsert: true}
+    );
+};
+
+const noteFormation = (req, note) => {
     return new Promise((resolve, reject) => {
-        let newGame = {
-            game: body.game,
-            questionsAnswered: body.questionsAnswered
-        };
-        let newFormation = {
-            version: body.version,
-            formation: body.formation,
-            gamesTab : [newGame]
-        };
-        let formationsTab;
-        if (user.formationsTab){
-            let formation = user.formationsTab.findIndex(x => x.version === body.version);
-            if(formation !== -1 ){
-                let game = user.formationsTab[formation].gamesTab.findIndex(x => x.game === body.game);
-                if(game !== -1 ){
-                   user.formationsTab[formation].gamesTab[game] = newGame;
-                } else {
-                    user.formationsTab[formation].gamesTab[user.formationsTab[formation].gamesTab.length] = newGame;
-                }
-            } else {
-                user.formationsTab[user.formationsTab.length] = newFormation;
-            }
-            formationsTab = user.formationsTab;
-        } else {
-            formationsTab = [newFormation];
-        }
-        let usersCollection = db.get().collection('users');
-        usersCollection.updateOne({"_id": user._id}, {$set: {formationsTab: formationsTab}}, (err) => {
-            if (err) {
-                reject(err);
-            }
-            resolve({ack: 'ok'});
-        });
-    })
-};
-
-const saveLastAction = (body, user) => {
-    return new Promise((resolve,reject) => {
-       let usersCollection = db.get().collection('users');
-       usersCollection.updateOne({'_id': user._id}, {$set: {lastAction: body}}, err =>{
-           if(err){
-               reject(err);
-           }
-           resolve({ack: 'ok'});
-       })
-    });
-};
-
-const noteFormation = (req, note) =>{
-    return new Promise ((resolve, reject) => {
         cookies.verify(cookies.get(req)).then(user => {
             let users = db.get().collection('users');
             users.findOne({mailAddress: user.mailAddress}).then(userDB => {
@@ -131,105 +95,48 @@ const noteFormation = (req, note) =>{
     })
 }
 
-const getFormationsWithProgress = (userFormationsArray, versions, formations) => {
-    let result = [];
-    versions.forEach(version => {
-        const progressArray = userFormationsArray && userFormationsArray
-                .find(f => f.formation === version.formationId.toString());
-        let progress = '';
-        let id = null;
-        if (progressArray) {
-            // there is a correlation between the player's progress and a formation
-            progress = function() {
-                for (let x = i = 0; x < version.levelsTab.length; x++) {
-                    const gamesTab = version.levelsTab[x].gamesTab;
-                    for (let y = 0; y < gamesTab.length; y++) {
-                        const game = gamesTab[y];
-                        if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered.length < game.tabQuestions.length) {
-                            id = progressArray.version;
-                            return 'inProgress';
-                        }
-                        i+= 1;
-                    }
+const getFormationsWithProgress = (user) => {
+    var _getGameById = (levelsTab, id) => {
+        let result = null;
+        levelsTab.forEach(level => {
+            level._gamesTab.forEach(game => {
+                if (game.id == id) {
+                    result = game;
                 }
-                id = progressArray.version;
-                return 'done';
-            }();
-            if (version.imageSrc){
-                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress, imageSrc: version.imageSrc});
-            }
-            else{
-                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
-            }
-        } else {
-            // check status for a published version
-            if(version.status === "Published") {
-                if (version.imageSrc){
-                    result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress, imageSrc: version.imageSrc});
-                }
-                else{
-                    result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
-                }
-            } else if(version.status && version.status !== "NotPublished") {
-                let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
-                if(myFormation.versions.length > 1) {
-                    version = myFormation.versions[myFormation.versions.length-2];
-                    if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: myFormation._id, label: version.label, status: version.status, progress});
-                }
-            }
-        }
-    });
-    return {myCollection: result};
-};
+            });
+        });
+        return result;
+    }
 
-const getPlayerFormationsWithProgress = (userFormationsArray, versions, formations, id) => {
-    let result = [];
-    versions.forEach(version => {
-        const progressArray = userFormationsArray && userFormationsArray
-                .find(f => f.formation === version.formationId.toString());
-        let progress = '';
-        let id = null;
-        if (progressArray) {
-            // there is a correlation between the player's progress and a formation
-            progress = function() {
-                for (let x = i = 0; x < version.levelsTab.length; x++) {
-                    const gamesTab = version.levelsTab[x].gamesTab;
-                    for (let y = 0; y < gamesTab.length; y++) {
-                        const game = gamesTab[y];
-                        if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered < game.tabQuestions.length) {
-                            id = progressArray.version;
-                            return progressArray;
+    return getProgresses(user).then((progresses) => {
+        return formations.getAllFormations().then(data => {
+            let formations = data.myCollection;
+            let versions = [];
+            formations.forEach((formation) => {
+                let versionTopush = formation.versions[formation.versions.length - 1]
+                progresses
+                    .filter((prog) => prog.formationId.toString() === formation._id.toString())
+                    .forEach((progress)=>{
+                        let version = formation.versions.find((version) => version._id.toString() === progress.versionId.toString());
+                        if (version) {
+                            let game = _getGameById(version.levelsTab, progress.gameId);
+                            if (game) {
+                                game.answered = progress.answered;
+                                versionTopush = version;
+                            }
                         }
-                        i+= 1;
-                    }
-                }
-                id = progressArray.version;
-                return progressArray;
-            }();
-            result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progressArray});
-        } else {
-            // check status for a published version
-            if(version.status === "Published") {
-                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progressArray});
-            } else if(version.status && version.status !== "NotPublished") {
-                let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
-                if(myFormation.versions.length > 1) {
-                    version = myFormation.versions[myFormation.versions.length-2];
-                    if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: myFormation._id, label: version.label, status: version.status, progress});
-                }
-            }
-        }
-    });
-    return {myCollection: result};
+                    })
+                versionTopush.formationId = formation._id;
+                versions.push(versionTopush);
+            })
+            return {myCollection: versions};
+        })
+    })
 }
-
 
 
 exports.getUserByEmailAddress = getUserByEmailAddress;
 exports.inscription = inscription;
-exports.getUserById = getUserById;
 exports.saveProgress = saveProgress;
-exports.getFormationsWithProgress = getFormationsWithProgress;
-exports.getPlayerFormationsWithProgress = getPlayerFormationsWithProgress;
-exports.saveLastAction = saveLastAction;
 exports.noteFormation = noteFormation;
+exports.getFormationsWithProgress = getFormationsWithProgress;

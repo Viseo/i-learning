@@ -2087,24 +2087,8 @@ exports.Util = function (globalVariables) {
         static inscription(user) {
             return dbListener.httpPostAsync('/users/inscription', user)
         }
-        static sendProgressToServer(quiz) {
-            var data = {
-                indexQuestion: quiz.currentQuestionIndex + 1,
-                questionsAnswered: [],
-                game: quiz.id,
-                version: quiz.parentFormation._id,
-                formation: quiz.parentFormation.formationId
-            };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
-            return dbListener.httpPostAsync("/users/self/progress", data)
-                .then(() => {
-                    if (quiz.currentQuestionIndex !== quiz.tabQuestions.length - 1) {
-                        return this.saveLastAction(data);
-                    }
-                    else {
-                        return this.saveLastAction({});
-                    }
-                });
+        static saveProgress(progress){
+            return dbListener.httpPostAsync('users/self/progress', progress);
         }
         static saveLastAction(object) {
             return dbListener.httpPostAsync('users/self/lastAction', object);

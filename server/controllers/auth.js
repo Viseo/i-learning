@@ -1,6 +1,6 @@
 module.exports = function (app) {
     const
-        TwinBcrypt = require('twin-bcrypt');
+        TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies'),
         db = require('../db'),
         users = require('../models/users');
@@ -26,19 +26,15 @@ module.exports = function (app) {
                 });
             }
         })
-            .catch(() => {
-                res.send({status: 'error'});
-            });
+        .catch((err) => {
+            console.log(err);
+            res.send({status: 'error'});
+        });
     });
 
     app.post('/auth/connect', (req, res) => {
-        const collection = db.get().collection('users');
-        collection.find().toArray((err, docs) => {
-            if (err) {
-                return console.error(err.name, err.message);
-            }
-            const user = docs.find(user => user.mailAddress === req.body.mailAddress);
-            if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
+        users.getUserByEmailAddress(req.body.mailAddress).then((user) => {
+            if (TwinBcrypt.compareSync(req.body.password, user.password)) {
                 cookies.generate(user)
                     .then(data => {
                         if (req.body.cookie) {
@@ -72,7 +68,10 @@ module.exports = function (app) {
             } else {
                 res.send({status: 'error'});
             }
-        });
+        }).catch((err)=>{
+            console.log(err);
+            res.send({status: 'error'});
+        })
     })
 };
 

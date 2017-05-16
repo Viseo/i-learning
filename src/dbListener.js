@@ -50,7 +50,11 @@ function HttpRequests(isWriting, isMock, listener) {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200) {
-                    isWriting && register(JSON.parse(request.responseText));
+                    if(request.responseText){
+                        let response = JSON.parse(request.responseText);
+                        isWriting && register(response);
+                    }
+
                     resolve(request.responseText);
                 }
             };
