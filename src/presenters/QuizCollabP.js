@@ -26,15 +26,13 @@ exports.QuizCollabP = function (globalVariable) {
         displayView() {
             if (this.isDone) {
                 this.displayScoreView();
-                this.view = this.scoreView;
             } else {
                 this.displayQuestionView(0);
-                this.view = this.questionView;
             }
         }
 
         displayQuestionView(questionIndex) {
-            this.displayed = "question";
+            this.view = this.questionView;
             if (questionIndex !== undefined) {
                 this.currentQuestionIndex = questionIndex;
             }
@@ -43,15 +41,15 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         displayScoreView() {
-            this.displayed = "score";
+            this.view = this.scoreView;
             this.scoreView.display();
         }
 
         returnHandler() {
-            if (this.isDone && this.displayed === "question") {
+            if (this.isDone && this.view === this.questionView) {
                 this.displayScoreView();
             } else {
-                //TODO handler state
+                this.returnToOldPage();
             }
         }
 
@@ -133,7 +131,7 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getCurrentAnswered() {
-            return this.quiz.getAnswered(this.currentQuestionIndex);
+            return this.quiz.getQuestionAnswered(this.currentQuestionIndex);
         }
 
         getCorrectAnswersIndex() {

@@ -33,7 +33,7 @@ exports.QuizScoreV = function (globalVariables) {
 
         display() {
             var _cleanManipulators = () => {
-
+                this.manipulator.flush();
             }
             var _attachManipulators = () => {
                 let headerManipulator = this.header.getManipulator();

@@ -611,33 +611,29 @@ exports.Models = function (globalVariables) {
     }
 
     class Quiz {
-        constructor(game, user) {
-            this.label = game.label;
-            this.index = game.index;
-            this.id = game.id;
-            this.levelIndex = game.levelIndex;
+        constructor(quiz) {
+            this.label = quiz.label;
+            this.index = quiz.index;
+            this.id = quiz.id;
+            this.levelIndex = quiz.levelIndex;
             this.type = 'Quiz';
-            this.questions = game.questions || [];
-            this.answered = user ? (user.answered || []) : null;
-            this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
+            this.questions = quiz.questions || [];
+            this.answered = quiz.answered || [];
+            this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
         }
 
         validateQuestion(questionIndex, answers){
             let question = this.questions[questionIndex],
-                result = {indexes: [], correct: true},
-                nbCorrectAnswers = 0;
+                indexes = [];
             if(question){
                 answers.forEach((answerIndex)=>{
                     let answer = question.answers[answerIndex];
                     if(answer){
-                        result.indexes.push(answerIndex);
-                        result.correct = answer.correct && result.correct;
-                        if(answer.correct) nbCorrectAnswers++;
+                        indexes.push(answerIndex);
                     }
                 })
-                result.correct = result.correct && this.getNbAnswersCorrect(questionIndex) === nbCorrectAnswers;
-                this.answered[questionIndex] = result;
             }
+            this.answered[questionIndex] = indexes;
         }
 
         getLabel(){
@@ -652,10 +648,26 @@ exports.Models = function (globalVariables) {
         getAnswers(questionIndex){
             return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
         }
+        isCorrect(questionIndex, answers){
+            let question = this.questions[questionIndex],
+                correct = true,
+                nbCorrectAnswers = 0;
+            if(question){
+                answers.forEach((answerIndex)=>{
+                    let answer = question.answers[answerIndex];
+                    if(answer){
+                        correct = answer.correct && correct;
+                        if(answer.correct) nbCorrectAnswers++;
+                    }
+                })
+                return correct && this.getNbAnswersCorrect(questionIndex) === nbCorrectAnswers;
+            }
+            return false;
+        }
         getWrongQuestions(){
             let wrongQuestions = [];
             this.answered.forEach((answered, index) => {
-                if(!answered.correct){
+                if(!this.isCorrect(index, answered)){
                     wrongQuestions.push({
                         index,
                         label: this.getQuestionLabel(index)
@@ -671,12 +683,12 @@ exports.Models = function (globalVariables) {
             return this.questions.length;
         }
         getNbQuestionsCorrect(){
-            return this.answered.reduce((nb, answered)=>answered.correct ? nb+1 : nb, 0);
+            return this.answered.reduce((nb, answered, questionIndex)=> this.isCorrect(questionIndex, answered) ? nb+1 : nb, 0);
         }
         getNbAnswersCorrect(questionsIndex){
             return this.questions[questionsIndex].answers.reduce((nb, answer)=>answer.correct ? nb+1 : nb, 0);
         }
-        getAnswered(questionIndex){
+        getQuestionAnswered(questionIndex){
             return this.answered[questionIndex];
         }
         getCorrectAnswersIndex(questionIndex){

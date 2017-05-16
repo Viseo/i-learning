@@ -287,7 +287,7 @@ exports.QuizQuestionV = function (globalVariables) {
                 })
             }
             var _displayAnswered = () => {
-                this.getCurrentAnswered().indexes.forEach((answeredIndex) => {
+                this.getCurrentAnswered().forEach((answeredIndex) => {
                     let answerManip = this.answers[answeredIndex];
                     let colorRect = new svg.Rect(this.answerWidth, this.answerHeight).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
                     answerManip.set(0, colorRect);
