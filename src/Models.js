@@ -635,7 +635,7 @@ exports.Models = function (globalVariables) {
             this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
-            this.answered = user.answered || [];
+            this.answered = user ? (user.answered || []) : null;
             this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
         }
 
