@@ -1022,7 +1022,7 @@ exports.Util = function (globalVariables) {
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
             let words = content.split(' '),
                 text = '',
-                w = wi * 0.94,
+                w = wi ,
                 t = new svg.Text('text');
             manipulator.set(layer, t);
             t.font(font, fontSize);
@@ -1339,6 +1339,52 @@ exports.Util = function (globalVariables) {
         };
     };
 
+    let resizeStringForText = (text,width,height)=> {
+
+        let glass = drawings.piste.last;
+        let pointToSave = {x:text.x, y:text.y};
+        text.position(10000, 10000);
+        glass.add(text);
+        if (text.boundingRect().width > width) {
+            let splitonspace = text.messageText.split(' ');
+            if(splitonspace.length == 1){
+                let count = -3;
+                while(text.boundingRect().width > width){
+                    text.message(text.messageText.slice(0, count) + '...');
+                    count--;
+                }
+                return text;
+            }
+            let result = '';
+            let tmp = '';
+            let nbLines = 0;
+            let computeWidth = (array) => {
+                if(nbLines >= 1 && text.message(result + array.join(' ')).boundingRect().height > height){
+                    result = result.split('').slice(0,-3).join('') + '...';
+                    return;
+                }
+                if (array.length == 1){
+                    result += array[0];
+                    return;
+                }
+                text.message(array.join(' '));
+                if (text.boundingRect().width > width) {
+                    let line1 = array, lines = [];
+                    while (text.boundingRect().width > width && line1.length > 1 ) {
+                        lines.unshift(line1.pop());
+                        text.message(line1.join(' '));
+                    }
+                    nbLines ++;
+                    result += line1.join(' ') + '\n';
+                    computeWidth(lines);
+                }
+            }
+            computeWidth(splitonspace);
+            text.message(result);
+        }
+        text.position(pointToSave.x, pointToSave.y);
+        return text;
+    }
     let drawHexagon = (w, h, orientation, ratio) => {
         let factor = ratio || 1;
         if (orientation == 'V') {
@@ -1361,7 +1407,7 @@ exports.Util = function (globalVariables) {
                 [-w / 2, -h / 2]
             ];
         }
-
+0
         let shape = new svg.Polygon().add(points).color(
             hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
         shape.width = orientation == 'V' ? w : w*factor;
@@ -2362,6 +2408,7 @@ exports.Util = function (globalVariables) {
         ReturnButton,
         Server,
         drawHexagon,
+        resizeStringForText,
         goDirectlyToLastAction,
         PopOut
     }

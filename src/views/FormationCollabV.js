@@ -72,17 +72,23 @@ exports.FormationCollabV = function(globalVariables) {
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5,5);
                 this.returnButton.text.font('Arial', 20).position(0,5);
+
+
+
                 this.returnButtonManipulator.add(this.returnButton.component)
                     .move(this.returnButton.width/2 + MARGIN,this.header.height + this.returnButton.height/2 + MARGIN);
                 let chevron = new svg.Chevron(10,20,3,'W').color(myColors.grey);
                 chevron.position(-130, 0);
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
+
             }
             createReturnButton();
         }
 
         displayGraphCollab(){
+
+
             this.graphManipulator && this.graphManipulator.flush();
             let createGraphPanel = ()=>{
                 this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
@@ -95,6 +101,8 @@ exports.FormationCollabV = function(globalVariables) {
                     this.header.height + 2*MARGIN + this.graphSize.height/2 + this.buttonSize.height);
                 this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
                 this.titleGraph = new svg.Text('Formation : ' +  this.label).font('Arial', 25).color(myColors.grey).anchor('left');
+
+
                 this.titleGraph.position(-0.85*this.graphSize.width/2, -this.graphSize.height/2 + 8.3);
                 this.graphManipulator.set(2,this.titleGraph);
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2*MARGIN, 3).color(myColors.white);

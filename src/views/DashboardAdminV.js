@@ -26,7 +26,8 @@ exports.DashboardAdmin = function(globalVariables){
 
         display(){
             let createBack = ()=>{
-                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
+                this.title = new svg.Text('Formations :')
+                    .font('Arial',25).color(myColors.grey);
                 this.title.position(INPUT_SIZE.w/2 + MARGIN, this.headHeight + INPUT_SIZE.h + 2*MARGIN + 8.3)
                 this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
                 this.titleBack.position(INPUT_SIZE.w/2 + MARGIN, this.headHeight + INPUT_SIZE.h + 2*MARGIN);
@@ -104,6 +105,8 @@ exports.DashboardAdmin = function(globalVariables){
                 this._displayMiniature(formation, i);
             });
             this.panel.add(this.miniaturesManipulator.first);
+            console.log(this.title.boundingRect());
+
         }
 
         addFormationMiniature(formation){

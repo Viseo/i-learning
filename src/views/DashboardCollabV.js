@@ -139,7 +139,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     manipulator.set(0,border).set(1,backCircle).add(clip);
                     let content = new svg.Text(formation.label)
                         .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
-                        .font('Arial', 20);
+                        .font('Arial',20);
                     manipulator.add(content);
                     return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
                 };

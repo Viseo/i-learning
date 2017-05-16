@@ -329,6 +329,8 @@ exports.FormationAdminV = function(globalVariables) {
             });
             this.updateAllLinks();
 
+
+
         }
         saveFormation(){
             this.presenter.saveFormation();

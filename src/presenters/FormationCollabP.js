@@ -34,7 +34,6 @@ exports.FormationCollabP = function(globalVariables){
         onClickGame(game){
             this.state.loadPresenterGameCollab(game);
         }
-
     };
 
 
