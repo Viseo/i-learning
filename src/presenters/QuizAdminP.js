@@ -75,6 +75,10 @@ exports.QuizAdminP = function (globalVariables) {
         getQuestions() {
             return this.quiz.questions;
         }
+
+        getLastQuestionIndex(){
+            return this.quiz.getLastQuestionIndex();
+        }
     }
 
     return QuizAdminP;

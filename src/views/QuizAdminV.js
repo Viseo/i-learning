@@ -63,7 +63,6 @@ exports.QuizAdminV = function (globalVariables) {
 
         display() {
             var _resetDrawings = () => {
-                // main.currentPageDisplayed = "QuizManager";
                 drawings.component.clean();
                 this.questionsBlockManipulator.flush();
                 this.questionDetailsManipulator.flush();
@@ -176,20 +175,16 @@ exports.QuizAdminV = function (globalVariables) {
             _displayQuestionDetails();
             _displayPreviewButton();
             _displaySaveButton();
-            //_displayQuestions();
-            this._displayQuestionBlock();
-            this._loadQuestionDetail();
-            this.questionsBlock.length > 1 && this.questionsBlock[0].select();
+            this._displayQuestionsBlock();
+            this._loadQuestionsDetail();
+            this.questionsBlock.length >= 1 && this.questionsBlock[0].select();
         }
 
 
-        _displayQuestionBlock() {
-            var _loadOneQuestionInBlock = (question, questionIndex) => {
-                let questionBlock = {};
-
-                var _initQuestionBlock = (questionGui, index) => {
-                    questionGui.manipulator = new Manipulator(this).addOrdonator(2);
-                    questionGui.index = index;
+        _displayQuestionsBlock() {
+            var _displayQuestionBlock = (question, lastQuestionIndex) => {
+                var _initQuestionBlock = () => {
+                    questionGui.index = lastQuestionIndex;
                     questionGui.unselect = () => {
                         if (questionGui.selected) {
                             questionGui.selected = false;
@@ -197,7 +192,6 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                     };
                     questionGui.select = () => {
-                        //this._loadQuestionDetail();
                         if (!questionGui.selected) {
                             questionGui.selected = true;
                             questionGui.questionButton.color([[43, 120, 228], 1, myColors.black]);
@@ -205,68 +199,93 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                     };
                 }
-                var _initGuiBlock = (questionGui, question) => {
-                    questionGui.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], question.label || "Question " + questionGui.index);
+                var _initGuiBlock = () => {
+                    var _deleteQuestion = () => {
+                        if(this.selectedQuestionIndex === questionGui.index){
+                            if(questionGui.index > 0){
+                                this.questionsBlock[questionGui.index - 1].select();
+                            }else if(this.questionsBlock.length > 1){
+                                this.questionsBlock[questionGui.index + 1].select();
+                            }else {
+                                this.unselectQuestion();
+                            }
+                        }
+                        this.questions.splice(questionGui.index, 1);
+                        this.questionsBlockManipulator.remove(this.questionsBlock[questionGui.index].manipulator);
+                        this.questionsBlock.splice(questionGui.index, 1);
+                        this.questionDetailsManipulator.remove(this.questionsDetail[questionGui.index].manipulator);
+                        this.questionsDetail.splice(questionGui.index, 1);
+                        for(let i = questionGui.index; i < this.questionsBlock.length; i++){
+                            if(this.selectedQuestionIndex === this.questionsBlock[i].index) this.selectedQuestionIndex = i;
+                            this.questionsBlock[i].index = i;
+                            this.questionsBlock[i].manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + this.questionsBlock[i].index * (dimensions.width + MARGIN), 0);
+                        }
+                        this.addNewQuestion.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + this.questions.length * (dimensions.width + MARGIN), 0)
+                    }
+
+                    questionGui.manipulator = new Manipulator(this).addOrdonator(2);
+                    questionGui.questionButton = new gui.Button(
+                        dimensions.width,
+                        dimensions.height, 
+                        [myColors.white, 1, myColors.black], 
+                        question.label
+                    );
                     questionGui.questionButton.back.corners(5, 5);
                     questionGui.questionButton.onClick(() => questionGui.select());
                     questionGui.manipulator.add(questionGui.questionButton.component);
                     questionGui.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + questionGui.index * (dimensions.width + MARGIN), 0);
+                    questionGui.redCross = IconCreator.createRedCrossIcon(questionGui.manipulator)
+                        .position(dimensions.width/2, -dimensions.height/2)
+                        .addEvent('click', () => _deleteQuestion());
                 };
-                _initQuestionBlock(questionBlock, questionIndex);
-                _initGuiBlock(questionBlock, question);
-
-                //todo deplacer questionsDetails
-                this.questionsBlock.splice(questionIndex, 0, questionBlock);
-                if (questionIndex <= this.questionsBlock.length) {
-                    for (let i = questionIndex + 1; i < this.questionsBlock.length; i++) {
-                        this.questionsBlock[i].index = i;
-                        this.questionsBlock[i].manipulator
-                            .move(MARGIN - this.width / 2 + dimensions.width / 2 + i * (dimensions.width + MARGIN), 0);
-                    }
+                var _displayBlock = () => {
+                    this.questionsBlock.push(questionGui);
+                    this.questionsBlockManipulator.add(questionGui.manipulator);
                 }
-                this.questionsBlockManipulator.add(questionBlock.manipulator);
-            };
 
-            var _createAddNewQuestion = () => {
+                let questionGui = {};
+                _initQuestionBlock();
+                _initGuiBlock();
+                _displayBlock();
+                return questionGui;
+            };
+            var _displayNewQuestionBlock = () => {
                 let onClickOnAddNewQuestion = () => {
-                    let question = {label: ""};
-                    let index = this.questionsBlock.length - 1;
-                    _loadOneQuestionInBlock(question, index);
+                    this.lastQuestionIndex++;
+                    let question = {label: "Question " + this.lastQuestionIndex};
+                    let index = this.questions.push(question) - 1;
+                    let questionGui = _displayQuestionBlock(question, index);
                     let questionInDetail = this._loadOneQuestionInDetail(question, index);
-                    this.questionsDetail.splice(index, 0, questionInDetail);
+                    this.questionsDetail.add(questionInDetail);
+                    questionGui.select();
+                    this.addNewQuestion.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + this.questions.length * (dimensions.width + MARGIN), 0);
                 };
 
-                let addNewQuestion = {};
-                addNewQuestion.manipulator = new Manipulator(this).addOrdonator(2);
-                addNewQuestion.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], "");
-                addNewQuestion.questionButton.back.corners(5, 5);
-                this.questionsBlock.splice(this.questionsBlock.length, 0, addNewQuestion);
-
-                addNewQuestion.manipulator.set(0, addNewQuestion.questionButton.component);
-                addNewQuestion.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + questions.length * (dimensions.width + MARGIN), 0);
-                let iconAddNewQuestion =  IconCreator.createPlusIcon(addNewQuestion.manipulator, 1);
+                this.addNewQuestion = {};
+                this.addNewQuestion.manipulator = new Manipulator(this).addOrdonator(2);
+                this.addNewQuestion.questionButton = new gui.Button(dimensions.width, dimensions.height, [myColors.white, 1, myColors.black], "");
+                this.addNewQuestion.questionButton.back.corners(5, 5);
+                this.addNewQuestion.manipulator.set(0, this.addNewQuestion.questionButton.component);
+                this.addNewQuestion.manipulator.move(MARGIN - this.width / 2 + dimensions.width / 2 + this.questions.length * (dimensions.width + MARGIN), 0);
+                let iconAddNewQuestion =  IconCreator.createPlusIcon(this.addNewQuestion.manipulator, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
-                addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
-
-                this.questionsBlockManipulator.add(addNewQuestion.manipulator);
+                this.addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
+                this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
             };
-
 
             this.questionsBlock = [];
-            let questions = this.getQuestions();
+            this.questions = this.getQuestions();
+            this.lastQuestionIndex = this.getLastQuestionIndex();
             let dimensions = {
                 width: this.width / QUESTIONS_PER_LINE,
                 height: this.height * 1 / 6 - 2 * MARGIN
             };
 
-            questions.forEach((itQuestion, i) => {
-                _loadOneQuestionInBlock(itQuestion, i);
+            this.questions.forEach((itQuestion, i) => {
+                _displayQuestionBlock(itQuestion, i);
             });
-            _createAddNewQuestion();
-
+            _displayNewQuestionBlock();
         }
-
-
 
         _loadOneQuestionInDetail(question, index){
             let questionDetail = {};
@@ -319,7 +338,7 @@ exports.QuizAdminV = function (globalVariables) {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
                     height: this.questionDetailsDim.height * 1 / 6 - 2 * MARGIN
                 }
-                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label || "Enoncé de la question " + (index + 1));
+                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label);
                 questionGui.textAreaManipulator.set(0, questionGui.textArea.component);
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
@@ -328,23 +347,24 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.answersDimension.height -= dimensions.height;
             };
             var _loadAnswerBlockForOneQuestion = (questionGui, questionIndex, question) => {
-                var _createDimension = (index) => {
-                    let answerGui = {
-                        dimensions: {
+                var _calculatePositionAnswer = (questionGui, indexReponse) => {
+                    let pos = {
                             width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                            height: 70
-                        },
-                        indexX: Math.floor(index % ANSWERS_PER_LINE),
-                        indexY: Math.floor(index / ANSWERS_PER_LINE),
-                        y: 70 / 2,
-                        x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2 - questionGui.answersDimension.width / 2
-                    };
-                    return answerGui;
+                            height: 70,
+                            indexX: Math.floor(indexReponse % ANSWERS_PER_LINE),
+                            indexY: Math.floor(indexReponse / ANSWERS_PER_LINE),
+                            y: 70 / 2,
+                            x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2
+                                - questionGui.answersDimension.width / 2
+                        }
+                    let realPos = {x: pos.x + pos.indexX * (pos.width + MARGIN),
+                     y : pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY}
+                    return realPos;
                 }
                 var _loadOneAnswerBlock = (answer, index) => {
                     var _initGui = (answerGui, index) => {
                         var _initManipulators = () => {
-                            answerGui.manipulator = new Manipulator(this).addOrdonator(4);
+                            answerGui.manipulator = new Manipulator(this).addOrdonator(5);
                             questionGui.answersManipulator.add(answerGui.manipulator);
                         }
                         var _initInfos = () => {
@@ -353,15 +373,42 @@ exports.QuizAdminV = function (globalVariables) {
                         _initManipulators();
                         _initInfos();
                     };
-                    var _initAnswerTextArea = (answerGui, answerLabel) => {
-                        answerGui.textArea = new gui.TextArea(0, 0, answerGui.dimensions.width, answerGui.dimensions.height, answerLabel || "Réponse");
+                    var _initAnswerTextArea = (answerGui, answerLabel, index) => {
+                        answerGui.textArea = new gui.TextArea(0, 0, dimensions.w, dimensions.h, answerLabel || "Réponse");
                         answerGui.manipulator.set(0, answerGui.textArea.component);
-                        answerGui.textArea.font('Arial', 15);
-                        answerGui.textArea.anchor('center');
+                        //answerGui.iconRedCross.addEvent('click', answerGui.iconRedCross.onClickRedCross);
+
+                        answerGui.textArea.font('Arial', 15).anchor('center');
                         answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
-                        answerGui.manipulator.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                            answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                        let pos = _calculatePositionAnswer(questionGui, index);
+                        answerGui.manipulator.move(pos.x, pos.y);
                     };
+                    var _initRedCross = (answerGui) =>{
+                        answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
+                        answerGui.iconRedCross.position(dimensions.w/2, -dimensions.h/2);
+                        answerGui.iconRedCross.onClickRedCross = () => {
+                            let indexAnswer = answerGui.index;
+                            questionGui.answersManipulator.remove(answerGui.manipulator);
+                            questionGui.answersGui.splice(indexAnswer, 1);
+                            for(var i = indexAnswer; i< questionGui.answersGui.length; i++){
+                                questionGui.answersGui[i].index = i;
+                            }
+
+                            questionGui.answersGui.forEach( (ele, index) => {
+                                let pos = _calculatePositionAnswer(questionGui, index);
+                                ele.manipulator.move(pos.x, pos.y);
+                            });
+                            let posAddNewReponse = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                            questionGui.addNewResponseManip.move(posAddNewReponse.x, posAddNewReponse.y);
+                            _attachRedCrossForAnswer(questionGui.answersGui);
+                            if(questionGui.answersGui.length < 8){
+                                questionGui.answersManipulator.add(questionGui.addNewResponseManip);
+                                let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                                questionGui.addNewResponseManip.move(pos.x, pos.y);
+                            }
+                        };
+                    }
+
                     var _addExplanationPen = (answerGui) => {
                         answerGui.explanationPenManipulator = new Manipulator(this);
                         answerGui.linesManipulator = new Manipulator(this);
@@ -375,14 +422,14 @@ exports.QuizAdminV = function (globalVariables) {
                                 answerGui.explanation = this.newPopInExplanation(answerGui, true);    // modele or state
                             }
                             // console.log(answer.explanation + 'help me !');
-                            answerGui.manipulator.set(3, answerGui.explanation.manipulator);
+                            answerGui.manipulator.set(4, answerGui.explanation.manipulator);
                             _hideAnswers();
                             answerGui.explanation.display();
                         }
 
                         let iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                        iconExplanation.position(answerGui.dimensions.width / 2 - iconExplanation.getContentSize() * 2 / 3,
-                            answerGui.dimensions.height / 2 - iconExplanation.getContentSize() / 2);
+                        iconExplanation.position(dimensions.w / 2 - iconExplanation.getContentSize() * 2 / 3,
+                            dimensions.h / 2 - iconExplanation.getContentSize() / 2);
                         iconExplanation.addEvent('click', _toggleExplanation);
 
                     };
@@ -400,49 +447,65 @@ exports.QuizAdminV = function (globalVariables) {
                         let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
                         let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                         answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
-                        answerGui.checkBoxManipulator.add(checkbox).move(-answerGui.dimensions.width / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                        answerGui.checkBoxManipulator.add(checkbox).move(-dimensions.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
                         answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
                     };
 
-                    let answerGui = _createDimension(index);
+                    let answerGui = {};
 
                     _initGui(answerGui, index);
-                    _initAnswerTextArea(answerGui, answer.label);
+                    _initAnswerTextArea(answerGui, answer.label, index);
+                    _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
 
                     return answerGui;
                 };
-
                 var _createAddNewResponse = () => {
                     var clickOnAddNewResponse = () => {
                         if(questionGui.answersGui.length < 8){
                             let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
                             questionGui.answersGui.push(answerGui);
+                            _attachRedCrossForAnswer(questionGui.answersGui);
 
                             if(questionGui.answersGui.length == 8){
                                 questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
                             }else{
-                                answerGui = _createDimension(questionGui.answersGui.length);
-                                questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                                    answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                                let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
+                                questionGui.addNewResponseManip.move(pos.x, pos.y);
                             }
                         }
                     };
 
                     questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
-                    let answerGui = _createDimension(questionGui.answersGui.length);
+                    let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
 
                     let addNewResponseButton
-                        = new gui.Button(answerGui.dimensions.width, answerGui.dimensions.height, [myColors.white, 1, myColors.black], "");
+                        = new gui.Button(dimensions.w, dimensions.h, [myColors.white, 1, myColors.black], "");
                     questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
 
-                    questionGui.addNewResponseManip.move(answerGui.x + answerGui.indexX * (answerGui.dimensions.width + MARGIN),
-                        answerGui.y * answerGui.indexY + (answerGui.dimensions.height + MARGIN) * answerGui.indexY);
+                    questionGui.addNewResponseManip.move(pos.x, pos.y);
                     IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
 
                     questionGui.answersManipulator.add(questionGui.addNewResponseManip);
                     questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
+                };
+                var _attachRedCrossForAnswer = (answersGui) =>{
+                    if(answersGui.length >= 3){
+                        answersGui.forEach(ele => {
+                            ele.iconRedCross.addEvent('click', ele.iconRedCross.onClickRedCross);
+                            ele.manipulator.set(3, ele.iconRedCross.manipulator);
+                        });
+                    }else{
+                        answersGui.forEach(ele => {
+                            ele.manipulator.unset(3);
+                        });
+                    }
+                }
+
+                let dimensions =  {
+                    w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                    h: 70
                 };
 
                 if(!question.answers || question.answers.length < 1){
@@ -456,9 +519,9 @@ exports.QuizAdminV = function (globalVariables) {
                 });
 
                 _createAddNewResponse();
+                _attachRedCrossForAnswer(questionGui.answersGui);
 
-
-            }
+            };
 
 
             _declareManipulatorQuestionDetail(questionDetail);
@@ -469,7 +532,7 @@ exports.QuizAdminV = function (globalVariables) {
             return questionDetail;
         }
 
-        _loadQuestionDetail(){
+        _loadQuestionsDetail(){
             this.questionsDetail = [];
             let questions = this.getQuestions();
 
@@ -646,6 +709,9 @@ exports.QuizAdminV = function (globalVariables) {
         getQuestions() {
             return this.presenter.getQuestions();
         }
+        getLastQuestionIndex(){
+            return this.presenter.getLastQuestionIndex();
+        }
 
         _updateQuizData() {
             let quizData = {
@@ -661,6 +727,11 @@ exports.QuizAdminV = function (globalVariables) {
             this.selectedQuestionIndex = index;
             this.questionDetailsManipulator
                 .set(1, this.questionsDetail[index].guiManipulator);
+        }
+        unselectQuestion(){
+            if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
+            this.selectedQuestionIndex = -1;
+            this.questionDetailsManipulator.unset(1);
         }
 
         refresh() {
