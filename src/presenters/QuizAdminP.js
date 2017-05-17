@@ -34,11 +34,34 @@ exports.QuizAdminP = function (globalVariables) {
                     questions: this.getQuestions()
                 };
             };
-            let quizToSave = getObjectToSave();
-            switch (true) {
+            let quizToSave = getObjectToSave(),
+                isValid = false;
+            quizToSave.questions.forEach(question => {
+                question.answers.forEach(answer => {
+                    if (!question.multipleChoice && isValid == false && answer.correct == true) {
+                        isValid = true;
+                    } else if (!question.multipleChoice && isValid == true && answer.correct == true) {
+                        isValid = false;
+                    } else if (question.multipleChoice && answer.correct == true) {
+                        isValid = true;
+                        return;
+                    }
+                });
 
+            });
+            if (isValid) {
+                return this.quiz.replaceQuiz(getObjectToSave()).then(data => {
+                    data.message && this.view.displayMessage(data.message);
+                    return data;
+                }).catch(error => {
+                    console.log(error);
+                    return error;
+                });
+            } else {
+                this.view.displayMessage(messageError);
             }
-                // return {status: "ok"};
+
+            // return {status: "ok"};
             /*let checkLabel = (label)=>{
              if (label == 'Ajouter une formation'){
              return {status: false, error: 'Veuillez entrer un titre valide.'};

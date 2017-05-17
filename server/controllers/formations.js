@@ -40,7 +40,7 @@ module.exports = function (app) {
                     game: req.body.index,
                     id: req.body.id
                 }, req.body, formation)
-                    .then(data => res.send({ack: 'ok'}))    /** TODO DMA code 200 **/
+                    .then(data => res.send({saved: true}))    /** TODO DMA code 200 **/
                     .catch(err => {console.log(err);res.send({ack: 'error'})});
             });
     });

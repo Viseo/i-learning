@@ -764,23 +764,14 @@ exports.Models = function (globalVariables) {
         replaceQuiz(object) {
             const
                 completeQuizMessage = "Les modifications ont bien été enregistrées",
-                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
-                errorMessage = "Entrer un nom valide pour enregistrer";
-            return util.Server.replaceQuiz(object, object.formationID, object.levelIndex, object.gameIndex, ignoredData)
+                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.index, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
                         return {message: completeQuizMessage, status: true};
                     } else {
                         return {message: imcompleteQuizMessage, status: false};
-                        // switch (answer.reason) {
-                        //     case "NoModif" :
-                        //         return {message: messageNoModification, status: false};
-                        //         break;
-                        //     case "NameAlreadyUsed" :
-                        //         return {message : messageUsedName, status: false};
-                        //         break;
-                        // }
                     }
                 })
         };

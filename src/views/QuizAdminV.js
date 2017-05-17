@@ -17,7 +17,7 @@ exports.QuizAdminV = function (globalVariables) {
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
-        EXPLANATION_DEFAUT_TEXT = "Cliquer ici pour ajouter du texte";
+        EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte";
 
     class QuizAdminV extends View {
         constructor(presenter) {
@@ -264,7 +264,7 @@ exports.QuizAdminV = function (globalVariables) {
                     questionGui.questionButton = new gui.Button(
                         dimensionsQuestionButton.width,
                         dimensionsQuestionButton.height,
-                        [myColors.white, 1, myColors.black], 
+                        [myColors.white, 1, myColors.black],
                         question.label
                     );
                     questionGui.questionButton.back.corners(5, 5);
@@ -507,14 +507,20 @@ exports.QuizAdminV = function (globalVariables) {
                             var _drawContent = () => {
                                 var _drawTextExplanation = () => {
                                     var _onModificationText = () => {
-                                        if(popUpExplanation.textExplanation.textMessage != EXPLANATION_DEFAUT_TEXT){
+                                        if(popUpExplanation.textExplanation.textMessage != EXPLANATION_DEFAULT_TEXT){
                                             answerGui.iconExplanation.activeStatusActionIcon();
                                             answerGui.iconExplanation.showActualBorder();
                                         }
                                     };
-
+                                    if (!answerGui.explanation) {
+                                        answerGui.explanation = EXPLANATION_DEFAULT_TEXT;
+                                        // } else {
+                                        //     answerGui.iconExplanation.activeStatusActionIcon();
+                                        //     answerGui.iconExplanation.showActualBorder();
+                                        // }
+                                    }
                                     popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w*2/3 - MARGIN,
-                                        dimensionContent.h - MARGIN, EXPLANATION_DEFAUT_TEXT);
+                                        dimensionContent.h - MARGIN, answerGui.explanation);
                                     popUpExplanation.textExplanation.font('Arial', 20)
                                         .frame.color(myColors.white, 0, myColors.black);
                                     popUpExplanation.textExplanation.position(dimensionContent.w/6 - MARGIN, 0);
@@ -576,7 +582,7 @@ exports.QuizAdminV = function (globalVariables) {
                         answerGui.linesManipulator = new Manipulator(this);
                         answerGui.penManipulator = new Manipulator(this);
 
-                        
+
                         var _toggleExplanation = () => {
                             answerGui.popUpExplanation.setTextTitle(answerGui.textArea.textMessage);
                             questionGui.explanationManipulator.add(answerGui.popUpExplanation.manipulator);
@@ -603,16 +609,23 @@ exports.QuizAdminV = function (globalVariables) {
                         let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                         answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
                         answerGui.checkBoxManipulator.add(checkbox).move(-dimensions.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                        if (answerGui.checked) {
+                            answerGui.checkBoxManipulator.add(checked);
+                        }
                         answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
                     };
 
-                    let answerGui = {};
+                    let answerGui = {checked:answer.correct, explanation: answer.explanation};
 
                     _initGui(answerGui, index);
                     _initAnswerTextArea(answerGui, answer.label, index);
                     _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
+                    if (answerGui.explanation != EXPLANATION_DEFAULT_TEXT) {
+                        answerGui.iconExplanation.activeStatusActionIcon();
+                        answerGui.iconExplanation.showActualBorder();
+                    }
 
                     return answerGui;
                 };
