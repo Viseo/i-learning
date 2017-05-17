@@ -81,16 +81,7 @@ exports.RegisterP = function (globalVariables) {
                     mailAddress: this._fields[2].text,
                     password: runtime.twinBcrypt(this._fields[3].text)
                 };
-                return Server.inscription(tempObject)
-                    .then(data => {
-                        if (!data) throw 'errorDisplay';
-                        let created = JSON.parse(data);
-                        if (created.ack === 'ok') {
-                            return;
-                        } else {
-                            throw "Un utilisateur possède déjà cette adresse mail !";
-                        }
-                    })
+                return Server.inscription(tempObject);
             } else {
                 return Promise.reject("Veuillez remplir correctement tous les champs")
             }

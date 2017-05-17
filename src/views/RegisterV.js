@@ -172,8 +172,8 @@ exports.RegisterV = function (globalVariables) {
                     this.saveButtonManipulator.remove(message);
                     this.returnToOldPage();
                 }, 3000);
-            }).catch((message) => {
-                let error = new svg.Text(message)
+            }).catch(() => {
+                let error = new svg.Text("Un utilisateur possède déjà cette adresse mail !")
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .position(0, -(INPUT_HEIGHT + MARGIN))
                     .color(myColors.red)

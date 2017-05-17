@@ -21,15 +21,7 @@ const getUserByEmailAddress = (email) => {
 };
 
 const inscription = (user) => {
-    return new Promise((resolve, reject) => {
-        let usersCollection = db.get().collection('users');
-        usersCollection.insertOne(user, (err) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(user);
-        })
-    })
+    return db.get().collection('users').insertOne(user).then(()=>user);
 };
 
 const getProgresses = (user) => {
