@@ -10,7 +10,7 @@ exports.DashboardCollabV = function (globalVariables) {
         createRating = globalVariables.domain.createRating,
         View = globalVariables.View,
         ClipPath = globalVariables.clipPath;
-    const TILE_SIZE = {w: 440, h: 100},
+    const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
         IMAGE_SIZE = 90;
@@ -140,6 +140,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     let content = new svg.Text(formation.label)
                         .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
                         .font('Arial',20);
+                    util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
                     manipulator.add(content);
                     return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
                 };

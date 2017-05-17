@@ -8,6 +8,7 @@ const connection = require('./ConnectionP').ConnectionP;
 const register = require('./RegisterP').RegisterP;
 const FQuizCollab = require('./QuizCollabP').QuizCollabP;
 const FQuizAdminP = require('./QuizAdminP').QuizAdminP;
+const FDollAdminP = require('./DollAdminP').DollAdminP;
 
 exports.PresenterFactory = function(globalvariables){
     globalvariables.Presenter = FPresenter(globalvariables).Presenter;
@@ -20,4 +21,5 @@ exports.PresenterFactory = function(globalvariables){
     globalvariables.RegisterP = register(globalvariables);
     globalvariables.QuizCollabP = FQuizCollab(globalvariables);
     globalvariables.QuizAdminP = FQuizAdminP(globalvariables);
+    globalvariables.DollAdminP = FDollAdminP(globalvariables);
 };

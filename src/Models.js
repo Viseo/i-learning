@@ -160,6 +160,10 @@ exports.Models = function (globalVariables) {
             switch(game.type){
                 case'Quiz':
                     this.currentPresenter = new globalVariables.QuizAdminP(this,game);
+                    break;
+                case'Poupee':
+                    this.currentPresenter = new globalVariables.DollAdminP(this, game);
+                    break;
             }
             this.currentPresenter.displayView();
         }
@@ -248,7 +252,7 @@ exports.Models = function (globalVariables) {
             this.links = formation.links || [];
             this._id = (formation._id || null); //TODO changer en versionId
             this.formationId = (formation.formationId || null);
-            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0};
+            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz:0, doll:0};
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -434,6 +438,9 @@ exports.Models = function (globalVariables) {
             switch(game.game.type){
                 case'Quiz':
                     this.gamesCounter.quizz ++;
+                    break;
+                case'Poupee':
+                    this.gamesCounter.doll ++;
                     break;
             }
             return newGame
@@ -677,6 +684,15 @@ exports.Models = function (globalVariables) {
         }
     }
 
+    class Doll{
+        constructor(game){
+            this.type = 'Poupee';
+            this.label = game.label;
+            this.index = game.index;
+            this.id = game.id;
+            this.levelIndex = game.levelIndex;
+        }
+    }
     class GamesLibrary{
         constructor(){
             this.list = [
@@ -690,6 +706,18 @@ exports.Models = function (globalVariables) {
                             levelIndex : level
                         });
                         return newQuiz;
+                    }
+                },
+                {
+                    type: 'Poupée',
+                    create: function(counter, level, column) {
+                        var newPoup = new Doll({
+                            label: 'Poupée ' + (counter ? counter.doll : 0),
+                            index: column,
+                            id: 'doll'+(counter ? counter.doll : 0),
+                            levelIndex: level
+                        });
+                        return newPoup;
                     }
                 }
             ]

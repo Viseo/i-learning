@@ -7,7 +7,8 @@ exports.DashboardAdmin = function(globalVariables){
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.domain.IconCreator,
         ClipPath = globalVariables.clipPath;
-    const TILE_SIZE = {w: 440, h: 100},
+
+    const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
         IMAGE_SIZE = 90;
@@ -105,8 +106,6 @@ exports.DashboardAdmin = function(globalVariables){
                 this._displayMiniature(formation, i);
             });
             this.panel.add(this.miniaturesManipulator.first);
-            console.log(this.title.boundingRect());
-
         }
 
         addFormationMiniature(formation){
@@ -142,7 +141,7 @@ exports.DashboardAdmin = function(globalVariables){
         _displayMiniature(formation, i){
             let createMiniature = (formation)=>{
                 let border =
-                    new svg.Rect(TILE_SIZE.w-IMAGE_SIZE, TILE_SIZE.h)
+                    new svg.Rect(TILE_SIZE.rect.w, TILE_SIZE.rect.h)
                     .corners(2,2)
                     .color(myColors.lightgrey, 0.5, myColors.grey)
                     .position(IMAGE_SIZE/2, 0);
@@ -159,11 +158,14 @@ exports.DashboardAdmin = function(globalVariables){
                 picture.draw(-TILE_SIZE.w/2 + IMAGE_SIZE, 0, IMAGE_SIZE,IMAGE_SIZE,manipulator, 3);
                 picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
                 let backCircle = new svg.Circle(IMAGE_SIZE/2 +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0);
-                manipulator.set(0,border).set(1,backCircle).add(clip);
                 let content = new svg.Text(formation.label)
                     .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
                     .font('Arial', 20);
-                manipulator.add(content);
+                util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
+                manipulator.set(0,border)
+                    .set(1,backCircle)
+                    .add(clip)
+                    .add(content);
                 return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
             }
             let placeMiniature = (miniature, i)=>{

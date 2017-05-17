@@ -403,7 +403,7 @@ exports.FormationAdminV = function(globalVariables) {
                     },
                     clicked : (what) => {
                         miniatureSelection(what.game.miniatureGame);
-                },
+                    },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);
                         this.dropAction(point.x,point.y, game);

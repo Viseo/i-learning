@@ -1353,6 +1353,7 @@ exports.Util = function (globalVariables) {
                     text.message(text.messageText.slice(0, count) + '...');
                     count--;
                 }
+                text.position(pointToSave.x, pointToSave.y);
                 return text;
             }
             let result = '';
