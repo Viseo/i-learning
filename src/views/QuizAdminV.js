@@ -258,7 +258,7 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                         let pos = calculatePositionOfQuestion(this.questions.length);
                         this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                    }
+                    };
 
                     questionGui.manipulator = new Manipulator(this).addOrdonator(2);
                     questionGui.questionButton = new gui.Button(
@@ -297,8 +297,22 @@ exports.QuizAdminV = function (globalVariables) {
                     let questionInDetail = this._loadOneQuestionInDetail(question, index);
                     this.questionsDetail.add(questionInDetail);
                     questionGui.select();
-                    let pos = calculatePositionOfQuestion(this.questions.length);
-                    this.addNewQuestion.manipulator.move(pos.x, pos.y);
+
+                    if(this.questions.length >= QUESTIONS_PER_LINE){
+                        let indexToStop = this.questions.length - (QUESTIONS_PER_LINE-1);
+                        for(var i = 0; i<indexToStop; i++){
+                            this.questionsBlockManipulator.remove(this.questionsBlock[i].manipulator);
+                        }
+                        for(var it = indexToStop, j = 0; it<this.questions.length; it++, j++){
+                            let pos = calculatePositionOfQuestion(j);
+                            this.questionsBlock[it].manipulator.move(pos.x, pos.y);
+                        }
+                        let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE -1);
+                        this.addNewQuestion.manipulator.move(pos.x, pos.y);
+                    }else{
+                        let pos = calculatePositionOfQuestion(this.questions.length);
+                        this.addNewQuestion.manipulator.move(pos.x, pos.y);
+                    }
                 };
 
                 this.addNewQuestion = {};
