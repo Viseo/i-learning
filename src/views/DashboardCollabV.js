@@ -213,22 +213,14 @@ exports.DashboardCollabV = function (globalVariables) {
                 };
                 let displayNotation = () =>{
                     let displayNotationManip = new Manipulator(this);
-                    if(formation.noteCounter > 0){
-                        let textNotation = new svg.Text('Cette formation a été notée '
-                            + formation.note + '/5 (' + formation.noteCounter.toString().split('').slice(0,2).join('')
-                            + ' votes)')
-                            .font('Arial', 14, 15).anchor('end');
-                        util.resizeStringForText(textNotation, 120, 50);
-                        displayNotationManip.add(textNotation);
-                        displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/8)
-                        miniature.manipulator.add(displayNotationManip);
-                    }
-                    else{
-                        let textNotation = new svg.Text("Cette formation n'a pas encore été notée");
-                        util.resizeStringForText(textNotation, 100, 50);
-                        displayManip.add(textNotation);
-                        miniature.manipulator.add(displayNotationManip);
-                    }
+                    let textNotation = new svg.Text(formation.note.toString().split('').slice(0,4).join('')
+                        + '/5 (' + formation.noteCounter
+                        + ' votes)')
+                        .font('Arial', 14, 15).anchor('end');
+                    util.resizeStringForText(textNotation, 120, 10);
+                    displayNotationManip.add(textNotation);
+                    displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
+                    miniature.manipulator.add(displayNotationManip);
                 }
                 displayNotation();
                 drawIcon(formation);

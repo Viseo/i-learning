@@ -185,7 +185,20 @@ exports.DashboardAdmin = function(globalVariables){
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
             drawIcon(formation);
-
+            let displayNotation = () =>{
+                if (formation.status == 'Published') {
+                    let displayNotationManip = new Manipulator(this);
+                    let textNotation = new svg.Text(formation.note.toString().split('').slice(0,4).join('')
+                        + '/5 (' + formation.noteCounter
+                        + ' votes)')
+                        .font('Arial', 14, 15).anchor('end');
+                    util.resizeStringForText(textNotation, 120, 10);
+                    displayNotationManip.add(textNotation);
+                    displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
+                    miniature.manipulator.add(displayNotationManip);
+                }
+            }
+            displayNotation();
             let onMouseOverSelect = miniature => {
                 miniature.border.color([130, 180, 255], 1, myColors.black);
                 miniature.backCircle.color([130, 180, 255], 1, myColors.black);
