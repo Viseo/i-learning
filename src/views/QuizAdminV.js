@@ -514,10 +514,6 @@ exports.QuizAdminV = function (globalVariables) {
                                     };
                                     if (!answerGui.explanation) {
                                         answerGui.explanation = EXPLANATION_DEFAULT_TEXT;
-                                        // } else {
-                                        //     answerGui.iconExplanation.activeStatusActionIcon();
-                                        //     answerGui.iconExplanation.showActualBorder();
-                                        // }
                                     }
                                     popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w*2/3 - MARGIN,
                                         dimensionContent.h - MARGIN, answerGui.explanation);
@@ -708,11 +704,6 @@ exports.QuizAdminV = function (globalVariables) {
                 let questionDetail = this._loadOneQuestionInDetail(itQuestion, i);
                 this.questionsDetail.add(questionDetail);
             });
-        }
-
-
-        createQuiz(quizData) {
-            return this.presenter.createQuiz(quizData);
         }
 
         getFormationLabel() {
