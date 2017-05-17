@@ -191,7 +191,7 @@ const updateImage = (formation, version1, version2) => {
 
 const updateNote = (req, versionId, note)=> {
     return new Promise((resolve, reject) => {
-        users.noteFormation(req, note)
+        users.noteFormation(req, note, versionId)
             .then(userNotation => {
                 getFormationById(req.params.id)
                     .then((data) => {

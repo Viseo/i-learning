@@ -268,6 +268,8 @@ exports.Models = function (globalVariables) {
             this.levelsTab = formation.levelsTab || [];
             this.label = formation.label ? formation.label : "";
             this.status = formation.progress ? formation.progress.status : (formation.status ? formation.status : 'NotPublished');
+            this.note = formation.note || -1;
+            this.noteCounter = formation.noteCounter;
         }
 
         getLevelsTab() {

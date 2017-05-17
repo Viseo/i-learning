@@ -414,9 +414,12 @@ exports.Tool = function (globalVariables, classContainer) {
 
         _createDrawStars(star);
         _createPopOut();
-
-        manipulator.set(layer, star.starsManipulator);
-
+        if(layer) {
+            manipulator.set(layer, star.starsManipulator);
+        }
+        else{
+            manipulator.add(star.starsManipulator);
+        }
         star.scaleStar = function (factor) {
             this.starsManipulator.scalor.scale(factor);
             return this;

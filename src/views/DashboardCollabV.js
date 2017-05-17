@@ -10,7 +10,7 @@ exports.DashboardCollabV = function (globalVariables) {
         createRating = globalVariables.domain.createRating,
         View = globalVariables.View,
         ClipPath = globalVariables.clipPath;
-    const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
+    const TILE_SIZE = {w: 490, h: 100, rect: {w: 400, h: 100}},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
         IMAGE_SIZE = 90;
@@ -166,7 +166,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 placeMiniature(miniature, i);
 
                 let createStars = () => {
-                    let factor = 5;
+                    let factor = 5.5;
                     let onStarClick = starObject => {
                         starMiniatures.showStarDefaultColor();
                         //todo doit afficher une couleur Quand on a voter 
@@ -183,7 +183,7 @@ exports.DashboardCollabV = function (globalVariables) {
                             starMiniatures[i].color(myColors.orange, 0.2, myColors.orange);
                             id = starMiniatures[i].id;
                         }
-                        onMouseOverSelect(miniature.manipulator);
+                        onMouseOverSelect(miniature);
                     };
 
                     let onStarLeave = () => {
@@ -191,8 +191,8 @@ exports.DashboardCollabV = function (globalVariables) {
                         starMiniatures.showStarDefaultColor();
                     };
 
-                    let starMiniatures = createRating(miniature.manipulator, 3);
-                    starMiniatures.popMark(formation.label).popPosition(0, -this.tileHeight / 2);
+                    let starMiniatures = createRating(miniature.manipulator);
+                    starMiniatures.popMark(formation.label).popPosition(IMAGE_SIZE/2, TILE_SIZE.h/2 + 0.5*MARGIN);
 
 
                     starMiniatures.forEach(
@@ -204,12 +204,33 @@ exports.DashboardCollabV = function (globalVariables) {
                     );
 
                     starMiniatures.scaleStar(factor);
-                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3, -this.tileHeight / 3);
+                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3 - TILE_SIZE.rect.w/2 + 3/2*IMAGE_SIZE, TILE_SIZE.h/3);
 
-                    let notationText = new svg.Text('Notez cette \n formation :').position(0, -this.tileHeight * 0.5).font('Arial', 12, 10);
+                    let notationText = new svg.Text('Notez cette \n formation :')
+                        .position(- TILE_SIZE.rect.w/2 +IMAGE_SIZE + MARGIN, TILE_SIZE.h/8).font('Arial', 14, 15)
+                        .anchor('left');
                     miniature.manipulator.add(notationText);
                 };
-
+                let displayNotation = () =>{
+                    let displayNotationManip = new Manipulator(this);
+                    if(formation.noteCounter > 0){
+                        let textNotation = new svg.Text('Cette formation a été notée '
+                            + formation.note + '/5 (' + formation.noteCounter.toString().split('').slice(0,2).join('')
+                            + ' votes)')
+                            .font('Arial', 14, 15).anchor('end');
+                        util.resizeStringForText(textNotation, 120, 50);
+                        displayNotationManip.add(textNotation);
+                        displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/8)
+                        miniature.manipulator.add(displayNotationManip);
+                    }
+                    else{
+                        let textNotation = new svg.Text("Cette formation n'a pas encore été notée");
+                        util.resizeStringForText(textNotation, 100, 50);
+                        displayManip.add(textNotation);
+                        miniature.manipulator.add(displayNotationManip);
+                    }
+                }
+                displayNotation();
                 drawIcon(formation);
                 (formation.progress == 'done') && createStars();
                 let onMouseOverSelect = miniature => {

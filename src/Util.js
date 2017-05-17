@@ -1379,6 +1379,9 @@ exports.Util = function (globalVariables) {
                     result += line1.join(' ') + '\n';
                     computeWidth(lines);
                 }
+                else{
+                    result += array.join(' ');
+                }
             }
             computeWidth(splitonspace);
             text.message(result);

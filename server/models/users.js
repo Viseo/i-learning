@@ -55,34 +55,50 @@ const saveProgress = (body, user) => {
     );
 };
 
-const noteFormation = (req, note) => {
+const noteFormation = (req, note, versionId) => {
     return new Promise((resolve, reject) => {
         cookies.verify(cookies.get(req)).then(user => {
-            let users = db.get().collection('users');
-            users.findOne({mailAddress: user.mailAddress}).then(userDB => {
-                let formation = userDB.formationsTab.find(f => f.formation.toString() == req.params.id.toString());
-                if (formation.note && Number(formation.note) != Number(note)) {
-                    let lastNote = formation.note;
-                    users.updateOne({
-                        'mailAddress': user.mailAddress,
-                        'formationsTab.formation': req.params.id
-                    }, {
-                        $set: {'formationsTab.$.note': Number(note)}
-                    }).then(data => {
-                        resolve({newVoter: false, lastNote: lastNote});
-                    })
+            let notation = db.get().collection('notation');
+            notation.findOne({userId: user._id, formationId: req.params.id, versionId: versionId}).then(data=>{
+                if (data){
+                    let lastNote = data.note;
+                    notation.updateOne({versionId: data.versionId, userId: data.userId}, {$set: {note: note}}).then(data=>{
+                        resolve({newVoter:false, lastNote: lastNote});
+                    });
+
                 }
-                else {
-                    users.updateOne({
-                        'mailAddress': user.mailAddress,
-                        'formationsTab.formation': req.params.id
-                    }, {
-                        $set: {'formationsTab.$.note': Number(note)}
-                    }).then(data => {
-                        resolve({newVoter: true});
-                    })
+                else{
+                    notation.insertOne({formationId: req.params.id, versionId: versionId, note: note, userId: user._id}).then(data=>{
+                       resolve({newVoter:true})
+                    });
                 }
             });
+
+            // let users = db.get().collection('users');
+            // users.findOne({mailAddress: user.mailAddress}).then(userDB => {
+            //     let formation = userDB.formationsTab.find(f => f.formation.toString() == req.params.id.toString());
+            //     if (formation.note && Number(formation.note) != Number(note)) {
+            //         let lastNote = formation.note;
+            //         users.updateOne({
+            //             'mailAddress': user.mailAddress,
+            //             'formationsTab.formation': req.params.id
+            //         }, {
+            //             $set: {'formationsTab.$.note': Number(note)}
+            //         }).then(data => {
+            //             resolve({newVoter: false, lastNote: lastNote});
+            //         })
+            //     }
+            //     else {
+            //         users.updateOne({
+            //             'mailAddress': user.mailAddress,
+            //             'formationsTab.formation': req.params.id
+            //         }, {
+            //             $set: {'formationsTab.$.note': Number(note)}
+            //         }).then(data => {
+            //             resolve({newVoter: true});
+            //         })
+            //     }
+            // });
         })
     })
 }
