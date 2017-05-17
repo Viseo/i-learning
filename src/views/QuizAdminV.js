@@ -13,7 +13,7 @@ exports.QuizAdminV = function (globalVariables) {
         ReturnButton = globalVariables.util.ReturnButton,
         BUTTON_WIDTH = 250,
         BUTTON_HEIGHT = 30,
-        QUESTIONS_PER_LINE = 6,
+        QUESTIONS_PER_LINE = 5,
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
@@ -211,7 +211,7 @@ exports.QuizAdminV = function (globalVariables) {
 
         _displayQuestionsBlock() {
             var calculatePositionOfQuestion = (index) =>{
-                let pos = { x: dimensionsChevronQuestion.w + MARGIN*2 - this.width / 2
+                let pos = { x: dimensionsChevronQuestion.w + MARGIN*2 - (this.width - MARGIN)/ 2
                         + dimensionsQuestionButton.width / 2 + index * (dimensionsQuestionButton.width + MARGIN),
                     y : 0
                 }
@@ -314,7 +314,8 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
             };
             var _initChevron = () => {
-                let posXRightChevron = this.width/2 - dimensionsChevronQuestion.w + MARGIN;
+                let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE+2);
+                let posXRightChevron = pos.x/2 +dimensionsChevronQuestion.w/2 + MARGIN;
 
                 this.questionsBlockChevron.right = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 20, "E");
                 this.questionsBlockChevron.right.color(myColors.grey, 1 , myColors.black).position(posXRightChevron, 0);
@@ -331,12 +332,12 @@ exports.QuizAdminV = function (globalVariables) {
             this.lastQuestionIndex = this.getLastQuestionIndex();
 
             let dimensionsQuestionButton = {
-                width: this.width / QUESTIONS_PER_LINE,
+                width: (this.width - MARGIN*QUESTIONS_PER_LINE)/ (QUESTIONS_PER_LINE+1),
                 height: this.height * 1 / 6 - 2 * MARGIN
             };
 
             let dimensionsChevronQuestion = {
-                w: (this.width - Math.floor(this.width/(dimensionsQuestionButton.width + MARGIN)) * (dimensionsQuestionButton.width + MARGIN) - MARGIN*3)/2,
+                w: (this.width - QUESTIONS_PER_LINE * (dimensionsQuestionButton.width + MARGIN))/2 - MARGIN*2,
                 h: dimensionsQuestionButton.height - MARGIN,
             };
 
