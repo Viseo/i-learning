@@ -113,10 +113,10 @@ const getFormationsWithProgress = (user) => {
             let formations = data.myCollection;
             let versions = [];
             formations.forEach((formation) => {
-                let versionTopush = formation.versions[formation.versions.length - 1]
+                let versionTopush = formation.versions.reverse().find((version) => version.status === "Published");
                 progresses
                     .filter((prog) => prog.formationId.toString() === formation._id.toString())
-                    .forEach((progress)=>{
+                    .forEach((progress) => {
                         let version = formation.versions.find((version) => version._id.toString() === progress.versionId.toString());
                         if (version) {
                             let game = _getGameById(version.levelsTab, progress.gameId);
@@ -126,8 +126,10 @@ const getFormationsWithProgress = (user) => {
                             }
                         }
                     })
-                versionTopush.formationId = formation._id;
-                versions.push(versionTopush);
+                if(versionTopush){
+                    versionTopush.formationId = formation._id;
+                    versions.push(versionTopush);
+                }
             })
             return {myCollection: versions};
         })
