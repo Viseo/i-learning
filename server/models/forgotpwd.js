@@ -76,7 +76,8 @@ const resetPWD = (mailAddress) => {
         let usersCollection = db.get().collection('users');
         usersCollection.find().toArray((err, docs) => {
             if (err) {
-                reject(err);
+                console.error(err);
+                reject(500);
             }
             let result = docs.find(user => user.mailAddress === mailAddress);
             if (result) {

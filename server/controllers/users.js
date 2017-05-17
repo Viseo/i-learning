@@ -63,8 +63,7 @@ module.exports = function (app) {
                 res.status(200).send();
             })
             .catch((err) => {
-                console.error(err);
-                res.status(500).send();
+                res.status(err).send();
             });
     });
 
@@ -74,20 +73,17 @@ module.exports = function (app) {
                 res.status(200).send();
             })
             .catch((err) => {
-                console.error(err);
-                res.status(404).send();
+                res.status(err).send();
             });
     });
 
     app.post('/users/password/update', function (req, res) { //updatePWD
-        console.log(req.body)
         pwd.updatePWD(req.body)
             .then(() => {
                 res.status(200).send();
             })
             .catch((err) => {
-                console.error(err);
-                res.status(404).send();
+                res.status(err).send();
             });
     });
 };
