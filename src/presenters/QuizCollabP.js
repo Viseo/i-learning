@@ -136,7 +136,7 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getCurrentAnswered() {
-            return this.quiz.getQuestionAnswered(this.currentQuestionIndex);
+            return this.quiz.getAnswered()[this.currentQuestionIndex];
         }
 
         getCorrectAnswersIndex() {

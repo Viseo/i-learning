@@ -175,13 +175,12 @@ exports.Models = function (globalVariables) {
         saveProgress(){
             let formationId = this.getFormationId();
             let versionId = this.getVersionId()
-            let {gameId, answered} = this.getGameProgress();
-
-            return Server.saveProgress({formationId, versionId, gameId, answered});
+            let gameToSave = this.getToSave();
+            return Server.saveProgress(Object.assign({formationId, versionId}, gameToSave));
         }
 
-        getGameProgress(){
-            return this.game.getProgress();
+        getToSave(){
+            return this.game.getToSave();
         }
 
         getVersionId(){
@@ -615,11 +614,20 @@ exports.Models = function (globalVariables) {
             this.answered[questionIndex] = indexes;
         }
 
+        getToSave(){
+            return {gameId: this.getId(), answered: this.getAnswered()};
+        }
         getProgress(){
             return {gameId: this.id, answered: this.answered};
         }
         getLabel(){
             return this.label;
+        }
+        getId(){
+            return this.id;
+        }
+        getAnswered(){
+            return this.answered;
         }
         getLastQuestionIndex(){
             return this.lastQuestionIndex;
@@ -669,9 +677,6 @@ exports.Models = function (globalVariables) {
         }
         getNbAnswersCorrect(questionsIndex){
             return this.questions[questionsIndex].answers.reduce((nb, answer)=>answer.correct ? nb+1 : nb, 0);
-        }
-        getQuestionAnswered(questionIndex){
-            return this.answered[questionIndex];
         }
         getCorrectAnswersIndex(questionIndex){
             let correctAnswers = [];
