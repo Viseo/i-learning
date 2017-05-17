@@ -534,6 +534,24 @@ exports.Models = function (globalVariables) {
             });
             return result;
         }
+
+        getFormationProgress(){
+            let result = [];
+            this.levelsTab.forEach(level =>{
+                level.getGamesTab().forEach(game=>{
+                    result.push(game.func());
+                });
+            });
+            if (result.some(res=> res=='InProgress')){
+                return 'InProgress';
+            }
+            else if (result.every(res=>res=='Done')){
+                return 'Done';
+            }
+            else if (result.every(res=>res=='Undone')){
+                return 'Undone';
+            }
+        }
     }
 
     class Level{
@@ -612,6 +630,18 @@ exports.Models = function (globalVariables) {
                 })
             }
             this.answered[questionIndex] = indexes;
+        }
+
+        func(){
+            if(this.answered.length == this.questions.length){
+                return 'Done';
+            }
+            else if (this.answered.length > 0 && this.answered.length < this.questions.length){
+                return 'InProgress';
+            }
+            else if (this.answered .length == 0){
+                return 'Undone';
+            }
         }
 
         getToSave(){
