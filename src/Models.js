@@ -232,6 +232,13 @@ exports.Models = function (globalVariables) {
             return result;
         }
 
+        loadAllFormations(){
+            this._formations.forEach(form=>{
+                this.loadFormation(form);
+                form.progress = form.getFormationProgress();
+            });
+        }
+
         loadFormation(formation) {
             let tmpLevelsTab = formation.levelsTab;
             formation.levelsTab = [];
@@ -539,17 +546,17 @@ exports.Models = function (globalVariables) {
             let result = [];
             this.levelsTab.forEach(level =>{
                 level.getGamesTab().forEach(game=>{
-                    result.push(game.func());
+                    result.push(game.getProgress());
                 });
             });
-            if (result.some(res=> res=='InProgress')){
-                return 'InProgress';
+            if (result.some(res=> res=='inProgress') || (result.some(res=> res=='done')&&result.some(res=> res=='undone'))){
+                return 'inProgress';
             }
-            else if (result.every(res=>res=='Done')){
-                return 'Done';
+            else if (result.every(res=>res=='done')){
+                return 'done';
             }
-            else if (result.every(res=>res=='Undone')){
-                return 'Undone';
+            else if (result.every(res=>res=='undone')){
+                return 'undone';
             }
         }
     }
@@ -632,23 +639,19 @@ exports.Models = function (globalVariables) {
             this.answered[questionIndex] = indexes;
         }
 
-        func(){
-            if(this.answered.length == this.questions.length){
-                return 'Done';
-            }
-            else if (this.answered.length > 0 && this.answered.length < this.questions.length){
-                return 'InProgress';
-            }
-            else if (this.answered .length == 0){
-                return 'Undone';
-            }
-        }
-
         getToSave(){
             return {gameId: this.getId(), answered: this.getAnswered()};
         }
         getProgress(){
-            return {gameId: this.id, answered: this.answered};
+            if(this.answered.length == this.questions.length){
+                return 'done';
+            }
+            else if (this.answered.length > 0 && this.answered.length < this.questions.length){
+                return 'inProgress';
+            }
+            else if (this.answered .length == 0){
+                return 'undone';
+            }
         }
         getLabel(){
             return this.label;

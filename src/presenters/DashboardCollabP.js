@@ -10,6 +10,7 @@ exports.DashboardCollabP = function(globalVariables) {
             super(state);
             this.view = new DashboardCollabV(this);
             this.formations = formations;
+            this.formations.loadAllFormations();
             this.user = user;
 
             //todo
