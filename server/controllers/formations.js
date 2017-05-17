@@ -37,10 +37,10 @@ module.exports = function (app) {
             .then(formation => {
                 formations.replaceQuiz({
                     level: req.body.levelIndex,
-                    game: req.body.gameIndex,
+                    game: req.body.index,
                     id: req.body.id
                 }, req.body, formation)
-                    .then(data => res.send({ack: 'ok'}))
+                    .then(data => res.send({ack: 'ok'}))    /** TODO DMA code 200 **/
                     .catch(err => {console.log(err);res.send({ack: 'error'})});
             });
     });

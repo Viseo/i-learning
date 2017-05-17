@@ -19,9 +19,26 @@ exports.QuizAdminP = function (globalVariables) {
 
         updateQuiz(quizData) {
             console.log(quizData);
-            // this.setLabel(quizData.label);
-            // this.setQuestions(quizData.questions);
-            // return {status: "ok"};
+            this.setLabel(quizData.label);
+            this.setQuestions(quizData.questions);
+            const messageError = "Il manque des informations";
+
+            const getObjectToSave = () => {
+                return {
+                    id: this.getId(),
+                    index: this.getIndex(),
+                    levelIndex: this.getLevelIndex(),
+                    formationId: this.getFormationId(),
+                    label: this.getLabel(),
+                    lastQuestionIndex: this.getLastIndex(),
+                    questions: this.getQuestions()
+                };
+            };
+            let quizToSave = getObjectToSave();
+            switch (true) {
+
+            }
+                // return {status: "ok"};
             /*let checkLabel = (label)=>{
              if (label == 'Ajouter une formation'){
              return {status: false, error: 'Veuillez entrer un titre valide.'};
@@ -60,18 +77,17 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         getFormationId() {
-            //return this.parentPresenter.getLabel();
             return this.state.getFormationId();
         }
 
         getFormationLabel() {
-            //return this.parentPresenter.getLabel();
-            return "RIEN";
+            return this.state.getFormationLabel();
         }
 
         getId() {
             return this.quiz.getId();
         }
+
         getIndex() {
             return this.quiz.getIndex();
         }
@@ -79,9 +95,11 @@ exports.QuizAdminP = function (globalVariables) {
         getLabel() {
             return this.quiz.getLabel();
         }
+
         getLastIndex() {
             return this.quiz.lastQuestionIndex;
         }
+
         getLevelIndex() {
             return this.quiz.getLevelIndex();
         }
@@ -94,13 +112,14 @@ exports.QuizAdminP = function (globalVariables) {
             return this.quiz.getQuestions();
         }
 
-        getLastQuestionIndex(){
+        getLastQuestionIndex() {
             return this.quiz.getLastQuestionIndex();
         }
 
         saveNewLabel(quizData) {
             //
         }
+
         renameQuiz(label) {
             this.quiz.setLabel(label);
             const messageError = "Vous devez remplir correctement le nom du quiz.";
@@ -108,12 +127,12 @@ exports.QuizAdminP = function (globalVariables) {
                 const getObjectToSave = () => {
                     return {
                         id: this.getId(),
-                        gameIndex: this.getIndex(),
-                        formationId : this.getFormationId(),
+                        index: this.getIndex(),
+                        formationId: this.getFormationId(),
                         label: this.getLabel(),
-                        lastQuestionIndex : this.getLastIndex(),
-                        levelIndex : this.getLevelIndex(),
-                        questions : this.getQuestions()
+                        lastQuestionIndex: this.getLastIndex(),
+                        levelIndex: this.getLevelIndex(),
+                        questions: this.getQuestions()
                     };
                 };
                 if (this.quiz.getId()) {

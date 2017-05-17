@@ -710,10 +710,20 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLabel();
         }
 
-        // getNewAnswers() {
-        //     let answers = [];
-        //     return answers;
-        // }
+        getNewAnswers(questionElementVue) {
+            let answers = [];
+            questionElementVue.answersGui.forEach(answerGui => {
+                    answers.push({
+                        // parentQuestion: "",
+                        correct: answerGui.checked ? true : false,
+                        label: answerGui.textArea.textMessage,
+                        explanation: answerGui.popUpExplanation.textExplanation.textMessage
+                    });
+                }
+            )
+
+            return answers;
+        }
 
         getNewLabel() {
             return this.titleManipulator.get(0).children['1'].getMessageText();
@@ -722,12 +732,13 @@ exports.QuizAdminV = function (globalVariables) {
         getNewQuestions() {
             let questionsDetail = this.questionsDetail,
                 questions = [];
-            questionsDetail.forEach(question => {
+            questionsDetail.forEach(questionElementVue => {
+                questionElementVue.answers = this.getNewAnswers(questionElementVue);
                 questions.push(
                     {
-                        label: question.textArea.textMessage,
-                        multipleChoice: question.multipleChoice,
-                        answers: question.answers
+                        label: questionElementVue.textArea.textMessage,
+                        multipleChoice: questionElementVue.multipleChoice,
+                        answers: questionElementVue.answers
                     }
                 );
             });
@@ -773,6 +784,9 @@ exports.QuizAdminV = function (globalVariables) {
             if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
             this.selectedQuestionIndex = -1;
             this.questionDetailsManipulator.unset(1);
+        }
+        updateQuiz(quizData) {
+            this.presenter.updateQuiz(quizData);
         }
 
         refresh() {

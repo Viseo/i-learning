@@ -173,6 +173,10 @@ exports.Models = function (globalVariables) {
             this.formations.loadFormation(formation);
         }
 
+        getFormationLabel() {
+            return this.formation.getFormationLabel();
+        }
+
         getFormationId() {
             return this.formation.getFormationId();
         }
@@ -300,6 +304,10 @@ exports.Models = function (globalVariables) {
                         }
                     }
                 })
+        }
+
+        getFormationLabel() {
+            return this.label;
         }
 
         getFormationId() {
@@ -628,11 +636,11 @@ exports.Models = function (globalVariables) {
 
     class Quiz {
         constructor(game, user) {
+            this.id = game.id;
+            this.index = game.index;
+            this.levelIndex = game.levelIndex;
             this.label = game.label;
             this.labelDefault = "Titre du quiz";
-            this.index = game.index;
-            this._id = game._id;
-            this.levelIndex = game.levelIndex;
             this.type = 'Quiz';
             this.questions = game.questions || [];
             this.answered = user ? (user.answered || []) : null;
@@ -658,8 +666,8 @@ exports.Models = function (globalVariables) {
         }
 
         getId() {
-            if (this._id) {
-                return this._id;
+            if (this.id) {
+                return this.id;
             }
             else {
                 return null;
@@ -745,6 +753,7 @@ exports.Models = function (globalVariables) {
                 let answer = JSON.parse(data);
                 if (answer.ack == 'error') {
                     answer.message = "Il faut enregistrer le quiz avant !";
+                    reject(answer);
                 } else if (answer.ack == 'ok') {
                     answer.message = "Le nom du quiz a été bien modifié";
                 }
@@ -763,6 +772,7 @@ exports.Models = function (globalVariables) {
                     if (answer.saved) {
                         return {message: completeQuizMessage, status: true};
                     } else {
+                        return {message: imcompleteQuizMessage, status: false};
                         // switch (answer.reason) {
                         //     case "NoModif" :
                         //         return {message: messageNoModification, status: false};
@@ -800,7 +810,7 @@ exports.Models = function (globalVariables) {
             this.parentQuestion = question;
             this.label = "Réponse par déf";
             this.correct = false;
-            this.explanation = {};
+            this.explanation = {label: ""};
             // this.media = imgSrc;
         }
     }
