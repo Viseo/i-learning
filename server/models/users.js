@@ -33,21 +33,17 @@ const getLastProgress = (user) => {
 }
 
 const saveProgress = (body, user) => {
-    let progress = {
-        formationId: body.formationId,
-        versionId: body.versionId,
-        gameId: body.gameId
-    }
     return db.get().collection('progress').updateOne(
         {
             "userId": new ObjectID(user._id),
-            "formationId": new ObjectID(progress.formationId),
-            "versionId": new ObjectID(progress.versionId),
-            "gameId": progress.gameId
+            "formationId": new ObjectID(body.formationId),
+            "versionId": new ObjectID(body.versionId),
+            "gameId": body.gameId
         },
         {
             $set: {
                 "answered": body.answered,
+                "done": body.done,
                 "ts": new Date()
             }
         },

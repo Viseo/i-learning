@@ -27,7 +27,7 @@ exports.QuizCollabP = function (globalVariable) {
             if (this.isDone) {
                 this.displayScoreView();
             } else {
-                this.displayQuestionView(0);
+                this.displayQuestionView(this.getAnswered().length);
             }
         }
 
@@ -136,9 +136,11 @@ exports.QuizCollabP = function (globalVariable) {
         }
 
         getCurrentAnswered() {
-            return this.quiz.getAnswered()[this.currentQuestionIndex];
+            return this.getAnswered()[this.currentQuestionIndex];
         }
-
+        getAnswered(){
+            return this.quiz.getAnswered();
+        }
         getCorrectAnswersIndex() {
             return this.quiz.getCorrectAnswersIndex(this.currentQuestionIndex);
         }

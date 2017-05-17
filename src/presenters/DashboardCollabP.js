@@ -12,22 +12,8 @@ exports.DashboardCollabP = function(globalVariables) {
             this.formations = formations;
             this.formations.loadAllFormations();
             this.user = user;
-
-            //todo
-            if(this.hasLastAction()){
-                //alert("Todo Got last action");
-            }
         };
 
-        hasLastAction(){
-            return this.user.hasLastAction();
-        }
-
-        loadFormation(formation){
-            this.formations.loadFormation(formation)
-        }
-
-        //todo
         clickOnFormation(formation){
             this.state.loadPresenterFormationCollab(formation,this.user);
         }
