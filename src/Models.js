@@ -744,7 +744,6 @@ exports.Models = function (globalVariables) {
         }
 
         renameQuiz(quiz) {
-            const
             return util.Server.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
                 let answer = JSON.parse(data);
                 if (answer.ack == 'error') {
@@ -758,18 +757,17 @@ exports.Models = function (globalVariables) {
         }
 
         replaceQuiz(object) {
-            const
-                completeQuizMessage = "Les modifications ont bien été enregistrées",
-                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+            const completeQuizMessage = "Les modifications ont bien été enregistrées",
+                incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
             return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.index, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
                         return {message: completeQuizMessage, status: true};
                     } else {
-                        return {message: imcompleteQuizMessage, status: false};
+                        return {message: incompleteQuizMessage, status: false};
                     }
-                })
+                });
         };
 
         setLabel(label) {
