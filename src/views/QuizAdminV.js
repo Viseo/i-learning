@@ -364,10 +364,10 @@ exports.QuizAdminV = function (globalVariables) {
                 let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE+2);
                 let posXRightChevron = pos.x/2 +dimensionsChevronQuestion.w/2 + MARGIN;
 
-                this.questionsBlockChevron.right = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 20, "E");
+                this.questionsBlockChevron.right = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "E");
                 this.questionsBlockChevron.right.color(myColors.halfGrey, 1 , myColors.black).position(posXRightChevron, 0);
 
-                this.questionsBlockChevron.left = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 20, "W");
+                this.questionsBlockChevron.left = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "W");
                 this.questionsBlockChevron.left.color(myColors.halfGrey, 1 , myColors.black).position(-posXRightChevron, 0);
 
                 var onClickRChevron = () => {
@@ -379,8 +379,20 @@ exports.QuizAdminV = function (globalVariables) {
                     _refreshQuestionsBlock();
                 };
 
+                var onMouseEnter = function () {
+                    this.color(myColors.black, 1 , myColors.halfGrey);
+                };
+
+                var onMouseOut = function () {
+                    this.color(myColors.halfGrey, 1 , myColors.black);
+                };
+
                 this.questionsBlockChevron.right.onClick(onClickRChevron);
                 this.questionsBlockChevron.left.onClick(onClickLChevron);
+                this.questionsBlockChevron.left.onMouseEnter(onMouseEnter.bind(this.questionsBlockChevron.left));
+                this.questionsBlockChevron.right.onMouseEnter(onMouseEnter.bind(this.questionsBlockChevron.right));
+                svg.addEvent(this.questionsBlockChevron.left, 'mouseleave', onMouseOut.bind(this.questionsBlockChevron.left))
+                svg.addEvent(this.questionsBlockChevron.right, 'mouseleave', onMouseOut.bind(this.questionsBlockChevron.right))
 
                 this._showActualQuestionChevron();
             };
