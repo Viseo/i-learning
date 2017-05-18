@@ -735,7 +735,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                             if (questionGui.answersGui.length == 8) {
                                 questionGui.answersManipulator.remove(questionGui.addNewResponseManip);
-                            }else{
+                            } else {
                                 let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
                                 questionGui.addNewResponseManip.move(pos.x, pos.y);
                             }
@@ -761,7 +761,7 @@ exports.QuizAdminV = function (globalVariables) {
                             ele.iconRedCross.addEvent('click', ele.iconRedCross.onClickRedCross);
                             ele.manipulator.set(3, ele.iconRedCross.manipulator);
                         });
-                    }else{
+                    } else {
                         answersGui.forEach(ele => {
                             ele.manipulator.unset(3);
                         });
@@ -822,7 +822,7 @@ exports.QuizAdminV = function (globalVariables) {
                         // parentQuestion: "",
                         correct: answerGui.checked ? true : false,
                         label: answerGui.textArea.textMessage,
-                        explanation: answerGui.popUpExplanation.textExplanation.textMessage
+                        explanation: {label: answerGui.popUpExplanation.textExplanation.textMessage}
                     });
                 }
             )

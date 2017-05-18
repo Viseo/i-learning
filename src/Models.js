@@ -659,16 +659,16 @@ exports.Models = function (globalVariables) {
     }
 
     class Quiz {
-        constructor(game, user) {
-            this.id = game.id;
-            this.index = game.index;
-            this.levelIndex = game.levelIndex;
-            this.label = game.label;
+        constructor(quiz) {
+            this.id = quiz.id;
+            this.index = quiz.index;
+            this.levelIndex = quiz.levelIndex;
+            this.label = quiz.label;
             this.labelDefault = "Titre du quiz";
             this.type = 'Quiz';
-            this.questions = game.questions || [];
-            this.answered = user ? (user.answered || []) : null;
-            this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
+            this.questions = quiz.questions || [];
+            this.answered = quiz.answered || [];
+            this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
         }
 
         isDone() {
@@ -734,8 +734,8 @@ exports.Models = function (globalVariables) {
                     let answer = question.answers[answerIndex];
                     if (answer) {
                         correct = answer.correct && correct;
-                        result.indexes.push(answerIndex);
-                        result.correct = answer.correct && result.correct;
+                        // result.indexes.push(answerIndex);
+                        // result.correct = answer.correct && result.correct;
                         if (answer.correct) nbCorrectAnswers++;
                     }
                 })
@@ -795,8 +795,8 @@ exports.Models = function (globalVariables) {
             return this.questions[questionsIndex].answers.reduce((nb, answer) => answer.correct ? nb + 1 : nb, 0);
         }
 
-        getAnswered(questionIndex) {
-            return this.answered[questionIndex];
+        getAnswered() {
+            return this.answered;
         }
 
         getCorrectAnswersIndex(questionIndex) {

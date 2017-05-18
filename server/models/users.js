@@ -103,7 +103,7 @@ const getFormationsWithProgress = (user) => {
     var _getGameById = (levelsTab, id) => {
         let result = null;
         levelsTab.forEach(level => {
-            level._gamesTab.forEach(game => {
+            level.gamesTab.forEach(game => {
                 if (game.id == id) {
                     result = game;
                 }
