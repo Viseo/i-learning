@@ -3,24 +3,28 @@
  */
 module.exports = function (app) {
     const
-        ObjectID = require('mongodb').ObjectID;
-    cookies = require('../cookies'),
+        ObjectID = require('mongodb').ObjectID,
+        cookies = require('../cookies'),
         formations = require('../models/formations'),
         users = require('../models/users')
 
     const id = new ObjectID();
 
-    app.post('/formations/insert', function (req, res) {
+    app.post('/formations/insert', function (req, res) { //TODO changer les send de cette fonction
         formations.getFormationsByName(req.body.label)
             .then(data => {
                 if (data.formation) {
                     res.send({saved: false, reason: "NameAlreadyUsed"});
+                    return;
                 } else {
-                    formations.insertFormation(req.body)
-                        .then((data) => res.send({saved: true, id: data.formation, idVersion: data.version}))
-                        .catch(console.error)
+                    return formations.insertFormation(req.body).then((data) => {
+                        res.send({saved: true, id: data.formation, idVersion: data.version})
+                    })
                 }
-            })
+            }).catch((err) => {
+            console.log(err);
+            res.send({saved: false});
+        })
     });
 
     app.post('/formations/deactivate', function (req, res) {
@@ -32,38 +36,41 @@ module.exports = function (app) {
             .catch(console.error)
     });
 
-    app.post('/formations/:id/quiz/:levelIndex/:gameIndex', function (req, res) {
-        formations.getFormationById(req.body.formationId)
-            .then(formation => {
-                formations.replaceQuiz({
-                    level: req.body.levelIndex,
-                    game: req.body.index,
-                    id: req.body.id
-                }, req.body, formation)
-                    .then(data => res.send({saved: true}))    /** TODO DMA code 200 **/
-                    .catch(err => {console.log(err);res.send({ack: 'error'})});
-            });
+    app.post('/formations/quiz', function (req, res) {
+        formations.getFormationById(req.body.formationId).then(formation => {
+            return formations.replaceQuiz({
+                level: req.body.levelIndex,
+                game: req.body.gameIndex,
+                id: req.body.id
+            }, req.body, formation)
+                .then(data => res.send({saved: true}))
+        }).catch(err => {
+            console.log(err);
+            res.send({ack: 'error'})
+        });
     });
 
     app.post('/formations/userFormationEval/:id', function (req, res) {
         let userNote = req.body.starId.split('')[req.body.starId.length - 1];
-        let result = {};
-        formations.updateNote(req, req.body.versionId, userNote)
-            .then(data => {
-                if (data.modifiedCount == 1) {
-                    res.send({ack: 'OK'})
-                }
-            }).catch(err => {
+        formations.updateNote(req, req.body.versionId, userNote).then(data => {
+            if (data.modifiedCount == 1) {
+                res.status(200).send();
+            } else {
+                res.status(404).send();
+            }
+        }).catch(err => {
             console.log(err);
+            res.status(403).send();
         });
     });
 
     app.get('/formations/:id', (req, res) => {
-        formations.getVersionById(req.params.id)
-            .then((data) => {
-                res.send(data)
-            })
-            .catch(console.error)
+        formations.getVersionById(req.params.id).then((data) => {
+            res.send(data)
+        }).catch(err => {
+            console.error(err);
+            res.status(404).send();
+        })
     });
 
     app.get('/formations', (req, res) => {
@@ -82,38 +89,41 @@ module.exports = function (app) {
     });
 
     app.post('/formations/:id', function (req, res) {
-        formations.getFormationByVersionId(req.params.id)
-            .then(formation => {
-                if (formation) {
-                    formations.getFormationsByName(req.body.label)
-                        .then(data => {
-                            let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
-                            let version2 = req.body;
-                            if (req.body.onlyImage && version1) {
-                                formations.updateImage(formation, version1, version2);
-                                res.send({saved: true});
-                                return;
-                            }
-                            if (data.formation) {
-                                if (formation._id.toString() === data.formation._id.toString()) {
-                                    if (formations.compareVersions(version1, version2, req.body.status !== "Published")) {
-                                        res.send({saved: false, reason: "NoModif"})
-                                    } else {
-                                        formations.newVersion(formation, req.body)
-                                            .then(data => res.send({saved: true, id: data}))
-                                            .catch(err => console.log(err));
-                                    }
-                                } else {
-                                    res.send({saved: false, reason: "NameAlreadyUsed"});
-                                }
+        formations.getFormationByVersionId(req.params.id).then(formation => {
+            if (formation) {
+                return formations.getFormationsByName(req.body.label).then(data => {
+                    let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
+                    let version2 = req.body;
+                    if (req.body.onlyImage && version1) {
+                        formations.updateImage(formation, version1, version2);
+                        return {saved: true};
+                    }
+                    if (data.formation) {
+                        if (formation._id.toString() === data.formation._id.toString()) {
+                            if (formations.compareVersions(version1, version2, req.body.status !== "Published")) {
+                                return {saved: false, reason: "NoModif"}
                             } else {
-                                formations.newVersion(formation, req.body)
-                                    .then(data => res.send({saved: true, id: data}))
-                                    .catch(err => console.log(err));
+                                return formations.newVersion(formation, req.body).then(data => ({
+                                    saved: true,
+                                    id: data
+                                }));
                             }
-                        });
-                }
-            });
+                        } else {
+                            return {saved: false, reason: "NameAlreadyUsed"};
+                        }
+                    } else {
+                        return formations.newVersion(formation, req.body).then(data => ({saved: true, id: data}));
+                    }
+                });
+            } else {
+                return {saved: false, reason: "notFound"};
+            }
+        }).then(message => {
+            res.send(message);
+        }).catch(err => {
+            console.error(err);
+            res.status(403).send();
+        })
     });
 };
 

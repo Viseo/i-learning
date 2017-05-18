@@ -9,6 +9,7 @@ module.exports = function (app) {
         const token = cookies.get(req);
         if (!token) {
             res.send({status: 'error'})
+            return;
         }
         cookies.verify(token).then(user => {
             if (req.session.oneTime) {
@@ -25,8 +26,7 @@ module.exports = function (app) {
                     }
                 });
             }
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log(err);
             res.send({status: 'error'});
         });
@@ -35,40 +35,37 @@ module.exports = function (app) {
     app.post('/auth/connect', (req, res) => {
         users.getUserByEmailAddress(req.body.mailAddress).then((user) => {
             if (TwinBcrypt.compareSync(req.body.password, user.password)) {
-                cookies.generate(user)
-                    .then(data => {
-                        if (req.body.cookie) {
-                            req.session.oneTime = false;
-                            res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30}`);
-                            res.send({
-                                ack: 'OK',
-                                user: {
-                                    lastName: user.lastName,
-                                    firstName: user.firstName,
-                                    admin: user.admin,
-                                    lastAction: user.lastAction
-                                }
-                            });
-                        }
-                        else {
-                            req.session.oneTime = true;
-                            res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30};`);
-                            res.send({
-                                ack: 'OK',
-                                user: {
-                                    lastName: user.lastName,
-                                    firstName: user.firstName,
-                                    admin: user.admin,
-                                    lastAction: user.lastAction
-                                }
-                            });
-                        }
-                    })
-                    .catch(err => console.log(err));
+                return cookies.generate(user).then(data => {
+                    if (req.body.cookie) {
+                        req.session.oneTime = false;
+                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30}`);
+                        res.send({
+                            ack: 'OK',
+                            user: {
+                                lastName: user.lastName,
+                                firstName: user.firstName,
+                                admin: user.admin,
+                                lastAction: user.lastAction
+                            }
+                        });
+                    } else {
+                        req.session.oneTime = true;
+                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30};`);
+                        res.send({
+                            ack: 'OK',
+                            user: {
+                                lastName: user.lastName,
+                                firstName: user.firstName,
+                                admin: user.admin,
+                                lastAction: user.lastAction
+                            }
+                        });
+                    }
+                })
             } else {
                 res.send({status: 'error'});
             }
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err);
             res.send({status: 'error'});
         })

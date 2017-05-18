@@ -46,21 +46,22 @@ module.exports = function (app, fs) {
 
         upload(req, res, (err) => {
             console.log(err);
-            insertInDB(req.file)
-                .then(() => {
-                    console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
-                    res.send('ok')
-                })
-                .catch((err) => {
-                    console.error(err.message);
-                    res.send('err')
-                });
+            insertInDB(req.file).then(() => {
+                console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
+                res.send('ok')
+            }).catch((err) => {
+                console.error(err.message);
+                res.send('err')
+            });
         })
     });
 
     app.get('/medias/images', function (req, res) {
         var collection = db.get().collection('images');
         collection.find().toArray(function (err, docs) {
+            if(err){
+                console.error(err);
+            }
             res.send({images: docs});
         });
     });
@@ -76,6 +77,9 @@ module.exports = function (app, fs) {
 
     app.get('/medias/videos', function (req, res) {
         db.get().collection('videos').find().toArray(function (err, videos) {
+            if(err){
+                console.error(err);
+            }
             res.send(videos);
         })
     });
