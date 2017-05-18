@@ -2130,6 +2130,9 @@ exports.Util = function (globalVariables) {
         static deactivateFormation(id, ignoredData) {
             return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
         }
+        static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
+            return dbListener.httpPostAsync('/formations/' + formationId + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
+        }
         static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
             return dbListener.httpPostAsync('/formations/' + id + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
         }
@@ -2212,6 +2215,7 @@ exports.Util = function (globalVariables) {
             grey: [125, 122, 117],
             lightyellow: [239, 239, 78],
             lighteryellow: [239, 239, 0],
+            halfGrey: [150,150,150],
             lightgrey: [232, 232, 238],
             lightwhite: [250, 250, 250],
             orange: [230, 122, 25],

@@ -232,6 +232,10 @@ exports.Tool = function (globalVariables, classContainer) {
             this.action = !this.action;
         }
 
+        activeStatusActionIcon(){
+            this.action = true;
+        }
+
         cancelActionIcon(){
             this.action = false;
         }

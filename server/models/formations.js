@@ -54,7 +54,7 @@ const getFormationById = (id) => {
             .find({ "_id": new ObjectID(id) })
             .toArray((err, docs) => {
                 if (err) reject(err);
-                resolve({ formation: docs[0] });
+                resolve(docs[0]);
             })
     });
 };

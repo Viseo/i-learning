@@ -33,15 +33,15 @@ module.exports = function (app) {
     });
 
     app.post('/formations/:id/quiz/:levelIndex/:gameIndex', function (req, res) {
-        formations.getFormationByVersionId(req.params.id)
+        formations.getFormationById(req.body.formationId)
             .then(formation => {
                 formations.replaceQuiz({
-                    level: req.params.levelIndex,
-                    game: req.params.gameIndex,
-                    id: req.params.id
+                    level: req.body.levelIndex,
+                    game: req.body.index,
+                    id: req.body.id
                 }, req.body, formation)
-                    .then(data => res.send({ack: 'ok'}))
-                    .catch(err => console.log(err));
+                    .then(data => res.send({saved: true}))    /** TODO DMA code 200 **/
+                    .catch(err => {console.log(err);res.send({ack: 'error'})});
             });
     });
 

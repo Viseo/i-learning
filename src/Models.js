@@ -208,6 +208,9 @@ exports.Models = function (globalVariables) {
         getVersionId() {
             return this.formation.getId();
         }
+        getFormationLabel() {
+            return this.formation.getFormationLabel();
+        }
 
         getFormationId() {
             return this.formation.getFormationId();
@@ -271,7 +274,7 @@ exports.Models = function (globalVariables) {
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
-                level._gamesTab.forEach(game => {
+                level.gamesTab.forEach(game => {
                     gamesTab.push(new Quiz(game, false, formation));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
@@ -349,6 +352,14 @@ exports.Models = function (globalVariables) {
                         }
                     }
                 })
+        }
+
+        getFormationLabel() {
+            return this.label;
+        }
+
+        getFormationId() {
+            return this.formationId;
         }
 
         getId() {
@@ -595,12 +606,12 @@ exports.Models = function (globalVariables) {
 
     class Level {
         constructor(gamesTab, index) {
-            this._gamesTab = gamesTab;
+            this.gamesTab = gamesTab;
             this.index = index;
         }
 
         getGamesTab() {
-            return this._gamesTab;
+            return this.gamesTab;
         }
     }
 
@@ -648,15 +659,16 @@ exports.Models = function (globalVariables) {
     }
 
     class Quiz {
-        constructor(quiz) {
-            this.label = quiz.label;
-            this.index = quiz.index;
-            this.id = quiz.id;
-            this.levelIndex = quiz.levelIndex;
+        constructor(game, user) {
+            this.id = game.id;
+            this.index = game.index;
+            this.levelIndex = game.levelIndex;
+            this.label = game.label;
+            this.labelDefault = "Titre du quiz";
             this.type = 'Quiz';
-            this.questions = quiz.questions || [];
-            this.answered = quiz.answered || [];
-            this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
+            this.questions = game.questions || [];
+            this.answered = user ? (user.answered || []) : null;
+            this.lastQuestionIndex = game.lastQuestionIndex || this.questions.length;
         }
 
         isDone() {
@@ -705,10 +717,6 @@ exports.Models = function (globalVariables) {
             return this.answered;
         }
 
-        getLastQuestionIndex() {
-            return this.lastQuestionIndex;
-        }
-
         getQuestionLabel(index) {
             return this.questions[index] ? this.questions[index].label : "";
         }
@@ -726,6 +734,8 @@ exports.Models = function (globalVariables) {
                     let answer = question.answers[answerIndex];
                     if (answer) {
                         correct = answer.correct && correct;
+                        result.indexes.push(answerIndex);
+                        result.correct = answer.correct && result.correct;
                         if (answer.correct) nbCorrectAnswers++;
                     }
                 })
@@ -734,6 +744,20 @@ exports.Models = function (globalVariables) {
             return false;
         }
 
+        getLastQuestionIndex(){
+            return this.lastQuestionIndex;
+        }
+        getIndex() {
+            return this.index;
+        }
+
+        getQuestionLabel(index) {
+            return this.questions[index] ? this.questions[index].label : "";
+        }
+
+        getAnswers(questionIndex) {
+            return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
+        }
         getWrongQuestions() {
             let wrongQuestions = [];
             this.answered.forEach((answered, index) => {
@@ -747,8 +771,16 @@ exports.Models = function (globalVariables) {
             return wrongQuestions;
         }
 
+        getLevelIndex() {
+            return this.levelIndex;
+        }
+
         isMultipleChoice(questionIndex) {
             return this.questions[questionIndex] ? !!this.questions[questionIndex].multipleChoice : false;
+        }
+
+        getQuestions() {
+            return this.questions;
         }
 
         getNbQuestions() {
@@ -763,6 +795,10 @@ exports.Models = function (globalVariables) {
             return this.questions[questionsIndex].answers.reduce((nb, answer) => answer.correct ? nb + 1 : nb, 0);
         }
 
+        getAnswered(questionIndex) {
+            return this.answered[questionIndex];
+        }
+
         getCorrectAnswersIndex(questionIndex) {
             let correctAnswers = [];
             this.getAnswers(questionIndex).forEach((answer, index) => {
@@ -771,6 +807,41 @@ exports.Models = function (globalVariables) {
                 }
             })
             return correctAnswers;
+        }
+
+        renameQuiz(quiz) {
+            return util.Server.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
+                let answer = JSON.parse(data);
+                if (answer.saved == false) {
+                    answer.message = "Il faut enregistrer le quiz avant !";
+                    reject(answer);
+                } else if (answer.saved == true) {
+                    answer.message = "Le nom du quiz a été bien modifié";
+                }
+                return answer;
+            })
+        }
+
+        replaceQuiz(object) {
+            const completeQuizMessage = "Les modifications ont bien été enregistrées",
+                incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.index, ignoredData)
+                .then((data) => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved) {
+                        return {message: completeQuizMessage, status: true};
+                    } else {
+                        return {message: incompleteQuizMessage, status: false};
+                    }
+                });
+        };
+
+        setLabel(label) {
+            this.label = label; // need base de données saving
+        }
+
+        setQuestions(questions) {
+            this.questions = questions; // need base de données saving
         }
     }
 
@@ -783,6 +854,27 @@ exports.Models = function (globalVariables) {
             this.levelIndex = game.levelIndex;
         }
     }
+    class Question {
+        constructor(quiz) {
+            this.parentQuiz = quiz;
+            this.answers = [];
+            this.label = "Question par déf";
+            this.multipleChoice = false;
+            // this.media = imgSrc;
+
+        }
+    }
+
+    class Answer {
+        constructor(question) {
+            this.parentQuestion = question;
+            this.label = "Réponse par déf";
+            this.correct = false;
+            this.explanation = {label: ""};
+            // this.media = imgSrc;
+        }
+    }
+
     class GamesLibrary {
         constructor() {
             this.list = [
