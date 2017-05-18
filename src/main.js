@@ -3,8 +3,8 @@ const Domain = require('./Domain').Domain,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
-    FModels = require('../Models').Models,
-    presenterFactory = require('../presenters/PresenterFactory').PresenterFactory;
+    FModels = require('./Models').Models,
+    presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
 
 function main(svg, runtime, dbListener, ImageRuntime, param) {

@@ -1,4 +1,4 @@
-const DashboardAdmin = require('./DashboardAdminV').DashboardAdmin;
+const DashboardAdmin = require('../views/DashboardAdminV').DashboardAdmin;
 
 exports.DashboardAdminP = function(globalVariables) {
     const DashboardView = DashboardAdmin(globalVariables),

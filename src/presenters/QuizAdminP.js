@@ -1,7 +1,7 @@
 /**
  * Created by DMA3622 on 05/05/2017.
  */
-const QuizAdminV = require('./QuizAdminV').QuizAdminV;
+const QuizAdminV = require('../views/QuizAdminV').QuizAdminV;
 
 exports.QuizAdminP = function (globalVariables) {
     const QuizAdminView = QuizAdminV(globalVariables),

@@ -175,7 +175,7 @@ exports.Domain = function (globalVariables) {
                 pos_text_y = height/2 +font_size/4,
                 userManip = this.userManipulator,
                 text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white).mark('homeText'),
-                rect = new svg.Rect(width, height).color(myColors.customBlue, 1, myColors.black).position(width/2, height/2);
+                rect = new svg.Rect(width, height).color(myColors.customBlue, 0.5, myColors.black).position(width/2, height/2);
             this.manipulator.set(1, text);
             this.manipulator.set(0, rect);
 
