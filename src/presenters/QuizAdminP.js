@@ -18,21 +18,26 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         updateQuiz(quizData) {
-            this.setLabel(quizData.label);
-            this.setQuestions(quizData.questions);
-            const messageError = "Il manque des informations";
-
-            const getObjectToSave = () => {
-                return {
-                    id: this.getId(),
-                    gameIndex: this.getIndex(),
-                    levelIndex: this.getLevelIndex(),
-                    formationId: this.getFormationId(),
-                    label: this.getLabel(),
-                    lastQuestionIndex: this.getLastIndex(),
-                    questions: this.getQuestions()
+            const messageError = "Il manque des informations",
+                getObjectToSave = () => {
+                    return {
+                        id: this.getId(),
+                        gameIndex: this.getIndex(),
+                        levelIndex: this.getLevelIndex(),
+                        formationId: this.getFormationId(),
+                        label: this.getLabel(),
+                        lastQuestionIndex: this.getLastIndex(),
+                        questions: this.getQuestions()
+                    };
                 };
-            };
+
+            if (quizData.label && quizData.label !== this.quiz.labelDefault && quizData.label.match(this.regex)) {
+                this.setLabel(quizData.label);
+            } else {
+                this.view.displayMessage(messageError);
+                return;
+            }
+            this.setQuestions(quizData.questions);
             let quizToSave = getObjectToSave(),
                 isValid = false;
             quizToSave.questions.forEach(question => {
@@ -114,17 +119,10 @@ exports.QuizAdminP = function (globalVariables) {
                         label: this.getLabel(),
                         lastQuestionIndex: this.getLastIndex(),
                         levelIndex: this.getLevelIndex(),
-                        questions: this.getQuestions()
                     };
                 };
                 if (this.getId()) {
                     return this.quiz.renameQuiz(getObjectToSave()).then(data => {
-                        // console.log(data);
-                        // if (data && data.ack == "ok") {
-                        //     return data.ack;
-                        // } else {
-                        //     return "error";
-                        // }
                         data.message && this.view.displayMessage(data.message);
                         return data;
                     }).catch(error => {
@@ -132,12 +130,6 @@ exports.QuizAdminP = function (globalVariables) {
                         return error;
                     });
                 }
-                // else{
-                //     return this.formation.addNewFormation(getObjectToSave()).then(data => {
-                //         this.view.displayMessage(data.message);
-                //         return data.status;
-                //     })
-                // }
             } else {
                 this.view.displayMessage(messageError);
                 return Promise.resolve(false);
@@ -146,12 +138,10 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         setLabel(quizLabel) {
-            // check du nom du quiz à implémenter
             this.quiz.setLabel(quizLabel);
         }
 
         setQuestions(questions) {
-            // check des questions à implémenter
             this.quiz.setQuestions(questions);
         }
     }
