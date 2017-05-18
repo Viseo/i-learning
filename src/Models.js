@@ -272,7 +272,15 @@ exports.Models = function (globalVariables) {
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
                 level._gamesTab.forEach(game => {
-                    gamesTab.push(new Quiz(game, false, formation));
+                    switch(game.type){
+                        case'Quiz':
+                            gamesTab.push(new Quiz(game, false, formation));
+                            break;
+                        case'Poupee':
+                            gamesTab.push(new Doll(game));
+                            break;
+                    }
+
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
@@ -285,7 +293,9 @@ exports.Models = function (globalVariables) {
             this.links = formation.links || [];
             this._id = (formation._id || null); //TODO changer en versionId
             this.formationId = (formation.formationId || null);
-            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz: 0, doll: 0};
+            this.gamesCounter = {};
+            this.gamesCounter.quizz = formation.gamesCounter.quizz || 0;
+            this.gamesCounter.doll = formation.gamesCounter.doll || 0;
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -781,6 +791,10 @@ exports.Models = function (globalVariables) {
             this.index = game.index;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
+        }
+
+        getLabel(){
+            return this.label;
         }
     }
     class GamesLibrary {
