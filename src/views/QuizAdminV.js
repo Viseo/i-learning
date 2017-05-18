@@ -309,6 +309,10 @@ exports.QuizAdminV = function (globalVariables) {
                         }
                         let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE -1);
                         this.addNewQuestion.manipulator.move(pos.x, pos.y);
+
+                        this.questionIndexScroll = indexToStop;
+
+                        this._showActualQuestionChevron();
                     }else{
                         let pos = calculatePositionOfQuestion(this.questions.length);
                         this.addNewQuestion.manipulator.move(pos.x, pos.y);
@@ -327,19 +331,60 @@ exports.QuizAdminV = function (globalVariables) {
                 this.addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
                 this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
             };
+
+            var _refreshQuestionsBlock = () => {
+                var _displayQuestionsBetween = (startIndexInclus, endIndexInclus) => {
+                    for(var it = startIndexInclus, j = 0; it<endIndexInclus+1; it++, j++){
+                        let pos = calculatePositionOfQuestion(j);
+                        this.questionsBlock[it].manipulator.move(pos.x, pos.y);
+                        this.questionsBlockManipulator.add(this.questionsBlock[it].manipulator);
+                    }
+                };
+
+                if(this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll-1].manipulator);
+                    if(this.questionIndexScroll + (QUESTIONS_PER_LINE + 1) <= this.questions.length){
+                        this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll + (QUESTIONS_PER_LINE )].manipulator);
+                    };
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
+                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
+                }else if (this.questionIndexScroll > 0){
+                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll-1].manipulator);
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 2);
+                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
+
+                }else if (this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
+                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
+                }
+
+                this._showActualQuestionChevron();
+            };
             var _initChevron = () => {
                 let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE+2);
                 let posXRightChevron = pos.x/2 +dimensionsChevronQuestion.w/2 + MARGIN;
 
                 this.questionsBlockChevron.right = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 20, "E");
-                this.questionsBlockChevron.right.color(myColors.grey, 1 , myColors.black).position(posXRightChevron, 0);
+                this.questionsBlockChevron.right.color(myColors.halfGrey, 1 , myColors.black).position(posXRightChevron, 0);
 
                 this.questionsBlockChevron.left = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 20, "W");
-                this.questionsBlockChevron.left.color(myColors.grey, 1 , myColors.black).position(-posXRightChevron, 0);
+                this.questionsBlockChevron.left.color(myColors.halfGrey, 1 , myColors.black).position(-posXRightChevron, 0);
 
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
+                var onClickRChevron = () => {
+                    this.questionIndexScroll++;
+                    _refreshQuestionsBlock();
+                };
+                var onClickLChevron = () => {
+                    this.questionIndexScroll--;
+                    _refreshQuestionsBlock();
+                };
+
+                this.questionsBlockChevron.right.onClick(onClickRChevron);
+                this.questionsBlockChevron.left.onClick(onClickLChevron);
+
+                this._showActualQuestionChevron();
             };
+
 
             this.questionsBlock = [];
             this.questions = this.getQuestions();
@@ -363,7 +408,51 @@ exports.QuizAdminV = function (globalVariables) {
 
             _displayNewQuestionBlock();
             _initChevron();
+            this.questionIndexScroll = 0;
+            this._showActualQuestionChevron();
         }
+
+
+
+        _showActualQuestionChevron(){
+            var _showAllChevron = () => {
+                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
+                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
+                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
+            };
+
+            var _showOnlyLChevron = () => {
+                this.questionsBlockChevronManipulator.remove(this.questionsBlockChevron.right);
+                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
+                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
+            }
+
+            var _showOnlyRChevron = () => {
+                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
+                this.questionsBlockChevronManipulator.remove(this.questionsBlockChevron.left);
+                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
+            }
+
+            var _hideAllQuestionChevron = () => {
+                this.questionsBlockManipulator.remove(this.questionsBlockChevronManipulator);
+            }
+
+            if(this.questions.length < QUESTIONS_PER_LINE){
+                _hideAllQuestionChevron();
+            }else{
+                if(this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+                    _showAllChevron();
+                }else if (this.questionIndexScroll > 0){
+                    _showOnlyLChevron();
+                }else if (this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+                    _showOnlyRChevron();
+                }else{
+                    _hideAllQuestionChevron();
+                }
+            }
+        }
+
+
 
         _loadOneQuestionInDetail(question, index){
             let questionDetail = {};

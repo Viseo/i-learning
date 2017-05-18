@@ -2227,6 +2227,7 @@ exports.Util = function (globalVariables) {
             grey: [125, 122, 117],
             lightyellow: [239, 239, 78],
             lighteryellow: [239, 239, 0],
+            halfGrey: [150,150,150],
             lightgrey: [232, 232, 238],
             lightwhite: [250, 250, 250],
             orange: [230, 122, 25],
