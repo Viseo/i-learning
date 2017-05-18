@@ -103,8 +103,8 @@ exports.QuizAdminV = function (globalVariables) {
                 this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
                 this.quizTitleField = titleTextArea;
 
-                let saveIcon = new util.Picture('../../images/save.png', false, this,'',null);
-                saveIcon.draw(titleTextArea.width/2 + 12.5 + MARGIN, 0, 25,25, this.titleManipulator, 1);
+                let saveIcon = new util.Picture('../../images/save.png', false, this, '', null);
+                saveIcon.draw(titleTextArea.width / 2 + 12.5 + MARGIN, 0, 25, 25, this.titleManipulator, 1);
                 svg.addEvent(saveIcon.imageSVG, 'click', this.renameQuiz.bind(this));
                 currentY += dimensions.height + MARGIN;
             }
@@ -199,21 +199,22 @@ exports.QuizAdminV = function (globalVariables) {
             this.questionsBlock.length >= 1 && this.questionsBlock[0].select();
         }
 
-        displayMessage(message){
+        displayMessage(message) {
             let messageText = new svg.Text(message).font('Arial', 20);
-            messageText.position(drawing.width/2, this.header.height + 20);
+            messageText.position(drawing.width / 2, this.header.height + 20);
             this.manipulator.add(messageText);
-            svg.timeout(()=>{
+            svg.timeout(() => {
                 this.manipulator.remove(messageText);
             }, 3000);
         }
 
 
         _displayQuestionsBlock() {
-            var calculatePositionOfQuestion = (index) =>{
-                let pos = { x: dimensionsChevronQuestion.w + MARGIN*2 - (this.width - MARGIN)/ 2
-                        + dimensionsQuestionButton.width / 2 + index * (dimensionsQuestionButton.width + MARGIN),
-                    y : 0
+            var calculatePositionOfQuestion = (index) => {
+                let pos = {
+                    x: dimensionsChevronQuestion.w + MARGIN * 2 - (this.width - MARGIN) / 2
+                    + dimensionsQuestionButton.width / 2 + index * (dimensionsQuestionButton.width + MARGIN),
+                    y: 0
                 }
                 return pos;
             };
@@ -269,12 +270,12 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 var _initGuiBlock = () => {
                     var _deleteQuestion = () => {
-                        if(this.selectedQuestionIndex === questionGui.index){
-                            if(questionGui.index > 0){
+                        if (this.selectedQuestionIndex === questionGui.index) {
+                            if (questionGui.index > 0) {
                                 this.questionsBlock[questionGui.index - 1].select();
-                            }else if(this.questionsBlock.length > 1){
+                            } else if (this.questionsBlock.length > 1) {
                                 this.questionsBlock[questionGui.index + 1].select();
-                            }else {
+                            } else {
                                 this.unselectQuestion();
                             }
                         }
@@ -310,7 +311,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let pos = calculatePositionOfQuestion(questionGui.index);
                     questionGui.manipulator.move(pos.x, pos.y);
                     questionGui.redCross = IconCreator.createRedCrossIcon(questionGui.manipulator)
-                        .position(dimensionsQuestionButton.width/2, -dimensionsQuestionButton.height/2)
+                        .position(dimensionsQuestionButton.width / 2, -dimensionsQuestionButton.height / 2)
                         .addEvent('click', () => _deleteQuestion());
                 };
                 var _displayBlock = () => {
@@ -334,22 +335,22 @@ exports.QuizAdminV = function (globalVariables) {
                     this.questionsDetail.add(questionInDetail);
                     questionGui.select();
 
-                    if(this.questions.length >= QUESTIONS_PER_LINE){
-                        let indexToStop = this.questions.length - (QUESTIONS_PER_LINE-1);
-                        for(var i = 0; i<indexToStop; i++){
+                    if (this.questions.length >= QUESTIONS_PER_LINE) {
+                        let indexToStop = this.questions.length - (QUESTIONS_PER_LINE - 1);
+                        for (var i = 0; i < indexToStop; i++) {
                             this.questionsBlockManipulator.remove(this.questionsBlock[i].manipulator);
                         }
-                        for(var it = indexToStop, j = 0; it<this.questions.length; it++, j++){
+                        for (var it = indexToStop, j = 0; it < this.questions.length; it++, j++) {
                             let pos = calculatePositionOfQuestion(j);
                             this.questionsBlock[it].manipulator.move(pos.x, pos.y);
                         }
-                        let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE -1);
+                        let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE - 1);
                         this.addNewQuestion.manipulator.move(pos.x, pos.y);
 
                         this.questionIndexScroll = indexToStop;
 
                         this._showActualQuestionChevron();
-                    }else{
+                    } else {
                         let pos = calculatePositionOfQuestion(this.questions.length);
                         this.addNewQuestion.manipulator.move(pos.x, pos.y);
                     }
@@ -362,20 +363,50 @@ exports.QuizAdminV = function (globalVariables) {
                 this.addNewQuestion.manipulator.set(0, this.addNewQuestion.questionButton.component);
                 let pos = calculatePositionOfQuestion(this.questions.length);
                 this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                let iconAddNewQuestion =  IconCreator.createPlusIcon(this.addNewQuestion.manipulator, 1);
+                let iconAddNewQuestion = IconCreator.createPlusIcon(this.addNewQuestion.manipulator, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
                 this.addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
                 this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
             };
+
+            var _refreshQuestionsBlock = () => {
+                var _displayQuestionsBetween = (startIndexInclus, endIndexInclus) => {
+                    for (var it = startIndexInclus, j = 0; it < endIndexInclus + 1; it++, j++) {
+                        let pos = calculatePositionOfQuestion(j);
+                        this.questionsBlock[it].manipulator.move(pos.x, pos.y);
+                        this.questionsBlockManipulator.add(this.questionsBlock[it].manipulator);
+                    }
+                };
+
+                if (this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
+                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll - 1].manipulator);
+                    if (this.questionIndexScroll + (QUESTIONS_PER_LINE + 1) <= this.questions.length) {
+                        this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll + (QUESTIONS_PER_LINE )].manipulator);
+                    }
+                    ;
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
+                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
+                } else if (this.questionIndexScroll > 0) {
+                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll - 1].manipulator);
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 2);
+                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
+
+                } else if (this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
+                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
+                }
+
+                this._showActualQuestionChevron();
+            };
             var _initChevron = () => {
-                let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE+2);
-                let posXRightChevron = pos.x/2 +dimensionsChevronQuestion.w/2 + MARGIN;
+                let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE + 2);
+                let posXRightChevron = pos.x / 2 + dimensionsChevronQuestion.w / 2 + MARGIN;
 
-                this.questionsBlockChevron.right = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "E");
-                this.questionsBlockChevron.right.color(myColors.halfGrey, 1 , myColors.black).position(posXRightChevron, 0);
+                this.questionsBlockChevron.right = new svg.Chevron(dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "E");
+                this.questionsBlockChevron.right.color(myColors.halfGrey, 1, myColors.black).position(posXRightChevron, 0);
 
-                this.questionsBlockChevron.left = new svg.Chevron( dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "W");
-                this.questionsBlockChevron.left.color(myColors.halfGrey, 1 , myColors.black).position(-posXRightChevron, 0);
+                this.questionsBlockChevron.left = new svg.Chevron(dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "W");
+                this.questionsBlockChevron.left.color(myColors.halfGrey, 1, myColors.black).position(-posXRightChevron, 0);
 
                 var onClickRChevron = () => {
                     this.questionIndexScroll++;
@@ -387,11 +418,11 @@ exports.QuizAdminV = function (globalVariables) {
                 };
 
                 var onMouseEnter = function () {
-                    this.color(myColors.black, 1 , myColors.halfGrey);
+                    this.color(myColors.black, 1, myColors.halfGrey);
                 };
 
                 var onMouseOut = function () {
-                    this.color(myColors.halfGrey, 1 , myColors.black);
+                    this.color(myColors.halfGrey, 1, myColors.black);
                 };
 
                 this.questionsBlockChevron.right.onClick(onClickRChevron);
@@ -410,12 +441,12 @@ exports.QuizAdminV = function (globalVariables) {
             this.lastQuestionIndex = this.getLastQuestionIndex();
 
             let dimensionsQuestionButton = {
-                width: (this.width - MARGIN*QUESTIONS_PER_LINE)/ (QUESTIONS_PER_LINE+1),
+                width: (this.width - MARGIN * QUESTIONS_PER_LINE) / (QUESTIONS_PER_LINE + 1),
                 height: this.height * 1 / 6 - 2 * MARGIN
             };
 
             let dimensionsChevronQuestion = {
-                w: (this.width - QUESTIONS_PER_LINE * (dimensionsQuestionButton.width + MARGIN))/2 - MARGIN*2,
+                w: (this.width - QUESTIONS_PER_LINE * (dimensionsQuestionButton.width + MARGIN)) / 2 - MARGIN * 2,
                 h: dimensionsQuestionButton.height - MARGIN,
             };
 
@@ -432,8 +463,7 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
 
-
-        _showActualQuestionChevron(){
+        _showActualQuestionChevron() {
             var _showAllChevron = () => {
                 this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
                 this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
@@ -456,24 +486,23 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.remove(this.questionsBlockChevronManipulator);
             }
 
-            if(this.questions.length < QUESTIONS_PER_LINE){
+            if (this.questions.length < QUESTIONS_PER_LINE) {
                 _hideAllQuestionChevron();
-            }else{
-                if(this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+            } else {
+                if (this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
                     _showAllChevron();
-                }else if (this.questionIndexScroll > 0){
+                } else if (this.questionIndexScroll > 0) {
                     _showOnlyLChevron();
-                }else if (this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
+                } else if (this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
                     _showOnlyRChevron();
-                }else{
+                } else {
                     _hideAllQuestionChevron();
                 }
             }
         }
 
 
-
-        _loadOneQuestionInDetail(question, index){
+        _loadOneQuestionInDetail(question, index) {
             let questionDetail = {};
 
             questionDetail.answersDimension = {
@@ -537,16 +566,18 @@ exports.QuizAdminV = function (globalVariables) {
             var _loadAnswerBlockForOneQuestion = (questionGui, questionIndex, question) => {
                 var _calculatePositionAnswer = (questionGui, indexReponse) => {
                     let pos = {
-                            width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
-                            height: 70,
-                            indexX: Math.floor(indexReponse % ANSWERS_PER_LINE),
-                            indexY: Math.floor(indexReponse / ANSWERS_PER_LINE),
-                            y: 70 / 2,
-                            x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2
-                                - questionGui.answersDimension.width / 2
-                        }
-                    let realPos = {x: pos.x + pos.indexX * (pos.width + MARGIN),
-                     y : pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY}
+                        width: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                        height: 70,
+                        indexX: Math.floor(indexReponse % ANSWERS_PER_LINE),
+                        indexY: Math.floor(indexReponse / ANSWERS_PER_LINE),
+                        y: 70 / 2,
+                        x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2
+                        - questionGui.answersDimension.width / 2
+                    }
+                    let realPos = {
+                        x: pos.x + pos.indexX * (pos.width + MARGIN),
+                        y: pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY
+                    }
                     return realPos;
                 }
                 var _loadOneAnswerBlock = (answer, index) => {
@@ -571,25 +602,25 @@ exports.QuizAdminV = function (globalVariables) {
                         let pos = _calculatePositionAnswer(questionGui, index);
                         answerGui.manipulator.move(pos.x, pos.y);
                     };
-                    var _initRedCross = (answerGui) =>{
+                    var _initRedCross = (answerGui) => {
                         answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
-                        answerGui.iconRedCross.position(dimensions.w/2, -dimensions.h/2);
+                        answerGui.iconRedCross.position(dimensions.w / 2, -dimensions.h / 2);
                         answerGui.iconRedCross.onClickRedCross = () => {
                             let indexAnswer = answerGui.index;
                             questionGui.answersManipulator.remove(answerGui.manipulator);
                             questionGui.answersGui.splice(indexAnswer, 1);
-                            for(var i = indexAnswer; i< questionGui.answersGui.length; i++){
+                            for (var i = indexAnswer; i < questionGui.answersGui.length; i++) {
                                 questionGui.answersGui[i].index = i;
                             }
 
-                            questionGui.answersGui.forEach( (ele, index) => {
+                            questionGui.answersGui.forEach((ele, index) => {
                                 let pos = _calculatePositionAnswer(questionGui, index);
                                 ele.manipulator.move(pos.x, pos.y);
                             });
                             let posAddNewReponse = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
                             questionGui.addNewResponseManip.move(posAddNewReponse.x, posAddNewReponse.y);
                             _attachRedCrossForAnswer(questionGui.answersGui);
-                            if(questionGui.answersGui.length < 8){
+                            if (questionGui.answersGui.length < 8) {
                                 questionGui.answersManipulator.add(questionGui.addNewResponseManip);
                                 let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
                                 questionGui.addNewResponseManip.move(pos.x, pos.y);
@@ -600,34 +631,34 @@ exports.QuizAdminV = function (globalVariables) {
                     var _addExplanationPen = (answerGui) => {
                         var _createExplanationPopUp = () => {
                             var _createRedCross = () => {
-                                var _closeExplanation = () =>{
+                                var _closeExplanation = () => {
                                     questionGui.explanationManipulator.remove(answerGui.popUpExplanation.manipulator);
                                 };
 
                                 let iconRedCross = IconCreator.createRedCrossIcon(popUpExplanation.manipulator, 2);
-                                iconRedCross.position(dimExplanation.w/2, -dimExplanation.h/2);
-                                iconRedCross.addEvent('click', _closeExplanation );
+                                iconRedCross.position(dimExplanation.w / 2, -dimExplanation.h / 2);
+                                iconRedCross.addEvent('click', _closeExplanation);
                             };
                             var _drawTitle = () => {
                                 popUpExplanation.textTitle = new svg.Text("").font('Arial', 25).color(myColors.grey);
-                                titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h/2 + 50);
+                                titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h / 2 + 50);
                             };
                             var _drawContent = () => {
                                 var _drawTextExplanation = () => {
                                     var _onModificationText = () => {
-                                        if(popUpExplanation.textExplanation.textMessage != EXPLANATION_DEFAULT_TEXT){
+                                        if (popUpExplanation.textExplanation.textMessage != EXPLANATION_DEFAULT_TEXT) {
                                             answerGui.iconExplanation.activeStatusActionIcon();
                                             answerGui.iconExplanation.showActualBorder();
                                         }
                                     };
                                     if (!answerGui.explanation) {
-                                        answerGui.explanation = EXPLANATION_DEFAULT_TEXT;
+                                        answerGui.explanation = {label: EXPLANATION_DEFAULT_TEXT};
                                     }
-                                    popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w*2/3 - MARGIN,
-                                        dimensionContent.h - MARGIN, answerGui.explanation);
+                                    popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w * 2 / 3 - MARGIN,
+                                        dimensionContent.h - MARGIN, answerGui.explanation.label);
                                     popUpExplanation.textExplanation.font('Arial', 20)
                                         .frame.color(myColors.white, 0, myColors.black);
-                                    popUpExplanation.textExplanation.position(dimensionContent.w/6 - MARGIN, 0);
+                                    popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
                                     popUpExplanation.textExplanation.onBlur(_onModificationText);
 
 
@@ -635,12 +666,12 @@ exports.QuizAdminV = function (globalVariables) {
                                 };
                                 var _drawMediaPic = () => {
                                     popUpExplanation.media = new svg.Image("../images/quiz/media.png");
-                                    popUpExplanation.media.dimension(dimensionContent.w/6, dimensionContent.w/6);
-                                    popUpExplanation.media.position(-dimensionContent.w/2 + popUpExplanation.media.width, 0 );
+                                    popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
+                                    popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
                                     contentManip.add(popUpExplanation.media);
                                 };
 
-                                let contentRect = new svg.Rect(dimensionContent.w, dimensionContent.h )
+                                let contentRect = new svg.Rect(dimensionContent.w, dimensionContent.h)
                                     .color(myColors.white, 1, myColors.grey).corners(MARGIN);
                                 contentManip.add(contentRect);
 
@@ -648,9 +679,9 @@ exports.QuizAdminV = function (globalVariables) {
                                 _drawMediaPic();
                             };
 
-                            let dimExplanation = { w: this.questionDetailsDim.width , h: this.questionDetailsDim.height};
+                            let dimExplanation = {w: this.questionDetailsDim.width, h: this.questionDetailsDim.height};
                             let dimensionContent = {
-                                w: dimExplanation.w - MARGIN *2, h: dimExplanation.h /2
+                                w: dimExplanation.w - MARGIN * 2, h: dimExplanation.h / 2
                             };
 
                             let popUpExplanation = {};
@@ -691,7 +722,7 @@ exports.QuizAdminV = function (globalVariables) {
                             answerGui.popUpExplanation.setTextTitle(answerGui.textArea.textMessage);
                             questionGui.explanationManipulator.add(answerGui.popUpExplanation.manipulator);
                         };
-                        answerGui.popUpExplanation =  _createExplanationPopUp();
+                        answerGui.popUpExplanation = _createExplanationPopUp();
 
 
                         answerGui.iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
@@ -719,14 +750,14 @@ exports.QuizAdminV = function (globalVariables) {
                         answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
                     };
 
-                    let answerGui = {checked:answer.correct, explanation: answer.explanation};
+                    let answerGui = {checked: answer.correct, explanation: answer.explanation};
 
                     _initGui(answerGui, index);
                     _initAnswerTextArea(answerGui, answer.label, index);
                     _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
-                    if (answerGui.explanation != EXPLANATION_DEFAULT_TEXT) {
+                    if (answerGui.explanation.label != EXPLANATION_DEFAULT_TEXT) {
                         answerGui.iconExplanation.activeStatusActionIcon();
                         answerGui.iconExplanation.showActualBorder();
                     }
@@ -762,8 +793,8 @@ exports.QuizAdminV = function (globalVariables) {
                     questionGui.answersManipulator.add(questionGui.addNewResponseManip);
                     questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
                 };
-                var _attachRedCrossForAnswer = (answersGui) =>{
-                    if(answersGui.length >= 3){
+                var _attachRedCrossForAnswer = (answersGui) => {
+                    if (answersGui.length >= 3) {
                         answersGui.forEach(ele => {
                             ele.iconRedCross.addEvent('click', ele.iconRedCross.onClickRedCross);
                             ele.manipulator.set(3, ele.iconRedCross.manipulator);
@@ -775,12 +806,12 @@ exports.QuizAdminV = function (globalVariables) {
                     }
                 }
 
-                let dimensions =  {
+                let dimensions = {
                     w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
                     h: 70
                 };
 
-                if(!question.answers || question.answers.length < 1){
+                if (!question.answers || question.answers.length < 1) {
                     question.answers = [{label: ""}, {label: ""}]
                 }
 
@@ -804,7 +835,7 @@ exports.QuizAdminV = function (globalVariables) {
             return questionDetail;
         }
 
-        _loadQuestionsDetail(){
+        _loadQuestionsDetail() {
             this.questionsDetail = [];
             let questions = this.getQuestions();
 
@@ -864,7 +895,8 @@ exports.QuizAdminV = function (globalVariables) {
         getQuestions() {
             return this.presenter.getQuestions();
         }
-        getLastQuestionIndex(){
+
+        getLastQuestionIndex() {
             return this.presenter.getLastQuestionIndex();
         }
 
@@ -877,12 +909,14 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         renameQuiz() {
-            this.presenter.renameQuiz(this.quizTitleField.textMessage).then(status=>{
-                if (status.saved){
+            this.presenter.renameQuiz(this.quizTitleField.textMessage).then(status => {
+                if (status.saved) {
                     let formationLabel = this.getFormationLabel();
                     this.label = this.getLabel();
                     this.header.display(formationLabel + " - " + this.label);
                 }
+            }).catch(error => {
+                console.log(error);
             });
         }
 
@@ -892,11 +926,13 @@ exports.QuizAdminV = function (globalVariables) {
             this.questionDetailsManipulator
                 .set(1, this.questionsDetail[index].guiManipulator);
         }
-        unselectQuestion(){
+
+        unselectQuestion() {
             if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
             this.selectedQuestionIndex = -1;
             this.questionDetailsManipulator.unset(1);
         }
+
         updateQuiz(quizData) {
             this.presenter.updateQuiz(quizData);
         }

@@ -18,7 +18,6 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         updateQuiz(quizData) {
-            console.log(quizData);
             this.setLabel(quizData.label);
             this.setQuestions(quizData.questions);
             const messageError = "Il manque des informations";
@@ -26,7 +25,7 @@ exports.QuizAdminP = function (globalVariables) {
             const getObjectToSave = () => {
                 return {
                     id: this.getId(),
-                    index: this.getIndex(),
+                    gameIndex: this.getIndex(),
                     levelIndex: this.getLevelIndex(),
                     formationId: this.getFormationId(),
                     label: this.getLabel(),
@@ -110,7 +109,7 @@ exports.QuizAdminP = function (globalVariables) {
                 const getObjectToSave = () => {
                     return {
                         id: this.getId(),
-                        index: this.getIndex(),
+                        gameIndex: this.getIndex(),
                         formationId: this.getFormationId(),
                         label: this.getLabel(),
                         lastQuestionIndex: this.getLastIndex(),
@@ -118,7 +117,7 @@ exports.QuizAdminP = function (globalVariables) {
                         questions: this.getQuestions()
                     };
                 };
-                if (this.quiz.getId()) {
+                if (this.getId()) {
                     return this.quiz.renameQuiz(getObjectToSave()).then(data => {
                         // console.log(data);
                         // if (data && data.ack == "ok") {

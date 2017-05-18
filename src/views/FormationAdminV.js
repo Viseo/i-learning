@@ -361,7 +361,7 @@ exports.FormationAdminV = function(globalVariables) {
                 let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
                 miniature.redCrossManipulator.set(0,redCross);
                 miniature.redCrossManipulator.addEvent('click', ()=>{
-                    this.removeGame(miniature.game);
+                    this.removeGame(miniature.manipulator.game);
                 });
                 miniature.manipulator.game = game;
                 game.miniatureGame = miniature;
@@ -445,7 +445,7 @@ exports.FormationAdminV = function(globalVariables) {
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator);
-                gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
+                gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
                     , 5);
             });
         }

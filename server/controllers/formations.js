@@ -41,8 +41,8 @@ module.exports = function (app) {
             return formations.replaceQuiz({
                 level: req.body.levelIndex,
                 game: req.body.gameIndex,
-                id: req.body.id
-            }, req.body, formation)
+                // id: req.body.id
+            }, req.body.newQuiz, formation)
                 .then(data => res.send({saved: true}))
         }).catch(err => {
             console.log(err);

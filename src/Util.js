@@ -2131,10 +2131,10 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
         }
         static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
-            return dbListener.httpPostAsync('/formations/' + formationId + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
+            return dbListener.httpPostAsync('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
         }
         static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/' + id + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
+            return dbListener.httpPostAsync('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
         }
 
         static upload(file, onProgress, onAbort) {

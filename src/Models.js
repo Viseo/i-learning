@@ -661,7 +661,7 @@ exports.Models = function (globalVariables) {
     class Quiz {
         constructor(quiz) {
             this.id = quiz.id;
-            this.index = quiz.index;
+            this.gameIndex = quiz.gameIndex;
             this.levelIndex = quiz.levelIndex;
             this.label = quiz.label;
             this.labelDefault = "Titre du quiz";
@@ -748,7 +748,7 @@ exports.Models = function (globalVariables) {
             return this.lastQuestionIndex;
         }
         getIndex() {
-            return this.index;
+            return this.gameIndex;
         }
 
         getQuestionLabel(index) {
@@ -819,13 +819,16 @@ exports.Models = function (globalVariables) {
                     answer.message = "Le nom du quiz a été bien modifié";
                 }
                 return answer;
+            }).catch(error => {
+                return error;
             })
         }
 
         replaceQuiz(object) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
-                incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
-            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.index, ignoredData)
+                incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
+                errorQuizMessage = "Erreur";
+            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -833,6 +836,8 @@ exports.Models = function (globalVariables) {
                     } else {
                         return {message: incompleteQuizMessage, status: false};
                     }
+                }).catch(error => {
+                    return {message : errorQuizMessage, status: false};
                 });
         };
 
@@ -883,7 +888,7 @@ exports.Models = function (globalVariables) {
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
                             label: 'Quiz ' + (counter ? counter.quizz : 0),
-                            index: column,
+                            gameIndex: column-1,
                             id: 'quizz' + (counter ? counter.quizz : 0),
                             levelIndex: level
                         });
