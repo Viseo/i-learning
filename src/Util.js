@@ -1353,12 +1353,12 @@ exports.Util = function (globalVariables) {
                     text.message(text.messageText.slice(0, count) + '...');
                     count--;
                 }
-                text.position(pointToSave.x, pointToSave.y);
+                glass.remove(text);
                 return text;
             }
             let result = '';
             let tmp = '';
-            let nbLines = 0;
+            var nbLines = 0;
             let computeWidth = (array) => {
                 if(nbLines >= 1 && text.message(result + array.join(' ')).boundingRect().height > height){
                     result = result.split('').slice(0,-3).join('') + '...';
@@ -1386,7 +1386,8 @@ exports.Util = function (globalVariables) {
             computeWidth(splitonspace);
             text.message(result);
         }
-        text.position(pointToSave.x, pointToSave.y);
+        text.position(pointToSave.x, pointToSave.y - (nbLines ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
+        glass.remove(text);
         return text;
     }
     let drawHexagon = (w, h, orientation, ratio) => {

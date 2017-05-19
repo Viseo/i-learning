@@ -12,6 +12,10 @@ exports.Models = function (globalVariables) {
 
         }
 
+        uploadImage(file, progressDisplay) {
+            return MediasLibrary.upload(file, progressDisplay);
+        }
+
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
@@ -306,14 +310,31 @@ exports.Models = function (globalVariables) {
             return this._levelsTab;
         }
 
-        saveNewFormation(callback) {
+        setImage(src){
+            this.imageSrc = src;
+        }
+
+        saveNewFormation() {
             const getObjectToSave = () => {
-                return {
-                    label: this.label,
-                    gamesCounter: this.gamesCounter,
-                    links: this.links,
-                    levelsTab: this.levelsTab
-                };
+                if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
             };
 
             return util.Server.insertFormation(getObjectToSave(), ignoredData)
@@ -332,14 +353,36 @@ exports.Models = function (globalVariables) {
         }
 
 
-        addNewFormation(object) {
+        addNewFormation() {
+            const getObjectToSave = () => {
+                if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
+            };
+
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.insertFormation(object, status, ignoredData)
+            return util.Server.insertFormation(getObjectToSave(), status, ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -374,13 +417,45 @@ exports.Models = function (globalVariables) {
             this.label = label;
         }
 
-        replaceFormation(object) {
+        replaceFormation(obj) {
+            const getObjectToSave = () => {
+                if (obj && obj.imageOnly) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status,
+                        imageOnly : true
+                    }
+                }
+                else if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
+            };
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.replaceFormation(this._id, object, ignoredData)
+            return util.Server.replaceFormation(this._id, getObjectToSave(), ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -916,7 +991,7 @@ exports.Models = function (globalVariables) {
 
         }
 
-        uppload(file, onProgress) {
+        static upload(file, onProgress) {
             return Server.upload(file, onProgress);
         }
 

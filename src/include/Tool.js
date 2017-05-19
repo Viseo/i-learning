@@ -361,11 +361,25 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
-                .setPictureContent("../images/quiz/explanation.png", (radiusSize * 2) * 0.8);
+                .setPictureContent("../images/quiz/media.png", (radiusSize*2)*0.8);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         }
+
+
+        static createAddImage(manipulator, layer){
+            let radiusSize = 20;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 0, myColors.none)
+                .setPictureContent("../images/quiz/explanation.png", (radiusSize*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
+
+
 
         static getRadiusContent() {
             return ICON_SIZE;
