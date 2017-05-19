@@ -59,12 +59,11 @@ exports.Models = function (globalVariables) {
             this.loadPresenterConnection();
         }
 
-        tryLoadCookieForPresenter(redirect) {
+        tryLoadCookieForPresenter(ID) {
             APIRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);
-                if (redirect) {
-                    password.display(param.ID);
-                    redirect = false;
+                if (ID) {
+                    password.display(ID);
                 } else {
                     if (data.ack === 'OK') {
                         this.loadPresenterDashboard(data.user);

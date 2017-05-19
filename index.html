@@ -58,23 +58,7 @@
 <script src="lib/enhancer.js"></script>
 <script src="src/main.js"></script>
 <script>
-    const targetRuntime = exports.targetRuntime(),
-        SVG = exports.SVG;
-    var url = document.URL;
-    var query = url.split('?')[1];
-    var ID;
-    var param;
-    exports.Enhance()
-    if (query) {
-        param = query.split('=')[0];
-    }
-    var redirect = false;
-    if (param == 'ID') {
-        redirect = true;
-        ID = query.split('=')[1];
-
-    }
-    main(SVG(targetRuntime), targetRuntime, false, {redirect, ID});
+    main();
 </script>
 </body>
 

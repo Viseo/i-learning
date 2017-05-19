@@ -1,16 +1,21 @@
-const Domain = require('./Domain').Domain,
-    Util = require('./Util').Util,
+const
+    targetRuntime = require().targetRuntime,
+    SVG = require().SVG,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
+    Domain = require('./Domain').Domain,
+    Util = require('./Util').Util,
     FModels = require('./Models').Models,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
-
-function main(svg, runtime, ImageRuntime, param) {
+function main() {
     let domain, util, gui, drawing, drawings;
-    let globalVariables = {svg, runtime, ImageRuntime};
+    let runtime = targetRuntime();
+    let svg = SVG(runtime);
+    let globalVariables = {svg, runtime};
 
+    exports.Enhance();
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
@@ -35,14 +40,12 @@ function main(svg, runtime, ImageRuntime, param) {
     presenterFactory(globalVariables);
     let models = FModels(globalVariables);
 
-    let redirect;
-    if (param) {
-        redirect = param.redirect;
-    }
+    let params = (new URL(document.location)).searchParams;
+    let ID = params.get("ID");
 
     //todo
     let state = new models.State();
-    state.tryLoadCookieForPresenter(redirect);
+    state.tryLoadCookieForPresenter(ID);
 
     return globalVariables;
 };
