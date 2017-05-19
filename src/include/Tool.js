@@ -460,14 +460,18 @@ exports.Tool = function (globalVariables, classContainer) {
 
     class ListView {
 
-        constructor(listElements, nbElementToShow, direction, listW, listH, chevronW, chevronH, chevronThickness, color) {
+        constructor(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH, chevronThickness, color, marge = 0) {
             this.listElements = listElements;
-            this.nbElementToshow = nbElementToShow;
             this.direction = direction;
             this.indexShow = 0;
 
+            this.marge = marge;
+
+            this.eleDim = {w: eleW + this.marge, h: eleH + MARGIN};
             this.listDim = {w : listW, h: listH};
             this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
+
+
 
             this.component = new svg.Translation();
             this.component.focus = this;
@@ -486,17 +490,17 @@ exports.Tool = function (globalVariables, classContainer) {
             }else{
                 var onClickChevronLeft = () => {
                     this.indexShow++;
-                    this.moveContent(this.indexShow*this.sectionSize, 0);
+                    this.moveContent(this.indexShow*this.eleDim.w, 0);
                     this._showActualChevron();
                 };
 
                 var onClickChevronRight = () => {
                     this.indexShow--;
-                    this.moveContent(this.indexShow*this.sectionSize, 0);
+                    this.moveContent(this.indexShow*this.eleDim.w, 0);
                     this._showActualChevron();
                 };
 
-                this.sectionSize = this.listDim.w / this.nbElementToshow;
+                this.nbElementToshow = Math.floor((this.listDim.w - MARGIN) / this.eleDim.w);
 
                 this.borderWithChevrons = new svg.Rect(listW + chevronW*2, listH).color(myColors.red, 4, myColors.black);
                 this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
@@ -511,7 +515,11 @@ exports.Tool = function (globalVariables, classContainer) {
 
                 this.chevrons.left.onClick(onClickChevronLeft);
                 this.chevrons.right.onClick(onClickChevronRight);
+
+                this.contentManip.move(eleW/2, listH/2);
             }
+
+            this.borderWithChevrons.corners(5);
 
 
             this.border = new svg.Rect(listW, listH).color([], 0, [0, 0, 0]);
@@ -539,10 +547,9 @@ exports.Tool = function (globalVariables, classContainer) {
 
             }else{
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].position(this.sectionSize * (i  + this.indexShow), 0);
+                    this.listElements[i].position(this.marge + this.eleDim.w * (i  + this.indexShow), 0);
                 }
             }
-
             this._showActualChevron();
         }
 
@@ -560,14 +567,6 @@ exports.Tool = function (globalVariables, classContainer) {
 
         remove(component) {
             this.contentManip.remove(component);
-            return this;
-        }
-
-
-        moveContentManip(x, y){
-            this.content.remove(this.contentManip.component);
-            this.contentManip.move(x, y);
-            this.content.add(this.contentManip.component);
             return this;
         }
 
@@ -615,7 +614,7 @@ exports.Tool = function (globalVariables, classContainer) {
             };
 
 
-            let tmpIndex = -this.indexShow + (this.nbElementToshow-1);
+            //let tmpIndex = -this.indexShow + (this.nbElementToshow-1);
 
             if(this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length){
                 _showAllChevron();
