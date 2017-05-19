@@ -13,6 +13,7 @@ exports.ConnectionP = function(globalVariables) {
             var _declareTextFields = () => {
                 this._fields = [
                     {
+                        id: "login",
                         title: "Adresse mail :",
                         text: "",
                         type: "text",
@@ -23,6 +24,7 @@ exports.ConnectionP = function(globalVariables) {
                         pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                     },
                     {
+                        id: "password",
                         title: "Mot de passe :",
                         text: "",
                         type: "password",
@@ -52,8 +54,7 @@ exports.ConnectionP = function(globalVariables) {
             if(_checkInputs()){
                 return this._connectWith(this._fields[0].text, this._fields[1].text, this._stayConnected);
             }else {
-                //TODO changer pour pouvoir mocker pour les tests
-                return Promise.reject("Veuillez remplir correctement tous les champs");
+                return this.state.createRejectedPromise("Veuillez remplir correctement tous les champs");
             }
         }
 

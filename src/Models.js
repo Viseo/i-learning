@@ -10,6 +10,10 @@ exports.Models = function (globalVariables) {
 
         }
 
+        createRejectedPromise(message){
+            return Promise.reject(message);
+        }
+
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
