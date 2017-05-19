@@ -53,9 +53,9 @@ const testKeyDownArrow = (runtime) => {
 };
 
 const enter = (contentArea, label) => {
-    contentArea.value = label;
+    contentArea.valueText = label;
     contentArea.listeners["input"]();
-    contentArea.value = label;
+    contentArea.valueText = label;
     contentArea.listeners["blur"]();
 };
 
@@ -85,6 +85,21 @@ const callClickOnElement = (root, nameClickElement) => {
     clickElement.listeners["click"]();
 };
 
+const callClickOnElementPos = (root, nameClickElement) => {
+    let clickElement = retrieve(root, "[" + nameClickElement + "]"),
+        glass = retrieve(root, "[glass]");
+    if (clickElement.handler.parentManip) {
+        glass.listeners["click"]({
+            pageX: clickElement.handler.parentManip.x, pageY: clickElement.handler.parentManip.y, preventDefault: () => {
+            }
+        });
+    } else {
+        glass.listeners["click"]({
+            pageX: clickElement.parent.handler.parentManip.x, pageY: clickElement.parent.handler.parentManip.y, preventDefault: () => {
+            }
+        });
+    }
+};
 
 /**
  *
@@ -112,9 +127,25 @@ describe('formationsManager', function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
-        main = require("../src/main").main;
-        dbListenerModule = require("../src/APIRequester").dbListener;
+        mainMock = require("mainMock").main;
+        dbListenerModule = require("../src/APIRequester").APIRequester;
         dbListener = new dbListenerModule(false, true);
+    });
+
+    it("DashboardAdminV/should add a new formation once", function (done) {
+        let serverResponse = {
+            noToken: {status: 'error'},
+            wrongToken: {status: 'error'},
+            oneTime: {status: 'oneTimeOnly'},
+            adminConnected: {ack: "OK", user: {lastName: "MA", firstName: "David", admin: "true"}}
+        }
+
+        svg.screenSize(1920, 947);
+        mainMock("DashboardAdminV", fakeModel);
+        let root = runtime.anchor("content");
+        runtime.screenSize(1500, 1500);
+        testKeyDownArrow(runtime);
+        done();
     });
 
     it("should not add a new formation", function (done) {
@@ -122,27 +153,27 @@ describe('formationsManager', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
-            runtime.listeners['resize']({w: 1500, h: 1500});
+            // runtime.listeners['resize']({w: 1500, h: 1500});
+            runtime.screenSize(1500,1500);
             testKeyDownArrow(runtime);
             runtime.advance();
-
-            testValueOnElement(root, "formationManagerLabelContent", "Ajouter une f…");
-
-            callClickOnElement(root, "addFormationButton");
-            testValueOnElement(root, "formationErrorMessage", "Veuillez rentrer un nom de formation valide");
-
+            testValueOnElement(root, "addFormationText", "Ajouter une formation");
+            callClickOnElementPos(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", "Veuillez entrer un titre valide.");
             runtime.advance();
-
-            callClickOnElement(root, "formationManagerLabelContent");
-            callEnterOnElement(root, "formationLabelContentArea", "Test[");
-            testValueOnElement(root, "formationInputErrorMessage", "Veuillez rentrer un nom de formation valide");
-
-            callClickOnElement(root, "formationManagerLabelContent");
-            callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
-            testValueOnElement(root, "formationInputErrorMessage", null);
+            callClickOnElement(root, "addFormationGlass");
+            callEnterOnElement(root, "addFormationTextInput", "Test[");
+            callClickOnElementPos(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", "Caractère(s) non autorisé(s).");
+            runtime.advance();
+            callClickOnElement(root, "addFormationGlass");
+            callEnterOnElement(root, "addFormationTextInput", "MaFormation");
+            callClickOnElementPos(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", null);
 
             callClickOnElement(root, "addFormationButton");
             testValueOnElement(root, "formationErrorMessage", "Cette formation existe déjà");
+            runtime.advance();
 
             done();
         });
