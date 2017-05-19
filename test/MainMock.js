@@ -2,8 +2,9 @@
  * Created by TBE3610 on 19/05/2017.
  */
 const
+    Enhance = require('../lib/enhancer').Enhance,
     mockRuntime = require('../lib/runtimemock').mockRuntime,
-    SVG = require().SVG,
+    SVG = require('../lib/svghandler').SVG,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
@@ -17,12 +18,11 @@ function mainMock(FModels, callback) {
     let svg = SVG(runtime);
     let globalVariables = {svg, runtime};
 
-    exports.Enhance();
+    Enhance();
     runtime.declareAnchor('content');
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
-    globalVariables.main = main;
 
     util = Util(globalVariables);
     globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
