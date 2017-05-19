@@ -20,6 +20,7 @@ function mainMock(FModels) {
 
     Enhance();
     runtime.declareAnchor('content');
+    svg.screenSize(1920, 947);
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
