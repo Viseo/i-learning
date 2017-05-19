@@ -12,7 +12,7 @@ const
     Util = require('../src/Util').Util,
     presenterFactory = require('../src/presenters/PresenterFactory').PresenterFactory;
 
-function mainMock(FModels, callback) {
+function mainMock(FModels) {
     let domain, util, gui, drawing, drawings;
     let runtime = mockRuntime();
     let svg = SVG(runtime);
@@ -43,13 +43,8 @@ function mainMock(FModels, callback) {
     presenterFactory(globalVariables);
     let models = FModels(globalVariables);
     let state = new models.State();
+    let root = runtime.anchor("content");
 
-    if(callback){
-        callback(state);
-    }else {
-        state.tryLoadCookieForPresenter();
-    }
-
-    return globalVariables;
+    return {state, root};
 };
 exports.mainMock = mainMock;
