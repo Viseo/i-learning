@@ -71,7 +71,7 @@ describe('Connection check headerMessage', function () {
         svg = SVG(runtime);
         runtime.declareAnchor('content');
         main = require("../src/main").main;
-        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListenerModule = require("../src/APIRequester").dbListener;
         dbListener = new dbListenerModule(false, true);
     });
 
@@ -117,7 +117,7 @@ describe('connection check textarea', function(){
         svg = SVG(runtime);
         runtime.declareAnchor('content');
         main = require("../src/main").main;
-        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListenerModule = require("../src/APIRequester").dbListener;
         dbListener = new dbListenerModule(false, true);
     });
 
@@ -228,7 +228,7 @@ describe('Forgotten password', function () {
         svg = SVG(runtime);
         runtime.declareAnchor('content');
         main = require("../src/main").main;
-        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListenerModule = require("../src/APIRequester").dbListener;
         dbListener = new dbListenerModule(false, true);
     });
 

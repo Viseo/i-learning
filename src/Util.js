@@ -4,7 +4,6 @@ exports.Util = function (globalVariables) {
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        dbListener = globalVariables.dbListener,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
@@ -21,7 +20,7 @@ exports.Util = function (globalVariables) {
         runtime = globalVariables.runtime;
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
-        dbListener = globalVariables.dbListener;
+        DbListener = globalVariables.dbListener;
         svg = globalVariables.svg;
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
@@ -2077,86 +2076,6 @@ exports.Util = function (globalVariables) {
         }
     }
 
-    class Server {
-        constructor() {
-        }
-
-        static connect(mail, password, cookie) {
-            return dbListener.httpPostAsync('/auth/connect', {mailAddress: mail, password: password, cookie: cookie})
-        }
-        static checkCookie() {
-            return dbListener.httpGetAsync('/auth/verify')
-        }
-
-        static inscription(user) {
-            return dbListener.httpPostAsync('/users/inscription', user)
-        }
-        static saveProgress(progress){
-            return dbListener.httpPostAsync('users/self/progress', progress);
-        }
-        static saveLastAction(object) {
-            return dbListener.httpPostAsync('users/self/lastAction', object);
-        }
-        static getUser() {
-            return dbListener.httpGetAsync("/users/self")
-        }
-        static resetPassword(mailAddress) {
-            return dbListener.httpPostAsync('/users/password/reset', mailAddress);
-        }
-        static checkTimestampPassword(id) {
-            return dbListener.httpPostAsync('/users/password/new', id);
-        }
-        static updatePassword(id, password) {
-            return dbListener.httpPostAsync('/users/password/update', {id: id, password: password});
-        }
-
-        static getAllFormations() {
-            return dbListener.httpGetAsync('/formations');
-        }
-        static getFormationsProgress(id) {
-            return dbListener.httpGetAsync('/formations/' + id + '/progression');
-        }
-        static getVersionById(id) {
-            return dbListener.httpGetAsync("/formations/" + id)
-        }
-        static replaceFormation(id, newFormation, ignoredData) {
-            //newFormation.status = status;
-            return dbListener.httpPostAsync("/formations/" + id, newFormation, ignoredData)
-        }
-        static insertFormation(newFormation, status, ignoredData) {
-            newFormation.status = status;
-            return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
-        }
-        static deactivateFormation(id, ignoredData) {
-            return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
-        }
-        static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
-            return dbListener.httpPostAsync('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
-        }
-        static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
-        }
-
-        static upload(file, onProgress, onAbort) {
-            return dbListener.httpUpload("/medias/upload", file, onProgress, this.deleteVideo);
-        }
-        static getImages() {
-            return dbListener.httpGetAsync('/medias/images');
-        }
-        static deleteImage(image) {
-            return dbListener.httpPostAsync("/medias/images/delete", image);
-        }
-        static getVideos() {
-            return dbListener.httpGetAsync('/medias/videos');
-        }
-        static deleteVideo(video) {
-            return dbListener.httpPostAsync("/medias/videos/delete", video);
-        }
-        static updateSingleFormationStars(id, starId, versionId) {
-            return dbListener.httpPostAsync('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
-        }
-    }
-
     svg.TextItem.prototype.enter = function () {
         this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
         if (this.component.value === "") this.messageText = "";
@@ -2398,7 +2317,6 @@ exports.Util = function (globalVariables) {
         Picture,
         Puzzle,
         ReturnButton,
-        Server,
         drawHexagon,
         resizeStringForText,
         goDirectlyToLastAction,

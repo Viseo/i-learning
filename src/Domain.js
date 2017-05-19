@@ -229,7 +229,7 @@ exports.Domain = function (globalVariables) {
                 displayUser();
                 let returnToListFormation = () => {
                     /*drawings.component.clean();
-                    Server.getAllFormations().then(data => {
+                    APIRequester.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
                         let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
                             : "FormationsManagerVueAdmin";

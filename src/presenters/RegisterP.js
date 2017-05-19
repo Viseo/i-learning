@@ -67,6 +67,10 @@ exports.RegisterP = function (globalVariables) {
             _declareTextFields();
         }
 
+        _register(userInfos){
+            return this.state.register(userInfos);
+        }
+
         registerNewUser() {
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
@@ -75,13 +79,13 @@ exports.RegisterP = function (globalVariables) {
             };
 
             if (_checkInputs()) {
-                let tempObject = {
+                let userInfos = {
                     lastName: this._fields[0].text,
                     firstName: this._fields[1].text,
                     mailAddress: this._fields[2].text,
                     password: runtime.twinBcrypt(this._fields[3].text)
                 };
-                return Server.inscription(tempObject);
+                return this._register(userInfos);
             } else {
                 return Promise.reject("Veuillez remplir correctement tous les champs")
             }

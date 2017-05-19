@@ -44,7 +44,7 @@
 <script src="src/presenters/DollAdminP.js"></script>
 <script src="src/presenters/PresenterFactory.js"></script>
 
-<script src="src/dbListener.js"></script>
+<script src="src/APIRequester.js"></script>
 <script src="src/include/User.js"></script>
 <script src="src/include/FormationsManager.js"></script>
 <script src="src/include/Formation.js"></script>
@@ -58,15 +58,13 @@
 <script src="lib/enhancer.js"></script>
 <script src="src/main.js"></script>
 <script>
-    const
-        enhance = exports.Enhance(),
-        targetRuntime = exports.targetRuntime(),
-        SVG = exports.SVG,
-        dbListener = new DbListener(true, false);
+    const targetRuntime = exports.targetRuntime(),
+        SVG = exports.SVG;
     var url = document.URL;
     var query = url.split('?')[1];
     var ID;
     var param;
+    exports.Enhance()
     if (query) {
         param = query.split('=')[0];
     }
@@ -76,7 +74,7 @@
         ID = query.split('=')[1];
 
     }
-    main(SVG(targetRuntime), targetRuntime, dbListener, false, {redirect: redirect, ID: ID});
+    main(SVG(targetRuntime), targetRuntime, false, {redirect, ID});
 </script>
 </body>
 

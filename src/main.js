@@ -7,9 +7,9 @@ const Domain = require('./Domain').Domain,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
 
-function main(svg, runtime, dbListener, ImageRuntime, param) {
+function main(svg, runtime, ImageRuntime, param) {
     let domain, util, gui, drawing, drawings;
-    let globalVariables = {svg, runtime, dbListener, ImageRuntime};
+    let globalVariables = {svg, runtime, ImageRuntime};
 
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});

@@ -1,8 +1,6 @@
 exports.Models = function (globalVariables) {
-    const util = globalVariables.util,
-        drawing = globalVariables.drawing,
-        Server = util.Server;
-
+    const drawing = globalVariables.drawing,
+        APIRequester = require('./APIRequester').APIRequester;
 
     class State {
         constructor() {
@@ -62,7 +60,7 @@ exports.Models = function (globalVariables) {
         }
 
         tryLoadCookieForPresenter(redirect) {
-            util.Server.checkCookie().then(data => {
+            APIRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);
                 if (redirect) {
                     password.display(param.ID);
@@ -80,7 +78,7 @@ exports.Models = function (globalVariables) {
 
 
         tryConnectForPresenterDashboard(login, pwd, stayConnected) {
-            return Server.connect(login, pwd, stayConnected).then(data => {
+            return APIRequester.connect(login, pwd, stayConnected).then(data => {
                 if (!data) throw 'Connexion refusée';
                 data = JSON.parse(data);
                 if (data.ack === 'OK') {
@@ -89,6 +87,10 @@ exports.Models = function (globalVariables) {
                     throw 'adresse e-mail ou mot de passe invalide';
                 }
             });
+        }
+
+        registerNewUser(userInfos){
+            return APIRequester.inscription(userInfos);
         }
 
         loadPresenterDashboard(user) {
@@ -198,7 +200,7 @@ exports.Models = function (globalVariables) {
             let formationId = this.getFormationId();
             let versionId = this.getVersionId()
             let gameToSave = this.getToSave();
-            return Server.saveProgress(Object.assign({formationId, versionId}, gameToSave));
+            return APIRequester.saveProgress(Object.assign({formationId, versionId}, gameToSave));
         }
 
         getToSave() {
@@ -232,7 +234,7 @@ exports.Models = function (globalVariables) {
         }
 
         sync() {
-            return Server.getAllFormations().then(data => {
+            return APIRequester.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
                     const sortAlphabetical = function (array) {
                         return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -316,7 +318,7 @@ exports.Models = function (globalVariables) {
                 };
             };
 
-            return util.Server.insertFormation(getObjectToSave(), ignoredData)
+            return APIRequester.insertFormation(getObjectToSave(), ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -339,7 +341,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.insertFormation(object, status, ignoredData)
+            return APIRequester.insertFormation(object, status, ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -380,7 +382,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.replaceFormation(this._id, object, ignoredData)
+            return APIRequester.replaceFormation(this._id, object, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -810,7 +812,7 @@ exports.Models = function (globalVariables) {
         }
 
         renameQuiz(quiz) {
-            return util.Server.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
+            return APIRequester.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
                 let answer = JSON.parse(data);
                 if (answer.saved == false) {
                     answer.message = "Il faut enregistrer le quiz avant !";
@@ -828,7 +830,7 @@ exports.Models = function (globalVariables) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
+            return APIRequester.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -917,29 +919,29 @@ exports.Models = function (globalVariables) {
         }
 
         uppload(file, onProgress) {
-            return Server.upload(file, onProgress);
+            return APIRequester.upload(file, onProgress);
         }
 
         getImages() {
-            return Server.getImages().then(data => JSON.parse(data));
+            return APIRequester.getImages().then(data => JSON.parse(data));
         }
 
         deleteImage(_id) {
-            return Server.deleteImage(_id).then(() => {
+            return APIRequester.deleteImage(_id).then(() => {
                 let imageIndex = this.images.findIndex((image) => image._id === _id);
                 if (imageIndex !== -1) this.images.splice(imageIndex, 1);
             });
         }
 
         getVideos() {
-            return Server.getVideos().then((videos) => {
+            return APIRequester.getVideos().then((videos) => {
                 this.videos = videos;
                 return videos;
             });
         }
 
         deleteVideo(_id) {
-            return Server.deleteVideo(_id).then(() => {
+            return APIRequester.deleteVideo(_id).then(() => {
                 let videoIndex = this.videos.findIndex((video) => video._id === _id);
                 if (videoIndex !== -1) this.videos.splice(videoIndex, 1);
             });
