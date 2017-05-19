@@ -137,7 +137,7 @@ exports.FormationCollabV = function (globalVariables) {
                 levelManipulator.add(gameMiniature.manipulator);
                 gameMiniature.manipulator.addEvent('click', () => this.onClickGame(game));
 
-                gameMiniature.manipulator.move(160 + game.index * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH / 2, 5);
+                gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH / 2, 5);
             });
         }
 
