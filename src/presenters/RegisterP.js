@@ -67,13 +67,17 @@ exports.RegisterP = function (globalVariables) {
         }
 
         _register(userInfos){
-            return this.state.register(userInfos);
+            return this.state.registerNewUser(userInfos);
         }
 
         registerNewUser() {
+            let error;
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
-                let allValid = this._fields.reduce((o, n) => o && n.valid, true)
+                let allValid = this._fields.reduce((o, n) => o && n.valid, true);
+                if(!allValid){
+                    error = this._fields.find(f => f.valid == false).errorMessage;
+                }
                 return isPasswordConfirmed && allValid;
             };
 
@@ -86,7 +90,7 @@ exports.RegisterP = function (globalVariables) {
                 };
                 return this._register(userInfos);
             } else {
-                return Promise.reject("Veuillez remplir correctement tous les champs");
+                return Promise.reject(JSON.stringify({reason:error}));
             }
         }
 

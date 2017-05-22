@@ -55,6 +55,6 @@ function main(mockResponses) {
         state.tryLoadCookieForPresenter(ID);
     }
 
-    return {state, root};
+    return {state, root, runtime};
 };
 exports.main = main;

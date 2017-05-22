@@ -129,7 +129,7 @@ class APIRequester {
     }
 
     inscription(user) {
-        return this.httpRequests.post('/users/inscription', user)
+        return this.httpRequests.post('/users/inscription', user);
     }
     saveProgress(progress){
         return this.httpRequests.post('users/self/progress', progress);

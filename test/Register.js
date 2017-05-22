@@ -3,32 +3,97 @@
  */
 
 const assert = require('assert'),
-    main = require('./MainMock').mainMock,
     testutils = require('../lib/testutils'),
-    {retrieve, rejectedPromise, resolvedPromise, enterTextField} = testutils;
-
-var FModelMock = function (globalVariables) {
-    class State {
-        constructor() {}
-
-        createRejectedPromise(message){
-            return rejectedPromise(message);
-        }
-
-        loadPresenterRegister() {
-            this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.RegisterP(this);
-            this.currentPresenter.displayView();
-        }
-    }
-
-    return {State};
-}
+    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('register page', function(){
     it('should register', function(){
-        let {root, state} = main(FModelMock);
+        let {root, state} = given(()=>{
+            return loadPage("Register", {
+                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+            });
+        })
+        when(()=>{
+            enterTextField(root, 'Prénom', 'paul');
+            enterTextField(root, "Nom", "Den");
+            enterTextField(root, "Adresse mail", "paul@den.fr");
+            enterTextField(root, 'Mot de passe', 'lollol');
+            enterTextField(root, 'Confirmer votre mot de passe', 'lollol');
+            click(root, 'saveButton');
+        }).then(()=>{
+            assertMessage(root, "successMessage", 'Votre compte a bien été créé !');
+        });
 
         state.loadPresenterRegister();
     })
+    it('should not register, incorrect email', function(){
+        let {root, state} = given(()=>{
+            return loadPage("Register", {
+                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+            });
+        })
+        when(()=>{
+            enterTextField(root, 'Prénom', 'paul');
+            enterTextField(root, "Nom", "Den");
+            enterTextField(root, "Adresse mail", "paul @den.fr");
+            enterTextField(root, 'Mot de passe', 'lollol');
+            enterTextField(root, 'Confirmer votre mot de passe', 'lollol');
+            click(root, 'saveButton');
+        }).then(()=>{
+            assertMessage(root, "msgFieldError", "L'adresse email n'est pas valide");
+        });
+    });
+    it('should not register, incorrect name', function(){
+        let {root, state} = given(()=>{
+            return loadPage("Register", {
+                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+            });
+        })
+        when(()=>{
+            enterTextField(root, 'Prénom', 'paul');
+            enterTextField(root, "Nom", "46654");
+            enterTextField(root, "Adresse mail", "paul@den.fr");
+            enterTextField(root, 'Mot de passe', 'lollol');
+            enterTextField(root, 'Confirmer votre mot de passe', 'lollol');
+            click(root, 'saveButton');
+        }).then(()=>{
+            assertMessage(root, "msgFieldError", "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
+        });
+
+        state.loadPresenterRegister();
+    });
+    it('should not register, already used email', function(){
+        let {root, state} = given(()=>{
+            return loadPage("Register", {
+                "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+            });
+        })
+        when(()=>{
+            enterTextField(root, 'Prénom', 'paul');
+            enterTextField(root, "Nom", "Den");
+            enterTextField(root, "Adresse mail", "paul@den.fr");
+            enterTextField(root, 'Mot de passe', 'lollol');
+            enterTextField(root, 'Confirmer votre mot de passe', 'lollol');
+            click(root, 'saveButton');
+        }).then(()=>{
+            assertMessage(root, "msgFieldError", 'Adresse mail déjà utilisée ! ');
+        });
+
+    });
+    it('should find new focused field, ', function(){
+        let {root, state, runtime} = given(()=>{
+            return loadPage("Register", {
+                "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+            });
+        })
+        when(()=>{
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            let focus = retrieve(root, '[NomselectedInput]');
+            assert(focus);
+        }).then(()=>{
+            assertMessage(root, "msgFieldError", 'Adresse mail déjà utilisée ! ');
+        });
+
+    });
+
 })

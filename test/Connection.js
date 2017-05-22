@@ -2,8 +2,9 @@
  * Created by TBE3610 on 19/05/2017.
  */
 
-const testutils = require('../lib/testutils'),
-    {enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
+const assert = require('assert'),
+    testutils = require('../lib/testutils'),
+    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('connection page', function () {
     it('should connect', function () {

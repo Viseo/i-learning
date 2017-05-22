@@ -364,7 +364,7 @@ exports.FormationAdminV = function(globalVariables) {
                     this.removeGame(miniature.manipulator.game);
                 });
                 miniature.manipulator.game = game;
-                game.miniatureGame = miniature;
+                miniature.manipulator.miniatureGame = miniature;
                 miniature.conf = {
                     drag: (what, x, y) => {
                         if(this.arrowMode) {
@@ -388,8 +388,8 @@ exports.FormationAdminV = function(globalVariables) {
                         if(this.arrowMode){
                             let point = whatParent.globalPoint(finalX,finalY);
                             let target = this.graphManipulator.last.getTarget(point.x,point.y);
-                            if(target && !target.notTarget && what.game.miniatureGame != target.parentManip.game.miniatureGame
-                                && target.parentManip.game.miniatureGame) {
+                            if(target && !target.notTarget && what.miniatureGame != target.parentManip.miniatureGame
+                                && target.parentManip.miniatureGame) {
                                 let child = target.parentManip.game;
                                 this.createLink(this.currentParent, child);
                             }
@@ -402,7 +402,7 @@ exports.FormationAdminV = function(globalVariables) {
                         }
                     },
                     clicked : (what) => {
-                        miniatureSelection(what.game.miniatureGame);
+                        miniatureSelection(what.miniatureGame);
                     },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);

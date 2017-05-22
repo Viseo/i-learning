@@ -21,7 +21,7 @@ module.exports = function (app) {
     app.post('/users/inscription', function (req, res) {
         db.get().collection('users').findOne({"mailAddress": req.body.mailAddress}).then((user) => {
             if(user){
-                res.status(403).send();
+                res.status(403).send({reason: 'Adresse mail déjà utilisée ! '});
             }else {
                 return users.inscription(req.body).then(() => res.status(200).send());
             }
