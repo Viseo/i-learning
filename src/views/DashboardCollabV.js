@@ -190,8 +190,6 @@ exports.DashboardCollabV = function (globalVariables) {
 
                     let starMiniatures = createRating(miniature.manipulator);
                     starMiniatures.popMark(formation.label).popPosition(IMAGE_SIZE/2, TILE_SIZE.h/2 + 0.5*MARGIN);
-
-
                     starMiniatures.forEach(
                         star => {
                             svg.addEvent(star, "click", () => onStarClick(star));
@@ -199,7 +197,6 @@ exports.DashboardCollabV = function (globalVariables) {
                             svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
                         }
                     );
-
                     starMiniatures.scaleStar(factor);
                     starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3 - TILE_SIZE.rect.w/2 + 3/2*IMAGE_SIZE, TILE_SIZE.h/3);
 
@@ -208,6 +205,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         .anchor('left');
                     miniature.manipulator.add(notationText);
                 };
+                
                 let displayNotation = () =>{
                     let displayNotationManip = new Manipulator(this);
                     let textNotation = new svg.Text(formation.note.toString().split('').slice(0,4).join('')
