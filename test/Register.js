@@ -88,10 +88,11 @@ describe('register page', function(){
         })
         when(()=>{
             runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
-            let focus = retrieve(root, '[NomselectedInput]');
-            assert(focus);
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
         }).then(()=>{
-            assertMessage(root, "msgFieldError", 'Adresse mail déjà utilisée ! ');
+            let focus = retrieve(root, '[PrénomselectedInput]');
+            assert(focus);
         });
 
     });

@@ -3,7 +3,7 @@ const FFormationsManager = require('./include/FormationsManager').formationsMana
 const FUser = require('./include/User').User;
 const FQuizElements = require('./include/QuizElements').QuizElements;
 const FFormation = require('./include/Formation').Formation;
-const FTool = require('./include/Tool').Tool;
+const FTool = require('./Tool').Tool;
 
 exports.Domain = function (globalVariables) {
 
