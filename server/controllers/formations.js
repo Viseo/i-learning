@@ -89,30 +89,19 @@ module.exports = function (app) {
     });
 
     app.post('/formations/:id', function (req, res) {
-        formations.getFormationByVersionId(req.params.id)
-            .then(formation => {
-                if (formation) {
-                    formations.getFormationsByName(req.body.label)
-                        .then(data => {
-                            let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
-                            let version2 = req.body;
-                            if (req.body.imageOnly && version1){
-                                formations.updateImage(formation, version1, version2);
-                                res.send({saved: true});
-                                return;
-                            }
-                            if (data.formation) {
-                                if (formation._id.toString() === data.formation._id.toString()) {
-                                    if (formations.compareVersions(version1, version2, req.body.status !== "Published")) {
-                                        res.send({saved: false, reason: "NoModif"})
-                                    } else {
-                                        formations.newVersion(formation, req.body)
-                                            .then(data => res.send({saved: true, id: data}))
-                                            .catch(err => console.log(err));
-                                    }
-                                } else {
-                                    res.send({saved: false, reason: "NameAlreadyUsed"});
-                                }
+        formations.getFormationByVersionId(req.params.id).then(formation => {
+            if (formation) {
+                return formations.getFormationsByName(req.body.label).then(data => {
+                    let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
+                    let version2 = req.body;
+                    if (req.body.onlyImage && version1) {
+                        formations.updateImage(formation, version1, version2);
+                        return {saved: true};
+                    }
+                    if (data.formation) {
+                        if (formation._id.toString() === data.formation._id.toString()) {
+                            if (formations.compareVersions(version1, version2, req.body.status !== "Published")) {
+                                return {saved: false, reason: "NoModif"}
                             } else {
                                 return formations.newVersion(formation, req.body).then(data => ({
                                     saved: true,
