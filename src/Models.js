@@ -258,6 +258,13 @@ exports.Models = function (globalVariables) {
         getFormationByVersionId(id) {
             return this._formations.find((form) => form.getId() === id);
         }
+        getFormationById(id){
+            return this._formations.find(form => form.getFormationId() === id);
+        }
+
+        updateSingleFormationStars(formationId, starId, versionID){
+            this.getFormationById(formationId).updateStars(starId);
+        }
 
         createFormation(label) {
             let newFormation = new Formation({label: label});
@@ -313,6 +320,11 @@ exports.Models = function (globalVariables) {
         setImage(src){
             this.imageSrc = src;
         }
+
+        updateStars(starId){
+            util.Server.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
+        }
+
 
         saveNewFormation() {
             const getObjectToSave = () => {

@@ -22,7 +22,7 @@ exports.DashboardAdmin = function(globalVariables){
         constructor(presenter){
             super(presenter);
             this.manipulator = new Manipulator(this).addOrdonator(2);
-           this.mediasManipulator = new Manipulator(this);
+            this.mediasManipulator = new Manipulator(this);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
             this.spaceBetween = 0;
             this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
