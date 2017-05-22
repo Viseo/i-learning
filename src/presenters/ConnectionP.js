@@ -54,7 +54,7 @@ exports.ConnectionP = function(globalVariables) {
             if(_checkInputs()){
                 return this._connectWith(this._fields[0].text, this._fields[1].text, this._stayConnected);
             }else {
-                return this.state.createRejectedPromise("Veuillez remplir correctement tous les champs");
+                return Promise.reject("Veuillez remplir correctement tous les champs");
             }
         }
 

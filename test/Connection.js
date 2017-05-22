@@ -5,12 +5,13 @@
 const assert = require('assert'),
     main = require('../src/main').main,
     testutils = require('../lib/testutils'),
-    {retrieve, enterTextField} = testutils;
+    {retrieve, enterTextField, given, when, click, assertMessage, loadPage} = testutils;
 
 describe('connection page', function () {
     it('should connect', function () {
         let mockResponses = {
-            "/auth/connect": {code: 200, content: ""}
+            "/auth/connect": {code: 200, content: {ack: "OK", user: {}}},
+            "/formations": {code: 200, content: {myCollection: []}}
         }
         let loginTest = "admin@test.com";
         let pwdTest = "password";
@@ -28,20 +29,19 @@ describe('connection page', function () {
     })
 
     it('should not connect (empty fields)', function(){
-        let {root, state} = main(FModelMock);
-        state.loadPresenterConnection();
-
-        let button = retrieve(root, "[connectionButton]");
-        button.handler.parentManip.listeners['click']();
-
-        let errorMessage = retrieve(root, "[msgFieldError]");
-        assert.equal(errorMessage.text, testutils.escape("Veuillez remplir correctement tous les champs"));
-
-
+        let {root, state} = given(()=>{
+            return loadPage("Connection", {'/auth/connect': {code: 404, content: {}}});
+        });
+        when(()=>{
+            click(root, "connectionButton");
+        }).then(()=>{
+            assertMessage(root, "msgFieldError", "Veuillez remplir correctement tous les champs");
+        });
     });
 
     it('should not connect (wrong login)', function(){
-        let {root, state} = main(FModelMock);
+        let mockResponses = {};
+        let {root, state} = main(mockResponses);
         state.loadPresenterConnection();
 
         enterTextField(root, "login", "aaaa");
@@ -55,7 +55,8 @@ describe('connection page', function () {
     });
 
     it('should not connect (wrong password)', function(){
-        let {root, state} = main(FModelMock);
+        let mockResponses = {}
+        let {root, state} = main(mockResponses);
         state.loadPresenterConnection();
 
         enterTextField(root, "login", "admin@test.com");

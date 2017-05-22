@@ -86,7 +86,7 @@ exports.RegisterP = function (globalVariables) {
                 };
                 return this._register(userInfos);
             } else {
-                return this.state.createRejectedPromise("Veuillez remplir correctement tous les champs");
+                return Promise.reject("Veuillez remplir correctement tous les champs");
             }
         }
 

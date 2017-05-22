@@ -11,10 +11,6 @@ exports.Models = function (globalVariables, mockResponses) {
             this.currentPresenter = null;
         }
 
-        createRejectedPromise(message){
-            return Promise.reject(message);
-        }
-
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();

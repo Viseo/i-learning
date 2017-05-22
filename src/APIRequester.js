@@ -28,9 +28,9 @@ class HTTPRequests {
         if(!result) throw new Error('missing http request : ' + theUrl);
 
         if(result.code == 200){
-            return resolvedPromise(result.content);
+            return Promise.resolve(JSON.stringify(result.content));
         }else {
-            return rejectedPromise(result.content);
+            return Promise.reject(JSON.stringify(result.content));
         }
     }
 
