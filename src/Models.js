@@ -918,8 +918,8 @@ exports.Models = function (globalVariables, mockResponses) {
 
         }
 
-        uppload(file, onProgress) {
-            return apiRequester.upload(file, onProgress);
+        upload(file, onProgress) {
+            return APIRequester.upload(file, onProgress);
         }
 
         getImages() {

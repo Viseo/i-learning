@@ -13,9 +13,6 @@ exports.DashboardAdminP = function(globalVariables) {
             this.formations = formations;
             this.formationsList = formations.getFormations();
         }
-        getLabels(){
-            return this.formations.getFormations().map(f => f.label);
-        }
         getFormations(){
             return this.formations.getFormations();
         }

@@ -127,7 +127,7 @@ describe('formationsManager', function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
-        mainMock = require("mainMock").main;
+        main = require("./main").main;
         dbListenerModule = require("../src/APIRequester").APIRequester;
         dbListener = new dbListenerModule(false, true);
     });
@@ -141,7 +141,7 @@ describe('formationsManager', function () {
         }
 
         svg.screenSize(1920, 947);
-        mainMock("DashboardAdminV", fakeModel);
+        mainMock(fakeModel);
         let root = runtime.anchor("content");
         runtime.screenSize(1500, 1500);
         testKeyDownArrow(runtime);

@@ -157,8 +157,8 @@ class APIRequester {
         //newFormation.status = status;
         return this.httpRequests.post("/formations/" + id, newFormation, ignoredData)
     }
-    insertFormation(newFormation, status, ignoredData) {
-        newFormation.status = status;
+    insertFormation(newFormation, ignoredData) {
+        // newFormation.status = status;
         return this.httpRequests.post("/formations/insert", newFormation, ignoredData)
     }
     deactivateFormation(id, ignoredData) {

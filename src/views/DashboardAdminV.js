@@ -75,6 +75,7 @@ exports.DashboardAdmin = function(globalVariables){
 
             let addFormationDisplay = ()=>{
                 let addFormationTextArea = new gui.TextField(0,0, INPUT_SIZE.w, INPUT_SIZE.h, 'Ajouter une formation')
+                // addFormationTextArea.component.mark('addFormationTextArea');
                 addFormationTextArea.text.mark('addFormationText');
                 addFormationTextArea.glass.mark('addFormationGlass');
                 addFormationTextArea.font('Arial', 15).color(myColors.grey);
@@ -152,7 +153,7 @@ exports.DashboardAdmin = function(globalVariables){
                     .position(IMAGE_SIZE/2, 0);
                 let clip = new ClipPath('image' + formation.label);
                 clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
-                let manipulator = new Manipulator(this).addOrdonator(4);
+                let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip"+formation.label);
                 let picture;
                 if(formation.imageSrc){
                     picture = new util.Picture(formation.imageSrc, false, this)
@@ -187,6 +188,7 @@ exports.DashboardAdmin = function(globalVariables){
                 icon && icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - icon.getSize()/2)
             }
             let miniature = createMiniature(formation);
+            miniature.border.mark("miniatureBorder"+formation.label);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
             drawIcon(formation);
