@@ -2,137 +2,192 @@
  * Created by qde3485 on 02/06/16.
  */
 
+function resolvedPromise(message){
+    function then(callback){
+        callback(message);
+        return {then, catch: ()=>{}};
+    }
+    return {then, catch: ()=>{}};
+}
+
+function rejectedPromise(message){
+    function error(callback){
+        callback(message);
+        return {then: ()=>{}, catch: error}
+    }
+    return {then: ()=>{}, catch: error}
+}
+
 class HTTPRequests {
-    constructor() {}
-
-    static get(theUrl) {
-        return new Promise((resolve, reject) => {
-            var request = new XMLHttpRequest();
-            request.onreadystatechange = function () {
-                if (this.readyState === XMLHttpRequest.DONE) {
-                    if (request.status == 200) {
-                        resolve(request.responseText);
-                    } else {
-                        reject(request.responseText);
-                    }
-                }
-            };
-            request.open("GET", theUrl, true); // true for asynchronous
-            request.send(null);
-        })
+    constructor(mockObject) {
+        this.mockResponses = mockObject;
     }
 
-    static post(theUrl, body, ignoredData) {
-        return new Promise((resolve, reject) => {
-            var request = new XMLHttpRequest();
-            request.onreadystatechange = function () {
-                if (this.readyState === XMLHttpRequest.DONE) {
-                    if (request.status == 200) {
-                        resolve(request.responseText);
-                    } else {
-                        reject(request.responseText);
-                    }
-                }
-            };
-            request.open('POST', theUrl, true); // true for asynchronous
-            request.setRequestHeader('Content-type', 'application/json');
-            let obj = ignoredData ? JSON.stringify(body, ignoredData) : JSON.stringify(body);
-            request.send(obj);
-        })
+    _mockRequest(theUrl){
+        let result = this.mockResponses[theUrl];
+        if(!result) throw new Error('missing http request : ' + theUrl);
+
+        if(result.code == 200){
+            return resolvedPromise(result.content);
+        }else {
+            return rejectedPromise(result.content);
+        }
     }
 
-    static upload(theUrl, file, onProgress) {
-        return new Promise((resolve, reject) => {
-            const formData = new FormData();
-            var request = new XMLHttpRequest();
-            request.onreadystatechange = function () {
-                if (this.readyState === XMLHttpRequest.DONE) {
-                    if (request.status == 200) {
-                        resolve(request.responseText);
-                    } else {
-                        reject(request.responseText);
+    get(theUrl) {
+        var _get = () =>{
+            return new Promise((resolve, reject) => {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        if (request.status == 200) {
+                            resolve(request.responseText);
+                        } else {
+                            reject(request.responseText);
+                        }
                     }
-                }
-            };
-            formData.append('file', file);
-            request.open('POST', theUrl, true); // true for asynchronous
-            request.timeout = 60 * 1000;
-            request.send(formData);
-        })
+                };
+                request.open("GET", theUrl, true); // true for asynchronous
+                request.send(null);
+            })
+        }
+
+        if(this.mockResponses){
+            return this._mockRequest(theUrl);
+        }else {
+            return _get();
+        }
     }
+
+    post(theUrl, body, ignoredData) {
+        var _post = () => {
+            return new Promise((resolve, reject) => {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        if (request.status == 200) {
+                            resolve(request.responseText);
+                        } else {
+                            reject(request.responseText);
+                        }
+                    }
+                };
+                request.open('POST', theUrl, true); // true for asynchronous
+                request.setRequestHeader('Content-type', 'application/json');
+                let obj = ignoredData ? JSON.stringify(body, ignoredData) : JSON.stringify(body);
+                request.send(obj);
+            })
+        }
+
+        if(this.mockResponses){
+            return this._mockRequest(theUrl);
+        }else {
+            return _post();
+        }
+    }
+
+    upload(theUrl, file, onProgress) {
+        var _upload = () => {
+            return new Promise((resolve, reject) => {
+                const formData = new FormData();
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE) {
+                        if (request.status == 200) {
+                            resolve(request.responseText);
+                        } else {
+                            reject(request.responseText);
+                        }
+                    }
+                };
+                formData.append('file', file);
+                request.open('POST', theUrl, true); // true for asynchronous
+                request.timeout = 60 * 1000;
+                request.send(formData);
+            })
+        }
+
+        if(this.mockResponses){
+            return this._mockRequest(theUrl);
+        }else {
+            return _upload();
+        }
+    }
+
 }
 
 class APIRequester {
-    constructor() {
+    constructor(mockObject) {
+        this.httpRequests = new HTTPRequests(mockObject);
     }
 
-    static connect(mail, password, cookie) {
-        return HTTPRequests.post('/auth/connect', {mailAddress: mail, password: password, cookie: cookie})
+    connect(mail, password, cookie) {
+        return this.httpRequests.post('/auth/connect', {mailAddress: mail, password: password, cookie: cookie})
     }
-    static checkCookie() {
-        return HTTPRequests.get('/auth/verify')
-    }
-
-    static inscription(user) {
-        return HTTPRequests.post('/users/inscription', user)
-    }
-    static saveProgress(progress){
-        return HTTPRequests.post('users/self/progress', progress);
-    }
-    static getUser() {
-        return HTTPRequests.get("/users/self")
-    }
-    static resetPassword(mailAddress) {
-        return HTTPRequests.post('/users/password/reset', mailAddress);
-    }
-    static checkTimestampPassword(id) {
-        return HTTPRequests.post('/users/password/new', id);
-    }
-    static updatePassword(id, password) {
-        return HTTPRequests.post('/users/password/update', {id: id, password: password});
+    checkCookie() {
+        return this.httpRequests.get('/auth/verify')
     }
 
-    static getAllFormations() {
-        return HTTPRequests.get('/formations');
+    inscription(user) {
+        return this.httpRequests.post('/users/inscription', user)
     }
-    static getFormationsProgress(id) {
-        return HTTPRequests.get('/formations/' + id + '/progression');
+    saveProgress(progress){
+        return this.httpRequests.post('users/self/progress', progress);
     }
-    static replaceFormation(id, newFormation, ignoredData) {
+    getUser() {
+        return this.httpRequests.get("/users/self")
+    }
+    resetPassword(mailAddress) {
+        return this.httpRequests.post('/users/password/reset', mailAddress);
+    }
+    checkTimestampPassword(id) {
+        return this.httpRequests.post('/users/password/new', id);
+    }
+    updatePassword(id, password) {
+        return this.httpRequests.post('/users/password/update', {id: id, password: password});
+    }
+
+    getAllFormations() {
+        return this.httpRequests.get('/formations');
+    }
+    getFormationsProgress(id) {
+        return this.httpRequests.get('/formations/' + id + '/progression');
+    }
+    replaceFormation(id, newFormation, ignoredData) {
         //newFormation.status = status;
-        return HTTPRequests.post("/formations/" + id, newFormation, ignoredData)
+        return this.httpRequests.post("/formations/" + id, newFormation, ignoredData)
     }
-    static insertFormation(newFormation, status, ignoredData) {
+    insertFormation(newFormation, status, ignoredData) {
         newFormation.status = status;
-        return HTTPRequests.post("/formations/insert", newFormation, ignoredData)
+        return this.httpRequests.post("/formations/insert", newFormation, ignoredData)
     }
-    static deactivateFormation(id, ignoredData) {
-        return HTTPRequests.post("/formations/deactivate", {id: id}, ignoredData);
+    deactivateFormation(id, ignoredData) {
+        return this.httpRequests.post("/formations/deactivate", {id: id}, ignoredData);
     }
-    static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
-        return HTTPRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
+    renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
+        return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
     }
-    static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-        return HTTPRequests.post('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
+    replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
+        return this.httpRequests.post('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
     }
 
-    static upload(file, onProgress) {
-        return HTTPRequests.upload("/medias/upload", file, onProgress, this.deleteVideo);
+    upload(file, onProgress) {
+        return this.httpRequests.upload("/medias/upload", file, onProgress, this.deleteVideo);
     }
-    static getImages() {
-        return HTTPRequests.get('/medias/images');
+    getImages() {
+        return this.httpRequests.get('/medias/images');
     }
-    static deleteImage(image) {
-        return HTTPRequests.post("/medias/images/delete", image);
+    deleteImage(image) {
+        return this.httpRequests.post("/medias/images/delete", image);
     }
-    static getVideos() {
-        return HTTPRequests.get('/medias/videos');
+    getVideos() {
+        return this.httpRequests.get('/medias/videos');
     }
-    static deleteVideo(video) {
-        return HTTPRequests.post("/medias/videos/delete", video);
+    deleteVideo(video) {
+        return this.httpRequests.post("/medias/videos/delete", video);
     }
-    static updateSingleFormationStars(id, starId, versionId) {
-        return HTTPRequests.post('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
+    updateSingleFormationStars(id, starId, versionId) {
+        return this.httpRequests.post('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
     }
 }
 

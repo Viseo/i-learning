@@ -1,6 +1,8 @@
 const
-    targetRuntime = require().targetRuntime,
-    SVG = require().SVG,
+    Enhance = require('../lib/enhancer').Enhance,
+    targetRuntime = require('../lib/targetruntime').targetRuntime,
+    mockRuntime = require('../lib/runtimemock').mockRuntime,
+    SVG = require('../lib/svghandler').SVG,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
@@ -9,17 +11,22 @@ const
     FModels = require('./Models').Models,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
-function main() {
-    let domain, util, gui, drawing, drawings;
-    let runtime = targetRuntime();
+function main(mockResponses) {
+    let domain, util, gui, drawing, drawings, root;
+    let runtime = mockResponses ? mockRuntime() : targetRuntime();
     let svg = SVG(runtime);
     let globalVariables = {svg, runtime};
 
-    exports.Enhance();
+    Enhance();
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
-    globalVariables.main = main;
+
+    if(mockResponses){
+        runtime.declareAnchor('content');
+        svg.screenSize(1920, 947);
+        root = runtime.anchor("content");
+    }
 
     util = Util(globalVariables);
     globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
@@ -38,15 +45,16 @@ function main() {
     util.setGlobalVariables();
 
     presenterFactory(globalVariables);
-    let models = FModels(globalVariables);
-
-    let params = (new URL(document.location)).searchParams;
-    let ID = params.get("ID");
-
-    //todo
+    let models = FModels(globalVariables, mockResponses);
     let state = new models.State();
-    state.tryLoadCookieForPresenter(ID);
 
-    return globalVariables;
+    if(!mockResponses){
+        let params = (new URL(document.location)).searchParams;
+        let ID = params.get("ID");
+
+        state.tryLoadCookieForPresenter(ID);
+    }
+
+    return {state, root};
 };
 exports.main = main;

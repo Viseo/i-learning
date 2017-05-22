@@ -3,39 +3,18 @@
  */
 
 const assert = require('assert'),
-    main = require('./MainMock').mainMock,
+    main = require('../src/main').main,
     testutils = require('../lib/testutils'),
-    {retrieve, rejectedPromise, resolvedPromise, enterTextField} = testutils;
-
-var FModelMock = function (globalVariables) {
-    class State {
-        constructor() {}
-
-        createRejectedPromise(message){
-            return rejectedPromise(message);
-        }
-
-        loadPresenterConnection() {
-            this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.ConnectionP(this);
-            this.currentPresenter.displayView();
-        }
-    }
-
-    return {State};
-}
+    {retrieve, enterTextField} = testutils;
 
 describe('connection page', function () {
     it('should connect', function () {
+        let mockResponses = {
+            "/auth/connect": {code: 200, content: ""}
+        }
         let loginTest = "admin@test.com";
         let pwdTest = "password";
-        let {root, state} = main(FModelMock);
-        state.tryConnectForPresenterDashboard = (login, pwd, stayConnected) => {
-            assert.equal(login, loginTest)
-            assert.equal(pwd, pwdTest);
-            assert.equal(stayConnected, true);
-            return resolvedPromise();
-        }
+        let {root, state} = main(mockResponses);
         state.loadPresenterConnection();
 
         enterTextField(root, "login", loginTest);

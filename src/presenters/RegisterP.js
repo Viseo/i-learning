@@ -7,7 +7,6 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
         runtime = globalVariables.runtime,
-        Server = globalVariables.util.Server,
         Presenter = globalVariables.Presenter;
 
     class RegisterP extends Presenter{
@@ -87,7 +86,7 @@ exports.RegisterP = function (globalVariables) {
                 };
                 return this._register(userInfos);
             } else {
-                return Promise.reject("Veuillez remplir correctement tous les champs")
+                return this.state.createRejectedPromise("Veuillez remplir correctement tous les champs");
             }
         }
 

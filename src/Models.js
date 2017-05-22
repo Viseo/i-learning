@@ -1,13 +1,14 @@
-exports.Models = function (globalVariables) {
+exports.Models = function (globalVariables, mockResponses) {
     const drawing = globalVariables.drawing,
         APIRequester = require('./APIRequester').APIRequester;
+
+    var apiRequester = new APIRequester(mockResponses);
 
     class State {
         constructor() {
             this.stackPage = [];
             this.formations = new Formations();
             this.currentPresenter = null;
-
         }
 
         createRejectedPromise(message){
@@ -64,7 +65,7 @@ exports.Models = function (globalVariables) {
         }
 
         tryLoadCookieForPresenter(ID) {
-            APIRequester.checkCookie().then(data => {
+            apiRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);
                 if (ID) {
                     password.display(ID);
@@ -81,7 +82,7 @@ exports.Models = function (globalVariables) {
 
 
         tryConnectForPresenterDashboard(login, pwd, stayConnected) {
-            return APIRequester.connect(login, pwd, stayConnected).then(data => {
+            return apiRequester.connect(login, pwd, stayConnected).then(data => {
                 if (!data) throw 'Connexion refusée';
                 data = JSON.parse(data);
                 if (data.ack === 'OK') {
@@ -93,7 +94,7 @@ exports.Models = function (globalVariables) {
         }
 
         registerNewUser(userInfos){
-            return APIRequester.inscription(userInfos);
+            return apiRequester.inscription(userInfos);
         }
 
         loadPresenterDashboard(user) {
@@ -203,7 +204,7 @@ exports.Models = function (globalVariables) {
             let formationId = this.getFormationId();
             let versionId = this.getVersionId()
             let gameToSave = this.getToSave();
-            return APIRequester.saveProgress(Object.assign({formationId, versionId}, gameToSave));
+            return apiRequester.saveProgress(Object.assign({formationId, versionId}, gameToSave));
         }
 
         getToSave() {
@@ -237,7 +238,7 @@ exports.Models = function (globalVariables) {
         }
 
         sync() {
-            return APIRequester.getAllFormations().then(data => {
+            return apiRequester.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
                     const sortAlphabetical = function (array) {
                         return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -321,7 +322,7 @@ exports.Models = function (globalVariables) {
                 };
             };
 
-            return APIRequester.insertFormation(getObjectToSave(), ignoredData)
+            return apiRequester.insertFormation(getObjectToSave(), ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -344,7 +345,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return APIRequester.insertFormation(object, status, ignoredData)
+            return apiRequester.insertFormation(object, status, ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -385,7 +386,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return APIRequester.replaceFormation(this._id, object, ignoredData)
+            return apiRequester.replaceFormation(this._id, object, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -815,7 +816,7 @@ exports.Models = function (globalVariables) {
         }
 
         renameQuiz(quiz) {
-            return APIRequester.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
+            return apiRequester.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
                 let answer = JSON.parse(data);
                 if (answer.saved == false) {
                     answer.message = "Il faut enregistrer le quiz avant !";
@@ -833,7 +834,7 @@ exports.Models = function (globalVariables) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return APIRequester.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
+            return apiRequester.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -922,29 +923,29 @@ exports.Models = function (globalVariables) {
         }
 
         uppload(file, onProgress) {
-            return APIRequester.upload(file, onProgress);
+            return apiRequester.upload(file, onProgress);
         }
 
         getImages() {
-            return APIRequester.getImages().then(data => JSON.parse(data));
+            return apiRequester.getImages().then(data => JSON.parse(data));
         }
 
         deleteImage(_id) {
-            return APIRequester.deleteImage(_id).then(() => {
+            return apiRequester.deleteImage(_id).then(() => {
                 let imageIndex = this.images.findIndex((image) => image._id === _id);
                 if (imageIndex !== -1) this.images.splice(imageIndex, 1);
             });
         }
 
         getVideos() {
-            return APIRequester.getVideos().then((videos) => {
+            return apiRequester.getVideos().then((videos) => {
                 this.videos = videos;
                 return videos;
             });
         }
 
         deleteVideo(_id) {
-            return APIRequester.deleteVideo(_id).then(() => {
+            return apiRequester.deleteVideo(_id).then(() => {
                 let videoIndex = this.videos.findIndex((video) => video._id === _id);
                 if (videoIndex !== -1) this.videos.splice(videoIndex, 1);
             });
