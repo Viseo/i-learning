@@ -294,8 +294,8 @@ exports.Models = function (globalVariables) {
             this._id = (formation._id || null); //TODO changer en versionId
             this.formationId = (formation.formationId || null);
             this.gamesCounter = {};
-            this.gamesCounter.quizz = formation.gamesCounter.quizz || 0;
-            this.gamesCounter.doll = formation.gamesCounter.doll || 0;
+            this.gamesCounter.quizz = formation.gamesCounter ? formation.gamesCounter.quizz : 0;
+            this.gamesCounter.doll = formation.gamesCounter ? formation.gamesCounter.doll : 0;
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;

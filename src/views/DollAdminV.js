@@ -153,8 +153,8 @@ exports.DollAdminV = function(globalVariables){
             solutionsHeaderManipulator.add(solutionsHeader)
                 .add(headerTitle)
                 .add(headerRollPanel);
-            solutionsHeaderManipulator.move(drawing.width/2, this.mainPanelManipulator.y - PANEL_SIZE.h/2 + solutionsHeader.height/2);
-            this.manipulator.add(solutionsHeaderManipulator);
+            solutionsHeaderManipulator.move(0,solutionsHeader.height/2 - PANEL_SIZE.h/2);
+            this.mainPanelManipulator.add(solutionsHeaderManipulator);
             this.displaySolutionsBody();
         }
 
@@ -162,7 +162,7 @@ exports.DollAdminV = function(globalVariables){
             let solutionsBodyManip = new Manipulator(this);
             let createLeftTemplate = () =>{
                 let leftTemplateManip = new Manipulator(this).addOrdonator(2);
-                let addSolutionButton = new gui.Button(0.8*INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.green],
+                let addSolutionButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.green],
                 'Ajouter une solution');
                 let selectSolution = new svg.Rect(0.8*addSolutionButton.width, INPUT_SIZE.h)
                     .color(myColors.white, 1, myColors.grey)
@@ -196,8 +196,8 @@ exports.DollAdminV = function(globalVariables){
                 solutionsBodyManip.add(leftTemplateManip);
             }
             createLeftTemplate();
-            solutionsBodyManip.move(drawing.width/2, this.mainPanelManipulator.y -PANEL_SIZE.h/5)
-            this.manipulator.add(solutionsBodyManip);
+            solutionsBodyManip.move(4*MARGIN,-PANEL_SIZE.h/4)
+            this.mainPanelManipulator.add(solutionsBodyManip);
 
         }
 
