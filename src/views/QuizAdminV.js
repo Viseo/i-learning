@@ -445,6 +445,10 @@ exports.QuizAdminV = function (globalVariables) {
                 } else if (this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
                     _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
                     this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
+                }else{
+                    _displayQuestionsBetween(this.questionIndexScroll, this.questionsBlock.length-1);
+                    let pos = calculatePositionOfQuestion(this.questionsBlock.length);
+                    this.addNewQuestion.manipulator.move(pos.x, pos.y);
                 }
 
                 this._showActualQuestionChevron();
