@@ -11,6 +11,7 @@ exports.QuizAdminV = function (globalVariables) {
         drawings = globalVariables.drawings,
         IconCreator = globalVariables.domain.IconCreator,
         ReturnButton = globalVariables.util.ReturnButton,
+        installDnD = globalVariables.gui.installDnD,
         BUTTON_WIDTH = 250,
         BUTTON_HEIGHT = 30,
         QUESTIONS_PER_LINE = 5,
@@ -140,14 +141,45 @@ exports.QuizAdminV = function (globalVariables) {
                 this.mediasLibraryManipulator.add(imagesManipulator);
                 imagesManipulator.move(-dimensions.width / 2 + imageWidth / 2 + MARGIN, -dimensions.height / 2 + imageWidth / 2 + MARGIN)
                 this.getImages().then((images) => {
+                    let conf = {
+                        drop: (what, whatParent, x, y) => {
+                            this._dropMediaAction(what.components[0], whatParent, x, y);
+                            return {x: what.x, y: what.y, parent: whatParent};
+                        },
+                        moved: (what) => {
+                            what.flush();
+                            return true;
+                        }
+                    };
+
                     images.images.forEach((image, index) => {
+                        var createDraggableCopy = (pic) => {
+                            let picManip = new Manipulator(this).addOrdonator(1);
+                            let point = pic.globalPoint(0, 0);
+                            picManip.move(point.x, point.y);
+
+
+                            let picCopy = pic.duplicate(pic);
+                            picManip.set(0, picCopy);
+                            drawings.piste.add(picManip);
+
+                            installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
+                            svg.event(drawings.component.glass, "mousedown", event);
+                        };
+
                         let indexX = Math.floor(index % IMAGES_PER_LINE);
                         let indexY = Math.floor(index / IMAGES_PER_LINE);
                         let picture = new svg.Image(image.imgSrc);
                         picture
                             .dimension(imageWidth, imageWidth)
-                            .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
-                        imagesManipulator.add(picture);
+                        let picManip = new Manipulator(this);
+                        picManip.move(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
+                        picManip.add(picture);
+
+                        imagesManipulator.add(picManip);
+
+
+                        picture.onMouseDown(() => createDraggableCopy(picture));
                     })
                 })
             };
@@ -197,6 +229,25 @@ exports.QuizAdminV = function (globalVariables) {
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
             this.questionsBlock.length >= 1 && this.questionsBlock[0].select();
+        }
+
+
+        _dropMediaAction(item, parent, x, y) {
+            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlock.length){
+
+
+                let globalPoints = parent.globalPoint(x, y);
+                let target = this.questionsDetail[this.selectedQuestionIndex].guiManipulator
+                    .last.getTarget(globalPoints.x,globalPoints.y);
+
+                if(target){
+                    if(target instanceof svg.Image){
+                        console.log(target);
+                        target.url(item.src);
+                    }
+
+                }
+            }
         }
 
         displayMessage(message) {
@@ -461,7 +512,6 @@ exports.QuizAdminV = function (globalVariables) {
             this.questionIndexScroll = 0;
             this._showActualQuestionChevron();
         }
-
 
         _showActualQuestionChevron() {
             var _showAllChevron = () => {
@@ -758,7 +808,7 @@ exports.QuizAdminV = function (globalVariables) {
                     _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
-                    if (answerGui.explanation.label != EXPLANATION_DEFAULT_TEXT) {
+                    if (answerGui.explanation.label != EXPLANATION_DEFAULT_TEXT ) {
                         answerGui.iconExplanation.activeStatusActionIcon();
                         answerGui.iconExplanation.showActualBorder();
                     }
