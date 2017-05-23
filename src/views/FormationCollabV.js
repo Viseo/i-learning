@@ -28,13 +28,6 @@ exports.FormationCollabV = function (globalVariables) {
                 width: drawing.width - 2 * MARGIN,
                 height: drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height,
             };
-
-            var _declareDimension = () => {
-                this.tileWidth = 120;
-                this.tileHeight = 100;
-                this.spaceBetween = 20;
-                this.headHeight = this.header.height + MARGIN;
-            };
         }
 
 
@@ -52,7 +45,7 @@ exports.FormationCollabV = function (globalVariables) {
             this.header.getManipulator().mark('header');
             this.header.display(this.label);
             this.displayGraphCollab();
-            let formation = this.presenter.getFormation();
+            let formation = this.getFormation();
 
             formation.levelsTab.forEach((level) => {
                 this.displayLevel(level);

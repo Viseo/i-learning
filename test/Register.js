@@ -4,7 +4,7 @@
 
 const assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
+    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing, loadPageWithFormation} = testutils;
 
 describe('register page', function(){
     it('should register', function(){
