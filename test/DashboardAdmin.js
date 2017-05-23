@@ -4,7 +4,7 @@
 const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {given, when, clickAlone, clickPos, enterValue, inputValue, assertMessage, loadPage, assertMissing, mouseEnter, mouseLeave, checkBorderColor} = testutils;
+    {given, when, clickElement, clickPos, enterValue, inputValue, assertMessage, loadPage, assertMissing, mouseEnter, mouseLeave, checkBorderColor} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -107,7 +107,7 @@ describe('dashboard admin page', function () {
             runtime.advance();
         });
         when(() => {
-            clickAlone(root, "addFormationGlass");
+            clickElement(root, "addFormationGlass");
             enterValue(root, "addFormationTextInput", "Test[");
             clickPos(root, "addFormationButton");
         }).then(() => {
@@ -115,14 +115,14 @@ describe('dashboard admin page', function () {
             runtime.advance();
         });
         when(() => {
-            clickAlone(root, "addFormationGlass");
+            clickElement(root, "addFormationGlass");
             enterValue(root, "addFormationTextInput", "Le");
             clickPos(root, "addFormationButton");
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
         });
         when(() => {
-            clickAlone(root, "addFormationGlass");
+            clickElement(root, "addFormationGlass");
             enterValue(root, "addFormationTextInput", "MaFormation");
             clickPos(root, "addFormationButton");
         }).then(() => {
@@ -139,7 +139,7 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", responsesMock, user);
             });
         when(() => {
-            clickAlone(root, "miniatureManipAgilité");
+            clickElement(root, "miniatureManipAgilité");
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
         });

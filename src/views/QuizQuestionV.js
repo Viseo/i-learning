@@ -251,7 +251,7 @@ exports.QuizQuestionV = function (globalVariables) {
             }
             var _displayText = () => {
                 let score = this.getScore();
-                let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreText');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.scoreManipulator);
                 this.scoreManipulator.add(scoreText);
                 icon.position(-scoreText.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
