@@ -221,8 +221,7 @@ exports.FormationAdminV = function(globalVariables) {
                 miniature.manipulator.move(0, (2*MARGIN + MINIATURE_HEIGHT/2)+ count*(MINIATURE_HEIGHT + 2*MARGIN) - this.librarySize.height/2);
                 miniature.manipulator.add(miniature.border)
                     .add(miniature.content);
-                let iconAddImage = IconCreator.createAddImage(miniature.manipulator);
-                iconAddImage.position(MINIATURE_WIDTH/2 - 2*MARGIN, -MINIATURE_HEIGHT/2+2*MARGIN);
+               
 
                 this.gameLibraryManipulator.add(miniature.manipulator);
 
