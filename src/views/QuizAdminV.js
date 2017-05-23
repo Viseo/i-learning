@@ -241,8 +241,7 @@ exports.QuizAdminV = function (globalVariables) {
                     .last.getTarget(globalPoints.x,globalPoints.y);
 
                 if(target){
-                    if(target instanceof svg.Image){
-                        console.log(target);
+                    if(target instanceof svg.Image && !target.id && target.id != "explanation"){
                         target.url(item.src);
                     }
 
@@ -566,7 +565,7 @@ exports.QuizAdminV = function (globalVariables) {
 
             var _declareManipulatorQuestionDetail = (questionGui) => {
                 questionGui.typeManipulator = new Manipulator(this).addOrdonator(2);
-                questionGui.textAreaManipulator = new Manipulator(this).addOrdonator(1);
+                questionGui.textAreaManipulator = new Manipulator(this).addOrdonator(3);
                 questionGui.answersManipulator = new Manipulator(this).addOrdonator(1);
                 questionGui.explanationManipulator = new Manipulator(this);
 
@@ -607,13 +606,27 @@ exports.QuizAdminV = function (globalVariables) {
             var _displayTextArea = (questionGui, index, question) => {
                 let dimensions = {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
-                    height: this.questionDetailsDim.height * 1 / 6 - 2 * MARGIN
-                }
-                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width, dimensions.height, question.label);
-                questionGui.textAreaManipulator.set(0, questionGui.textArea.component);
+                    height: this.questionDetailsDim.height / 4 - 2 * MARGIN
+                };
+
+                let titleArea = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
+                questionGui.textAreaManipulator.set(0, titleArea);
+
+                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width*6/8, dimensions.height - MARGIN, question.label);
+                //questionGui.textArea.position((dimensions.width - questionGui.textArea.width)/2 - MARGIN, 0);
+                questionGui.textAreaManipulator.set(1, questionGui.textArea.component);
+
+                let sizePicture = dimensions.height - MARGIN;
+
+                questionGui.textAreaPicture = new svg.Image((question.imageSrc) ? question.imageSrc : "../images/quiz/newImage.png");
+                questionGui.textAreaPicture.dimension(sizePicture, sizePicture)
+                    .position(-questionGui.textArea.width/2 - (titleArea.width - questionGui.textArea.width)/4 , 0 );
+
+                questionGui.textAreaManipulator.add(questionGui.textAreaPicture);
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
-                questionGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                //questionGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
+                questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
                 questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
                 questionGui.answersDimension.height -= dimensions.height;
             };
@@ -719,7 +732,7 @@ exports.QuizAdminV = function (globalVariables) {
                                     contentManip.add(popUpExplanation.textExplanation.component);
                                 };
                                 var _drawMediaPic = () => {
-                                    popUpExplanation.media = new svg.Image("../images/quiz/media.png");
+                                    popUpExplanation.media = new svg.Image((answer.explanation.imageSrc) ? answer.explanation.imageSrc :  "../images/quiz/newImage.png");
                                     popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
                                     popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
                                     contentManip.add(popUpExplanation.media);
@@ -780,6 +793,7 @@ exports.QuizAdminV = function (globalVariables) {
 
 
                         answerGui.iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
+                        answerGui.iconExplanation.content.mark("explanation");
                         answerGui.iconExplanation.position(dimensions.w / 2 - answerGui.iconExplanation.getContentSize() * 2 / 3, 0);
                         answerGui.iconExplanation.addEvent('click', _toggleExplanation);
 
@@ -911,14 +925,18 @@ exports.QuizAdminV = function (globalVariables) {
         getNewAnswers(questionElementVue) {
             let answers = [];
             questionElementVue.answersGui.forEach(answerGui => {
-                    answers.push({
-                        // parentQuestion: "",
-                        correct: answerGui.checked ? true : false,
-                        label: answerGui.textArea.textMessage,
-                        explanation: {label: answerGui.popUpExplanation.textExplanation.textMessage}
-                    });
+                let answer = {
+                    correct: answerGui.checked ? true : false,
+                    label: answerGui.textArea.textMessage,
+                    explanation: {label: answerGui.popUpExplanation.textExplanation.textMessage}
+                };
+
+                if(answerGui.popUpExplanation.media.src != "../images/quiz/newImage.png"){
+                    answer.explanation.imageSrc = answerGui.popUpExplanation.media.src;
                 }
-            )
+
+                answers.push(answer);
+            });
 
             return answers;
         }
@@ -932,13 +950,18 @@ exports.QuizAdminV = function (globalVariables) {
                 questions = [];
             questionsDetail.forEach(questionElementVue => {
                 questionElementVue.answers = this.getNewAnswers(questionElementVue);
-                questions.push(
-                    {
-                        label: questionElementVue.textArea.textMessage,
-                        multipleChoice: questionElementVue.multipleChoice,
-                        answers: questionElementVue.answers
-                    }
-                );
+
+                let question = {
+                    label: questionElementVue.textArea.textMessage,
+                    multipleChoice: questionElementVue.multipleChoice,
+                    answers: questionElementVue.answers
+                };
+
+                if(questionElementVue.textAreaPicture.src != "../images/quiz/newImage.png"){
+                    question.imageSrc = questionElementVue.textAreaPicture.src;
+                }
+
+                questions.push(question);
             });
             return questions;
         }
