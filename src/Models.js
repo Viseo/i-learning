@@ -12,10 +12,16 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         createFormation(obj){
-            obj = JSON.parse(obj);
+            if(typeof obj == 'string') obj = JSON.parse(obj);
             let formation = new Formation(obj);
             formation.loadFormation(obj);
             return formation;
+        }
+
+        createQuiz(obj){
+            if(typeof obj == 'string') obj = JSON.parse(obj);
+            let quiz = new Quiz(obj);
+            return quiz;
         }
 
         uploadImage(file, progressDisplay) {

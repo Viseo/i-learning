@@ -107,6 +107,10 @@ exports.QuizCollabP = function (globalVariable) {
             return this.quiz.getLabel();
         }
 
+        getId(){
+            return this.quiz.getId();
+        }
+
         getNbQuestions() {
             return this.quiz.getNbQuestions();
         }
