@@ -11,6 +11,13 @@ exports.Models = function (globalVariables, mockResponses) {
             this.currentPresenter = null;
         }
 
+        createFormation(obj){
+            obj = JSON.parse(obj);
+            let formation = new Formation(obj);
+            formation.loadFormation(obj);
+            return formation;
+        }
+
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
@@ -354,6 +361,19 @@ exports.Models = function (globalVariables, mockResponses) {
                         }
                     }
                 })
+        }
+
+        loadFormation(formation) {
+            let tmpLevelsTab = this.levelsTab;
+            this.levelsTab = [];
+            tmpLevelsTab.forEach(level => {
+                var gamesTab = [];
+                level.gamesTab.forEach(game => {
+                    gamesTab.push(new Quiz(game, false, this));
+                    gamesTab[gamesTab.length - 1].id = game.id;
+                });
+                this.levelsTab.push(new Level(gamesTab, this.levelsTab.length));
+            });
         }
 
         getFormationLabel() {

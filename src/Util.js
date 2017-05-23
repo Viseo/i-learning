@@ -64,130 +64,130 @@ exports.Util = function (globalVariables) {
         return (fontSize / 2 * stringLength);
     }
 
-    // /**
-    //  *
-    //  * Class pour un paneau dynamique (affichage)
-    //  *
-    //  */
-    // class PopOut {
-    //     /**
-    //      * Build a reusable popUp
-    //      * @param width of popup
-    //      * @param height of popup
-    //      * @param classToDisplay class to display (null if only text)
-    //      * @param parentManipulator to rattach the popup at the good place
-    //      * @param isOnlyText boolean to know if we just are building a text popup
-    //      */
-    //     constructor(width, height, classToDisplay, parentManipulator, isOnlyText){
-    //         this.width = width;
-    //         this.height = height;
-    //         this.classToDisplay = classToDisplay;
-    //         this.parentManipulator = parentManipulator;
-    //         this.redCrossManipulator = new Manipulator(this);
-    //         this.manipulator = new Manipulator(this).addOrdonator(4);
-    //         let tmpFlush = parentManipulator.flush;
-    //         let self = this;
-    //         if (isOnlyText){
-    //             this.text = new svg.Text('');
-    //         }
-    //         this.onlyText = isOnlyText;
-    //         parentManipulator.flush = function (handler){
-    //             let result = tmpFlush.apply(this, arguments);
-    //             self.hide();
-    //             return result;
-    //         }
-    //     }
-    //
-    //     setText(text){
-    //         if(this.text){
-    //             this.text.messageText = text;
-    //         }
-    //     }
-    //
-    //     show(){
-    //         let computeBox = ()=>{
-    //             if (this.width > drawing.width){
-    //                 this.width = drawing.width - 20;
-    //             }
-    //             if (this.x - this.width/2 < 0){
-    //                 this.x = this.width/2 + 10;
-    //             }
-    //             if (this.x + this.width/2 > drawing.width){
-    //                 this.x = drawing.width - this.width/2 - 10;
-    //             }
-    //             if (this.y - this.height/2 < 0){
-    //                 this.y = this.height/2 + 10;
-    //             }
-    //             if (this.y + this.height/2 > drawing.height){
-    //                 this.y = drawing.height - this.height/2 - 10;
-    //             }
-    //         }
-    //         this.manipulator && this.hide();
-    //         if (this.panel){
-    //             this.setPanel();
-    //         }
-    //         drawings.piste.set(0,this.manipulator.component);
-    //         let point = {
-    //             x : this.parentManipulator.first.globalPoint(0, 0).x ,
-    //             y : this.parentManipulator.first.globalPoint(0, 0).y
-    //         }
-    //         this.x = point.x;
-    //         this.y = point.y - this.height/2;
-    //         if (this.onlyText){
-    //             this.manipulator.set(1, this.text.dimension(this.width, this.height));
-    //             //this.manipulator.first.steppy(5,50).opacity(0,1);
-    //         }
-    //         else{
-    //             this.manipulator.set(1, this.classToDisplay.manipulator);
-    //             this.manipulator.first.opacity(0);
-    //             this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
-    //                 this.manipulator.first.steppy(5,50).opacity(0,1);
-    //             });
-    //             this.manipulator.scalor.scale(0.5);
-    //             this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
-    //             this.redCross.mark('popupRedcross');
-    //             this.redCrossManipulator.add(this.redCross);
-    //         }
-    //         if(this.xAdd != undefined && this.yAdd != undefined){
-    //             this.x += this.xAdd;
-    //             this.y += this.yAdd;
-    //         }
-    //         computeBox();
-    //         this.manipulator.move(this.x , this.y);
-    //         this.manipulator.add(this.redCrossManipulator);
-    //         this.redCrossManipulator.move(this.width, -this.height);
-    //         this.redCross && svg.addEvent(this.redCross, 'mouseup', () => this.hide());
-    //         if (this.cb){
-    //             this.cb();
-    //         }
-    //     }
-    //
-    //     defineProperty(x, y, callback){
-    //         this.xAdd = x;
-    //         this.yAdd = y;
-    //         this.cb = callback;
-    //     }
-    //
-    //
-    //     hide(){
-    //         this.manipulator.flush();
-    //         //this.manipulator = null;
-    //     }
-    //     setPanel(w, h, fillColor, strokeColor) {
-    //         this.panel = true;
-    //         w = w || this.width;
-    //         h = h || this.height;
-    //         this.panelWidth = w;
-    //         this.panelHeight = h;
-    //         fillColor = fillColor || myColors.white;
-    //         strokeColor = strokeColor || myColors.grey;
-    //         this.manipulator.set(0,new svg.Rect(this.panelWidth,this.panelHeight)
-    //             .color(fillColor, 1, strokeColor)
-    //             .corners(5,5)
-    //             .opacity(0.8)
-    //             .position(0,-this.panelHeight/4));
-    //     }
-    // }
+    /**
+     *
+     * Class pour un paneau dynamique (affichage)
+     *
+     */
+    class PopOut {
+        /**
+         * Build a reusable popUp
+         * @param width of popup
+         * @param height of popup
+         * @param classToDisplay class to display (null if only text)
+         * @param parentManipulator to rattach the popup at the good place
+         * @param isOnlyText boolean to know if we just are building a text popup
+         */
+        constructor(width, height, classToDisplay, parentManipulator, isOnlyText){
+            this.width = width;
+            this.height = height;
+            this.classToDisplay = classToDisplay;
+            this.parentManipulator = parentManipulator;
+            this.redCrossManipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
+            let tmpFlush = parentManipulator.flush;
+            let self = this;
+            if (isOnlyText){
+                this.text = new svg.Text('');
+            }
+            this.onlyText = isOnlyText;
+            parentManipulator.flush = function (handler){
+                let result = tmpFlush.apply(this, arguments);
+                self.hide();
+                return result;
+            }
+        }
+
+        setText(text){
+            if(this.text){
+                this.text.messageText = text;
+            }
+        }
+
+        show(){
+            let computeBox = ()=>{
+                if (this.width > drawing.width){
+                    this.width = drawing.width - 20;
+                }
+                if (this.x - this.width/2 < 0){
+                    this.x = this.width/2 + 10;
+                }
+                if (this.x + this.width/2 > drawing.width){
+                    this.x = drawing.width - this.width/2 - 10;
+                }
+                if (this.y - this.height/2 < 0){
+                    this.y = this.height/2 + 10;
+                }
+                if (this.y + this.height/2 > drawing.height){
+                    this.y = drawing.height - this.height/2 - 10;
+                }
+            }
+            this.manipulator && this.hide();
+            if (this.panel){
+                this.setPanel();
+            }
+            drawings.piste.set(0,this.manipulator.component);
+            let point = {
+                x : this.parentManipulator.first.globalPoint(0, 0).x ,
+                y : this.parentManipulator.first.globalPoint(0, 0).y
+            }
+            this.x = point.x;
+            this.y = point.y - this.height/2;
+            if (this.onlyText){
+                this.manipulator.set(1, this.text.dimension(this.width, this.height));
+                //this.manipulator.first.steppy(5,50).opacity(0,1);
+            }
+            else{
+                this.manipulator.set(1, this.classToDisplay.manipulator);
+                this.manipulator.first.opacity(0);
+                this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
+                    this.manipulator.first.steppy(5,50).opacity(0,1);
+                });
+                this.manipulator.scalor.scale(0.5);
+                this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
+                this.redCross.mark('popupRedcross');
+                this.redCrossManipulator.add(this.redCross);
+            }
+            if(this.xAdd != undefined && this.yAdd != undefined){
+                this.x += this.xAdd;
+                this.y += this.yAdd;
+            }
+            computeBox();
+            this.manipulator.move(this.x , this.y);
+            this.manipulator.add(this.redCrossManipulator);
+            this.redCrossManipulator.move(this.width, -this.height);
+            this.redCross && svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+            if (this.cb){
+                this.cb();
+            }
+        }
+
+        defineProperty(x, y, callback){
+            this.xAdd = x;
+            this.yAdd = y;
+            this.cb = callback;
+        }
+
+
+        hide(){
+            this.manipulator.flush();
+            //this.manipulator = null;
+        }
+        setPanel(w, h, fillColor, strokeColor) {
+            this.panel = true;
+            w = w || this.width;
+            h = h || this.height;
+            this.panelWidth = w;
+            this.panelHeight = h;
+            fillColor = fillColor || myColors.white;
+            strokeColor = strokeColor || myColors.grey;
+            this.manipulator.set(0,new svg.Rect(this.panelWidth,this.panelHeight)
+                .color(fillColor, 1, strokeColor)
+                .corners(5,5)
+                .opacity(0.8)
+                .position(0,-this.panelHeight/4));
+        }
+    }
 
 
     class Manipulator {
@@ -2319,7 +2319,7 @@ exports.Util = function (globalVariables) {
         // ReturnButton,
         drawHexagon,
         resizeStringForText,
-        goDirectlyToLastAction
-        //PopOut
+        goDirectlyToLastAction,
+        PopOut
     }
 };
