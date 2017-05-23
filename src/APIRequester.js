@@ -2,22 +2,6 @@
  * Created by qde3485 on 02/06/16.
  */
 
-// function resolvedPromise(message){
-//     function then(callback){
-//         callback(message);
-//         return {then, catch: ()=>{}};
-//     }
-//     return {then, catch: ()=>{}};
-// }
-//
-// function rejectedPromise(message){
-//     function error(callback){
-//         callback(message);
-//         return {then: ()=>{}, catch: error}
-//     }
-//     return {then: ()=>{}, catch: error}
-// }
-
 class HTTPRequests {
     constructor(mockObject) {
         this.mockResponses = mockObject;
@@ -27,7 +11,7 @@ class HTTPRequests {
         let result = this.mockResponses[theUrl];
         if(!result) throw new Error('missing http request : ' + theUrl);
 
-        if(result.code == 200){
+        if(!result.code || result.code == 200){
             return Promise.resolve(JSON.stringify(result.content));
         }else {
             return Promise.reject(JSON.stringify(result.content));

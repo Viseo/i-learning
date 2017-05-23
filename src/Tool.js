@@ -412,8 +412,8 @@ exports.Tool = function (globalVariables, classContainer) {
             }
         };
         var _createPopOut = () => {
-            star.pop = new PopOut(80, 30, null, manipulator, true);
-            star.pop.setPanel();
+            //star.pop = new PopOut(80, 30, null, manipulator, true);
+            //star.pop.setPanel();
         };
 
         _createDrawStars(star);
@@ -430,7 +430,7 @@ exports.Tool = function (globalVariables, classContainer) {
         };
 
         star.popMark = function (label) {
-            this.pop.manipulator.mark(label + 'StarMiniatures');
+            //this.pop.manipulator.mark(label + 'StarMiniatures');
             this.starsManipulator.mark(label + 'StarManip');
             return this;
         };
@@ -449,7 +449,7 @@ exports.Tool = function (globalVariables, classContainer) {
         };
 
         star.popPosition = function (x, y) {
-            this.pop.defineProperty(x, y);
+            //this.pop.defineProperty(x, y);
             return this;
         };
 

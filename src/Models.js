@@ -118,7 +118,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 } else {
                     this.currentPresenter.displayView();
                 }
-            })
+            }).catch((err)=>console.log(err));
         }
 
         loadPresenterFormationAdmin(formation) {
