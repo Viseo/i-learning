@@ -4,7 +4,7 @@
 const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {given, when, clickElement, clickPos, enterValue, inputValue, assertMessage, loadPage, assertMissing, mouseEnter, mouseLeave, checkBorderColor} = testutils;
+    {given, when, clickElement, clickPos, enterValue, assertMessage, loadPage, assertMissing, mouseEnter, mouseLeave, checkBorderColor} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -164,4 +164,18 @@ describe('dashboard admin page', function () {
         });
         done();
     });
+    it("should set up an image to a formation", function (done) {
+
+        responsesMock = {
+            '/formations': {code: 200, content: jsonFormation},
+            '/medias/images' : {images: "boo", content: 'image'}
+        },
+            {root, state, runtime} = given(() => {
+                return loadPage("Dashboard", responsesMock, user);
+            });
+        when(() => {
+            clickElement(root, "popUpImgAgilité");
+        }).then(() => {
+        });
+    })
 });

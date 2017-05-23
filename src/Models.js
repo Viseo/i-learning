@@ -329,7 +329,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         getLevelsTab() {
-            return this._levelsTab;
+            return this.levelsTab;
         }
 
         setImage(src){
@@ -1064,6 +1064,7 @@ exports.Models = function (globalVariables, mockResponses) {
     return {
         State,
         Formations,
+        Formation,
         User,
         Quiz //TODO à retirer après les tests
     }
