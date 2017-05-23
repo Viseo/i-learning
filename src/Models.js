@@ -487,21 +487,21 @@ exports.Models = function (globalVariables) {
 
         moveGame(game, level, column) {
             let newGame = false;
-            if (game.index == undefined) {
+            if (game.gameIndex == undefined) {
                 game = this.addNewGame(game, level, column);
                 newGame = true;
             }
             let lastLevel = game.levelIndex;
             !newGame && this.levelsTab[lastLevel].getGamesTab().forEach(g => {
-                if (g.index > game.index) {
+                if (g.index > game.gameIndex) {
                     g.index--;
                 }
             });
-            !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.index, 1);
-            game.index = column - 1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
+            !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.gameIndex, 1);
+            game.gameIndex = column - 1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
                 column - 1;
             this.levelsTab[level].getGamesTab().forEach(g => {
-                if (g.index >= game.index) {
+                if (g.index >= game.gameIndex) {
                     g.index++;
                 }
             })
@@ -546,11 +546,11 @@ exports.Models = function (globalVariables) {
 
         removeGame(game) {
             this.levelsTab[game.levelIndex].getGamesTab().forEach(g => {
-                if (g.index > game.index) {
+                if (g.index > game.gameIndex) {
                     g.index--;
                 }
             });
-            this.levelsTab[game.levelIndex].getGamesTab().splice(game.index, 1);
+            this.levelsTab[game.levelIndex].getGamesTab().splice(game.gameIndex, 1);
             if (this.levelsTab[game.levelIndex].getGamesTab().length == 0) {
                 this.levelsTab.forEach(l => {
                     if (l.index > game.levelIndex) {
@@ -946,7 +946,7 @@ exports.Models = function (globalVariables) {
         constructor(game) {
             this.type = 'Poupee';
             this.label = game.label;
-            this.index = game.index;
+            this.index = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
