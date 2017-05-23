@@ -27,7 +27,7 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation undone"}, //levelsTab: [{gamesTab: [{questions: [{}], answered: []}]}]
+                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{questions: [{}], answered: []}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
                 }
@@ -61,7 +61,7 @@ describe('dashboard collab', function(){
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
             assertMessage(root, "textMiniature2", "formation done");
-            click(root, "unDoneIcon");
+            click(root, "inProgressIcon");
         }).then(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
             assertMissing(root, "textMiniature2");
@@ -84,10 +84,10 @@ describe('dashboard collab', function(){
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
             assertMessage(root, "textMiniature2", "formation done");
-            click(root, "done");
+            click(root, "doneIcon");
         }).then(()=>{
-            assertMessage(root, "textMiniature1", "formation inProgress");
-            assertMissing(root, "textMiniature2");
+            assertMissing(root, "textMiniature1");
+            assertMessage(root, "textMiniature2", "formation done");
         })
     });
     it('should enter a formation');

@@ -269,9 +269,6 @@ exports.Util = function (globalVariables) {
                     handler.children.forEach(function (child, index) {
                         if ((child instanceof svg.Handler)) {
                             clean(child);
-                            if(handler instanceof svg.Ordered){
-                                handler.unset(index);
-                            }
                         } else {
                             handler.unset(index);
                         }
@@ -280,9 +277,6 @@ exports.Util = function (globalVariables) {
                     for (let j = handler.children.length - 1; j >= 0; j--) {
                         if (handler.children[j] instanceof svg.Handler) {
                             clean(handler.children[j]);
-                            if(handler instanceof svg.Scaling){
-                                handler.remove(handler.children[j]);
-                            }
                         } else {
                             handler.remove(handler.children[j]);
                         }
