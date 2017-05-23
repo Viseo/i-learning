@@ -268,39 +268,6 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 return pos;
             };
-            var _refreshQuestionsBlock = () => {
-                var _displayQuestionsBetween = (startIndexInclus, endIndexInclus) => {
-                    for(var it = startIndexInclus, j = 0; it<endIndexInclus+1; it++, j++){
-                        let pos = calculatePositionOfQuestion(j);
-                        this.questionsBlock[it].manipulator.move(pos.x, pos.y);
-                        this.questionsBlockManipulator.add(this.questionsBlock[it].manipulator);
-                    }
-                };
-
-                if(this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
-                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll-1].manipulator);
-                    if(this.questionIndexScroll + (QUESTIONS_PER_LINE + 1) <= this.questions.length){
-                        this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll + (QUESTIONS_PER_LINE )].manipulator);
-                    };
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
-                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
-                }else if (this.questionIndexScroll > 0){
-                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll-1].manipulator);
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 2);
-                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
-
-                }else if (this.questionIndexScroll + (QUESTIONS_PER_LINE-1) < this.questions.length){
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
-                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
-                }else{
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questions.length-1)
-                    let pos = calculatePositionOfQuestion(this.questions.length);
-                    this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
-                }
-
-                this._showActualQuestionChevron();
-            };
             var _displayQuestionBlock = (question, lastQuestionIndex) => {
                 var _initQuestionBlock = () => {
                     questionGui.index = lastQuestionIndex;
@@ -419,7 +386,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
             };
 
-            var _refreshQuestionsBlock = () => {
+            var  _refreshQuestionsBlock = () => {
                 var _displayQuestionsBetween = (startIndexInclus, endIndexInclus) => {
                     for (var it = startIndexInclus, j = 0; it < endIndexInclus + 1; it++, j++) {
                         let pos = calculatePositionOfQuestion(j);
@@ -448,6 +415,7 @@ exports.QuizAdminV = function (globalVariables) {
                     _displayQuestionsBetween(this.questionIndexScroll, this.questionsBlock.length-1);
                     let pos = calculatePositionOfQuestion(this.questionsBlock.length);
                     this.addNewQuestion.manipulator.move(pos.x, pos.y);
+                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
                 }
 
                 this._showActualQuestionChevron();
