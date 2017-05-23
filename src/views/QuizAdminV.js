@@ -732,7 +732,7 @@ exports.QuizAdminV = function (globalVariables) {
                                     contentManip.add(popUpExplanation.textExplanation.component);
                                 };
                                 var _drawMediaPic = () => {
-                                    popUpExplanation.media = new svg.Image((answer.explanation.imageSrc) ? answer.explanation.imageSrc :  "../images/quiz/newImage.png");
+                                    popUpExplanation.media = new svg.Image((answer.explanation && answer.explanation.imageSrc) ? answer.explanation.imageSrc :  "../images/quiz/newImage.png");
                                     popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
                                     popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
                                     contentManip.add(popUpExplanation.media);

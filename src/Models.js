@@ -954,6 +954,9 @@ exports.Models = function (globalVariables) {
             this.multipleChoice = false;
             // this.media = imgSrc;
 
+            if (quiz.imageSrc) {
+                this.imageSrc = quiz.imageSrc;
+            }
         }
     }
 
