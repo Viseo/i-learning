@@ -5,13 +5,18 @@ exports.FormationAdminV = function(globalVariables) {
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        domain = globalVariables.domain,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         IconCreator = globalVariables.domain.IconCreator,
         LEVEL_HEIGHT = 150,
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
+        BUTTON_SIZE = {w: 40, h: 30},
+        BUTTON_HEIGHT = 30,
+        IMAGES_PER_LINE = 3,
         MINIATURE_FONT_SIZE = 15,
+        IMAGE_MINIATURE = 50,
         installDnD = globalVariables.gui.installDnD,
         View = globalVariables.View;
 
@@ -22,6 +27,7 @@ exports.FormationAdminV = function(globalVariables) {
             this.buttonSize= {width:150, height:50};
             this.inputSize = {width: 300, height:30};
             this.manipulator = new Manipulator(this);
+            this.mediasManipulator = new Manipulator(this);
             this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
             this.label = this.getLabel();
             this.graphSize = {
@@ -197,19 +203,29 @@ exports.FormationAdminV = function(globalVariables) {
             let games = this.getGamesLibrary();
             let count = 0;
             games.list.forEach(game => {
+
                 let createMiniature = ()=> {
+
                     let miniature = {
                         border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).color(myColors.white, 1, myColors.grey).corners(10, 10),
                         content: new svg.Text(game.type).font('Arial', MINIATURE_FONT_SIZE),
                         manipulator: new Manipulator(this)
                     }
+
+
                     return miniature
                 };
+
+
                 let miniature = createMiniature();
                 miniature.manipulator.move(0, (2*MARGIN + MINIATURE_HEIGHT/2)+ count*(MINIATURE_HEIGHT + 2*MARGIN) - this.librarySize.height/2);
                 miniature.manipulator.add(miniature.border)
                     .add(miniature.content);
+                let iconAddImage = IconCreator.createAddImage(miniature.manipulator);
+                iconAddImage.position(MINIATURE_WIDTH/2 - 2*MARGIN, -MINIATURE_HEIGHT/2+2*MARGIN);
+
                 this.gameLibraryManipulator.add(miniature.manipulator);
+
                 let createDraggableCopy = () => {
                     let manipulator = new Manipulator(this).addOrdonator(2);
                     drawings.piste.add(manipulator);
@@ -342,6 +358,163 @@ exports.FormationAdminV = function(globalVariables) {
 
 
 
+        displayPopUpImage(miniature) {
+            this.mediasManipulator.flush();
+            this.mainManip.set(1, this.mediasManipulator);
+            let dimensions = {
+                width: drawing.width * 1/2 - MARGIN,
+                height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_HEIGHT)
+            };
+
+            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
+            borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
+            let mediaPanel = new gui.Panel( dimensions.width - 2* MARGIN , dimensions.height - BUTTON_HEIGHT - 4* MARGIN);
+            mediaPanel.position(0,(borderLibrary.height - mediaPanel.height)/2 - 2*MARGIN - BUTTON_HEIGHT);
+            mediaPanel.border.color( myColors.none, 1  , myColors.grey);
+
+
+            let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(mediaPanel.width/2, mediaPanel.height/2);
+            let titleLibrary = new svg.Text('Library :').color(myColors.grey).font('Arial', 25);
+            let titleLibraryBack = new svg.Rect(100 ,3).color(myColors.white);
+            titleLibraryBack.position(-borderLibrary.width / 2 + 2*MARGIN + titleLibraryBack.width/2,
+                -borderLibrary.height / 2 + 2*MARGIN) ;
+            titleLibrary.position( -borderLibrary.width / 2 + 2*MARGIN + titleLibraryBack.width/2 , -borderLibrary.height / 2 + 2*MARGIN + 8.33);
+            let addPictureButton = new gui.Button(3*BUTTON_SIZE.w,BUTTON_SIZE.h,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
+                .position( borderLibrary.width /2 - BUTTON_SIZE.w*3/2 -2*MARGIN ,borderLibrary.height/2-BUTTON_SIZE.h/2 - MARGIN);
+            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
+            util.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
+            addPictureButton.component.add(addPictureButton.text);
+            mediaPanel.content.add(rectWhite);
+            this.mediasManipulator.add( borderLibrary);
+            this.mediasManipulator.add( mediaPanel.component);
+            this.mediasManipulator.add( titleLibraryBack);
+            this.mediasManipulator.add( titleLibrary);
+            this.mediasManipulator.add(addPictureButton.component);
+
+           let redCross = domain.IconCreator.createRedCrossIcon( this.mediasManipulator ).position(dimensions.width/2,-dimensions.height/2 ) ;
+           let redCrossHandler = () => {this.mediasManipulator.flush()};
+             svg.addEvent( redCross.border,'click', redCrossHandler);
+             svg.addEvent( redCross.content,'click', redCrossHandler);
+
+          let pictureClickHandler = (picture) => {
+             this.setImageOnMiniature(miniature, picture.src);
+          };
+            let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
+            let imagesManipulator = new Manipulator(this);
+
+            mediaPanel.content.add(imagesManipulator.first);
+            imagesManipulator.move(imageWidth/2 + MARGIN, imageWidth/2 + MARGIN);
+            this.getImages().then((images) => {
+
+                images.images.forEach((image, index) => {
+                    let indexX = Math.floor(index % IMAGES_PER_LINE);
+                    let indexY = Math.floor(index / IMAGES_PER_LINE);
+                    let picture = new svg.Image(image.imgSrc);
+                    picture
+                        .dimension(imageWidth, imageWidth)
+                        .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN));
+                    imagesManipulator.add(picture);
+                    svg.addEvent(picture, 'click', ()=>{
+                      pictureClickHandler(picture);
+                      redCrossHandler();
+                   });
+                })
+            });
+            this.mediasManipulator.move( drawing.width/2, drawing.height/2);
+
+            const onChangeFileExplorerHandler = () => {
+                uploadFiles(fileExplorer.component.files)
+            };
+
+            var uploadFiles = (files) => {
+                var _progressDisplayer = () => {
+                  var _displayUploadIcon = manipulator => {
+                    let icon = drawUploadIcon({x: -w / 2, y: 5, size: 20});
+                    manipulator.set(0, icon);
+                  }
+                  var _displayRect = manipulator => {
+                    let rect = new svg.Rect(w * 0.7, 16).color(myColors.none, 1, myColors.darkerGreen);
+                    manipulator.set(1, rect);
+                  }
+
+                  let manipulator = new Manipulator().addOrdonator(4);
+                  _displayUploadIcon(manipulator);
+                  _displayRect(manipulator);
+                   this.videosUploadManipulators.push(manipulator);
+
+                 return (e) => {
+                        var _displayProgressBar = manipulator => {
+                            const progwidth = w * e.loaded / e.total;
+                            const bar = new svg.Rect(progwidth - 15, 14)
+                                .color(myColors.green)
+                                .position(-(w - progwidth) / 2, 0);
+                            manipulator.set(2, bar);
+                        }
+                        var _displayPercentage = manipulator => {
+                            const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
+                            percentage.position(0, percentage.boundingRect().height / 4);
+                            manipulator.set(3, percentage);
+                        }
+
+                        _displayProgressBar(manipulator);
+                        _displayPercentage(manipulator);
+                        if (e.loaded === e.total) {
+                            this.videosUploadManipulators.remove(manipulator);
+                        }
+                    };
+                };
+
+                for (let file of files) {
+                    let progressDisplay;
+                    this.selectedTab = 0;
+                    if (file.type === 'video/mp4') {
+                        this.selectedTab = 1;
+                        progressDisplay = _progressDisplayer();
+                    }
+                    this.presenter.uploadImage(file, progressDisplay).then(() => {
+                        this.displayPopUpImage(miniature);
+                    });
+                }
+            };
+
+
+            let fileExplorer;
+            const fileExplorerHandler = () => {
+                if (!fileExplorer) {
+                    let globalPointCenter ={x:drawing.w/2, y:drawing.h/2};
+                    var fileExplorerStyle = {
+                        leftpx: globalPointCenter.x,
+                        toppx: globalPointCenter.y,
+                        width: this.w / 5,
+                        height: this.w / 5
+                    };
+                    fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                    fileExplorer.type("file");
+                    svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
+                    svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
+                    svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
+                    svg.runtime.attr(fileExplorer.component, "hidden", "true");
+                    svg.runtime.attr(fileExplorer.component, "multiple", "true");
+                    drawings.component.add(fileExplorer);
+                    fileExplorer.fileClick = function () {
+                        svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+                    }
+                }
+                fileExplorer.fileClick();
+            };
+
+
+
+            addPictureButton.onClick(fileExplorerHandler);
+            svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
+
+        }
+
+        setImageOnMiniature(miniature, src){
+            this.presenter.setImageOnMiniature(miniature.manipulator.game, src);
+        }
+
+
         displayLevel(level){
             let miniatureSelection = (miniature) => {
                 if(!this.arrowMode) {
@@ -352,10 +525,20 @@ exports.FormationAdminV = function(globalVariables) {
                 }
             }
             let createGameMiniature = (game)=>{
+
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
                     manipulator : new Manipulator(this).addOrdonator(4),
+                }
+                let iconAddImage = IconCreator.createAddImage(miniature.manipulator);
+                iconAddImage.position(MINIATURE_WIDTH/2 - 2*MARGIN, -MINIATURE_HEIGHT/2+2*MARGIN);
+                iconAddImage.addEvent('click', ()=>{this.displayPopUpImage(miniature)});
+
+                if(game.imageSrc){
+                    miniature.picture = new svg.Image(game.imageSrc);
+                    miniature.picture.dimension(IMAGE_MINIATURE, IMAGE_MINIATURE);
+                    miniature.picture.position(-MINIATURE_WIDTH/2 + IMAGE_MINIATURE/2 + MARGIN, 0);
                 }
                 miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
                 let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
@@ -416,18 +599,23 @@ exports.FormationAdminV = function(globalVariables) {
                 svg.addEvent(miniature.content, 'dblclick', ()=>{
                     this.dbClickMiniature(miniature)
                 });
+
                 installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);
             let levelIndex = level.index;
+
             let levelMiniature = {
                 line : new svg.Line(0,5,150,5).color(myColors.black, 1, myColors.black),
                 text: new svg.Text('Level : ' + (levelIndex+1)).font('Arial', MINIATURE_FONT_SIZE).anchor('left'),
+
                 icon : {
                     rect : new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10,10),
                     whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158,5)
                 }
+
+
             }
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width/2 + MARGIN, (levelIndex)*LEVEL_HEIGHT - this.graphSize.height/2 + LEVEL_HEIGHT/2) ;
@@ -436,14 +624,19 @@ exports.FormationAdminV = function(globalVariables) {
             levelManipulator.add(levelRedCrossManipulator);
             levelRedCrossManipulator.add(levelRedCross);
             svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
+
+
+
             levelManipulator.set(0,levelMiniature.line)
                 .set(1,levelMiniature.text)
                 .set(2,levelMiniature.icon.rect)
                 .set(3, levelMiniature.icon.whiteRect);
+
             level.getGamesTab().forEach(game => {
                 let gameMiniature = createGameMiniature(game);
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
+                gameMiniature.picture && gameMiniature.manipulator.add(gameMiniature.picture);
                 levelManipulator.add(gameMiniature.manipulator);
                 gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
                     , 5);
@@ -584,6 +777,9 @@ exports.FormationAdminV = function(globalVariables) {
         testLoadQuiz(quizIntel) {
             // let selectedQuiz = new Quiz
             this.presenter.loadQuiz(quizIntel);
+        }
+        getImages() {
+            return this.presenter.getImages();
         }
     }
 

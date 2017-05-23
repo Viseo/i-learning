@@ -756,6 +756,11 @@ exports.Models = function (globalVariables) {
             this.questions = quiz.questions || [];
             this.answered = quiz.answered || [];
             this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
+            this.imageSrc = quiz.imageSrc || null;
+        }
+
+        setImage(src){
+            this.imageSrc = src;
         }
 
         isDone() {
@@ -944,6 +949,11 @@ exports.Models = function (globalVariables) {
             this.index = game.index;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
+            this.imageSrc = game.imageSrc || null;
+        }
+
+        setImage(src){
+            this.imageSrc = src;
         }
     }
     class Question {

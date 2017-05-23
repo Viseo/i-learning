@@ -8,6 +8,7 @@ exports.FormationAdminP = function(globalVariables){
         constructor(state, formation){
             super(state);
             this.formation = formation;
+            this.mediaLibrary = state.getMediasLibrary();
             this.view = new FormationAdminV(this);
             this.regex = TITLE_FORMATION_REGEX;
             this.levelsTab = formation.getLevelsTab();
@@ -19,6 +20,17 @@ exports.FormationAdminP = function(globalVariables){
         getFormation(){
             return this.formation;
         }
+        getImages()
+        {
+            return this.mediaLibrary.getImages();
+        }
+
+        setImageOnMiniature(game, src){
+            game.setImage(src);
+            this.view.displayGraph();
+            //miniature.replaceFormation({imageOnly:true});
+        }
+
 
         renameFormation(label){
             this.formation.setLabel(label);
@@ -132,6 +144,12 @@ exports.FormationAdminP = function(globalVariables){
         getGamesLibrary(){
             return this.state.getGamesLibrary();
         }
+
+        uploadImage(file, progressDisplay){
+            return this.state.uploadImage(file, progressDisplay);
+        }
+
+
     }
 
     return FormationAdminP;
