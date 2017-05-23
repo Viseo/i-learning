@@ -11,12 +11,23 @@ exports.DashboardAdminP = function(globalVariables) {
             super(state);
             this.view = new DashboardView(this);
             this.formations = formations;
+            this.mediaLibrary = state.getMediasLibrary();
             this.formationsList = formations.getFormations();
         }
         getFormations(){
             return this.formations.getFormations();
         }
 
+        getImages()
+        {
+            return this.mediaLibrary.getImages();
+        }
+
+        setImageOnFormation(formation, src){
+            formation.setImage(src);
+            this.view.displayMiniatures();
+            formation.replaceFormation({imageOnly:true});
+        }
         createFormation(label){
             let checkLabel = (label)=>{
                 if (label == 'Ajouter une formation'){
@@ -56,6 +67,10 @@ exports.DashboardAdminP = function(globalVariables) {
         }
         updateFormations(){
             this.formationsList = this.formations.getFormations();
+        }
+
+        uploadImage(file, progressDisplay){
+            return this.state.uploadImage(file, progressDisplay);
         }
 
         miniatureClickHandler(formation){

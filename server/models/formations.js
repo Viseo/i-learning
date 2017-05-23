@@ -195,7 +195,7 @@ const updateNote = (req, versionId, note)=> {
             .then(userNotation => {
                 getFormationById(req.params.id)
                     .then((data) => {
-                        let formation = data.formation;
+                        let formation = data;
                         formation.versions.forEach(version => {
                             if (version._id.toString() == versionId.toString()) {
                                 if (userNotation.newVoter) {

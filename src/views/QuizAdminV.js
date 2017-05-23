@@ -728,6 +728,7 @@ exports.QuizAdminV = function (globalVariables) {
                         answerGui.iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
                         answerGui.iconExplanation.position(dimensions.w / 2 - answerGui.iconExplanation.getContentSize() * 2 / 3, 0);
                         answerGui.iconExplanation.addEvent('click', _toggleExplanation);
+
                     };
                     var _addValidCheckbox = (answerGui) => {
                         answerGui.checkBoxManipulator = new Manipulator(this);

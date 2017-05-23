@@ -170,11 +170,8 @@ exports.DashboardCollabV = function (globalVariables) {
                     let factor = 5.5;
                     let onStarClick = starObject => {
                         starMiniatures.showStarDefaultColor();
-                        //todo doit afficher une couleur Quand on a voter 
-                        Server.updateSingleFormationStars(formation.formationId, starObject.id, formation._id)
-                            .then(data => {
-                                console.log(data);
-                            });
+                        //todo doit afficher une couleur Quand on a voter
+                        this.updateSingleFormationStars(formation.formationId, starObject.id, formation._id);
                     };
 
                     let onStarHover = starObject => {
@@ -269,6 +266,10 @@ exports.DashboardCollabV = function (globalVariables) {
 
         getFormations() {
             return this.presenter.getFormations();
+        }
+
+        updateSingleFormationStars(formationId, starId, versionId){
+            this.presenter.updateSingleFormationStars(formationId, starId, versionId);
         }
 
         refresh() {

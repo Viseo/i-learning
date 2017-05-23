@@ -79,36 +79,16 @@ exports.FormationAdminP = function(globalVariables){
             const messageError = "Vous devez remplir correctement le nom de la formation.";
 
             if (this.formation.label && this.formation.label !== this.formation.labelDefault && this.formation.label.match(this.regex)) {
-                const getObjectToSave = () => {
-                    if (this.imageSrc) {
-                        return {
-                            label: this.formation.label,
-                            gamesCounter: this.formation.gamesCounter,
-                            links: this.formation.links,
-                            levelsTab: this.formation.levelsTab,
-                            imageSrc: this.formation.imageSrc,
-                            status: this.formation.status
-                        }
-                    }
-                    else {
-                        return {
-                            label: this.formation.label,
-                            gamesCounter: this.formation.gamesCounter,
-                            links: this.formation.links,
-                            levelsTab: this.formation.levelsTab,
-                            status: this.formation.status
-                        };
-                    }
-                };
+
 
                 if (this.formation.getId()) {
-                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
+                    return this.formation.replaceFormation().then(data => {
                         this.view.displayMessage(data.message);
                         return data.status;
                     });
                 }
                 else {
-                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
+                    return this.formation.addNewFormation().then(data => {
                         this.view.displayMessage(data.message);
                         return data.status;
                     })

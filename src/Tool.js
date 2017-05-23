@@ -12,7 +12,8 @@ exports.Tool = function (globalVariables, classContainer) {
         PopOut = globalVariables.util.PopOut;
 
     const
-        ICON_SIZE = 15;
+        ICON_SIZE = 15,
+        MARGIN = 10;
 
 
     class IconSetting {
@@ -55,7 +56,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        changeContentColor(fillColor, strokeWidth, strokeColor){
+        changeContentColor(fillColor, strokeWidth, strokeColor) {
             this.contentProperties.fillColor = fillColor;
             this.contentProperties.strokeWidth = strokeWidth;
             this.contentProperties.strokeColor = strokeColor;
@@ -181,18 +182,18 @@ exports.Tool = function (globalVariables, classContainer) {
                 : manipulator.add(this.manipulator);
         }
 
-        changeContentPollygonColor(fillColor, strokeWidth, strokeColor){
-            if(this.iconSetting.contentProperties.type == "Polygon"){
+        changeContentPollygonColor(fillColor, strokeWidth, strokeColor) {
+            if (this.iconSetting.contentProperties.type == "Polygon") {
                 this.iconSetting.changeContentColor(fillColor, strokeWidth, strokeColor);
                 this.content.color(fillColor, strokeWidth, strokeColor);
             }
         }
 
-        getSize(){
+        getSize() {
             return this.iconSetting.borderProperties.size;
         }
 
-        getContentSize(){
+        getContentSize() {
             return this.iconSetting.contentProperties.size;
         }
 
@@ -201,7 +202,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        rotate(rotation){
+        rotate(rotation) {
             this.manipulator.rotate(rotation);
             return this;
         }
@@ -228,19 +229,19 @@ exports.Tool = function (globalVariables, classContainer) {
              (this.content) && svg.addEvent(this.content, eventName, handler);*/
         }
 
-        changeStatusActionIcon(){
+        changeStatusActionIcon() {
             this.action = !this.action;
         }
 
-        activeStatusActionIcon(){
+        activeStatusActionIcon() {
             this.action = true;
         }
 
-        cancelActionIcon(){
+        cancelActionIcon() {
             this.action = false;
         }
 
-        isInAction(){
+        isInAction() {
             return this.action;
         }
     }
@@ -250,25 +251,25 @@ exports.Tool = function (globalVariables, classContainer) {
 
         }
 
-        createIconByName(name, manipulator, layer){
-            switch(name){
+        createIconByName(name, manipulator, layer) {
+            switch (name) {
                 case'done':
-                    return this.createDoneIcon(manipulator,layer);
+                    return this.createDoneIcon(manipulator, layer);
                     break;
                 case'undone':
-                    return this.createUndoneIcon(manipulator,layer);
+                    return this.createUndoneIcon(manipulator, layer);
                     break;
                 case'inProgress':
-                    return this.createInProgressIcon(manipulator,layer);
+                    return this.createInProgressIcon(manipulator, layer);
                     break;
                 case'NotPublished':
                     return null;
                     break;
                 case'Edited':
-                    return this.createEditedIcon(manipulator,layer);
+                    return this.createEditedIcon(manipulator, layer);
                     break;
                 case'Published':
-                    return this.createDoneIcon(manipulator,layer);
+                    return this.createDoneIcon(manipulator, layer);
                     break;
                 default:
                     break;
@@ -303,7 +304,7 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.green, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                .setPathContent(_getPathCheckContent(ICON_SIZE *1.75), ICON_SIZE * 2, myColors.none, 3, myColors.white);
+                .setPathContent(_getPathCheckContent(ICON_SIZE * 1.75), ICON_SIZE * 2, myColors.none, 3, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -320,13 +321,13 @@ exports.Tool = function (globalVariables, classContainer) {
         static createPlusIcon(manipulator, layer) {
             var _getPathPlus = (size) => {
                 var strokePlus = size / 5;
-                var sizePlus = size*2/3;
+                var sizePlus = size * 2 / 3;
 
                 let point = [
                     [-sizePlus, -strokePlus], [-strokePlus, -strokePlus], [-strokePlus, -sizePlus],
                     [strokePlus, -sizePlus], [strokePlus, -strokePlus], [sizePlus, -strokePlus],
                     [sizePlus, +strokePlus], [strokePlus, strokePlus], [strokePlus, sizePlus],
-                    [-strokePlus, sizePlus], [-strokePlus, strokePlus], [-sizePlus,+strokePlus]
+                    [-strokePlus, sizePlus], [-strokePlus, strokePlus], [-sizePlus, +strokePlus]
                 ];
                 return point;
             };
@@ -339,24 +340,36 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         };
 
-        static createRedCrossIcon(manipulator, layer){
+        static createRedCrossIcon(manipulator, layer) {
             let icon = this.createPlusIcon(manipulator, layer);
             icon.changeContentPollygonColor(myColors.red, 1, myColors.black);
             icon.rotate(45);
             return icon;
         }
 
-        createSettingIcon(manipulator, layer){
+        createSettingIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)
-                .setPictureContent("../images/settings.png", (ICON_SIZE*2)*0.8);
+                .setPictureContent("../images/settings.png", (ICON_SIZE * 2) * 0.8);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         }
 
-        static createExplanationIcon(manipulator, layer){
+        static createExplanationIcon(manipulator, layer) {
             let radiusSize = 30;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 0, myColors.none)
+                .setPictureContent("../images/quiz/media.png", (radiusSize*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
+
+
+        static createAddImage(manipulator, layer){
+            let radiusSize = 20;
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
@@ -366,21 +379,23 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
+
+
         static getRadiusContent() {
             return ICON_SIZE;
         }
 
-        static createImageIcon(src, manipulator, layer){
+        static createImageIcon(src, manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
-                .setPictureContent(src, ICON_SIZE*2);
+                .setPictureContent(src, ICON_SIZE * 2);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         }
     }
 
-    function createRating(manipulator, layer){
+    function createRating(manipulator, layer) {
         const STAR_SPACE = 4;
         const defaultColor = {
             fillColor: myColors.yellow,
@@ -389,11 +404,11 @@ exports.Tool = function (globalVariables, classContainer) {
         };
 
         const starsNoteEnum = {
-            'star1' : 'Pas Terrible',
+            'star1': 'Pas Terrible',
             'star2': 'Passable',
-            'star3' : 'Correcte',
-            'star4' : 'Bien',
-            'star5' : 'Excellente'
+            'star3': 'Correcte',
+            'star4': 'Bien',
+            'star5': 'Excellente'
         };
 
         let star = [];
@@ -404,10 +419,10 @@ exports.Tool = function (globalVariables, classContainer) {
 
         var _createDrawStars = () => {
             star.starsManipulator = new Manipulator(this).addOrdonator(5);
-            for(var i = 0 ; i < 5; i++){
+            for (var i = 0; i < 5; i++) {
                 star[i] = new svg.Polygon().add(starPoints).position(STAR_SPACE * i, 0)
                     .color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
-                    .mark("star" + (i+1));
+                    .mark("star" + (i + 1));
                 star.starsManipulator.add(star[i]);
             }
         };
@@ -418,10 +433,10 @@ exports.Tool = function (globalVariables, classContainer) {
 
         _createDrawStars(star);
         _createPopOut();
-        if(layer) {
+        if (layer) {
             manipulator.set(layer, star.starsManipulator);
         }
-        else{
+        else {
             manipulator.add(star.starsManipulator);
         }
         star.scaleStar = function (factor) {
@@ -444,7 +459,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         };
 
-        star.getNoteEnum = function (){
+        star.getNoteEnum = function () {
             return starsNoteEnum;
         };
 
@@ -456,8 +471,254 @@ exports.Tool = function (globalVariables, classContainer) {
         return star;
     }
 
+
+    class ListView {
+
+        constructor(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH,
+                    chevronThickness, color = myColors.white, marge = 0) {
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this);
+                this.contentManip = new Manipulator(this);
+                this.chevronManip = new Manipulator(this);
+                this.manipulator.add(this.chevronManip).add(this.component);
+            };
+            var _declareDimension = () => {
+                this.marge = marge;
+
+                this.eleDim = {w: eleW + this.marge, h: eleH + this.marge};
+                this.listDim = {w : listW, h: listH};
+                this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
+            };
+
+
+            this.listElements = listElements;
+            this.direction = direction;
+            this.indexShow = 0;
+
+            _declareDimension();
+
+            this.component = new svg.Translation();
+            this.component.focus = this;
+
+            _declareManipulator();
+
+
+            this.chevrons = {};
+
+            if(direction == "V"){
+                var onClickChevronTop = () => {
+                    this.indexShow++;
+                    this.moveContent(0, this.indexShow*this.eleDim.h);
+                    this._showActualChevron();
+                };
+
+                var onClickChevronDown = () => {
+                    this.indexShow--;
+                    this.moveContent(0, this.indexShow*this.eleDim.h);
+                    this._showActualChevron();
+                };
+
+                this.nbElementToshow = Math.floor((this.listDim.h - this.marge) / this.eleDim.h);
+
+                this.borderWithChevrons = new svg.Rect(listW, listH + chevronH*2);
+
+                this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
+                    .color(myColors.black, 0, myColors.none)
+                    .position(0, -listH/2 - chevronH/2);
+                this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
+                    .color(myColors.black, 0, myColors.none)
+                    .position(0, listH/2 + chevronH/2);
+                this.chevronManip
+                    .add(this.borderWithChevrons)
+                    .add(this.chevrons.top)
+                    .add(this.chevrons.down);
+
+                this.chevrons.top.onClick(onClickChevronTop);
+                this.chevrons.down.onClick(onClickChevronDown);
+
+                this.contentManip.move(listW/2, eleH/2);
+            }else{
+                var onClickChevronLeft = () => {
+                    this.indexShow++;
+                    this.moveContent(this.indexShow*this.eleDim.w, 0);
+                    this._showActualChevron();
+                };
+
+                var onClickChevronRight = () => {
+                    this.indexShow--;
+                    this.moveContent(this.indexShow*this.eleDim.w, 0);
+                    this._showActualChevron();
+                };
+
+                this.nbElementToshow = Math.floor((this.listDim.w - this.marge) / this.eleDim.w);
+
+                this.borderWithChevrons = new svg.Rect(listW + chevronW*2, listH);
+                this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
+                    .color(myColors.black, 0, myColors.none)
+                    .position(-listW/2 - chevronW/2, 0);
+                this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
+                    .color(myColors.black, 0, myColors.none)
+                    .position(listW/2 + chevronW/2, 0);
+                this.chevronManip
+                    .add(this.borderWithChevrons)
+                    .add(this.chevrons.left)
+                    .add(this.chevrons.right);
+
+                this.chevrons.left.onClick(onClickChevronLeft);
+                this.chevrons.right.onClick(onClickChevronRight);
+
+                this.contentManip.move(eleW/2, listH/2);
+            }
+
+            this.borderWithChevrons.color(color, 2, myColors.black).corners(5);
+
+
+            this.border = new svg.Rect(listW, listH).color([], 0, [0, 0, 0]);
+            this.view = new svg.Drawing(listW, listH).position(-listW / 2, -listH / 2);
+            this.translate = new svg.Translation();
+            this.component.add(this.view.add(this.translate)).add(this.border);
+
+
+            this.back = new svg.Rect(listW, listH).color(color, 0, []).mark("background");
+            this.back.fillOpacity(0);
+            this.content = new svg.Translation().mark("content");
+            this.content.width = listW;
+            this.content.height = listH;
+
+            this.content.add(this.contentManip.component);
+
+            this.translate.add(this.back.position(listW / 2, listH / 2)).add(this.content);
+
+
+            this._showActualChevron();
+        }
+
+        position(x, y) {
+            this.manipulator.move(x, y);
+            return this;
+        }
+
+
+        moveContent(x, y) {
+            let vx = x;
+            let vy = y;
+            let completeMovement = progress => {
+                if (progress === 1) {
+                    delete this.animation;
+                }
+            };
+            if (!this.animation) {
+                this.animation = true;
+                this.content.onChannel().smoothy(100, 25)
+                    .execute(completeMovement).moveTo(vx, vy);
+            }
+            return this;
+        }
+
+        color(color) {
+            this.back.color(color, 0, []);
+            return this;
+        }
+
+
+        _showActualChevron(){
+            var _showAllChevron = () => {
+                this.chevrons.left && this.chevronManip.add(this.chevrons.left);
+                this.chevrons.right && this.chevronManip.add(this.chevrons.right);
+                this.chevrons.top && this.chevronManip.add(this.chevrons.top);
+                this.chevrons.down && this.chevronManip.add(this.chevrons.down);
+            };
+
+            var _showOnlyLeftOrTopChevron = () => {
+                this.chevrons.left && this.chevronManip.add(this.chevrons.left);
+                this.chevrons.top && this.chevronManip.add(this.chevrons.top);
+                this.chevrons.right && this.chevronManip.remove(this.chevrons.right);
+                this.chevrons.down && this.chevronManip.remove(this.chevrons.down);
+            };
+
+            var _showOnlyRightOrDownChevron = () => {
+                this.chevrons.left && this.chevronManip.remove(this.chevrons.left);
+                this.chevrons.top && this.chevronManip.remove(this.chevrons.top);
+                this.chevrons.right && this.chevronManip.add(this.chevrons.right);
+                this.chevrons.down && this.chevronManip.add(this.chevrons.down);
+            };
+
+            var _hideAllQuestionChevron = () => {
+                this.chevrons.left && this.chevronManip.remove(this.chevrons.left);
+                this.chevrons.top && this.chevronManip.remove(this.chevrons.top);
+                this.chevrons.right && this.chevronManip.remove(this.chevrons.right);
+                this.chevrons.down && this.chevronManip.remove(this.chevrons.down);
+            };
+
+            if(this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length){
+                _showAllChevron();
+            }else if (this.indexShow != 0 && -this.indexShow + this.nbElementToshow >= this.listElements.length){
+                _showOnlyLeftOrTopChevron();
+            }else if (-this.indexShow + (this.nbElementToshow) < this.listElements.length){
+                _showOnlyRightOrDownChevron();
+            }else{
+                _hideAllQuestionChevron();
+            }
+        }
+    }
+
+
+    class ListSVGView extends ListView{
+
+        refreshListView() {
+            if(this.direction == "V"){
+                for (let i = 0; i < this.listElements.length; i++) {
+                    this.listElements[i].position(0, this.marge + this.eleDim.h * (i  + this.indexShow));
+                }
+            }else{
+                for (let i = 0; i < this.listElements.length; i++) {
+                    this.listElements[i].position(this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                }
+            }
+            this._showActualChevron();
+        }
+
+        add(component){
+            this.listElements.push(component);
+            this.contentManip.add(component);
+        }
+
+        removeElementFromList(ele){
+            this.listElements.remove(ele);
+            this.contentManip.remove(ele);
+        }
+
+    }
+
+    class ListManipulatorView extends ListView{
+        refreshListView(){
+            if(this.direction == "V"){
+                for (let i = 0; i < this.listElements.length; i++) {
+                    this.listElements[i].move(0, this.marge + this.eleDim.h * (i  + this.indexShow));
+                }
+            }else{
+                for (let i = 0; i < this.listElements.length; i++) {
+                    this.listElements[i].move(this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                }
+            }
+            this._showActualChevron();
+        }
+
+        add(manip){
+            this.listElements.push(manip.component);
+            this.contentManip.add(manip.component);
+        }
+
+        removeElementFromList(manip){
+            this.listElements.remove(manip.component);
+            this.contentManip.remove(manip.component);
+        }
+    }
+
     return {
         IconCreator,
-        createRating
+        createRating,
+        ListSVGView,
+        ListManipulatorView
     };
 };

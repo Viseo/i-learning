@@ -18,6 +18,10 @@ exports.Models = function (globalVariables, mockResponses) {
             return formation;
         }
 
+        uploadImage(file, progressDisplay) {
+            return MediasLibrary.upload(file, progressDisplay);
+        }
+
         returnToOldPage() {
             this._putStackPageToFrozen();
             let presenterName = this.stackPage.pop();
@@ -263,6 +267,13 @@ exports.Models = function (globalVariables, mockResponses) {
         getFormationByVersionId(id) {
             return this._formations.find((form) => form.getId() === id);
         }
+        getFormationById(id){
+            return this._formations.find(form => form.getFormationId() === id);
+        }
+
+        updateSingleFormationStars(formationId, starId, versionID){
+            this.getFormationById(formationId).updateStars(starId);
+        }
 
         createFormation(label) {
             let newFormation = new Formation({label: label});
@@ -315,14 +326,36 @@ exports.Models = function (globalVariables, mockResponses) {
             return this._levelsTab;
         }
 
-        saveNewFormation(callback) {
+        setImage(src){
+            this.imageSrc = src;
+        }
+
+        updateStars(starId){
+            util.Server.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
+        }
+
+
+        saveNewFormation() {
             const getObjectToSave = () => {
-                return {
-                    label: this.label,
-                    gamesCounter: this.gamesCounter,
-                    links: this.links,
-                    levelsTab: this.levelsTab
-                };
+                if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
             };
 
             return apiRequester.insertFormation(getObjectToSave(), ignoredData)
@@ -341,7 +374,29 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
 
-        addNewFormation(object) {
+        addNewFormation() {
+            const getObjectToSave = () => {
+                if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
+            };
+
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -396,7 +451,39 @@ exports.Models = function (globalVariables, mockResponses) {
             this.label = label;
         }
 
-        replaceFormation(object) {
+        replaceFormation(obj) {
+            const getObjectToSave = () => {
+                if (obj && obj.imageOnly) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status,
+                        imageOnly : true
+                    }
+                }
+                else if (this.imageSrc) {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        imageSrc: this.imageSrc,
+                        status: this.status
+                    }
+                }
+                else {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab,
+                        status: this.status
+                    };
+                }
+            };
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageReplace = "Les modifications ont bien été enregistrées.",
