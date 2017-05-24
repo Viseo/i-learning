@@ -1,20 +1,32 @@
-const Domain = require('./Domain').Domain,
-    Util = require('./Util').Util,
+const
+    Enhance = require('../lib/enhancer').Enhance,
+    targetRuntime = require('../lib/targetruntime').targetRuntime,
+    mockRuntime = require('../lib/runtimemock').mockRuntime,
+    SVG = require('../lib/svghandler').SVG,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
+    Domain = require('./Domain').Domain,
+    Util = require('./Util').Util,
     FModels = require('./Models').Models,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
+function main(mockResponses) {
+    let domain, util, gui, drawing, drawings, root;
+    let runtime = mockResponses ? mockRuntime() : targetRuntime();
+    let svg = SVG(runtime);
+    let globalVariables = {svg, runtime};
 
-function main(svg, runtime, dbListener, ImageRuntime, param) {
-    let domain, util, gui, drawing, drawings;
-    let globalVariables = {svg, runtime, dbListener, ImageRuntime};
-
+    Enhance();
     svgPolyfill(svg);
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
-    globalVariables.main = main;
+
+    if(mockResponses){
+        runtime.declareAnchor('content');
+        svg.screenSize(1920, 947);
+        root = runtime.anchor("content");
+    }
 
     util = Util(globalVariables);
     globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
@@ -33,17 +45,16 @@ function main(svg, runtime, dbListener, ImageRuntime, param) {
     util.setGlobalVariables();
 
     presenterFactory(globalVariables);
-    let models = FModels(globalVariables);
+    let models = FModels(globalVariables, mockResponses);
+    let state = new models.State();
 
-    let redirect;
-    if (param) {
-        redirect = param.redirect;
+    if(!mockResponses){
+        let params = (new URL(document.location)).searchParams;
+        let ID = params.get("ID");
+
+        state.tryLoadCookieForPresenter(ID);
     }
 
-    //todo
-    let state = new models.State();
-    state.tryLoadCookieForPresenter(redirect);
-
-    return globalVariables;
+    return {state, root, runtime};
 };
 exports.main = main;

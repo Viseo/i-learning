@@ -19,6 +19,8 @@
     "nodemailer": "^3.1.8"
   },
   "devDependencies": {
+    "mock-promises": "^0.8.2",
+    "promise-mock": "^1.1.1",
     "test-module": "*"
   },
   "scripts": {

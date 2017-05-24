@@ -4,7 +4,6 @@ exports.Util = function (globalVariables) {
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        dbListener = globalVariables.dbListener,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
@@ -21,7 +20,7 @@ exports.Util = function (globalVariables) {
         runtime = globalVariables.runtime;
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
-        dbListener = globalVariables.dbListener;
+        DbListener = globalVariables.dbListener;
         svg = globalVariables.svg;
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
@@ -284,7 +283,8 @@ exports.Util = function (globalVariables) {
                     }
                 }
             };
-            clean(this.translator);
+            clean(this.component);
+            this.components = [];
             return this;
         }
 
@@ -1436,727 +1436,647 @@ exports.Util = function (globalVariables) {
         });
     }
 
-    class MiniatureGame {
-        constructor(game, size) {
-            this.game = game;       // classe GameVue
-            this.scoreSize = 13;
-            this.width = size;
-            this.height = size / 2;
-            this.size = size;
-            game.miniature = this;
-            this.iconManipulator = new Manipulator(this).addOrdonator(3);
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(4);
-            this._acceptDrop = true;
-            this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
+    // class MiniatureGame {
+    //     constructor(game, size) {
+    //         this.game = game;       // classe GameVue
+    //         this.scoreSize = 13;
+    //         this.width = size;
+    //         this.height = size / 2;
+    //         this.size = size;
+    //         game.miniature = this;
+    //         this.iconManipulator = new Manipulator(this).addOrdonator(3);
+    //         this.manipulator = new Manipulator(this);
+    //         this.manipulator.addOrdonator(4);
+    //         this._acceptDrop = true;
+    //         this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
+    //
+    //     }
+    //
+    //     dropImage(element){
+    //         this.game.picture = element.src;
+    //         this.drawImage();
+    //     }
+    //
+    //     checkIfParentDone() {
+    //         if (!globalVariables.playerMode) {
+    //             return true;
+    //         }
+    //         for (let i in this.game.parentGamesList) {
+    //             let game = this.game.parentFormation.findGameById(this.game.parentGamesList[i].id)
+    //             if (game.questionsAnswered.length != game.tabQuestions.length) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    //
+    //     drawImage(){
+    //         this.picture = new Picture(this.game.picture, true, this, '', ()=> {
+    //             this.manipulator.unset(3);
+    //             this.game.picture = null;
+    //         });
+    //         this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
+    //     }
+    //
+    //     display() {
+    //         let addSettingsIcon = () =>{
+    //             let iconCreator = new IconCreator();
+    //             let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
+    //             this.popOut.defineProperty(0, -this.height);
+    //             settingsIcon.addEvent('click', ()=>{
+    //                 this.popOut.show.call(this.popOut);
+    //                 this.selected = !this.selected;
+    //                 this.updateSelectionDesign();
+    //             });
+    //             settingsIcon.position(-this.width/2, -this.height/2- settingsIcon.getSize()/2);
+    //         };
+    //         !globalVariables.playerMode && addSettingsIcon();
+    //         this.updateProgress();
+    //         let icon = {
+    //             content: autoAdjustText(this.game.title, this.picture ? this.width * 0.9 : this.width, this.height, 15, 'Arial', this.manipulator),
+    //             underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0, 2 * MARGIN),
+    //             border: drawHexagon(this.width, this.height, 'H', 0.8).mark('hexBorder' + this.game.levelIndex + this.game.id)
+    //         };
+    //         this.border = icon.border;
+    //         this.content = icon.content;
+    //         this.content.text.mark('titlelevel' + this.game.levelIndex + this.game.id);
+    //         this.underContent = icon.underContent;
+    //         let video;
+    //         if (this.video) {
+    //             video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+    //         }
+    //         if (this.game.picture) {
+    //             this.drawImage();
+    //         }
+    //         if (this.game.parentGamesList) {
+    //             let check = this.checkIfParentDone();
+    //             if (!check) {
+    //                 icon.border.color(myColors.grey, 1, myColors.grey);
+    //             }
+    //         }
+    //         this.manipulator.set(0, icon.border);
+    //         globalVariables.playerMode && this.manipulator.set(2, icon.underContent);
+    //         this.manipulator.mark('level' + this.game.levelIndex + this.game.id);
+    //         this.redCrossManipulator = new Manipulator(this);
+    //         this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
+    //         this.redCross.mark('gameRedCross');
+    //         this.redCrossManipulator.add(this.redCross);
+    //         svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
+    //         this.selected = false;
+    //         if (globalVariables.playerMode) {
+    //             this.drawIcon();
+    //         }
+    //         this.game.miniatureManipulator.add(this.manipulator);
+    //     }
+    //
+    //     updateProgress() {
+    //         this.game.progress = this.game.questionsAnswered.length == 0 ? '' :
+    //             this.game.questionsAnswered.length == this.game.tabQuestions.length ? 'done' : 'inProgress'
+    //     }
+    //
+    //     showDefaultColor() {
+    //         this.manipulator.ordonator.children[0]
+    //             .color(hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+    //     }
+    //
+    //     redCrossClickHandler() {
+    //         let formationVue = this.game.parentFormation;
+    //         drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+    //         this.removeAllLinks();
+    //         formationVue.miniaturesManipulator.remove(this.manipulator);
+    //         this.manipulator.flush();
+    //         this.manipulator.remove(this.redCrossManipulator);
+    //         var longestLevelCandidates = formationVue.findLongestLevel();
+    //         if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
+    //             formationVue.levelWidth -= (formationVue.graphElementSize + formationVue.minimalMarginBetweenGraphElements);
+    //             formationVue.movePanelContent();
+    //         }
+    //         formationVue.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+    //         var levelsTab = formationVue.levelsTab;
+    //         if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
+    //             levelsTab[this.game.levelIndex].redCrossClickHandler();
+    //         }
+    //         while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+    //             levelsTab[levelsTab.length - 1].manipulator.unset(2);
+    //             levelsTab[levelsTab.length - 1].manipulator.unset(1);
+    //             levelsTab[levelsTab.length - 1].manipulator.unset(0);
+    //             formationVue.levelsTab.pop();
+    //         }
+    //         formationVue.selectedGame.selected = false;
+    //         formationVue.selectedGame = null;
+    //         formationVue.displayGraph();
+    //     }
+    //
+    //     removeAllLinks() {
+    //         for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
+    //             if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
+    //                 links.splice(i, 1);
+    //         }
+    //     }
+    //
+    //     moveAllLinks() {
+    //         for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
+    //             if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
+    //                 links[i].arrow.redraw();
+    //         }
+    //     }
+    //
+    //     miniatureClickHandler() {
+    //         let formationVue = this.game.parentFormation;
+    //         formationVue.selectedArrow && formationVue.selectedArrow.arrowPath.component.listeners.click();
+    //         if (!this.selected) {
+    //             if (formationVue.selectedGame) {
+    //                 this.checkAndDrawValidity(formationVue.selectedGame);
+    //                 formationVue.selectedGame.selected = false;
+    //                 !playerMode && formationVue.selectedGame.removeRedCross();
+    //             }
+    //         }
+    //         this.selected = !this.selected;
+    //         this.updateSelectionDesign();
+    //     }
+    //
+    //
+    //     updateSelectionDesign() {
+    //         if (this.selected) {
+    //             this.game.parentFormation.selectedGame = this;
+    //             !playerMode && this.manipulator.add(this.redCrossManipulator);
+    //             this.manipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
+    //         } else {
+    //             this.checkAndDrawValidity(this);
+    //             !playerMode && this.redCrossManipulator.first.parent && this.manipulator.remove(this.redCrossManipulator);
+    //             this.game.parentFormation.selectedGame = null;
+    //         }
+    //     }
+    //
+    //     checkAndDrawValidity(gameMiniature) {
+    //         let displayWhenPublished = () => {
+    //             let result = true;
+    //             gameMiniature.game.tabQuestions.forEach(question => {
+    //                 if (!(question instanceof AddEmptyElementVue)) {
+    //                     question.questionType && question.questionType.validationTab.forEach(funcEl => {
+    //                         result = result && funcEl(question).isValid;
+    //                     })
+    //                 }
+    //             });
+    //             result ? gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey)
+    //                 : gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 3, myColors.red);
+    //         };
+    //         let displayWhenNotPublished = () => {
+    //             gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey);
+    //         };
+    //
+    //         (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
+    //     }
+    //
+    //     drawIcon() {
+    //         let iconCreator = new IconCreator();
+    //         if (!this.game.parentGamesList || this.checkIfParentDone()) {
+    //             switch (this.game.progress) {
+    //                 case "done":
+    //                     iconCreator.createDoneIcon(this.iconManipulator, 0);
+    //                     break;
+    //                 case "inProgress":
+    //                     iconCreator.createInProgressIcon(this.iconManipulator, 0);
+    //                     break;
+    //                 default:
+    //                     iconCreator.createUndoneIcon(this.iconManipulator, 0);
+    //                     break;
+    //             }
+    //             this.manipulator.add(this.iconManipulator);
+    //             this.iconManipulator.move(this.size / 2, -this.size / 3);
+    //         }
+    //         else if (this.game.parentGamesList && !this.checkIfParentDone()) {
+    //             let lock = new Picture('/images/padlock2.png', false, this, '', null);
+    //             lock.draw(this.size / 2, -this.size / 3, this.size / 5, this.size / 5, this.iconManipulator, 1);
+    //             this.manipulator.add(this.iconManipulator);
+    //         }
+    //     }
+    //
+    //     removeRedCross() {
+    //         this.manipulator.remove(this.redCrossManipulator);
+    //         this.selected = false;
+    //         this.showDefaultColor();
+    //     }
+    // }
 
-        }
+    // class MiniatureFormation {
+    //     constructor(formation) {
+    //         var _declareManipulator = () => {
+    //             this.manipulator = new Manipulator(this).addOrdonator(3);
+    //             this.iconManipulator = new Manipulator(this).addOrdonator(4);
+    //             this.starsManipulator = new Manipulator(this).addOrdonator(5).mark(formation.label + 'StarManip');
+    //         }
+    //
+    //         _declareManipulator();
+    //         this.formation = formation;
+    //         this._acceptDrop = true;
+    //         this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
+    //         if(formation.imageSrc){
+    //             this.picture = formation.imageSrc;
+    //         }
+    //     }
+    //
+    //     dropImage(element){
+    //         this.picture = element.src;
+    //         this.drawPicture();
+    //         this.formation.saveFormation(null, this.formation.status, false, true);
+    //     }
+    //     drawPicture() {
+    //         this.imageManipulator = new Manipulator(this).addOrdonator(2);
+    //         this.manipulator.set(2,this.imageManipulator);
+    //         this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
+    //             this.imageManipulator.flush();
+    //             this.imageManipulator = null
+    //         });
+    //         this.image.draw(0,this.height/3, this.width/2, this.height/2,this.imageManipulator,0);
+    //         this.formation.imageSrc = this.image.src;
+    //         svg.addEvent(this.image.imageSVG,"mouseenter",
+    //             () => {
+    //                 !globalVariables.playerMode && this.image.imageMouseoverHandler();
+    //                 this.manipulator.get(0).color([130, 180, 255], 3, myColors.black);
+    //             });
+    //         this.image.imageSVG.mark(this.formation.label + 'SetupImage');
+    //     }
+    //
+    //     display(x, y, w, h) {
+    //         this.width = w;
+    //         this.height = h;
+    //         let iconSize = this.formation.parent.iconeSize;
+    //         let addSettingsIcon = () =>{
+    //             let iconCreator = new IconCreator();
+    //             let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
+    //             this.popOut.defineProperty(0, -h*1.5);
+    //             settingsIcon.addEvent('click', this.popOut.show.bind(this.popOut));
+    //             settingsIcon.position(-w / 4, -h * 2 / 3 - iconSize / 2);
+    //             settingsIcon.content.mark(this.formation.label + 'Setup');
+    //         };
+    //         let points = [
+    //             [w / 2, -h / 1.5],
+    //             [0, -h],
+    //             [-w / 2, -h / 1.5],
+    //             [-w / 2, h / 1.5],
+    //             [0, h],
+    //             [w / 2, h / 1.5]
+    //         ];
+    //         let createStars = () => {
+    //             let factor = 5;
+    //             let onStarClick = starObject => {
+    //                 starMiniatures.showStarDefaultColor();
+    //                 Server.updateSingleFormationStars(this.formation.formationId, starObject.id, this.formation._id).then(data => {
+    //                     console.log(data);
+    //                 });
+    //             };
+    //
+    //             let onStarHover = starObject => {
+    //                 starMiniatures.pop.setText(starMiniatures.getNoteEnum()[starObject.id]);
+    //                 starMiniatures.pop.show();
+    //                 for(var i=0, id; starObject.id != id; i++){
+    //                     starMiniatures[i].color(myColors.orange,0.2,myColors.orange);
+    //                     id = starMiniatures[i].id;
+    //                 }
+    //                 onMouseOverSelect(this.manipulator);
+    //             };
+    //
+    //             let onStarLeave = starObject =>{
+    //                 starMiniatures.pop.hide();
+    //                 starMiniatures.showStarDefaultColor();
+    //             };
+    //
+    //             let starMiniatures = createRating(this.manipulator, 2);
+    //             starMiniatures.popMark(this.formation.label).popPosition(0, -h/2);
+    //
+    //
+    //             if (playerMode) {
+    //                 starMiniatures.forEach(
+    //                     star => {
+    //                         svg.addEvent(star, "click", () => onStarClick(star));
+    //                         svg.addEvent(star, 'mouseenter', () => onStarHover(star));
+    //                         svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
+    //                     }
+    //                 );
+    //             }
+    //
+    //             starMiniatures.scaleStar(factor);
+    //             starMiniatures.starPosition(-(STAR_SPACE-1) * factor*3, - h / 3);
+    //
+    //             this.notationTextManipulator = new Manipulator(this);
+    //             let notationText = new svg.Text('Notez cette \n formation :').position(0,-h*0.5).font('Arial', 12, 10);
+    //             this.notationTextManipulator.add(notationText);
+    //             this.manipulator.add(this.notationTextManipulator);
+    //         };
+    //
+    //
+    //         if(this.formation.progress == 'done' && globalVariables.playerMode){
+    //             createStars();
+    //         }
+    //
+    //         !globalVariables.playerMode && addSettingsIcon();
+    //         this.formation.parent.formationsManipulator.add(this.manipulator);
+    //         let miniature = {
+    //             content: autoAdjustText(this.formation.label, w, h, 20, 'Arial', this.manipulator, 1), //new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
+    //             border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
+    //         };
+    //         //this.manipulator.set(1, miniature.content);
+    //         this.manipulator.set(0, miniature.border);
+    //         miniature.border.mark(this.formation.label);
+    //
+    //
+    //         if (!playerMode && statusEnum[this.formation.status]) {
+    //             let icon = statusEnum[this.formation.status].icon(iconSize);
+    //             icon.elements.forEach((element, index) => {
+    //                 this.iconManipulator.set(index, element);
+    //             });
+    //         }
+    //         this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
+    //         this.manipulator.move(x, y);
+    //         this.manipulator.add(this.iconManipulator);
+    //
+    //         playerMode && this.drawIcon();
+    //         if (this.picture){
+    //             this.drawPicture();
+    //         }
+    //         let onMouseOverSelect = manipulator => {
+    //             manipulator.get(0).color([130, 180, 255], 3, myColors.black);
+    //         };
+    //         let onMouseOutSelect = manipulator => {
+    //             manipulator.get(0).color([250, 250, 250], 1, myColors.grey);
+    //         };
+    //
+    //         this.setHandler("mouseenter", () => onMouseOverSelect(this.manipulator));
+    //         this.setHandler("mouseleave", () => onMouseOutSelect(this.manipulator));
+    //     }
+    //
+    //     drawIcon() {
+    //         let iconCreator = new IconCreator();
+    //         let icon = null;
+    //         switch (this.formation.progress) {
+    //             case "done":
+    //                 icon = iconCreator.createDoneIcon(this.iconManipulator); break;
+    //             case "inProgress":
+    //                 icon = iconCreator.createInProgressIcon(this.iconManipulator); break;
+    //             default:
+    //                 icon = iconCreator.createUndoneIcon(this.iconManipulator); break;
+    //         }
+    //         this.manipulator.add(this.iconManipulator);
+    //     }
+    //
+    //     setHandler(eventname, handler) {
+    //         this.manipulator.addEvent(eventname, handler);
+    //     }
+    //
+    //     removeHandler(eventname) {
+    //         this.manipulator.removeEvent(eventname);
+    //     }
+    // }
 
-        dropImage(element){
-            this.game.picture = element.src;
-            this.drawImage();
-        }
+    // class ReturnButton {
+    //     constructor(parent, label) {
+    //         this.parent = parent;
+    //         this.labelDefault = "Retour";
+    //         this.label = label ? label : this.labelDefault;
+    //         this.manipulator = new Manipulator(this);
+    //         this.manipulator.addOrdonator(2);
+    //         this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
+    //         this.manipulator.add(this.chevronManipulator);
+    //     }
+    //
+    //     display(x, y, w, h) {
+    //         let returnText = new svg.Text(this.label);
+    //         let returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
+    //         returnButton.resize(w, h);
+    //         returnButton.color(myColors.black, 0, []);
+    //         returnText.font("Arial", 20).anchor("start").position(0, 0);
+    //         this.manipulator.set(1, returnText);
+    //         let textSize = returnText.boundingRect();
+    //         let size = returnButton.boundingRect();
+    //         returnText.position(w + size.width / 2, size.height / 4);
+    //         const backgroundW = w + size.width + textSize.width;
+    //         let background = new svg.Rect(backgroundW * 1.15, h * 1.1)
+    //             .position(backgroundW / 2, 0)
+    //             .color(myColors.white, 0, myColors.white);
+    //         this.manipulator.set(0, background);
+    //         this.manipulator.move(x + w, y);
+    //         returnText.parentObj = this;
+    //         returnButton.parentObj = this;
+    //         background.parentObj = this;
+    //     }
+    //
+    //     setHandler(returnHandler){
+    //         this.manipulator.addEvent('click', returnHandler);
+    //     }
+    //
+    //     removeHandler(){
+    //         this.manipulator.removeEvent('click');
+    //     }
+    // }
 
-        checkIfParentDone() {
-            if (!globalVariables.playerMode) {
-                return true;
-            }
-            for (let i in this.game.parentGamesList) {
-                let game = this.game.parentFormation.findGameById(this.game.parentGamesList[i].id)
-                if (game.questionsAnswered.length != game.tabQuestions.length) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        drawImage(){
-            this.picture = new Picture(this.game.picture, true, this, '', ()=> {
-                this.manipulator.unset(3);
-                this.game.picture = null;
-            });
-            this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
-        }
-
-        display() {
-            let addSettingsIcon = () =>{
-                let iconCreator = new IconCreator();
-                let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
-                this.popOut.defineProperty(0, -this.height);
-                settingsIcon.addEvent('click', ()=>{
-                    this.popOut.show.call(this.popOut);
-                    this.selected = !this.selected;
-                    this.updateSelectionDesign();
-                });
-                settingsIcon.position(-this.width/2, -this.height/2- settingsIcon.getSize()/2);
-            };
-            !globalVariables.playerMode && addSettingsIcon();
-            this.updateProgress();
-            let icon = {
-                content: autoAdjustText(this.game.title, this.picture ? this.width * 0.9 : this.width, this.height, 15, 'Arial', this.manipulator),
-                underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0, 2 * MARGIN),
-                border: drawHexagon(this.width, this.height, 'H', 0.8).mark('hexBorder' + this.game.levelIndex + this.game.id)
-            };
-            this.border = icon.border;
-            this.content = icon.content;
-            this.content.text.mark('titlelevel' + this.game.levelIndex + this.game.id);
-            this.underContent = icon.underContent;
-            let video;
-            if (this.video) {
-                video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
-            }
-            if (this.game.picture) {
-                this.drawImage();
-            }
-            if (this.game.parentGamesList) {
-                let check = this.checkIfParentDone();
-                if (!check) {
-                    icon.border.color(myColors.grey, 1, myColors.grey);
-                }
-            }
-            this.manipulator.set(0, icon.border);
-            globalVariables.playerMode && this.manipulator.set(2, icon.underContent);
-            this.manipulator.mark('level' + this.game.levelIndex + this.game.id);
-            this.redCrossManipulator = new Manipulator(this);
-            this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
-            this.redCross.mark('gameRedCross');
-            this.redCrossManipulator.add(this.redCross);
-            svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
-            this.selected = false;
-            if (globalVariables.playerMode) {
-                this.drawIcon();
-            }
-            this.game.miniatureManipulator.add(this.manipulator);
-        }
-
-        updateProgress() {
-            this.game.progress = this.game.questionsAnswered.length == 0 ? '' :
-                this.game.questionsAnswered.length == this.game.tabQuestions.length ? 'done' : 'inProgress'
-        }
-
-        showDefaultColor() {
-            this.manipulator.ordonator.children[0]
-                .color(hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
-        }
-
-        redCrossClickHandler() {
-            let formationVue = this.game.parentFormation;
-            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            this.removeAllLinks();
-            formationVue.miniaturesManipulator.remove(this.manipulator);
-            this.manipulator.flush();
-            this.manipulator.remove(this.redCrossManipulator);
-            var longestLevelCandidates = formationVue.findLongestLevel();
-            if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
-                formationVue.levelWidth -= (formationVue.graphElementSize + formationVue.minimalMarginBetweenGraphElements);
-                formationVue.movePanelContent();
-            }
-            formationVue.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
-            var levelsTab = formationVue.levelsTab;
-            if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
-                levelsTab[this.game.levelIndex].redCrossClickHandler();
-            }
-            while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-                levelsTab[levelsTab.length - 1].manipulator.unset(2);
-                levelsTab[levelsTab.length - 1].manipulator.unset(1);
-                levelsTab[levelsTab.length - 1].manipulator.unset(0);
-                formationVue.levelsTab.pop();
-            }
-            formationVue.selectedGame.selected = false;
-            formationVue.selectedGame = null;
-            formationVue.displayGraph();
-        }
-
-        removeAllLinks() {
-            for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
-                if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
-                    links.splice(i, 1);
-            }
-        }
-
-        moveAllLinks() {
-            for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
-                if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
-                    links[i].arrow.redraw();
-            }
-        }
-
-        miniatureClickHandler() {
-            let formationVue = this.game.parentFormation;
-            formationVue.selectedArrow && formationVue.selectedArrow.arrowPath.component.listeners.click();
-            if (!this.selected) {
-                if (formationVue.selectedGame) {
-                    this.checkAndDrawValidity(formationVue.selectedGame);
-                    formationVue.selectedGame.selected = false;
-                    !playerMode && formationVue.selectedGame.removeRedCross();
-                }
-            }
-            this.selected = !this.selected;
-            this.updateSelectionDesign();
-        }
-
-
-        updateSelectionDesign() {
-            if (this.selected) {
-                this.game.parentFormation.selectedGame = this;
-                !playerMode && this.manipulator.add(this.redCrossManipulator);
-                this.manipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
-            } else {
-                this.checkAndDrawValidity(this);
-                !playerMode && this.redCrossManipulator.first.parent && this.manipulator.remove(this.redCrossManipulator);
-                this.game.parentFormation.selectedGame = null;
-            }
-        }
-
-        checkAndDrawValidity(gameMiniature) {
-            let displayWhenPublished = () => {
-                let result = true;
-                gameMiniature.game.tabQuestions.forEach(question => {
-                    if (!(question instanceof AddEmptyElementVue)) {
-                        question.questionType && question.questionType.validationTab.forEach(funcEl => {
-                            result = result && funcEl(question).isValid;
-                        })
-                    }
-                });
-                result ? gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey)
-                    : gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 3, myColors.red);
-            };
-            let displayWhenNotPublished = () => {
-                gameMiniature.manipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey);
-            };
-
-            (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
-        }
-
-        drawIcon() {
-            let iconCreator = new IconCreator();
-            if (!this.game.parentGamesList || this.checkIfParentDone()) {
-                switch (this.game.progress) {
-                    case "done":
-                        iconCreator.createDoneIcon(this.iconManipulator, 0);
-                        break;
-                    case "inProgress":
-                        iconCreator.createInProgressIcon(this.iconManipulator, 0);
-                        break;
-                    default:
-                        iconCreator.createUndoneIcon(this.iconManipulator, 0);
-                        break;
-                }
-                this.manipulator.add(this.iconManipulator);
-                this.iconManipulator.move(this.size / 2, -this.size / 3);
-            }
-            else if (this.game.parentGamesList && !this.checkIfParentDone()) {
-                let lock = new Picture('/images/padlock2.png', false, this, '', null);
-                lock.draw(this.size / 2, -this.size / 3, this.size / 5, this.size / 5, this.iconManipulator, 1);
-                this.manipulator.add(this.iconManipulator);
-            }
-        }
-
-        removeRedCross() {
-            this.manipulator.remove(this.redCrossManipulator);
-            this.selected = false;
-            this.showDefaultColor();
-        }
-    }
-
-    class MiniatureFormation {
-        constructor(formation) {
-            var _declareManipulator = () => {
-                this.manipulator = new Manipulator(this).addOrdonator(3);
-                this.iconManipulator = new Manipulator(this).addOrdonator(4);
-                this.starsManipulator = new Manipulator(this).addOrdonator(5).mark(formation.label + 'StarManip');
-            }
-
-            _declareManipulator();
-            this.formation = formation;
-            this._acceptDrop = true;
-            this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
-            if(formation.imageSrc){
-                this.picture = formation.imageSrc;
-            }
-        }
-
-        dropImage(element){
-            this.picture = element.src;
-            this.drawPicture();
-            this.formation.saveFormation(null, this.formation.status, false, true);
-        }
-        drawPicture() {
-            this.imageManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.set(2,this.imageManipulator);
-            this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
-                this.imageManipulator.flush();
-                this.imageManipulator = null
-            });
-            this.image.draw(0,this.height/3, this.width/2, this.height/2,this.imageManipulator,0);
-            this.formation.imageSrc = this.image.src;
-            svg.addEvent(this.image.imageSVG,"mouseenter",
-                () => {
-                    !globalVariables.playerMode && this.image.imageMouseoverHandler();
-                    this.manipulator.get(0).color([130, 180, 255], 3, myColors.black);
-                });
-            this.image.imageSVG.mark(this.formation.label + 'SetupImage');
-        }
-
-        display(x, y, w, h) {
-            this.width = w;
-            this.height = h;
-            let iconSize = this.formation.parent.iconeSize;
-            let addSettingsIcon = () =>{
-                let iconCreator = new IconCreator();
-                let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
-                this.popOut.defineProperty(0, -h*1.5);
-                settingsIcon.addEvent('click', this.popOut.show.bind(this.popOut));
-                settingsIcon.position(-w / 4, -h * 2 / 3 - iconSize / 2);
-                settingsIcon.content.mark(this.formation.label + 'Setup');
-            };
-            let points = [
-                [w / 2, -h / 1.5],
-                [0, -h],
-                [-w / 2, -h / 1.5],
-                [-w / 2, h / 1.5],
-                [0, h],
-                [w / 2, h / 1.5]
-            ];
-            let createStars = () => {
-                let factor = 5;
-                let onStarClick = starObject => {
-                    starMiniatures.showStarDefaultColor();
-                    Server.updateSingleFormationStars(this.formation.formationId, starObject.id, this.formation._id).then(data => {
-                        console.log(data);
-                    });
-                };
-
-                let onStarHover = starObject => {
-                    starMiniatures.pop.setText(starMiniatures.getNoteEnum()[starObject.id]);
-                    starMiniatures.pop.show();
-                    for(var i=0, id; starObject.id != id; i++){
-                        starMiniatures[i].color(myColors.orange,0.2,myColors.orange);
-                        id = starMiniatures[i].id;
-                    }
-                    onMouseOverSelect(this.manipulator);
-                };
-
-                let onStarLeave = starObject =>{
-                    starMiniatures.pop.hide();
-                    starMiniatures.showStarDefaultColor();
-                };
-
-                let starMiniatures = createRating(this.manipulator, 2);
-                starMiniatures.popMark(this.formation.label).popPosition(0, -h/2);
-
-
-                if (playerMode) {
-                    starMiniatures.forEach(
-                        star => {
-                            svg.addEvent(star, "click", () => onStarClick(star));
-                            svg.addEvent(star, 'mouseenter', () => onStarHover(star));
-                            svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
-                        }
-                    );
-                }
-
-                starMiniatures.scaleStar(factor);
-                starMiniatures.starPosition(-(STAR_SPACE-1) * factor*3, - h / 3);
-
-                this.notationTextManipulator = new Manipulator(this);
-                let notationText = new svg.Text('Notez cette \n formation :').position(0,-h*0.5).font('Arial', 12, 10);
-                this.notationTextManipulator.add(notationText);
-                this.manipulator.add(this.notationTextManipulator);
-            };
-
-
-            if(this.formation.progress == 'done' && globalVariables.playerMode){
-                createStars();
-            }
-
-            !globalVariables.playerMode && addSettingsIcon();
-            this.formation.parent.formationsManipulator.add(this.manipulator);
-            let miniature = {
-                content: autoAdjustText(this.formation.label, w, h, 20, 'Arial', this.manipulator, 1), //new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
-                border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
-            };
-            //this.manipulator.set(1, miniature.content);
-            this.manipulator.set(0, miniature.border);
-            miniature.border.mark(this.formation.label);
-
-
-            if (!playerMode && statusEnum[this.formation.status]) {
-                let icon = statusEnum[this.formation.status].icon(iconSize);
-                icon.elements.forEach((element, index) => {
-                    this.iconManipulator.set(index, element);
-                });
-            }
-            this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
-            this.manipulator.move(x, y);
-            this.manipulator.add(this.iconManipulator);
-
-            playerMode && this.drawIcon();
-            if (this.picture){
-                this.drawPicture();
-            }
-            let onMouseOverSelect = manipulator => {
-                manipulator.get(0).color([130, 180, 255], 3, myColors.black);
-            };
-            let onMouseOutSelect = manipulator => {
-                manipulator.get(0).color([250, 250, 250], 1, myColors.grey);
-            };
-
-            this.setHandler("mouseenter", () => onMouseOverSelect(this.manipulator));
-            this.setHandler("mouseleave", () => onMouseOutSelect(this.manipulator));
-        }
-
-        drawIcon() {
-            let iconCreator = new IconCreator();
-            let icon = null;
-            switch (this.formation.progress) {
-                case "done":
-                    icon = iconCreator.createDoneIcon(this.iconManipulator); break;
-                case "inProgress":
-                    icon = iconCreator.createInProgressIcon(this.iconManipulator); break;
-                default:
-                    icon = iconCreator.createUndoneIcon(this.iconManipulator); break;
-            }
-            this.manipulator.add(this.iconManipulator);
-        }
-
-        setHandler(eventname, handler) {
-            this.manipulator.addEvent(eventname, handler);
-        }
-
-        removeHandler(eventname) {
-            this.manipulator.removeEvent(eventname);
-        }
-    }
-
-    class ReturnButton {
-        constructor(parent, label) {
-            this.parent = parent;
-            this.labelDefault = "Retour";
-            this.label = label ? label : this.labelDefault;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(2);
-            this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
-            this.manipulator.add(this.chevronManipulator);
-        }
-
-        display(x, y, w, h) {
-            let returnText = new svg.Text(this.label);
-            let returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
-            returnButton.resize(w, h);
-            returnButton.color(myColors.black, 0, []);
-            returnText.font("Arial", 20).anchor("start").position(0, 0);
-            this.manipulator.set(1, returnText);
-            let textSize = returnText.boundingRect();
-            let size = returnButton.boundingRect();
-            returnText.position(w + size.width / 2, size.height / 4);
-            const backgroundW = w + size.width + textSize.width;
-            let background = new svg.Rect(backgroundW * 1.15, h * 1.1)
-                .position(backgroundW / 2, 0)
-                .color(myColors.white, 0, myColors.white);
-            this.manipulator.set(0, background);
-            this.manipulator.move(x + w, y);
-            returnText.parentObj = this;
-            returnButton.parentObj = this;
-            background.parentObj = this;
-        }
-
-        setHandler(returnHandler){
-            this.manipulator.addEvent('click', returnHandler);
-        }
-
-        removeHandler(){
-            this.manipulator.removeEvent('click');
-        }
-    }
-
-    class Puzzle {
-        constructor(rows, columns, elementsArray, orientation = "upToDown", parentObject) {
-            this.rows = rows;
-            this.columns = columns;
-            this.nbOfVisibleElements = this.rows * this.columns;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(this.nbOfVisibleElements + 3); // Pour les chevrons
-            this.leftChevronManipulator = new Manipulator(this).addOrdonator(3);
-            this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
-            this.elementsArray = elementsArray;
-            this.visibleElementsArray = [];
-            this.indexOfFirstVisibleElement = 0;
-            this.fillVisibleElementsArray(orientation);
-            this.chevronMaxSize = 75;
-            this.chevronMinSize = 15;
-            this.orientation = orientation;
-            this.parentObject = parentObject;
-            this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
-            this.rightChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
-            this.leftChevron.handler = () => {
-                drawings.component.clean();
-                this.updateStartPosition("left");
-                this.fillVisibleElementsArray(this.orientation);
-                this.display();
-            };
-            this.rightChevron.handler = () => {
-                drawings.component.clean();
-                this.updateStartPosition("right");
-                this.fillVisibleElementsArray(this.orientation);
-                this.display();
-            };
-        }
-
-        checkPuzzleElementsArrayValidity() {
-            this.visibleElementsArray.forEach(array => {
-                array.forEach(
-                    element => {
-                        if (!(element instanceof AddEmptyElementVue)) {
-                            element.checkValidity();
-                        }
-                    });
-            });
-        }
-
-        updateElementsArray(newElementsArray) {
-            this.elementsArray = newElementsArray;
-        }
-
-        drawChevrons() {
-            this.leftChevron.resize(this.chevronSize, this.chevronSize);
-            this.rightChevron.resize(this.chevronSize, this.chevronSize);
-            this.leftChevron.move((this.chevronSize - this.width) / 2, 0);
-            this.rightChevron.move((this.width - this.chevronSize) / 2, 0);
-            this.updateChevrons();
-            let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
-            let updateRightChevron = this.rightChevron && this.rightChevron._activated;
-            updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
-            updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
-            this.manipulator.set(1, this.leftChevronManipulator);
-            this.manipulator.set(2, this.rightChevronManipulator);
-        }
-
-        hideChevrons() {
-            this.manipulator.unset(1);
-            this.manipulator.unset(2);
-        }
-
-        updateChevrons() {
-            if (this.indexOfFirstVisibleElement === 0) {
-                this.leftChevron && this.leftChevron.desactivate();
-                this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
-            }
-            else if (this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length) {
-                this.leftChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
-                this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
-            }
-            else {
-                this.rightChevron && this.rightChevron.desactivate();
-                this.rightChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
-            }
-        }
-
-        updateStartPosition(leftOrRight) {
-            if (leftOrRight === 'right') {
-                var orientation = 1;
-            }
-            else if (leftOrRight === 'left') {
-                orientation = -1;
-            }
-            if (this.columns === 1) {
-                this.indexOfFirstVisibleElement += orientation;
-            }
-            else {
-                let shift = (this.columns - 1) * this.rows * orientation;
-                let temporaryIndex = this.indexOfFirstVisibleElement + shift;
-                if (temporaryIndex > 0) {
-                    let overflow = (temporaryIndex + shift) - (this.elementsArray.length);
-                    let result = ((overflow / this.rows) % 1 === 0) ? overflow / this.rows : Math.floor(overflow / this.rows) + 1;
-                    if (result > 0) {
-                        temporaryIndex -= result * this.rows + 1;
-                    }
-                }
-                else {
-                    temporaryIndex = 0;
-                }
-                this.indexOfFirstVisibleElement = temporaryIndex;
-            }
-            this.updateChevrons();
-        }
-
-        fillVisibleElementsArray(orientation) {
-            this.visibleElementsArray = [];
-            if (orientation === "leftToRight") {
-                var count = this.indexOfFirstVisibleElement;
-                var stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement + 1) + this.nbOfVisibleElements));
-                for (var row = 0; row < this.rows; row++) {
-                    var rowArray = [];
-                    for (var column = 0; column < this.columns; column++) {
-                        let index = count;
-                        if (typeof this.elementsArray[index] !== "undefined") {
-                            (this.elementsArray[index].puzzleRowIndex = row);
-                            (this.elementsArray[index].puzzleColumnIndex = column);
-                            count++;
-                            rowArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows - 1) * row * this.columns + column]);
-                        }
-                    }
-                    this.visibleElementsArray.push(rowArray);
-                    if (count >= stop) {
-                        return true;
-                    }
-                }
-            } else if (orientation === "upToDown") {
-                count = this.indexOfFirstVisibleElement;
-                stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement + 1) + this.nbOfVisibleElements));
-                for (column = 0; column < this.columns; column++) {
-                    var columnsArray = [];
-                    for (row = 0; row < this.rows; row++) {
-                        let index = count;
-                        if (this.elementsArray[index]) {
-                            this.elementsArray[index].puzzleRowIndex = row;
-                            this.elementsArray[index].puzzleColumnIndex = column;
-                            count++;
-                            columnsArray.push(this.elementsArray[index]);
-                        }
-                    }
-                    this.visibleElementsArray.push(columnsArray);
-                    if (count >= stop) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        adjustElementsDimensions() {
-            this.elementWidth = (this.visibleArea.width - MARGIN * (this.columns - 1)) / this.columns;
-            this.elementHeight = (this.visibleArea.height - MARGIN * (this.rows + 1)) / this.rows;
-            for (var i = this.indexOfFirstVisibleElement; i < this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++) {
-                if (typeof this.elementsArray[i] !== "undefined") {
-                    this.elementsArray[i].width = this.elementWidth;
-                    this.elementsArray[i].height = this.elementHeight;
-                }
-            }
-        }
-
-        adjustElementsPositions() {
-            for (var i = this.indexOfFirstVisibleElement; i < this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++) {
-                if (typeof this.elementsArray[i] !== "undefined") {
-                    this.elementsArray[i].x = -(this.visibleArea.width - this.elementsArray[i].width) / 2 + this.elementsArray[i].puzzleColumnIndex * (this.elementWidth + MARGIN);
-                    this.elementsArray[i].y = -(this.visibleArea.height - this.elementsArray[i].height) / 2 + this.elementsArray[i].puzzleRowIndex * (this.elementHeight + MARGIN) + MARGIN;
-                }
-            }
-        }
-
-        display(x, y, w, h, needChevrons = true) {
-            if (this.parentObject.indexOfEditedQuestion) {
-                this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush();// questionPuzzle
-            }
-            (typeof x !== "undefined") && (this.x = x);
-            (typeof y !== "undefined") && (this.y = y);
-            (typeof w !== "undefined") && (this.width = w);
-            (typeof h !== "undefined") && (this.height = h);
-            this.manipulator.move(this.x, this.y);
-            this.chevronSize = Math.max(Math.min(this.height * 0.15, this.width * 0.1, this.chevronMaxSize), this.chevronMinSize);
-            this.visibleArea = {
-                width: needChevrons ? (this.width - 2 * this.chevronSize) : (this.width),
-                height: this.height
-            };
-            this.chevronsDisplayed = ((this.elementsArray.length > this.rows * this.columns) && needChevrons);
-            this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
-            this.adjustElementsDimensions();
-            this.adjustElementsPositions();
-            let itNumber = 0;
-            for (var i = 3; i < this.nbOfVisibleElements + 3; i++) {
-                this.manipulator.unset(i);
-            }
-            this.visibleElementsArray.forEach(it => {
-                let itElem = 0;
-                it.forEach(elem => {
-                    let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                    this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
-                    elem.display(elem.x, elem.y + ((globalVariables.playerMode) ? SPACING_Y_INCORRECT_ANSWER * itElem++ : 0),
-                        elem.width, elem.height);
-                });
-                itNumber++;
-            });
-        }
-    }
-
-    class Server {
-        constructor() {
-        }
-
-        static connect(mail, password, cookie) {
-            return dbListener.httpPostAsync('/auth/connect', {mailAddress: mail, password: password, cookie: cookie})
-        }
-        static checkCookie() {
-            return dbListener.httpGetAsync('/auth/verify')
-        }
-
-        static inscription(user) {
-            return dbListener.httpPostAsync('/users/inscription', user)
-        }
-        static saveProgress(progress){
-            return dbListener.httpPostAsync('users/self/progress', progress);
-        }
-        static saveLastAction(object) {
-            return dbListener.httpPostAsync('users/self/lastAction', object);
-        }
-        static getUser() {
-            return dbListener.httpGetAsync("/users/self")
-        }
-        static resetPassword(mailAddress) {
-            return dbListener.httpPostAsync('/users/password/reset', mailAddress);
-        }
-        static checkTimestampPassword(id) {
-            return dbListener.httpPostAsync('/users/password/new', id);
-        }
-        static updatePassword(id, password) {
-            return dbListener.httpPostAsync('/users/password/update', {id: id, password: password});
-        }
-
-        static getAllFormations() {
-            return dbListener.httpGetAsync('/formations');
-        }
-        static getFormationsProgress(id) {
-            return dbListener.httpGetAsync('/formations/' + id + '/progression');
-        }
-        static getVersionById(id) {
-            return dbListener.httpGetAsync("/formations/" + id)
-        }
-        static replaceFormation(id, newFormation, ignoredData) {
-            //newFormation.status = status;
-            return dbListener.httpPostAsync("/formations/" + id, newFormation, ignoredData)
-        }
-        static insertFormation(newFormation, status, ignoredData) {
-            newFormation.status = status;
-            return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
-        }
-        static deactivateFormation(id, ignoredData) {
-            return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
-        }
-        static renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
-            return dbListener.httpPostAsync('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
-        }
-        static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
-        }
-
-        static upload(file, onProgress, onAbort) {
-            return dbListener.httpUpload("/medias/upload", file, onProgress, this.deleteVideo);
-        }
-        static getImages() {
-            return dbListener.httpGetAsync('/medias/images');
-        }
-        static deleteImage(image) {
-            return dbListener.httpPostAsync("/medias/images/delete", image);
-        }
-        static getVideos() {
-            return dbListener.httpGetAsync('/medias/videos');
-        }
-        static deleteVideo(video) {
-            return dbListener.httpPostAsync("/medias/videos/delete", video);
-        }
-        static updateSingleFormationStars(id, starId, versionId) {
-            return dbListener.httpPostAsync('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
-        }
-    }
+    // class Puzzle {
+    //     constructor(rows, columns, elementsArray, orientation = "upToDown", parentObject) {
+    //         this.rows = rows;
+    //         this.columns = columns;
+    //         this.nbOfVisibleElements = this.rows * this.columns;
+    //         this.manipulator = new Manipulator(this);
+    //         this.manipulator.addOrdonator(this.nbOfVisibleElements + 3); // Pour les chevrons
+    //         this.leftChevronManipulator = new Manipulator(this).addOrdonator(3);
+    //         this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
+    //         this.elementsArray = elementsArray;
+    //         this.visibleElementsArray = [];
+    //         this.indexOfFirstVisibleElement = 0;
+    //         this.fillVisibleElementsArray(orientation);
+    //         this.chevronMaxSize = 75;
+    //         this.chevronMinSize = 15;
+    //         this.orientation = orientation;
+    //         this.parentObject = parentObject;
+    //         this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
+    //         this.rightChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
+    //         this.leftChevron.handler = () => {
+    //             drawings.component.clean();
+    //             this.updateStartPosition("left");
+    //             this.fillVisibleElementsArray(this.orientation);
+    //             this.display();
+    //         };
+    //         this.rightChevron.handler = () => {
+    //             drawings.component.clean();
+    //             this.updateStartPosition("right");
+    //             this.fillVisibleElementsArray(this.orientation);
+    //             this.display();
+    //         };
+    //     }
+    //
+    //     checkPuzzleElementsArrayValidity() {
+    //         this.visibleElementsArray.forEach(array => {
+    //             array.forEach(
+    //                 element => {
+    //                     if (!(element instanceof AddEmptyElementVue)) {
+    //                         element.checkValidity();
+    //                     }
+    //                 });
+    //         });
+    //     }
+    //
+    //     updateElementsArray(newElementsArray) {
+    //         this.elementsArray = newElementsArray;
+    //     }
+    //
+    //     drawChevrons() {
+    //         this.leftChevron.resize(this.chevronSize, this.chevronSize);
+    //         this.rightChevron.resize(this.chevronSize, this.chevronSize);
+    //         this.leftChevron.move((this.chevronSize - this.width) / 2, 0);
+    //         this.rightChevron.move((this.width - this.chevronSize) / 2, 0);
+    //         this.updateChevrons();
+    //         let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
+    //         let updateRightChevron = this.rightChevron && this.rightChevron._activated;
+    //         updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
+    //         updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
+    //         this.manipulator.set(1, this.leftChevronManipulator);
+    //         this.manipulator.set(2, this.rightChevronManipulator);
+    //     }
+    //
+    //     hideChevrons() {
+    //         this.manipulator.unset(1);
+    //         this.manipulator.unset(2);
+    //     }
+    //
+    //     updateChevrons() {
+    //         if (this.indexOfFirstVisibleElement === 0) {
+    //             this.leftChevron && this.leftChevron.desactivate();
+    //             this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
+    //         }
+    //         else if (this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length) {
+    //             this.leftChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
+    //             this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
+    //         }
+    //         else {
+    //             this.rightChevron && this.rightChevron.desactivate();
+    //             this.rightChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
+    //         }
+    //     }
+    //
+    //     updateStartPosition(leftOrRight) {
+    //         if (leftOrRight === 'right') {
+    //             var orientation = 1;
+    //         }
+    //         else if (leftOrRight === 'left') {
+    //             orientation = -1;
+    //         }
+    //         if (this.columns === 1) {
+    //             this.indexOfFirstVisibleElement += orientation;
+    //         }
+    //         else {
+    //             let shift = (this.columns - 1) * this.rows * orientation;
+    //             let temporaryIndex = this.indexOfFirstVisibleElement + shift;
+    //             if (temporaryIndex > 0) {
+    //                 let overflow = (temporaryIndex + shift) - (this.elementsArray.length);
+    //                 let result = ((overflow / this.rows) % 1 === 0) ? overflow / this.rows : Math.floor(overflow / this.rows) + 1;
+    //                 if (result > 0) {
+    //                     temporaryIndex -= result * this.rows + 1;
+    //                 }
+    //             }
+    //             else {
+    //                 temporaryIndex = 0;
+    //             }
+    //             this.indexOfFirstVisibleElement = temporaryIndex;
+    //         }
+    //         this.updateChevrons();
+    //     }
+    //
+    //     fillVisibleElementsArray(orientation) {
+    //         this.visibleElementsArray = [];
+    //         if (orientation === "leftToRight") {
+    //             var count = this.indexOfFirstVisibleElement;
+    //             var stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement + 1) + this.nbOfVisibleElements));
+    //             for (var row = 0; row < this.rows; row++) {
+    //                 var rowArray = [];
+    //                 for (var column = 0; column < this.columns; column++) {
+    //                     let index = count;
+    //                     if (typeof this.elementsArray[index] !== "undefined") {
+    //                         (this.elementsArray[index].puzzleRowIndex = row);
+    //                         (this.elementsArray[index].puzzleColumnIndex = column);
+    //                         count++;
+    //                         rowArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows - 1) * row * this.columns + column]);
+    //                     }
+    //                 }
+    //                 this.visibleElementsArray.push(rowArray);
+    //                 if (count >= stop) {
+    //                     return true;
+    //                 }
+    //             }
+    //         } else if (orientation === "upToDown") {
+    //             count = this.indexOfFirstVisibleElement;
+    //             stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement + 1) + this.nbOfVisibleElements));
+    //             for (column = 0; column < this.columns; column++) {
+    //                 var columnsArray = [];
+    //                 for (row = 0; row < this.rows; row++) {
+    //                     let index = count;
+    //                     if (this.elementsArray[index]) {
+    //                         this.elementsArray[index].puzzleRowIndex = row;
+    //                         this.elementsArray[index].puzzleColumnIndex = column;
+    //                         count++;
+    //                         columnsArray.push(this.elementsArray[index]);
+    //                     }
+    //                 }
+    //                 this.visibleElementsArray.push(columnsArray);
+    //                 if (count >= stop) {
+    //                     return true;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    //     adjustElementsDimensions() {
+    //         this.elementWidth = (this.visibleArea.width - MARGIN * (this.columns - 1)) / this.columns;
+    //         this.elementHeight = (this.visibleArea.height - MARGIN * (this.rows + 1)) / this.rows;
+    //         for (var i = this.indexOfFirstVisibleElement; i < this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++) {
+    //             if (typeof this.elementsArray[i] !== "undefined") {
+    //                 this.elementsArray[i].width = this.elementWidth;
+    //                 this.elementsArray[i].height = this.elementHeight;
+    //             }
+    //         }
+    //     }
+    //
+    //     adjustElementsPositions() {
+    //         for (var i = this.indexOfFirstVisibleElement; i < this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++) {
+    //             if (typeof this.elementsArray[i] !== "undefined") {
+    //                 this.elementsArray[i].x = -(this.visibleArea.width - this.elementsArray[i].width) / 2 + this.elementsArray[i].puzzleColumnIndex * (this.elementWidth + MARGIN);
+    //                 this.elementsArray[i].y = -(this.visibleArea.height - this.elementsArray[i].height) / 2 + this.elementsArray[i].puzzleRowIndex * (this.elementHeight + MARGIN) + MARGIN;
+    //             }
+    //         }
+    //     }
+    //
+    //     display(x, y, w, h, needChevrons = true) {
+    //         if (this.parentObject.indexOfEditedQuestion) {
+    //             this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush();// questionPuzzle
+    //         }
+    //         (typeof x !== "undefined") && (this.x = x);
+    //         (typeof y !== "undefined") && (this.y = y);
+    //         (typeof w !== "undefined") && (this.width = w);
+    //         (typeof h !== "undefined") && (this.height = h);
+    //         this.manipulator.move(this.x, this.y);
+    //         this.chevronSize = Math.max(Math.min(this.height * 0.15, this.width * 0.1, this.chevronMaxSize), this.chevronMinSize);
+    //         this.visibleArea = {
+    //             width: needChevrons ? (this.width - 2 * this.chevronSize) : (this.width),
+    //             height: this.height
+    //         };
+    //         this.chevronsDisplayed = ((this.elementsArray.length > this.rows * this.columns) && needChevrons);
+    //         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
+    //         this.adjustElementsDimensions();
+    //         this.adjustElementsPositions();
+    //         let itNumber = 0;
+    //         for (var i = 3; i < this.nbOfVisibleElements + 3; i++) {
+    //             this.manipulator.unset(i);
+    //         }
+    //         this.visibleElementsArray.forEach(it => {
+    //             let itElem = 0;
+    //             it.forEach(elem => {
+    //                 let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
+    //                 this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
+    //                 elem.display(elem.x, elem.y + ((globalVariables.playerMode) ? SPACING_Y_INCORRECT_ANSWER * itElem++ : 0),
+    //                     elem.width, elem.height);
+    //             });
+    //             itNumber++;
+    //         });
+    //     }
+    // }
 
     svg.TextItem.prototype.enter = function () {
         this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
@@ -2394,12 +2314,11 @@ exports.Util = function (globalVariables) {
         Bdd,
         Drawings,
         Manipulator,
-        MiniatureGame,
-        MiniatureFormation,
+        // MiniatureGame,
+        // MiniatureFormation,
         Picture,
-        Puzzle,
-        ReturnButton,
-        Server,
+        // Puzzle,
+        // ReturnButton,
         drawHexagon,
         resizeStringForText,
         goDirectlyToLastAction,

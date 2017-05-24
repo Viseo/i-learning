@@ -209,7 +209,7 @@ exports.FormationAdminV = function(globalVariables) {
                     let miniature = {
                         border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).color(myColors.white, 1, myColors.grey).corners(10, 10),
                         content: new svg.Text(game.type).font('Arial', MINIATURE_FONT_SIZE),
-                        manipulator: new Manipulator(this)
+                        manipulator: new Manipulator(this).mark(game.type + "LibManip")
                     }
 
 
@@ -224,8 +224,7 @@ exports.FormationAdminV = function(globalVariables) {
                
 
                 this.gameLibraryManipulator.add(miniature.manipulator);
-
-                let createDraggableCopy = () => {
+                let createDraggableCopy = event => {
                     let manipulator = new Manipulator(this).addOrdonator(2);
                     drawings.piste.add(manipulator);
                     let point = miniature.border.globalPoint(0, 0);
@@ -310,34 +309,6 @@ exports.FormationAdminV = function(globalVariables) {
             }
             createGraphPanel();
             createButtons();
-            // let testTarget = {
-            //     id: "quizz1",
-            //     label: "test de quiz",
-            //     questions: [
-            //         {
-            //             label: "question 1",
-            //             multipleChoice: false,
-            //             answers: [
-            //                 {label:"réponse 1", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"reponse 2", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"}
-            //             ],
-            //             media: "../images/bidon.png"
-            //         },
-            //         {
-            //             label: "question 2",
-            //             multipleChoice: true,
-            //             answers: [
-            //                 {label:"réponse 1", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"reponse 2", correct: true, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"réponse 3", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"réponse 4", correct: false, explanation:{label:"parce que !"}, media: "../images/bidon.png"},
-            //                 {label:"reponse 5", correct: true, explanation:{label:"parce que :=) !"}, media: "../images/bidon.png"},
-            //             ],
-            //             media: "../images/bidon.png"
-            //         }
-            //     ]
-            // }
-            // this.testLoadQuiz(testTarget);
             let formation = this.getFormation();
             formation.levelsTab.forEach(level =>{
                 this.displayLevel(level);
@@ -546,7 +517,7 @@ exports.FormationAdminV = function(globalVariables) {
                     this.removeGame(miniature.manipulator.game);
                 });
                 miniature.manipulator.game = game;
-                game.miniatureGame = miniature;
+                miniature.manipulator.miniatureGame = miniature;
                 miniature.conf = {
                     drag: (what, x, y) => {
                         if(this.arrowMode) {
@@ -570,8 +541,8 @@ exports.FormationAdminV = function(globalVariables) {
                         if(this.arrowMode){
                             let point = whatParent.globalPoint(finalX,finalY);
                             let target = this.graphManipulator.last.getTarget(point.x,point.y);
-                            if(target && !target.notTarget && what.game.miniatureGame != target.parentManip.game.miniatureGame
-                                && target.parentManip.game.miniatureGame) {
+                            if(target && !target.notTarget && what.miniatureGame != target.parentManip.miniatureGame
+                                && target.parentManip.miniatureGame) {
                                 let child = target.parentManip.game;
                                 this.createLink(this.currentParent, child);
                             }
@@ -584,7 +555,7 @@ exports.FormationAdminV = function(globalVariables) {
                         }
                     },
                     clicked : (what) => {
-                        miniatureSelection(what.game.miniatureGame);
+                        miniatureSelection(what.miniatureGame);
                     },
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x,what.y);

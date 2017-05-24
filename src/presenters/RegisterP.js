@@ -7,7 +7,6 @@ const RegisterV = require('../views/RegisterV').RegisterV;
 exports.RegisterP = function (globalVariables) {
     const registerView = RegisterV(globalVariables),
         runtime = globalVariables.runtime,
-        Server = globalVariables.util.Server,
         Presenter = globalVariables.Presenter;
 
     class RegisterP extends Presenter{
@@ -67,23 +66,31 @@ exports.RegisterP = function (globalVariables) {
             _declareTextFields();
         }
 
+        _register(userInfos){
+            return this.state.registerNewUser(userInfos);
+        }
+
         registerNewUser() {
+            let error;
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
-                let allValid = this._fields.reduce((o, n) => o && n.valid, true)
+                let allValid = this._fields.reduce((o, n) => o && n.valid, true);
+                if(!allValid){
+                    error = this._fields.find(f => f.valid == false).errorMessage;
+                }
                 return isPasswordConfirmed && allValid;
             };
 
             if (_checkInputs()) {
-                let tempObject = {
+                let userInfos = {
                     lastName: this._fields[0].text,
                     firstName: this._fields[1].text,
                     mailAddress: this._fields[2].text,
                     password: runtime.twinBcrypt(this._fields[3].text)
                 };
-                return Server.inscription(tempObject);
+                return this._register(userInfos);
             } else {
-                return Promise.reject("Veuillez remplir correctement tous les champs")
+                return Promise.reject(JSON.stringify({reason:error}));
             }
         }
 

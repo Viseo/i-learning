@@ -36,8 +36,8 @@ exports.QuizQuestionV = function (globalVariables) {
                 this.manipulator = new Manipulator(this);
                 this.questionManipulator = new Manipulator(this).addOrdonator(4);
                 this.returnButtonManipulator = new Manipulator(this);
-                this.leftChevronManipulator = new Manipulator(this);
-                this.rightChevronManipulator = new Manipulator(this);
+                this.leftChevronManipulator = new Manipulator(this).mark('leftChevron');
+                this.rightChevronManipulator = new Manipulator(this).mark('rightChevron');
                 this.answersManipulator = new Manipulator(this);
                 this.helpManipulator = new Manipulator(this);
                 this.scoreManipulator = new Manipulator(this);
@@ -89,7 +89,9 @@ exports.QuizQuestionV = function (globalVariables) {
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
                 this.questionManipulator.set(0, line);
-                let title = new svg.Text(this.getCurrentQuestionLabel()).font(FONT, FONT_SIZE);
+                let title = new svg.Text(this.getCurrentQuestionLabel())
+                    .font(FONT, FONT_SIZE)
+                    .mark('questionTitle'+this.getId());
                 this.questionManipulator.set(3, title);
                 //Title in the left corner  with limit 15 char
                 let formationTitle = autoAdjustText(
@@ -155,7 +157,7 @@ exports.QuizQuestionV = function (globalVariables) {
                         this.selectAnswer(index);
                     }
 
-                    let manip = new Manipulator(this).addOrdonator(3); //keep one layer for color answer
+                    let manip = new Manipulator(this).addOrdonator(3).mark(answer.label); //keep one layer for color answer
                     let border = new svg.Rect(this.answerWidth, this.answerHeight).color(myColors.white, 1, myColors.black).corners(10, 10);
                     let colorRect = new svg.Rect(this.answerWidth, this.answerHeight).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
                     let colored = false;
@@ -191,6 +193,7 @@ exports.QuizQuestionV = function (globalVariables) {
                     let validateButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Valider");
                     validateButton.position(BUTTON_WIDTH/2 + MARGIN/2, 0);
                     validateButton.onClick(this.confirmQuestion.bind(this));
+                    validateButton.glass.mark('validateButton');
                     this.buttonsManipulator.add(validateButton.component)
                 }
                 var _displayResetButton = () => {
@@ -249,7 +252,7 @@ exports.QuizQuestionV = function (globalVariables) {
             }
             var _displayText = () => {
                 let score = this.getScore();
-                let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreText');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.scoreManipulator);
                 this.scoreManipulator.add(scoreText);
                 icon.position(-scoreText.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
@@ -341,6 +344,10 @@ exports.QuizQuestionV = function (globalVariables) {
 
         getLabel() {
             return this.presenter.getLabel();
+        }
+
+        getId(){
+            return this.presenter.getId();
         }
 
         isMultipleChoice(){

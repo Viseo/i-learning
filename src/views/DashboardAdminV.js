@@ -80,9 +80,13 @@ exports.DashboardAdmin = function(globalVariables){
 
             let addFormationDisplay = ()=>{
                 let addFormationTextArea = new gui.TextField(0,0, INPUT_SIZE.w, INPUT_SIZE.h, 'Ajouter une formation')
+                // addFormationTextArea.component.mark('addFormationTextArea');
+                addFormationTextArea.text.mark('addFormationText');
+                addFormationTextArea.glass.mark('addFormationGlass');
                 addFormationTextArea.font('Arial', 15).color(myColors.grey);
                 addFormationTextArea.text.position(-INPUT_SIZE.w/2 + MARGIN, 7.5);
                 addFormationTextArea.control.placeHolder('Ajouter une formation');
+                addFormationTextArea.control.mark('addFormationTextInput');
                 addFormationTextArea.onInput((oldMessage, message, valid)=>{
                     if (!message || !oldMessage){
                         addFormationTextArea.text.message('Ajouter une formation');
@@ -94,6 +98,7 @@ exports.DashboardAdmin = function(globalVariables){
                 this.addFormationManipulator.move(MARGIN + INPUT_SIZE.w/2, this.header.height + MARGIN + INPUT_SIZE.h/2);
 
                 let addButton = new gui.Button(BUTTON_SIZE.w,BUTTON_SIZE.h, [myColors.grey, 0, myColors.none], '+');
+                addButton.component.mark('addFormationButton');
                 addButton.position(INPUT_SIZE.w/2 + BUTTON_SIZE.w/2 + MARGIN, 0);
                 addButton.text.color(myColors.white, 0, myColors.none).font('Arial', 30).position(0,10);
                 addButton.back.corners(5,5);
@@ -131,6 +136,7 @@ exports.DashboardAdmin = function(globalVariables){
         displayErrorMessage(message){
             let errorMessage = new svg.Text(message).color(myColors.red, 0, myColors.none);
             errorMessage.position(INPUT_SIZE.w/2 + BUTTON_SIZE.w + 3*MARGIN, 8.3)
+                .mark('formationErrorMessage')
                 .font('Arial', 25)
                 .anchor('left');
             this.addFormationManipulator.set(2, errorMessage);
@@ -157,7 +163,7 @@ exports.DashboardAdmin = function(globalVariables){
                     .position(IMAGE_SIZE/2, 0);
                 let clip = new ClipPath('image' + formation.label);
                 clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
-                let manipulator = new Manipulator(this).addOrdonator(4);
+                let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip"+formation.label);
                 let picture;
                 if(formation.imageSrc){
                     picture = new util.Picture(formation.imageSrc, false, this)
@@ -177,9 +183,9 @@ exports.DashboardAdmin = function(globalVariables){
                     .add(clip)
                     .add(content);
 
-                let iconAddImage = IconCreator.createAddImage(manipulator);
-                 iconAddImage.position( TILE_SIZE.w/2 -3*MARGIN  , -TILE_SIZE.h /4 );
-
+                let iconAddImage = IconCreator.createExplanationIcon(manipulator);
+                iconAddImage.position( TILE_SIZE.w/2 -3*MARGIN  , -TILE_SIZE.h /4 );
+                iconAddImage.manipulator.mark("popUpImg" +formation.label);
                 iconAddImage.addEvent('click', ()=>{this.displayPopUpImage(formation)});
 
 
@@ -199,6 +205,7 @@ exports.DashboardAdmin = function(globalVariables){
                 icon && icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - icon.getSize()/2)
             }
             let miniature = createMiniature(formation);
+            miniature.border.mark("miniatureBorder"+formation.label);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
             drawIcon(formation);

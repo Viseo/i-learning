@@ -67,7 +67,7 @@ exports.DashboardCollabV = function (globalVariables) {
                             iconCancelAction1.cancelActionIcon();
                             iconCancelAction2.cancelActionIcon();
                             this.miniaturesManipulator.flush();
-                            this._displayFormation();
+                            this._displayFormations();
                             _drawBorderFilter();
                         };
                         this.inProgressIcon.addEvent('click',
@@ -112,10 +112,10 @@ exports.DashboardCollabV = function (globalVariables) {
             }
             createBack();
             this._displayHeader("Dashboard");
-            this._displayFormation();
+            this._displayFormations();
         }
 
-        _displayFormation(){
+        _displayFormations(){
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
                     let border =
@@ -139,7 +139,8 @@ exports.DashboardCollabV = function (globalVariables) {
                     manipulator.set(0,border).set(1,backCircle).add(clip);
                     let content = new svg.Text(formation.label)
                         .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
-                        .font('Arial',20);
+                        .font('Arial',20)
+                        .mark('textMiniature'+formation._id);
                     util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
                     manipulator.add(content);
                     return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
@@ -239,7 +240,7 @@ exports.DashboardCollabV = function (globalVariables) {
             this.getFormations().forEach((formation) => {
                 if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
                 if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
-                if (this.undoneIcon.isInAction() && formation.progress != '') return;
+                if (this.undoneIcon.isInAction() && formation.progress != 'undone') return;
                 _displayMiniature(formation, i++);
             });
             this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);

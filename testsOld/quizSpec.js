@@ -123,7 +123,7 @@ describe('QuizManager', function () {
         svg = SVG(runtime);
         runtime.declareAnchor('content');
         main = require("../src/main").main;
-        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListenerModule = require("../src/APIRequester").dbListener;
         dbListener = new dbListenerModule(false, true);
     });
 

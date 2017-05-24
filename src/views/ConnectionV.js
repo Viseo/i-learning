@@ -101,6 +101,7 @@ exports.ConnectionV = function (globalVariables) {
                             .pattern(field.pattern)
                             .type(field.type)
                             .anchor("center")
+                        fieldArea.mark(field.id);
                         fieldManip.set(0, fieldArea.component);
 
                         fieldArea.onInput(_updatePresenter);
@@ -196,7 +197,8 @@ exports.ConnectionV = function (globalVariables) {
                     button.activeShadow();
                     this.connectionButtonManipulator
                         .add(button.component)
-                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
+                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5)
+                        .mark('connectionButton');
                     this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
                 }
                 var _displayRegisterText = () => {

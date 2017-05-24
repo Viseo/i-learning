@@ -14,9 +14,6 @@ exports.DashboardAdminP = function(globalVariables) {
             this.mediaLibrary = state.getMediasLibrary();
             this.formationsList = formations.getFormations();
         }
-        getLabels(){
-            return this.formations.getFormations().map(f => f.label);
-        }
         getFormations(){
             return this.formations.getFormations();
         }

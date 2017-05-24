@@ -68,7 +68,7 @@ exports.QuizScoreV = function (globalVariables) {
                 }
                 let score = this.getScore();
                 let rect = new svg.Rect(dimensions.width, dimensions.height).color(score.color, 1, myColors.black).corners(5, 5);
-                let text = new svg.Text(score.message).font(FONT, FONT_SIZE);
+                let text = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreTitle');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.titleManipulator);
                 this.titleManipulator.set(0, rect).set(1, text);
                 icon.position(-text.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
@@ -113,9 +113,9 @@ exports.QuizScoreV = function (globalVariables) {
                 }
                 let button = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Voir les réponses et les explications");
                 button.onClick(_loadQuestionResult);
+                button.glass.mark('answeredButton');
                 this.resultButtonManipulator.add(button.component);
                 this.resultButtonManipulator.move(drawing.width / 2, drawing.height - MARGIN - dimensions.height / 2);
-
             }
 
             drawing.manipulator.set(0, this.manipulator);

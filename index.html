@@ -44,13 +44,13 @@
 <script src="src/presenters/DollAdminP.js"></script>
 <script src="src/presenters/PresenterFactory.js"></script>
 
-<script src="src/dbListener.js"></script>
+<script src="src/APIRequester.js"></script>
 <script src="src/include/User.js"></script>
 <script src="src/include/FormationsManager.js"></script>
 <script src="src/include/Formation.js"></script>
 <script src="src/include/Library.js"></script>
 <script src="src/include/QuizElements.js"></script>
-<script src="src/include/Tool.js"></script>
+<script src="src/Tool.js"></script>
 
 
 <script src="src/Util.js"></script>
@@ -58,25 +58,7 @@
 <script src="lib/enhancer.js"></script>
 <script src="src/main.js"></script>
 <script>
-    const
-        enhance = exports.Enhance(),
-        targetRuntime = exports.targetRuntime(),
-        SVG = exports.SVG,
-        dbListener = new DbListener(true, false);
-    var url = document.URL;
-    var query = url.split('?')[1];
-    var ID;
-    var param;
-    if (query) {
-        param = query.split('=')[0];
-    }
-    var redirect = false;
-    if (param == 'ID') {
-        redirect = true;
-        ID = query.split('=')[1];
-
-    }
-    main(SVG(targetRuntime), targetRuntime, dbListener, false, {redirect: redirect, ID: ID});
+    main();
 </script>
 </body>
 

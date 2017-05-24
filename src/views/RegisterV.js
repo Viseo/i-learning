@@ -52,6 +52,9 @@ exports.RegisterV = function (globalVariables) {
             };
             var _displayFields = () => {
                 var _displayField = (field) => {
+                    let _createIdFromName = (field)=>{
+                        return field.title.split('').splice(0, field.title.length-2).join('');
+                    }
                     var _displayIcon = () => {
                         let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
                         icon.position(-INPUT_WIDTH / 2 + icon.getContentSize() / 2 + MARGIN, 0);
@@ -97,6 +100,7 @@ exports.RegisterV = function (globalVariables) {
                             .pattern(field.pattern)
                             .type(field.type)
                             .anchor("center")
+                            .mark(_createIdFromName(field));
                         fieldManip.set(0, fieldArea.component);
 
                         fieldArea.onInput(_updatePresenter);
@@ -130,6 +134,7 @@ exports.RegisterV = function (globalVariables) {
             var _displaySaveButton = () => {
                 let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Inscription');
                 saveButton.text.color(myColors.lightgrey, 0, myColors.white);
+                saveButton.component.mark('saveButton');
                 saveButton.activeShadow();
                 this.saveButtonManipulator
                     .add(saveButton.component)
@@ -161,7 +166,7 @@ exports.RegisterV = function (globalVariables) {
 
         tryRegister(){
             this.registerNewUser().then(() => {
-                let message = new svg.Text("Votre compte a bien été créé !")
+                let message = new svg.Text('Votre compte a bien été créé !')
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .position(0, -MARGIN - BUTTON_HEIGHT)
                     .color(myColors.green)
@@ -172,8 +177,8 @@ exports.RegisterV = function (globalVariables) {
                     this.saveButtonManipulator.remove(message);
                     this.returnToOldPage();
                 }, 3000);
-            }).catch(() => {
-                let error = new svg.Text("Un utilisateur possède déjà cette adresse mail !")
+            }).catch((data) => {
+                let error = new svg.Text(JSON.parse(data).reason)
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .position(0, -(INPUT_HEIGHT + MARGIN))
                     .color(myColors.red)
@@ -215,6 +220,7 @@ exports.RegisterV = function (globalVariables) {
                 let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
                 svg.event(this.inputs[newIndex].glass, 'click');
                 this.selectedInput = this.inputs[newIndex];
+                this.selectedInput.mark(this.selectedInput.id + 'selectedInput');
             }
 
             if (event.keyCode === 9) { // TAB

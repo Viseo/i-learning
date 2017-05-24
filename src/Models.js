@@ -1,15 +1,27 @@
-exports.Models = function (globalVariables) {
-    const util = globalVariables.util,
-        drawing = globalVariables.drawing,
-        Server = util.Server;
+exports.Models = function (globalVariables, mockResponses) {
+    const drawing = globalVariables.drawing,
+        APIRequester = require('./APIRequester').APIRequester;
 
+    var apiRequester = new APIRequester(mockResponses);
 
     class State {
         constructor() {
             this.stackPage = [];
             this.formations = new Formations();
             this.currentPresenter = null;
+        }
 
+        createFormation(obj){
+            if(typeof obj == 'string') obj = JSON.parse(obj);
+            let formation = new Formation(obj);
+            formation.loadFormation(obj);
+            return formation;
+        }
+
+        createQuiz(obj){
+            if(typeof obj == 'string') obj = JSON.parse(obj);
+            let quiz = new Quiz(obj);
+            return quiz;
         }
 
         uploadImage(file, progressDisplay) {
@@ -65,12 +77,11 @@ exports.Models = function (globalVariables) {
             this.loadPresenterConnection();
         }
 
-        tryLoadCookieForPresenter(redirect) {
-            util.Server.checkCookie().then(data => {
+        tryLoadCookieForPresenter(ID) {
+            apiRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);
-                if (redirect) {
-                    password.display(param.ID);
-                    redirect = false;
+                if (ID) {
+                    password.display(ID);
                 } else {
                     if (data.ack === 'OK') {
                         this.loadPresenterDashboard(data.user);
@@ -84,7 +95,7 @@ exports.Models = function (globalVariables) {
 
 
         tryConnectForPresenterDashboard(login, pwd, stayConnected) {
-            return Server.connect(login, pwd, stayConnected).then(data => {
+            return apiRequester.connect(login, pwd, stayConnected).then(data => {
                 if (!data) throw 'Connexion refusée';
                 data = JSON.parse(data);
                 if (data.ack === 'OK') {
@@ -93,6 +104,10 @@ exports.Models = function (globalVariables) {
                     throw 'adresse e-mail ou mot de passe invalide';
                 }
             });
+        }
+
+        registerNewUser(userInfos){
+            return apiRequester.inscription(userInfos);
         }
 
         loadPresenterDashboard(user) {
@@ -113,7 +128,7 @@ exports.Models = function (globalVariables) {
                 } else {
                     this.currentPresenter.displayView();
                 }
-            })
+            }).catch((err)=>console.log(err));
         }
 
         loadPresenterFormationAdmin(formation) {
@@ -202,7 +217,7 @@ exports.Models = function (globalVariables) {
             let formationId = this.getFormationId();
             let versionId = this.getVersionId()
             let gameToSave = this.getToSave();
-            return Server.saveProgress(Object.assign({formationId, versionId}, gameToSave));
+            return apiRequester.saveProgress(Object.assign({formationId, versionId}, gameToSave));
         }
 
         getToSave() {
@@ -236,7 +251,7 @@ exports.Models = function (globalVariables) {
         }
 
         sync() {
-            return Server.getAllFormations().then(data => {
+            return apiRequester.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
                     const sortAlphabetical = function (array) {
                         return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -314,7 +329,7 @@ exports.Models = function (globalVariables) {
         }
 
         getLevelsTab() {
-            return this._levelsTab;
+            return this.levelsTab;
         }
 
         setImage(src){
@@ -349,7 +364,7 @@ exports.Models = function (globalVariables) {
                 }
             };
 
-            return util.Server.insertFormation(getObjectToSave(), ignoredData)
+            return apiRequester.insertFormation(getObjectToSave(), ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -394,7 +409,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.insertFormation(getObjectToSave(), status, ignoredData)
+            return apiRequester.insertFormation(object, status, ignoredData)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -407,6 +422,19 @@ exports.Models = function (globalVariables) {
                         }
                     }
                 })
+        }
+
+        loadFormation(formation) {
+            let tmpLevelsTab = this.levelsTab;
+            this.levelsTab = [];
+            tmpLevelsTab.forEach(level => {
+                var gamesTab = [];
+                level.gamesTab.forEach(game => {
+                    gamesTab.push(new Quiz(game, false, this));
+                    gamesTab[gamesTab.length - 1].id = game.id;
+                });
+                this.levelsTab.push(new Level(gamesTab, this.levelsTab.length));
+            });
         }
 
         getFormationLabel() {
@@ -467,7 +495,7 @@ exports.Models = function (globalVariables) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return util.Server.replaceFormation(this._id, getObjectToSave(), ignoredData)
+            return apiRequester.replaceFormation(this._id, object, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -902,7 +930,7 @@ exports.Models = function (globalVariables) {
         }
 
         renameQuiz(quiz) {
-            return util.Server.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
+            return apiRequester.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
                 let answer = JSON.parse(data);
                 if (answer.saved == false) {
                     answer.message = "Il faut enregistrer le quiz avant !";
@@ -920,7 +948,7 @@ exports.Models = function (globalVariables) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return util.Server.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
+            return apiRequester.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -1016,30 +1044,30 @@ exports.Models = function (globalVariables) {
 
         }
 
-        static upload(file, onProgress) {
-            return Server.upload(file, onProgress);
+        upload(file, onProgress) {
+            return APIRequester.upload(file, onProgress);
         }
 
         getImages() {
-            return Server.getImages().then(data => JSON.parse(data));
+            return apiRequester.getImages().then(data => JSON.parse(data));
         }
 
         deleteImage(_id) {
-            return Server.deleteImage(_id).then(() => {
+            return apiRequester.deleteImage(_id).then(() => {
                 let imageIndex = this.images.findIndex((image) => image._id === _id);
                 if (imageIndex !== -1) this.images.splice(imageIndex, 1);
             });
         }
 
         getVideos() {
-            return Server.getVideos().then((videos) => {
+            return apiRequester.getVideos().then((videos) => {
                 this.videos = videos;
                 return videos;
             });
         }
 
         deleteVideo(_id) {
-            return Server.deleteVideo(_id).then(() => {
+            return apiRequester.deleteVideo(_id).then(() => {
                 let videoIndex = this.videos.findIndex((video) => video._id === _id);
                 if (videoIndex !== -1) this.videos.splice(videoIndex, 1);
             });
@@ -1049,6 +1077,7 @@ exports.Models = function (globalVariables) {
     return {
         State,
         Formations,
+        Formation,
         User,
         Quiz //TODO à retirer après les tests
     }
