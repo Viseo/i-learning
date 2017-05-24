@@ -31,6 +31,38 @@ describe('quiz collab page', function () {
             assertMessage(root, "questionTitle1", "question 2");
         })
     });
+
+    it('should answer a multiple choice question', function(){
+        let {root, state} = given(()=>{
+            let quizMultiple = {
+                id: "1",
+                label: "quiz",
+                questions: [
+                    {
+                        label: "question 1",
+                        multipleChoice: true,
+                        answers: [{label: "answer1", correct: true}, {label: "answer2", correct: true}, {label: "answer3"}]
+                    },
+                    {
+                        label: "question 2",
+                        multipleChoice: true,
+                        answers: [{label: "answer1", correct: true}, {label: "answer2", correct: true}, {label: "answer3"}]
+                    }
+                ]
+            }
+            let page = loadPage("GameCollab", mockResponses, quizMultiple, "Quiz");
+            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+            return page;
+        })
+        when(()=>{
+            click(root, 'answer1');
+            click(root, 'answer2');
+            clickElement(root, "validateButton");
+        }).then(()=>{
+            assertMessage(root, 'questionTitle1', 'question 2');
+        })
+    })
+
     it('should navigate between questions', function(){
         let {root, state} = given(() => {
             let page = loadPage("GameCollab", mockResponses, quizJson, "Quiz");

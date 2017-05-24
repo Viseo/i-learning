@@ -193,6 +193,7 @@ exports.QuizQuestionV = function (globalVariables) {
                     let validateButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Valider");
                     validateButton.position(BUTTON_WIDTH/2 + MARGIN/2, 0);
                     validateButton.onClick(this.confirmQuestion.bind(this));
+                    validateButton.glass.mark('validateButton');
                     this.buttonsManipulator.add(validateButton.component)
                 }
                 var _displayResetButton = () => {
