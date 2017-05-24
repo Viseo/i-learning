@@ -11,6 +11,7 @@ exports.FormationCollabV = function (globalVariables) {
         MINIATURE_FONT_SIZE = 20,
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
+        IMAGE_MINIATURE = 50,
         LEVEL_HEIGHT = 150;
 
 
@@ -102,6 +103,12 @@ exports.FormationCollabV = function (globalVariables) {
                 miniature.manipulator.mini = miniature;
                 miniature.game = game;
                 miniature.manipulator.mark('miniature' + game.label);
+                if(game.imageSrc){
+                    miniature.picture = new svg.Image(game.imageSrc);
+                    miniature.picture.dimension(IMAGE_MINIATURE, IMAGE_MINIATURE);
+                    miniature.picture.position(-MINIATURE_WIDTH/2 + IMAGE_MINIATURE/2 + MARGIN, 0);
+                    miniature.manipulator.add(miniature.picture);
+                }
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);

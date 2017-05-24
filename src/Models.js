@@ -337,7 +337,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         updateStars(starId){
-            util.Server.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
+            apiRequester.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
         }
 
 
@@ -495,7 +495,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return apiRequester.replaceFormation(this._id, object, ignoredData)
+            return apiRequester.replaceFormation(this._id, getObjectToSave(), ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -1044,8 +1044,8 @@ exports.Models = function (globalVariables, mockResponses) {
 
         }
 
-        upload(file, onProgress) {
-            return APIRequester.upload(file, onProgress);
+        static upload(file, onProgress) {
+            return apiRequester.upload(file, onProgress);
         }
 
         getImages() {

@@ -183,7 +183,7 @@ exports.DashboardAdmin = function(globalVariables){
                     .add(clip)
                     .add(content);
 
-                let iconAddImage = IconCreator.createExplanationIcon(manipulator);
+                let iconAddImage = IconCreator.createAddImage(manipulator);
                 iconAddImage.position( TILE_SIZE.w/2 -3*MARGIN  , -TILE_SIZE.h /4 );
                 iconAddImage.manipulator.mark("popUpImg" +formation.label);
                 iconAddImage.addEvent('click', ()=>{this.displayPopUpImage(formation)});

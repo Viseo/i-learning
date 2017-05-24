@@ -509,6 +509,7 @@ exports.FormationAdminV = function(globalVariables) {
                     miniature.picture = new svg.Image(game.imageSrc);
                     miniature.picture.dimension(IMAGE_MINIATURE, IMAGE_MINIATURE);
                     miniature.picture.position(-MINIATURE_WIDTH/2 + IMAGE_MINIATURE/2 + MARGIN, 0);
+                    miniature.manipulator.add(miniature.picture);
                 }
                 miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
                 let redCross = drawRedCross(MINIATURE_WIDTH/2.05,-MINIATURE_HEIGHT/2, 18, miniature.redCrossManipulator);
@@ -606,7 +607,6 @@ exports.FormationAdminV = function(globalVariables) {
                 let gameMiniature = createGameMiniature(game);
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
-                gameMiniature.picture && gameMiniature.manipulator.add(gameMiniature.picture);
                 levelManipulator.add(gameMiniature.manipulator);
                 gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH/2
                     , 5);
@@ -720,33 +720,9 @@ exports.FormationAdminV = function(globalVariables) {
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             this.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
-            // let arrowClickHandler = () => {
-            //     //formation.selectedGame && formation.clicAction();//selectedGame.miniature.manipulator.ordonator.children[0].component.listeners.mouseup();
-            //     if (!this.selected) {
-            //         if (formation.selectedArrow) {
-            //             formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
-            //             formation.selectedArrow.selected = false;
-            //             formation.arrowsManipulator.remove(formation.selectedArrow.redCrossManipulator);
-            //         }
-            //         formation.selectedArrow = this;
-            //         formation.arrowsManipulator.add(this.redCrossManipulator);
-            //         this.arrowPath.color(myColors.blue, 2, myColors.black);
-            //     } else {
-            //         this.arrowPath.color(myColors.black, 1, myColors.black);
-            //         formation.arrowsManipulator.remove(this.redCrossManipulator);
-            //         formation.selectedArrow = null;
-            //     }
-            //     this.selected = !this.selected;
-            // };
-            // !playerMode && svg.addEvent(this.arrowPath, 'click', arrowClickHandler);
             this.arrowPath.color(myColors.black, 0, myColors.black);
             return this;
 
-        }
-
-        testLoadQuiz(quizIntel) {
-            // let selectedQuiz = new Quiz
-            this.presenter.loadQuiz(quizIntel);
         }
         getImages() {
             return this.presenter.getImages();
