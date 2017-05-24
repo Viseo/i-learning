@@ -609,7 +609,7 @@ exports.Tool = function (globalVariables, classContainer) {
             };
             if (!this.animation) {
                 this.animation = true;
-                this.content.onChannel().smoothy(100, 25)
+                this.content.onChannel().steppy(15, 5)
                     .execute(completeMovement).moveTo(vx, vy);
             }
             return this;
@@ -668,11 +668,11 @@ exports.Tool = function (globalVariables, classContainer) {
         refreshListView() {
             if(this.direction == "V"){
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].position(0, this.marge + this.eleDim.h * (i  + this.indexShow));
+                    this.listElements[i].position(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
                 }
             }else{
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].position(this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                    this.listElements[i].position(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
                 }
             }
             this._showActualChevron();
@@ -694,11 +694,11 @@ exports.Tool = function (globalVariables, classContainer) {
         refreshListView(){
             if(this.direction == "V"){
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(0, this.marge + this.eleDim.h * (i  + this.indexShow));
+                    this.listElements[i].move(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
                 }
             }else{
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                    this.listElements[i].move(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
                 }
             }
             this._showActualChevron();
