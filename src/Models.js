@@ -33,10 +33,10 @@ exports.Models = function (globalVariables, mockResponses) {
             let presenterName = this.stackPage.pop();
             switch (presenterName) {
                 case "DashboardAdminP":
-                    this.loadPresenterDashboard(this.user);
+                    this.loadPresenterDashboard();
                     break;
                 case "DashboardCollabP":
-                    this.loadPresenterDashboard(this.user);
+                    this.loadPresenterDashboard();
                     break;
                 case "ConnectionP":
                     this.loadPresenterConnection();
@@ -86,7 +86,6 @@ exports.Models = function (globalVariables, mockResponses) {
                     if (data.ack === 'OK') {
                         this.loadPresenterDashboard(data.user);
                     } else {
-                        globalVariables.admin = false;
                         this.loadPresenterConnection();
                     }
                 }
@@ -113,12 +112,13 @@ exports.Models = function (globalVariables, mockResponses) {
         loadPresenterDashboard(user) {
             this._addPageToStack();
 
-            if(!this.user) this.user = new User(user);
-            drawing.username = `${user.firstName} ${user.lastName}`;
-            user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+            if(user) {
+                this.user = new User(user);
+                drawing.username = `${user.firstName} ${user.lastName}`;
+            }
             this.formations.sync().then(() => {
                 this.currentPresenter && this.currentPresenter.flushView();
-                if (globalVariables.admin) {
+                if (this.user.admin) {
                     this.currentPresenter = new globalVariables.dashboardAdminP(this, this.formations);
                 } else {
                     this.currentPresenter = new globalVariables.DashboardCollabP(this, this.user, this.formations);
@@ -128,7 +128,10 @@ exports.Models = function (globalVariables, mockResponses) {
                 } else {
                     this.currentPresenter.displayView();
                 }
-            }).catch((err)=>console.log(err));
+            }).catch((err)=>{
+                console.log(err)
+                this.clearOldPageStackAndLoadPresenterConnection();
+            });
         }
 
         loadPresenterFormationAdmin(formation) {
