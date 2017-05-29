@@ -14,7 +14,8 @@ exports.DashboardAdmin = function(globalVariables){
         BUTTON_SIZE = {w: 40, h: 30},
         BUTTON_HEIGHT = 30,
         IMAGES_PER_LINE = 3,
-        IMAGE_SIZE = 90;
+        CLIP_SIZE = 45,
+        IMAGE_SIZE =160;
 
 
 
@@ -160,9 +161,9 @@ exports.DashboardAdmin = function(globalVariables){
                     new svg.Rect(TILE_SIZE.rect.w, TILE_SIZE.rect.h)
                     .corners(2,2)
                     .color(myColors.lightgrey, 0.5, myColors.grey)
-                    .position(IMAGE_SIZE/2, 0);
+                    .position(CLIP_SIZE, 0);
                 let clip = new ClipPath('image' + formation.label);
-                clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
+                clip.add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w/2+ CLIP_SIZE*2, 0))
                 let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip"+formation.label);
                 let picture;
                 if(formation.imageSrc){
@@ -171,11 +172,11 @@ exports.DashboardAdmin = function(globalVariables){
                 else{
                     picture = new util.Picture('../../images/viseo.png', false, this, '', null);
                 }
-                picture.draw(-TILE_SIZE.w/2 + IMAGE_SIZE, 0, IMAGE_SIZE,IMAGE_SIZE,manipulator, 3);
+                picture.draw(-TILE_SIZE.w/2 + 2* CLIP_SIZE, 0, IMAGE_SIZE,2*CLIP_SIZE,manipulator, 3);
                 picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
-                let backCircle = new svg.Circle(IMAGE_SIZE/2 +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0);
+                let backCircle = new svg.Circle(CLIP_SIZE +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ 2*CLIP_SIZE, 0);
                 let content = new svg.Text(formation.label)
-                    .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
+                    .position(CLIP_SIZE, -TILE_SIZE.h/4)
                     .font('Arial', 20);
                 util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
                 manipulator.set(0,border)
