@@ -10,7 +10,9 @@ describe('register page', function(){
     it('should register', function(){
         let {root, state} = given(()=>{
             return loadPage("Register", {
-                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                mockResponses: {
+                    "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                }
             });
         })
         when(()=>{
@@ -29,7 +31,9 @@ describe('register page', function(){
     it('should not register, incorrect email', function(){
         let {root, state} = given(()=>{
             return loadPage("Register", {
-                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                mockResponses: {
+                    "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                }
             });
         })
         when(()=>{
@@ -46,7 +50,9 @@ describe('register page', function(){
     it('should not register, incorrect name', function(){
         let {root, state} = given(()=>{
             return loadPage("Register", {
-                "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                mockResponses: {
+                    "/users/inscription": {code: 200, content: {ack: "OK", user: {}}}
+                }
             });
         })
         when(()=>{
@@ -65,7 +71,9 @@ describe('register page', function(){
     it('should not register, already used email', function(){
         let {root, state} = given(()=>{
             return loadPage("Register", {
-                "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+                mockResponses:{
+                    "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+                }
             });
         })
         when(()=>{
@@ -83,7 +91,9 @@ describe('register page', function(){
     it('should find new focused field, ', function(){
         let {root, state, runtime} = given(()=>{
             return loadPage("Register", {
-                "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+                mockResponses:{
+                    "/users/inscription": {code: 403, content: {reason:'Adresse mail déjà utilisée ! '}}
+                }
             });
         })
         when(()=>{

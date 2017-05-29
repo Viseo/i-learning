@@ -319,6 +319,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
 
                 let questionManip = new Manipulator(this).addOrdonator(2);
+                questionManip.mark('questionBlock'+lastQuestionIndex);
                 _initBlock(questionManip);
                 _displayBlock();
 
@@ -344,6 +345,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let iconAddNewQuestion = IconCreator.createPlusIcon(addNewQuestionManip, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
                 questionButton.onClick(() => onClickOnAddNewQuestion());
+                questionButton.glass.mark('newQuestionButton');
 
                 this.questionsBlockListView.add(addNewQuestionManip);
             };

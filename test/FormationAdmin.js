@@ -30,7 +30,7 @@ const ImageRuntime = {
     }
 };
 
-let answers, gamesTab, formationMock, formationData, responsesMock;
+let answers, gamesTab, formationMock, mockResponses;
 
 describe('formation admin page', function () {
     beforeEach(function () {
@@ -70,14 +70,13 @@ describe('formation admin page', function () {
                 status: "NotPublished",
                 levelsTab: [{gamesTab: gamesTab}]
             },
-            responsesMock = {
+            mockResponses = {
                 'boo': {data: 200, content: {}}
             }
     });
     it("should", function (done) {
         let {root, state, runtime} = given(() => {
-            formationData = new models.Formation(formationMock);
-            return loadPage("FormationAdmin", responsesMock, formationData);
+            return loadPage("FormationAdmin", {mockResponses, data:formationMock, className: "Formation"});
         });
         when(() => {
             mouseDown(root, "QuizLibManip");

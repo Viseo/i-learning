@@ -27,69 +27,66 @@ const ImageRuntime = {
         this.images[id].onload();
     }
 };
-let user, answers, gamesTab, formationMock, formationMock2, jsonFormation, responsesMock;
+const user = {
+        lastName: "MA",
+        firstName: "David",
+        admin: true
+    },
+    answers = [{
+        correct: true,
+        label: "Bibi",
+        explanation: {label: "Hello"}
+    }, {
+        correct: false,
+        label: "Baba",
+        explanation: {label: "Baba"}
+    }],
+    gamesTab = [{
+        formationId: "591ec683aabd34544c5bcedb",
+        gameIndex: 0,
+        id: "quizz0",
+        label: "Introduction aux méthodes agiles",
+        lastQuestionIndex: 0,
+        levelIndex: 0,
+        type: 'Quiz',
+        questions: {
+            answers: [answers],
+            label: "Boubou",
+            multipleChoice: false,
+
+        },
+    }],
+    formationMock = {
+        links: [],
+        _id: "591ec683aabd34544c5bceda",
+        formationId: "591ec683aabd34544c5bcedb",
+        gamesCounter: {doll: 0, quizz: 1},
+        label: "Agilité",
+        progress: undefined,
+        imageSrc: undefined,
+        note: 0,
+        noteCounter: 0,
+        status: "NotPublished",
+        levelsTab: [{gamesTab: gamesTab}]
+    },
+    formationMock2 = {
+        links: [],
+        _id: "591ec683aabd34544c5azgzagz",
+        formationId: "591ec683aabd34544c5azgzagy",
+        gamesCounter: {doll: 0, quizz: 1},
+        label: "Force",
+        progress: undefined,
+        imageSrc: undefined,
+        note: 5,
+        noteCounter: 1,
+        status: "Published",
+        levelsTab: [{gamesTab: gamesTab}]
+    },
+    jsonFormation = {myCollection: [formationMock, formationMock2]};
 
 describe('dashboard admin page', function () {
-    beforeEach(function () {
-        user = {
-            lastName: "MA",
-            firstName: "David",
-            admin: true
-        },
-            answers = [{
-                correct: true,
-                label: "Bibi",
-                explanation: {label: "Hello"}
-            }, {
-                correct: false,
-                label: "Baba",
-                explanation: {label: "Baba"}
-            }],
-            gamesTab = [{
-                formationId: "591ec683aabd34544c5bcedb",
-                gameIndex: 0,
-                id: "quizz0",
-                label: "Introduction aux méthodes agiles",
-                lastQuestionIndex: 0,
-                levelIndex: 0,
-                type: 'Quiz',
-                questions: {
-                    answers: [answers],
-                    label: "Boubou",
-                    multipleChoice: false,
-
-                },
-            }],
-            formationMock = {
-                links: [],
-                _id: "591ec683aabd34544c5bceda",
-                formationId: "591ec683aabd34544c5bcedb",
-                gamesCounter: {doll: 0, quizz: 1},
-                label: "Agilité",
-                progress: undefined,
-                imageSrc: undefined,
-                note: 0,
-                noteCounter: 0,
-                status: "NotPublished",
-                levelsTab: [{gamesTab: gamesTab}]
-            },
-            formationMock2 = {
-                links: [],
-                _id: "591ec683aabd34544c5azgzagz",
-                formationId: "591ec683aabd34544c5azgzagy",
-                gamesCounter: {doll: 0, quizz: 1},
-                label: "Force",
-                progress: undefined,
-                imageSrc: undefined,
-                note: 5,
-                noteCounter: 1,
-                status: "Published",
-                levelsTab: [{gamesTab: gamesTab}]
-            },
-            jsonFormation = {myCollection: [formationMock, formationMock2]};
-    });
-    it('should add a new formation', function (done) {
-        responsesMock = {
+    it('should add a new formation', function () {
+        let mockResponses = {
             '/formations': {code: 200, content: jsonFormation},
             '/formations/insert': {
                 code: 200,
@@ -97,7 +94,7 @@ describe('dashboard admin page', function () {
             }
         },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", responsesMock, user);
+                return loadPage("Dashboard", {mockResponses, data:user});
             });
         assertMessage(root, "addFormationText", "Ajouter une formation");
 
@@ -129,29 +126,26 @@ describe('dashboard admin page', function () {
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
         });
-
-        done();
     });
-    it("should enter in a formation", function (done) {
-        responsesMock = {
+    it("should enter in a formation", function () {
+        let mockResponses = {
             '/formations': {code: 200, content: jsonFormation},
         },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", responsesMock, user);
+                return loadPage("Dashboard", {mockResponses, data:user});
             });
         when(() => {
             clickElement(root, "miniatureManipAgilité");
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
         });
-        done();
     });
-    it("should highlight some formations", function (done) {
-        responsesMock = {
+    it("should highlight some formations", function () {
+        let mockResponses = {
             '/formations': {code: 200, content: jsonFormation},
         },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", responsesMock, user);
+                return loadPage("Dashboard", {mockResponses, data:user});
             });
         when(() => {
             mouseEnter(root, "miniatureManipAgilité");
@@ -163,16 +157,14 @@ describe('dashboard admin page', function () {
         }).then(() => {
             checkBorderColor(root, "miniatureBorderAgilité", [232, 232, 238]);
         });
-        done();
     });
-    it("should set up an image to a formation", function (done) {
-
-        responsesMock = {
+    it("should set up an image to a formation", function () {
+        let mockResponses = {
             '/formations': {code: 200, content: jsonFormation},
-            '/medias/images' : {images: "boo", content: 'image'}
+            '/medias/images': {images: "boo", content: 'image'}
         },
-            {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", responsesMock, user);
+            {root, state} = given(() => {
+                return loadPage("Dashboard", {mockResponses, data:user});
             });
         when(() => {
             clickElement(root, "popUpImgAgilité");

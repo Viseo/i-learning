@@ -18,7 +18,7 @@ describe('dashboard collab', function(){
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation undone");
@@ -41,7 +41,7 @@ describe('dashboard collab', function(){
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
@@ -64,7 +64,7 @@ describe('dashboard collab', function(){
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
@@ -76,4 +76,5 @@ describe('dashboard collab', function(){
         })
     });
     it('should enter a formation');
+    it('should load lastAction');
 })

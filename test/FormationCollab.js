@@ -7,7 +7,7 @@ const doneFormationJson = '{"links":[],"_id":"5922a85388b9a80f44f5737c","formati
 describe('Formation Collab', function () {
     it('should find a miniature', function () {
         let {root, state} = given(() => {
-            return loadPage(...["FormationCollab", , doneFormationJson, "Formation"]);
+            return loadPage("FormationCollab", {data:doneFormationJson, className: "Formation"});
         })
         when(() => {
         }).then(() => {

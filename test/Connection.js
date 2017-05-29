@@ -10,8 +10,10 @@ describe('connection page', function () {
     it('should connect', function () {
         let {root, state} = given(()=>{
             return loadPage("Connection", {
-                "/auth/connect": {code: 200, content: {ack: "OK", user: {}}},
-                "/formations": {code: 200, content: {myCollection: []}}
+                mockResponses: {
+                    "/auth/connect": {code: 200, content: {ack: "OK", user: {}}},
+                    "/formations": {code: 200, content: {myCollection: []}}
+                }
             });
         })
         when(()=>{
