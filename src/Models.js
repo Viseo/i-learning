@@ -718,10 +718,7 @@ exports.Models = function (globalVariables, mockResponses) {
                     result.push(game.getProgress());
                 });
             });
-            if (result.length <= 0) {
-                return this.progress;
-            }
-            else if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done') && result.some(res => res == 'undone'))) {
+            if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done') && result.some(res => res == 'undone'))) {
                 return 'inProgress';
             }
             else if (result.every(res => res == 'done')) {

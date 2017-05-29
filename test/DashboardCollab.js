@@ -12,9 +12,8 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{questions: [{}], answered: []}]}],
-                        progress: 'undone'},
-                        {_id: "2", label: "formation done", progress: 'done'}
+                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}], answered: []}]}]},
+                        {_id: "2", label: "formation done"}
                     ]}
                 }
             };
@@ -36,9 +35,8 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{questions: [{}, {}], answered: [{}]}]}],
-                        progress: 'inProgress'},
-                        {_id: "2", label: "formation done", progress: 'done'}
+                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}, {}], answered: [{}]}]}]},
+                        {_id: "2", label: "formation done"}
                     ]}
                 }
             };
@@ -60,9 +58,8 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{questions: [{}, {}], answered: [{}]}]}],
-                        progress: 'inProgress'},
-                        {_id: "2", label: "formation done", progress: 'done'}
+                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz', questions: [{}, {}], answered: [{}]}]}]},
+                        {_id: "2", label: "formation done"}
                     ]}
                 }
             };
