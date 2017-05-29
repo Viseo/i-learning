@@ -300,8 +300,16 @@ exports.Models = function (globalVariables, mockResponses) {
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
-                level.gamesTab.forEach(game => {
-                    gamesTab.push(new Quiz(game, false, formation));
+                level._gamesTab.forEach(game => {
+                    switch(game.type){
+                        case'Quiz':
+                            gamesTab.push(new Quiz(game, false, formation));
+                            break;
+                        case'Poupee':
+                            gamesTab.push(new Doll(game));
+                            break;
+                    }
+
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
@@ -314,7 +322,9 @@ exports.Models = function (globalVariables, mockResponses) {
             this.links = formation.links || [];
             this._id = (formation._id || null); //TODO changer en versionId
             this.formationId = (formation.formationId || null);
-            this.gamesCounter = formation.gamesCounter ? formation.gamesCounter : {quizz: 0, doll: 0};
+            this.gamesCounter = {};
+            this.gamesCounter.quizz = formation.gamesCounter ? formation.gamesCounter.quizz : 0;
+            this.gamesCounter.doll = formation.gamesCounter ? formation.gamesCounter.doll : 0;
             this.progress = formation.progress;
             if (formation.imageSrc) {
                 this.imageSrc = formation.imageSrc;
@@ -982,6 +992,10 @@ exports.Models = function (globalVariables, mockResponses) {
 
         setImage(src){
             this.imageSrc = src;
+        }
+
+        getLabel(){
+            return this.label;
         }
     }
     class Question {
