@@ -160,7 +160,7 @@ exports.Models = function (globalVariables, mockResponses) {
 
             this.currentPresenter && this.currentPresenter.flushView();
             switch (game.type) {
-                case'Quiz':
+                case GameType.Quiz:
                     this.currentPresenter = new globalVariables.QuizCollabP(this, game);
             }
             this.currentPresenter.displayView();
@@ -187,10 +187,10 @@ exports.Models = function (globalVariables, mockResponses) {
 
             this.currentPresenter && this.currentPresenter.flushView();
             switch (game.type) {
-                case'Quiz':
+                case GameType.QUIZ:
                     this.currentPresenter = new globalVariables.QuizAdminP(this, game);
                     break;
-                case'Poupee':
+                case GameType.DOLL:
                     this.currentPresenter = new globalVariables.DollAdminP(this, game);
                     break;
             }
@@ -302,10 +302,10 @@ exports.Models = function (globalVariables, mockResponses) {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
                     switch(game.type){
-                        case'Quiz':
+                        case GameType.QUIZ:
                             gamesTab.push(new Quiz(game, false, formation));
                             break;
-                        case'Poupee':
+                        case GameType.DOLL:
                             gamesTab.push(new Doll(game));
                             break;
                     }
@@ -606,10 +606,10 @@ exports.Models = function (globalVariables, mockResponses) {
         addNewGame(game, level, column) {
             let newGame = game.game.create(this.gamesCounter, level, column);
             switch (game.game.type) {
-                case'Quiz':
+                case GameType.QUIZ:
                     this.gamesCounter.quizz++;
                     break;
-                case'Poupee':
+                case GameType.DOLL:
                     this.gamesCounter.doll++;
                     break;
             }
@@ -636,7 +636,7 @@ exports.Models = function (globalVariables, mockResponses) {
         updateGamesCounter(game) {
             let inc = 1;
             switch (game.type) {
-                case'Quiz':
+                case GameType.QUIZ:
                     this.gamesCounter.quizz += inc;
                     break;
             }
@@ -790,7 +790,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.levelIndex = quiz.levelIndex;
             this.label = quiz.label;
             this.labelDefault = "Titre du quiz";
-            this.type = 'Quiz';
+            this.type = GameType.QUIZ;
             this.questions = quiz.questions || [];
             this.answered = quiz.answered || [];
             this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
@@ -982,9 +982,9 @@ exports.Models = function (globalVariables, mockResponses) {
 
     class Doll {
         constructor(game) {
-            this.type = 'Poupee';
+            this.type = GameType.DOLL;
             this.label = game.label;
-            this.index = game.gameIndex;
+            this.gameIndex = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
@@ -996,6 +996,11 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getLabel(){
             return this.label;
+        }
+
+        getProgress() {
+            //todo dois etre completer
+            return 'undone';
         }
     }
     class Question {
@@ -1026,7 +1031,7 @@ exports.Models = function (globalVariables, mockResponses) {
         constructor() {
             this.list = [
                 {
-                    type: 'Quiz',
+                    type: GameType.QUIZ,
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
                             label: 'Quiz ' + (counter ? counter.quizz : 0),
@@ -1038,7 +1043,7 @@ exports.Models = function (globalVariables, mockResponses) {
                     }
                 },
                 {
-                    type: 'Poupée',
+                    type: GameType.DOLL,
                     create: function (counter, level, column) {
                         var newPoup = new Doll({
                             label: 'Poupée ' + (counter ? counter.doll : 0),
@@ -1087,6 +1092,12 @@ exports.Models = function (globalVariables, mockResponses) {
             });
         }
     }
+
+
+    const GameType = {
+        QUIZ: 'Quiz',
+        DOLL: 'Doll',
+    };
 
     return {
         State,
