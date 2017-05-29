@@ -11,6 +11,8 @@ exports.DollAdminV = function(globalVariables){
         header: {w :PANEL_SIZE.w - SANDBOX_SIZE.w, h: 0.2*(PANEL_SIZE.h - 5*MARGIN)/2}},
         TAB_SIZE={w:0.1*PANEL_SIZE.w, h: 0.1*PANEL_SIZE.h},
         ListManipulatorView = globalVariables.domain.ListManipulatorView,
+        ListSvgView = globalVariables.domain.ListSVGView,
+        HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
         IMAGE_SIZE = {w:30, h:30}
 
@@ -121,21 +123,57 @@ exports.DollAdminV = function(globalVariables){
             }
         }
 
+        toggleMode(mode){
+            if(mode=='text'){
+                this.textMode = true;
+                svg.addEvent(this.sandboxMain, 'mousedown', this.textZoning.bind(this));
+            }
+        }
+
+        textZoning(event){
+            let point = this.sandboxManip.component.localPoint(event.x,event.y);
+            let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 1, myColors.black);
+            this.sandboxManip.add(rect);
+            let moveHandler = (eventMove)=>{
+                if (eventMove.x - event.x > 0 && eventMove.y - event.y > 0 && this.textMode) {
+                    rect.dimension(eventMove.x - event.x, eventMove.y - event.y);
+                    rect.position(point.x + rect.width / 2, point.y + rect.height / 2);
+                }
+            }
+            let mouseupHandler = ()=>{
+                svg.removeEvent(this.sandboxMain, 'mousemove');
+                this.sandboxManip.remove(rect);
+                let text = new gui.TextField(rect.x, rect.y, rect.width, rect.height, '');
+                this.sandboxManip.add(text.component);
+                this.textMode=false;
+            }
+            svg.addEvent(this.sandboxMain, 'mousemove', moveHandler)
+            svg.addEvent(this.sandboxMain, 'mouseup', mouseupHandler)
+        }
+
         displaySandBoxZone(){
             this.sandboxManip = new Manipulator(this);
-            this.sandBoxHeader = new svg.Rect(SANDBOX_SIZE.header.w,SANDBOX_SIZE.header.h)
-                .color(myColors.lightgrey, 1, myColors.grey)
-                .corners(2,2);
-            this.sandboxRect = new svg.Rect(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h)
+            let actionTabs = [
+                new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3),
+                new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue),
+                new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE),
+                new svg.Image('../../images/svg-guy.png').dimension(HEADER_TILE, HEADER_TILE)
+                ]
+            svg.addEvent(actionTabs[0], 'click', ()=>{this.toggleMode('text')});
+            let actionList = new ListSvgView(actionTabs, 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
+                HEADER_TILE, 5, undefined, 25);
+
+            this.sandboxMain = new svg.Rect(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
-            this.sandboxRect.position(0, SANDBOX_SIZE.header.h/2 + this.sandboxRect.height/2);
+            this.sandboxMain.position(0, SANDBOX_SIZE.header.h/2 + this.sandboxMain.height/2);
+            this.sandboxManip.add(actionList.manipulator)
+                .add(this.sandboxMain);
 
-            this.sandboxManip.add(this.sandBoxHeader)
-                .add(this.sandboxRect);
 
             this.sandboxManip.move(-PANEL_SIZE.w/2 + SANDBOX_SIZE.header.w/2 + MARGIN, -PANEL_SIZE.h/2 + SANDBOX_SIZE.header.h/2 + 2*MARGIN);
             this.mainPanelManipulator.add(this.sandboxManip);
+            actionList.refreshListView();
             this.displayObjectives();
             this.displayResponses();
         }
@@ -219,7 +257,7 @@ exports.DollAdminV = function(globalVariables){
                     drop: (what, whatParent, finalX, finalY)=>{
                             let point = whatParent.globalPoint(finalX,finalY);
                             let target = this.manipulator.last.getTarget(point.x,point.y);
-                            if(target && !target.dropID == 'objectivesDrop' || !target.dropID) {
+                            if(!target || target && target.dropID != 'objectivesDrop' || !target.dropID) {
                                 this.objectivesList.removeElementFromList(what);
                                 what.flush();
                             }
@@ -299,7 +337,7 @@ exports.DollAdminV = function(globalVariables){
                     drop: (what, whatParent, finalX, finalY)=>{
                         let point = whatParent.globalPoint(finalX,finalY);
                         let target = this.manipulator.last.getTarget(point.x,point.y);
-                        if(target && !target.dropID == 'responsesDrop' || !target.dropID) {
+                        if(!target || target && target.dropID != 'responsesDrop' || !target.dropID) {
                             this.responsesList.removeElementFromList(what);
                             what.flush();
                         }

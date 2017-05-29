@@ -489,9 +489,6 @@ exports.Tool = function (globalVariables, classContainer) {
                 this.listDim = {w : listW, h: listH};
                 this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
             };
-
-
-            this.listElements = listElements;
             this.direction = direction;
             this.indexShow = 0;
 
@@ -501,8 +498,6 @@ exports.Tool = function (globalVariables, classContainer) {
             this.component.focus = this;
 
             _declareManipulator();
-
-
             this.chevrons = {};
 
             if(direction == "V"){
@@ -591,6 +586,8 @@ exports.Tool = function (globalVariables, classContainer) {
             this.content.add(this.contentManip.component);
 
             this.translate.add(this.back.position(listW / 2, listH / 2)).add(this.content);
+            this.listElements = [];
+            listElements.forEach(elem=>this.add(elem));
 
             this._showActualChevron();
         }
@@ -672,32 +669,27 @@ exports.Tool = function (globalVariables, classContainer) {
 
 
     class ListSVGView extends ListView{
-        constructor(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH,
-                    chevronThickness, color = myColors.white, marge = 0){
-            super(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH,
-                chevronThickness, color, marge);
-            this.addElementInit(listElements);
-        }
-
         addElementInit(array){
             array.forEach(elem=>this.contentManip.add(elem));
         }
         refreshListView() {
             if(this.direction == "V"){
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].position(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
+                    this.listElements[i].move(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
                 }
             }else{
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].position(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                    this.listElements[i].move(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
                 }
             }
             this._showActualChevron();
         }
 
         add(component){
-            this.listElements.push(component);
-            this.contentManip.add(component);
+            let elemManip = new Manipulator(this)
+            elemManip.add(component)
+            this.listElements.push(elemManip);
+            this.contentManip.add(elemManip);
         }
 
         removeElementFromList(ele){
@@ -708,13 +700,6 @@ exports.Tool = function (globalVariables, classContainer) {
     }
 
     class ListManipulatorView extends ListView{
-        constructor(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH,
-                    chevronThickness, color = myColors.white, marge = 0){
-            super(listElements, direction, listW, listH, chevronW, chevronH, eleW, eleH,
-                chevronThickness, color, marge);
-            this.addElementInit(listElements);
-        }
-
         addElementInit(array){
             array.forEach(elem=>this.contentManip.add(elem.component));
         }
@@ -745,6 +730,12 @@ exports.Tool = function (globalVariables, classContainer) {
         removeElementFromList(manip){
             this.listElements.remove(manip);
             this.contentManip.remove(manip.component);
+
+            if((this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length) ||
+                (this.indexShow != 0 && -this.indexShow + this.nbElementToshow >= this.listElements.length)){
+                this.indexShow++;
+            }
+            this._showActualChevron();
         }
         resetAllMove(){
             this.listElements.forEach(manip => manip.move(0,0));
