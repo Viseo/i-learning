@@ -52,6 +52,7 @@ describe('dashboard admin page', function () {
                 label: "Introduction aux méthodes agiles",
                 lastQuestionIndex: 0,
                 levelIndex: 0,
+                type: 'Quiz',
                 questions: {
                     answers: [answers],
                     label: "Boubou",

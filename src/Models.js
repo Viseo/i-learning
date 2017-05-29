@@ -312,8 +312,6 @@ exports.Models = function (globalVariables, mockResponses) {
                             gamesTab.push(new Doll(game));
                             break;
                     }
-
-                    gamesTab[gamesTab.length - 1].id = game.id;
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
             });
@@ -720,7 +718,10 @@ exports.Models = function (globalVariables, mockResponses) {
                     result.push(game.getProgress());
                 });
             });
-            if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done') && result.some(res => res == 'undone'))) {
+            if (result.length <= 0) {
+                return this.progress;
+            }
+            else if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done') && result.some(res => res == 'undone'))) {
                 return 'inProgress';
             }
             else if (result.every(res => res == 'done')) {

@@ -67,7 +67,7 @@ exports.QuizScoreV = function (globalVariables) {
                     height: drawing.height / 5
                 }
                 let score = this.getScore();
-                let rect = new svg.Rect(dimensions.width, dimensions.height).color(score.color, 1, myColors.black).corners(5, 5);
+                let rect = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, score.color).corners(5, 5);
                 let text = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreTitle');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.titleManipulator);
                 this.titleManipulator.set(0, rect).set(1, text);

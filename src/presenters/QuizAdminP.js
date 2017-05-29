@@ -27,7 +27,8 @@ exports.QuizAdminP = function (globalVariables) {
                         formationId: this.getFormationId(),
                         label: this.getLabel(),
                         lastQuestionIndex: this.getLastIndex(),
-                        questions: this.getQuestions()
+                        questions: this.getQuestions(),
+                        type: 'Quiz'
                     };
                 };
 
@@ -54,7 +55,7 @@ exports.QuizAdminP = function (globalVariables) {
 
             });
             if (isValid) {
-                return this.quiz.replaceQuiz(getObjectToSave()).then(data => {
+                return this.quiz.replaceQuiz(quizToSave).then(data => {
                     data.message && this.view.displayMessage(data.message);
                     return data;
                 }).catch(error => {
@@ -115,10 +116,12 @@ exports.QuizAdminP = function (globalVariables) {
                     return {
                         id: this.getId(),
                         gameIndex: this.getIndex(),
+                        levelIndex: this.getLevelIndex(),
                         formationId: this.getFormationId(),
                         label: this.getLabel(),
                         lastQuestionIndex: this.getLastIndex(),
-                        levelIndex: this.getLevelIndex(),
+                        questions: this.getQuestions(),
+                        type: 'Quiz'
                     };
                 };
                 if (this.getId()) {
