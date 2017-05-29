@@ -300,7 +300,7 @@ exports.Models = function (globalVariables, mockResponses) {
             formation.levelsTab = [];
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
-                level._gamesTab.forEach(game => {
+                level.gamesTab.forEach(game => {
                     switch(game.type){
                         case'Quiz':
                             gamesTab.push(new Quiz(game, false, formation));

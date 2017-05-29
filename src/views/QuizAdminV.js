@@ -10,14 +10,14 @@ exports.QuizAdminV = function (globalVariables) {
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         IconCreator = globalVariables.domain.IconCreator,
-        ReturnButton = globalVariables.util.ReturnButton,
+        ListManipulatorView = globalVariables.domain.ListManipulatorView,
         installDnD = globalVariables.gui.installDnD,
         BUTTON_WIDTH = 250,
         BUTTON_HEIGHT = 30,
-        QUESTIONS_PER_LINE = 5,
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
+        QUESTION_BUTTON_SIZE = {w: 200, h: 90},
         EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte";
 
     class QuizAdminV extends View {
@@ -40,8 +40,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator = new Manipulator(this);
                 this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
                 this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
-                this.questionsBlockChevronManipulator = new Manipulator(this);
-                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
 
                 this.titleManipulator = new Manipulator(this).addOrdonator(2);
                 this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(3);
@@ -62,7 +60,7 @@ exports.QuizAdminV = function (globalVariables) {
             }
 
             this.label = this.getLabel();
-            this.questionsBlockChevron = {};
+            this.questionsBlock = [];
 
             _declareManipulator();
             _createReturnButton();
@@ -113,9 +111,13 @@ exports.QuizAdminV = function (globalVariables) {
                 let dimensions = {
                     width: this.width,
                     height: this.height * 1 / 6
-                }
-                let border = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
-                this.questionsBlockManipulator.set(0, border);
+                };
+
+                this.questionsBlockListView = new ListManipulatorView(this.questionsBlock, 'H',
+                    dimensions.width - 100, dimensions.height, 50, 80,
+                    QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
+
+                this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
                 currentY += dimensions.height + MARGIN;
             }
@@ -228,20 +230,18 @@ exports.QuizAdminV = function (globalVariables) {
             _displaySaveButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
-            this.questionsBlock.length >= 1 && this.questionsBlock[0].select();
+            this.questionsBlock.length >= 2 && this.questionsBlock[0].select();
         }
 
 
         _dropMediaAction(item, parent, x, y) {
-            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlock.length){
-
-
+            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlock.length) {
                 let globalPoints = parent.globalPoint(x, y);
                 let target = this.questionsDetail[this.selectedQuestionIndex].guiManipulator
-                    .last.getTarget(globalPoints.x,globalPoints.y);
+                    .last.getTarget(globalPoints.x, globalPoints.y);
 
-                if(target){
-                    if(target instanceof svg.Image && !target.id && target.id != "explanation"){
+                if (target) {
+                    if (target instanceof svg.Image && !target.id && target.id != "explanation") {
                         target.url(item.src);
                     }
 
@@ -259,88 +259,70 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
 
+
         _displayQuestionsBlock() {
-            var calculatePositionOfQuestion = (index) => {
-                let pos = {
-                    x: dimensionsChevronQuestion.w + MARGIN * 2 - (this.width - MARGIN) / 2
-                    + dimensionsQuestionButton.width / 2 + index * (dimensionsQuestionButton.width + MARGIN),
-                    y: 0
-                }
-                return pos;
-            };
             var _displayQuestionBlock = (question, lastQuestionIndex) => {
-                var _initQuestionBlock = () => {
-                    questionGui.index = lastQuestionIndex;
-                    questionGui.unselect = () => {
-                        if (questionGui.selected) {
-                            questionGui.selected = false;
-                            questionGui.questionButton.color([myColors.white, 1, myColors.black]);
-                        }
-                    };
-                    questionGui.select = () => {
-                        if (!questionGui.selected) {
-                            questionGui.selected = true;
-                            questionGui.questionButton.color([[43, 120, 228], 1, myColors.black]);
-                            this.selectQuestion(questionGui.index);
-                        }
-                    };
-                }
-                var _initGuiBlock = () => {
+                var _initBlock = (questionManip) => {
                     var _deleteQuestion = () => {
-                        if (this.selectedQuestionIndex === questionGui.index) {
-                            if (questionGui.index > 0) {
-                                this.questionsBlock[questionGui.index - 1].select();
-                            } else if (this.questionsBlock.length > 1) {
-                                this.questionsBlock[questionGui.index + 1].select();
+                        if (this.selectedQuestionIndex === questionManip.index) {
+                            if (questionManip.index > 0) {
+                                this.questionsBlock[questionManip.index - 1].select();
+                            } else if (this.questionsBlock.length > 2) {
+                                this.questionsBlock[questionManip.index + 1].select();
                             } else {
                                 this.unselectQuestion();
                             }
                         }
-                        this.questions.splice(questionGui.index, 1);
-                        this.questionsBlockManipulator.remove(this.questionsBlock[questionGui.index].manipulator);
-                        this.questionsBlock.splice(questionGui.index, 1);
-                        this.questionDetailsManipulator.remove(this.questionsDetail[questionGui.index].manipulator);
-                        this.questionsDetail.splice(questionGui.index, 1);
+                        this.questions.splice(questionManip.index, 1);
+                        this.questionsBlockListView.removeElementFromList(questionManip);
+                        this.questionDetailsManipulator.remove(this.questionsDetail[questionManip.index].manipulator);
+                        this.questionsDetail.splice(questionManip.index, 1);
 
-                        for(let i = questionGui.index; i < this.questionsBlock.length; i++){
-                            if(this.selectedQuestionIndex === this.questionsBlock[i].index) this.selectedQuestionIndex = i;
+                        for (let i = questionManip.index; i < this.questionsBlock.length; i++) {
+                            if (this.selectedQuestionIndex === this.questionsBlock[i].index) this.selectedQuestionIndex = i;
                             this.questionsBlock[i].index = i;
                         }
 
-                        if (this.questionIndexScroll + (QUESTIONS_PER_LINE-1) >= this.questions.length && this.questionIndexScroll > 0){
-                            this.questionIndexScroll--;
-                        }
-
-                        _refreshQuestionsBlock();
+                        this.questionsBlockListView.refreshListView();
                     };
 
-                    questionGui.manipulator = new Manipulator(this).addOrdonator(2);
-                    questionGui.questionButton = new gui.Button(
-                        dimensionsQuestionButton.width,
-                        dimensionsQuestionButton.height,
-                        [myColors.white, 1, myColors.black],
-                        question.label
+                    let questionButton = new gui.Button(
+                        QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h,
+                        [myColors.white, 1, myColors.black], question.label
                     );
-                    questionGui.questionButton.back.corners(5, 5);
-                    questionGui.questionButton.onClick(() => questionGui.select());
-                    questionGui.manipulator.add(questionGui.questionButton.component);
 
-                    let pos = calculatePositionOfQuestion(questionGui.index);
-                    questionGui.manipulator.move(pos.x, pos.y);
-                    questionGui.redCross = IconCreator.createRedCrossIcon(questionGui.manipulator)
-                        .position(dimensionsQuestionButton.width / 2, -dimensionsQuestionButton.height / 2)
+                    questionManip.index = lastQuestionIndex;
+                    questionManip.unselect = () => {
+                        if (questionButton.selected) {
+                            questionButton.selected = false;
+                            questionButton.color([myColors.white, 1, myColors.black]);
+                        }
+                    };
+                    questionManip.select = () => {
+                        if (!questionButton.selected) {
+                            questionButton.selected = true;
+                            questionButton.color([[43, 120, 228], 1, myColors.black]);
+                            this.selectQuestion(questionManip.index);
+                        }
+                    };
+
+                    questionButton.back.corners(5, 5);
+                    questionButton.onClick(() => questionManip.select());
+                    questionManip.add(questionButton.component);
+
+                    IconCreator.createRedCrossIcon(questionManip)
+                        .position(QUESTION_BUTTON_SIZE.w / 2, -QUESTION_BUTTON_SIZE.h / 2)
                         .addEvent('click', () => _deleteQuestion());
                 };
                 var _displayBlock = () => {
-                    this.questionsBlock.push(questionGui);
-                    this.questionsBlockManipulator.add(questionGui.manipulator);
+                    this.questionsBlockListView.addManipInIndex(questionManip, lastQuestionIndex);
                 }
 
-                let questionGui = {};
-                _initQuestionBlock();
-                _initGuiBlock();
+                let questionManip = new Manipulator(this).addOrdonator(2);
+                _initBlock(questionManip);
                 _displayBlock();
-                return questionGui;
+
+                return questionManip;
             };
             var _displayNewQuestionBlock = () => {
                 let onClickOnAddNewQuestion = () => {
@@ -351,175 +333,31 @@ exports.QuizAdminV = function (globalVariables) {
                     let questionInDetail = this._loadOneQuestionInDetail(question, index);
                     this.questionsDetail.add(questionInDetail);
                     questionGui.select();
-
-                    if (this.questions.length >= QUESTIONS_PER_LINE) {
-                        let indexToStop = this.questions.length - (QUESTIONS_PER_LINE - 1);
-                        for (var i = 0; i < indexToStop; i++) {
-                            this.questionsBlockManipulator.remove(this.questionsBlock[i].manipulator);
-                        }
-                        for (var it = indexToStop, j = 0; it < this.questions.length; it++, j++) {
-                            let pos = calculatePositionOfQuestion(j);
-                            this.questionsBlock[it].manipulator.move(pos.x, pos.y);
-                        }
-                        let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE - 1);
-                        this.addNewQuestion.manipulator.move(pos.x, pos.y);
-
-                        this.questionIndexScroll = indexToStop;
-
-                        this._showActualQuestionChevron();
-                    } else {
-                        let pos = calculatePositionOfQuestion(this.questions.length);
-                        this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                    }
+                    this.questionsBlockListView.refreshListView();
                 };
 
-                this.addNewQuestion = {};
-                this.addNewQuestion.manipulator = new Manipulator(this).addOrdonator(2);
-                this.addNewQuestion.questionButton = new gui.Button(dimensionsQuestionButton.width, dimensionsQuestionButton.height, [myColors.white, 1, myColors.black], "");
-                this.addNewQuestion.questionButton.back.corners(5, 5);
-                this.addNewQuestion.manipulator.set(0, this.addNewQuestion.questionButton.component);
-                let pos = calculatePositionOfQuestion(this.questions.length);
-                this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                let iconAddNewQuestion = IconCreator.createPlusIcon(this.addNewQuestion.manipulator, 1);
+                let addNewQuestionManip = new Manipulator(this).addOrdonator(2);
+                let questionButton = new gui.Button(QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, [myColors.white, 1, myColors.black], "");
+                questionButton.back.corners(5, 5);
+                addNewQuestionManip.set(0, questionButton.component);
+
+                let iconAddNewQuestion = IconCreator.createPlusIcon(addNewQuestionManip, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
-                this.addNewQuestion.questionButton.onClick(() => onClickOnAddNewQuestion());
-                this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
+                questionButton.onClick(() => onClickOnAddNewQuestion());
+
+                this.questionsBlockListView.add(addNewQuestionManip);
             };
-
-            var  _refreshQuestionsBlock = () => {
-                var _displayQuestionsBetween = (startIndexInclus, endIndexInclus) => {
-                    for (var it = startIndexInclus, j = 0; it < endIndexInclus + 1; it++, j++) {
-                        let pos = calculatePositionOfQuestion(j);
-                        this.questionsBlock[it].manipulator.move(pos.x, pos.y);
-                        this.questionsBlockManipulator.add(this.questionsBlock[it].manipulator);
-                    }
-                };
-
-                if (this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
-                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll - 1].manipulator);
-                    if (this.questionIndexScroll + (QUESTIONS_PER_LINE + 1) <= this.questions.length) {
-                        this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll + (QUESTIONS_PER_LINE )].manipulator);
-                    }
-                    ;
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
-                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
-                } else if (this.questionIndexScroll > 0) {
-                    this.questionsBlockManipulator.remove(this.questionsBlock[this.questionIndexScroll - 1].manipulator);
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 2);
-                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
-
-                } else if (this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionIndexScroll + QUESTIONS_PER_LINE - 1);
-                    this.questionsBlockManipulator.remove(this.addNewQuestion.manipulator);
-                }else{
-                    _displayQuestionsBetween(this.questionIndexScroll, this.questionsBlock.length-1);
-                    let pos = calculatePositionOfQuestion(this.questionsBlock.length);
-                    this.addNewQuestion.manipulator.move(pos.x, pos.y);
-                    this.questionsBlockManipulator.add(this.addNewQuestion.manipulator);
-                }
-
-                this._showActualQuestionChevron();
-            };
-            var _initChevron = () => {
-                let pos = calculatePositionOfQuestion(QUESTIONS_PER_LINE + 2);
-                let posXRightChevron = pos.x / 2 + dimensionsChevronQuestion.w / 2 + MARGIN;
-
-                this.questionsBlockChevron.right = new svg.Chevron(dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "E");
-                this.questionsBlockChevron.right.color(myColors.halfGrey, 1, myColors.black).position(posXRightChevron, 0);
-
-                this.questionsBlockChevron.left = new svg.Chevron(dimensionsChevronQuestion.w, dimensionsChevronQuestion.h, 15, "W");
-                this.questionsBlockChevron.left.color(myColors.halfGrey, 1, myColors.black).position(-posXRightChevron, 0);
-
-                var onClickRChevron = () => {
-                    this.questionIndexScroll++;
-                    _refreshQuestionsBlock();
-                };
-                var onClickLChevron = () => {
-                    this.questionIndexScroll--;
-                    _refreshQuestionsBlock();
-                };
-
-                var onMouseEnter = function () {
-                    this.color(myColors.black, 1, myColors.halfGrey);
-                };
-
-                var onMouseOut = function () {
-                    this.color(myColors.halfGrey, 1, myColors.black);
-                };
-
-                this.questionsBlockChevron.right.onClick(onClickRChevron);
-                this.questionsBlockChevron.left.onClick(onClickLChevron);
-                this.questionsBlockChevron.left.onMouseEnter(onMouseEnter.bind(this.questionsBlockChevron.left));
-                this.questionsBlockChevron.right.onMouseEnter(onMouseEnter.bind(this.questionsBlockChevron.right));
-                svg.addEvent(this.questionsBlockChevron.left, 'mouseleave', onMouseOut.bind(this.questionsBlockChevron.left))
-                svg.addEvent(this.questionsBlockChevron.right, 'mouseleave', onMouseOut.bind(this.questionsBlockChevron.right))
-
-                this._showActualQuestionChevron();
-            };
-
-
-            this.questionsBlock = [];
+            
             this.questions = this.getQuestions();
             this.lastQuestionIndex = this.getLastQuestionIndex();
-
-            let dimensionsQuestionButton = {
-                width: (this.width - MARGIN * QUESTIONS_PER_LINE) / (QUESTIONS_PER_LINE + 1),
-                height: this.height * 1 / 6 - 2 * MARGIN
-            };
-
-            let dimensionsChevronQuestion = {
-                w: (this.width - QUESTIONS_PER_LINE * (dimensionsQuestionButton.width + MARGIN)) / 2 - MARGIN * 2,
-                h: dimensionsQuestionButton.height - MARGIN,
-            };
 
 
             this.questions.forEach((itQuestion, i) => {
                 _displayQuestionBlock(itQuestion, i);
             });
 
-
             _displayNewQuestionBlock();
-            _initChevron();
-            this.questionIndexScroll = 0;
-            this._showActualQuestionChevron();
-        }
-
-        _showActualQuestionChevron() {
-            var _showAllChevron = () => {
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
-                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
-            };
-
-            var _showOnlyLChevron = () => {
-                this.questionsBlockChevronManipulator.remove(this.questionsBlockChevron.right);
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.left);
-                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
-            }
-
-            var _showOnlyRChevron = () => {
-                this.questionsBlockChevronManipulator.add(this.questionsBlockChevron.right);
-                this.questionsBlockChevronManipulator.remove(this.questionsBlockChevron.left);
-                this.questionsBlockManipulator.add(this.questionsBlockChevronManipulator);
-            }
-
-            var _hideAllQuestionChevron = () => {
-                this.questionsBlockManipulator.remove(this.questionsBlockChevronManipulator);
-            }
-
-            if (this.questions.length < QUESTIONS_PER_LINE) {
-                _hideAllQuestionChevron();
-            } else {
-                if (this.questionIndexScroll > 0 && this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
-                    _showAllChevron();
-                } else if (this.questionIndexScroll > 0) {
-                    _showOnlyLChevron();
-                } else if (this.questionIndexScroll + (QUESTIONS_PER_LINE - 1) < this.questions.length) {
-                    _showOnlyRChevron();
-                } else {
-                    _hideAllQuestionChevron();
-                }
-            }
+            this.questionsBlockListView.refreshListView();
         }
 
 
@@ -580,20 +418,18 @@ exports.QuizAdminV = function (globalVariables) {
                 let titleArea = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 1, myColors.black);
                 questionGui.textAreaManipulator.set(0, titleArea);
 
-                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width*6/8, dimensions.height - MARGIN, question.label);
-                //questionGui.textArea.position((dimensions.width - questionGui.textArea.width)/2 - MARGIN, 0);
+                questionGui.textArea = new gui.TextArea(0, 0, dimensions.width * 6 / 8, dimensions.height - MARGIN, question.label);
                 questionGui.textAreaManipulator.set(1, questionGui.textArea.component);
 
                 let sizePicture = dimensions.height - MARGIN;
 
                 questionGui.textAreaPicture = new svg.Image((question.imageSrc) ? question.imageSrc : "../images/quiz/newImage.png");
                 questionGui.textAreaPicture.dimension(sizePicture, sizePicture)
-                    .position(-questionGui.textArea.width/2 - (titleArea.width - questionGui.textArea.width)/4 , 0 );
+                    .position(-questionGui.textArea.width / 2 - (titleArea.width - questionGui.textArea.width) / 4, 0);
 
                 questionGui.textAreaManipulator.add(questionGui.textAreaPicture);
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
-                //questionGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
                 questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
                 questionGui.answersDimension.height -= dimensions.height;
@@ -700,7 +536,7 @@ exports.QuizAdminV = function (globalVariables) {
                                     contentManip.add(popUpExplanation.textExplanation.component);
                                 };
                                 var _drawMediaPic = () => {
-                                    popUpExplanation.media = new svg.Image((answer.explanation && answer.explanation.imageSrc) ? answer.explanation.imageSrc :  "../images/quiz/newImage.png");
+                                    popUpExplanation.media = new svg.Image((answer.explanation && answer.explanation.imageSrc) ? answer.explanation.imageSrc : "../images/quiz/newImage.png");
                                     popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
                                     popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
                                     contentManip.add(popUpExplanation.media);
@@ -742,7 +578,6 @@ exports.QuizAdminV = function (globalVariables) {
                             popUpExplanation.setTextTitle = function (msg) {
                                 this.textTitle.message("Explication de la réponse : " + msg);
                             };
-
 
                             return popUpExplanation;
                         };
@@ -794,7 +629,7 @@ exports.QuizAdminV = function (globalVariables) {
                     _initRedCross(answerGui);
                     _addExplanationPen(answerGui);
                     _addValidCheckbox(answerGui);
-                    if (answerGui.explanation.label != EXPLANATION_DEFAULT_TEXT ) {
+                    if (answerGui.explanation.label != EXPLANATION_DEFAULT_TEXT) {
                         answerGui.iconExplanation.activeStatusActionIcon();
                         answerGui.iconExplanation.showActualBorder();
                     }
@@ -899,7 +734,7 @@ exports.QuizAdminV = function (globalVariables) {
                     explanation: {label: answerGui.popUpExplanation.textExplanation.textMessage}
                 };
 
-                if(answerGui.popUpExplanation.media.src != "../images/quiz/newImage.png"){
+                if (answerGui.popUpExplanation.media.src != "../images/quiz/newImage.png") {
                     answer.explanation.imageSrc = answerGui.popUpExplanation.media.src;
                 }
 
@@ -925,7 +760,7 @@ exports.QuizAdminV = function (globalVariables) {
                     answers: questionElementVue.answers
                 };
 
-                if(questionElementVue.textAreaPicture.src != "../images/quiz/newImage.png"){
+                if (questionElementVue.textAreaPicture.src != "../images/quiz/newImage.png") {
                     question.imageSrc = questionElementVue.textAreaPicture.src;
                 }
 
@@ -969,8 +804,7 @@ exports.QuizAdminV = function (globalVariables) {
         selectQuestion(index) {
             if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
             this.selectedQuestionIndex = index;
-            this.questionDetailsManipulator
-                .set(1, this.questionsDetail[index].guiManipulator);
+            this.questionDetailsManipulator.set(1, this.questionsDetail[index].guiManipulator);
         }
 
         unselectQuestion() {

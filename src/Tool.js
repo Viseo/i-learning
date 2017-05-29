@@ -570,7 +570,7 @@ exports.Tool = function (globalVariables, classContainer) {
                 this.contentManip.move(eleW/2, listH/2);
             }
 
-            this.borderWithChevrons.color(color, 2, myColors.black).corners(5);
+            this.borderWithChevrons.color(color, 1, myColors.black).corners(5);
 
 
             this.border = new svg.Rect(listW, listH).color([], 0, [0, 0, 0]);
@@ -694,23 +694,28 @@ exports.Tool = function (globalVariables, classContainer) {
         refreshListView(){
             if(this.direction == "V"){
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
+                    this.listElements[i].component.move(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
                 }
             }else{
                 for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
+                    this.listElements[i].component.move(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
                 }
             }
             this._showActualChevron();
         }
 
         add(manip){
-            this.listElements.push(manip.component);
+            this.listElements.push(manip);
+            this.contentManip.add(manip.component);
+        }
+
+        addManipInIndex(manip, index){
+            this.listElements.splice(index, 0, manip);
             this.contentManip.add(manip.component);
         }
 
         removeElementFromList(manip){
-            this.listElements.remove(manip.component);
+            this.listElements.remove(manip);
             this.contentManip.remove(manip.component);
         }
     }
