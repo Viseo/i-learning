@@ -984,7 +984,7 @@ exports.Models = function (globalVariables, mockResponses) {
         constructor(game) {
             this.type = 'Poupee';
             this.label = game.label;
-            this.index = game.gameIndex;
+            this.gameIndex = game.gameIndex;
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;

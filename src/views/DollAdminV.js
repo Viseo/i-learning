@@ -10,6 +10,8 @@ exports.DollAdminV = function(globalVariables){
         RIGHTBOX_SIZE = {w: PANEL_SIZE.w - SANDBOX_SIZE.w - 3*MARGIN,h: (PANEL_SIZE.h - 6*MARGIN)/2,
         header: {w :PANEL_SIZE.w - SANDBOX_SIZE.w, h: 0.2*(PANEL_SIZE.h - 5*MARGIN)/2}},
         TAB_SIZE={w:0.1*PANEL_SIZE.w, h: 0.1*PANEL_SIZE.h},
+        ListManipulatorView = globalVariables.domain.ListManipulatorView,
+        installDnD = globalVariables.gui.installDnD,
         IMAGE_SIZE = {w:30, h:30}
 
     class DollAdminV extends View{
@@ -202,6 +204,41 @@ exports.DollAdminV = function(globalVariables){
         }
 
         displayObjectives(){
+            let createMiniature = ()=>{
+                let miniature ={
+                    border: new svg.Line(-this.objectivesList.width/2 + 2* MARGIN,15,this.objectivesList.width/2 - 2* MARGIN,15)
+                        .color(myColors.black, 1, myColors.grey),
+                    text: new svg.Text(this.objectivesInput.textMessage).font('Arial', 18).position(0,6),
+                    manip: new Manipulator(this)
+                };
+                miniature.manip.add(miniature.text)
+                    .add(miniature.border);
+                miniature.text.markDropID('objectivesDrop');
+                miniature.border.markDropID('objectivesDrop');
+                let conf ={
+                    drop: (what, whatParent, finalX, finalY)=>{
+                            let point = whatParent.globalPoint(finalX,finalY);
+                            let target = this.manipulator.last.getTarget(point.x,point.y);
+                            if(target && !target.dropID == 'objectivesDrop' || !target.dropID) {
+                                this.objectivesList.removeElementFromList(what);
+                                what.flush();
+                            }
+                            return {x: finalX, y: finalY, parent: whatParent};
+                    },
+                    moved: (what)=>{
+                        this.objectivesList.resetAllMove();
+                        this.objectivesList.refreshListView();
+                        return true;
+                    }
+                }
+                installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
+                return miniature;
+            }
+            let addObjectiveHandler = ()=>{
+                let mini = createMiniature();
+                this.objectivesList.add(mini.manip);
+                this.objectivesList.refreshListView();
+            }
             let objectivesManip = new Manipulator(this);
             let objectivesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -216,10 +253,11 @@ exports.DollAdminV = function(globalVariables){
                 .corners(2,2);
             objectivesBody.position(0, objectivesHeader.height/2 + objectivesBody.height/2);
 
-            let objectivesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
+            this.objectivesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black]);
-            objectivesInput.position(-RIGHTBOX_SIZE.w/2+objectivesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
-            objectivesInput.frame.corners(5,5);
+            this.objectivesInput.font('Arial', 18);
+            this.objectivesInput.position(-RIGHTBOX_SIZE.w/2+this.objectivesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
+            this.objectivesInput.frame.corners(5,5);
 
             let objectivesAddButton = new gui.Button(0.25*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey],'Ajouter');
             objectivesAddButton.text
@@ -227,18 +265,60 @@ exports.DollAdminV = function(globalVariables){
                 .position(0,6);
             objectivesAddButton.back.corners(5,5);
             objectivesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - objectivesAddButton.width/2, RIGHTBOX_SIZE.header.h);
+            objectivesAddButton.onClick(addObjectiveHandler);
+
+            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.objectivesList.position(0,RIGHTBOX_SIZE.h -this.objectivesList.height);
+            this.objectivesList.markDropID('objectivesDrop')
 
             objectivesManip.add(objectivesHeader)
                 .add(objectivesTitle)
                 .add(objectivesBody)
                 .add(objectivesAddButton.component)
-                .add(objectivesInput.component);
+                .add(this.objectivesInput.component)
+                .add(this.objectivesList.manipulator);
 
             objectivesManip.move(PANEL_SIZE.w/2 - RIGHTBOX_SIZE.w/2 - MARGIN, 2*MARGIN-PANEL_SIZE.h/2 + objectivesHeader.height/2);
             this.mainPanelManipulator.add(objectivesManip);
+            this.objectivesList.refreshListView();
         }
 
         displayResponses(){
+            let createMiniature = ()=>{
+                let miniature ={
+                    border: new svg.Line(-this.objectivesList.width/2 + 2* MARGIN,15,this.objectivesList.width/2 - 2* MARGIN,15)
+                        .color(myColors.black, 1, myColors.grey),
+                    text: new svg.Text(this.responsesInput.textMessage).font('Arial', 18).position(0,6),
+                    manip: new Manipulator(this)
+                };
+                miniature.manip.add(miniature.text)
+                    .add(miniature.border);
+                miniature.text.markDropID('responsesDrop');
+                miniature.border.markDropID('responsesDrop');
+                let conf ={
+                    drop: (what, whatParent, finalX, finalY)=>{
+                        let point = whatParent.globalPoint(finalX,finalY);
+                        let target = this.manipulator.last.getTarget(point.x,point.y);
+                        if(target && !target.dropID == 'responsesDrop' || !target.dropID) {
+                            this.responsesList.removeElementFromList(what);
+                            what.flush();
+                        }
+                        return {x: finalX, y: finalY, parent: whatParent};
+                    },
+                    moved: (what)=>{
+                        this.responsesList.resetAllMove();
+                        this.responsesList.refreshListView();
+                        return true;
+                    }
+                }
+                installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
+                return miniature;
+            }
+            let addResponseHandler = ()=>{
+                let mini = createMiniature();
+                this.responsesList.add(mini.manip);
+                this.responsesList.refreshListView();
+            }
             let responsesManip = new Manipulator(this);
             let responsesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -253,10 +333,11 @@ exports.DollAdminV = function(globalVariables){
                 .corners(2,2);
             responsesBody.position(0, responsesHeader.height/2 + responsesBody.height/2);
 
-            let responsesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
-                .color([myColors.white, 1, myColors.black]);
-            responsesInput.position(-RIGHTBOX_SIZE.w/2+responsesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
-            responsesInput.frame.corners(5,5);
+            this.responsesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
+                .color([myColors.white, 1, myColors.black])
+            this.responsesInput.font('Arial', 18);
+            this.responsesInput.position(-RIGHTBOX_SIZE.w/2+this.responsesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
+            this.responsesInput.frame.corners(5,5);
 
             let responsesAddButton = new gui.Button(0.25*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey],'Ajouter');
             responsesAddButton.text
@@ -264,13 +345,18 @@ exports.DollAdminV = function(globalVariables){
                 .position(0,6);
             responsesAddButton.back.corners(5,5);
             responsesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - responsesAddButton.width/2, RIGHTBOX_SIZE.header.h);
+            responsesAddButton.onClick(addResponseHandler);
 
+            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.responsesList.position(0,RIGHTBOX_SIZE.h -this.responsesList.height);
+            this.responsesList.markDropID('responsesDrop')
 
             responsesManip.add(responsesHeader)
                 .add(responsesTitle)
                 .add(responsesBody)
                 .add(responsesAddButton.component)
-                .add(responsesInput.component);
+                .add(this.responsesInput.component)
+                .add(this.responsesList.manipulator);
             responsesManip.move(PANEL_SIZE.w/2 - RIGHTBOX_SIZE.w/2 - MARGIN, 2*MARGIN-PANEL_SIZE.h/2 + responsesHeader.height/2 + RIGHTBOX_SIZE.h + 2*MARGIN);
             this.mainPanelManipulator.add(responsesManip);
         }
