@@ -42,7 +42,7 @@ const getFormationsByName = (name) => {
                 reject(err);
             }
             let result = docs.find(formation => formation.versions[formation.versions.length - 1].label === name);
-            resolve({ formation: result });
+            resolve({formation: result});
         })
     });
 };
@@ -51,7 +51,7 @@ const getFormationById = (id) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations
-            .find({ "_id": new ObjectID(id) })
+            .find({"_id": new ObjectID(id)})
             .toArray((err, docs) => {
                 if (err) reject(err);
                 resolve(docs[0]);
@@ -70,7 +70,7 @@ const getVersionById = (id) => {
                 docs.forEach(formation => {
                     version = formation.versions.find(version => version._id.toString() === id) || version;
                 });
-                resolve({ formation: version });
+                resolve({formation: version});
             })
     });
 };
@@ -87,7 +87,7 @@ const insertFormation = (object) => {
             if (err) {
                 reject(err);
             }
-            resolve({ formation: docs.insertedId, version: object._id });
+            resolve({formation: docs.insertedId, version: object._id});
         })
     });
 };
@@ -98,11 +98,11 @@ const deactivateFormation = (formation) => {
             version = formation.versions[formation.versions.length - 1];
         version.status = "NotPublished";
         version._id = new ObjectID();
-        collectionFormations.updateOne({ "_id": new ObjectID(formation._id) }, { $push: { versions: version } }, (err) => {
+        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions: version}}, (err) => {
             if (err) {
                 reject(err);
             }
-            resolve({ version: version._id.toString() });
+            resolve({version: version._id.toString()});
         });
     });
 };
@@ -117,7 +117,7 @@ const getLastVersions = () => {
                 formation.versions[formation.versions.length - 1].formationId = formation._id;
                 formations.push(formation.versions[formation.versions.length - 1]);
             });
-            resolve({ myCollection: formations });
+            resolve({myCollection: formations});
         })
     })
 };
@@ -129,7 +129,7 @@ const getAllFormations = () => {
             if (err) {
                 reject(err);
             }
-            resolve({ myCollection: docs });
+            resolve({myCollection: docs});
         })
     })
 };
@@ -141,7 +141,7 @@ const newVersion = (formation, version) => {
             if (JSON.stringify(version) !== JSON.stringify(formation.versions[formation.versions.length - 1])) {
                 // new version
                 version._id = new ObjectID();
-                collectionFormations.updateOne({ "_id": new ObjectID(formation._id) }, { $push: { versions: version } }, (err) => {
+                collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions: version}}, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -154,15 +154,18 @@ const newVersion = (formation, version) => {
             // update last version
             let versionId = formation.versions[formation.versions.length - 1]._id;
             if (formation.versions[formation.versions.length - 1].status === "NotPublished" && version.status === "Edited") version.status = "NotPublished";
-            
+
             //rename keys, it will only set _fields that are in version object
             //others will remain unchanged
-            Object.keys(version).forEach(function(key){
+            Object.keys(version).forEach(function (key) {
                 version[`versions.$.${key}`] = version[key];
                 delete version[key];
             });
-            
-            collectionFormations.updateOne({ "_id": new ObjectID(formation._id), "versions._id": new ObjectID(versionId) },
+
+            collectionFormations.updateOne({
+                    "_id": new ObjectID(formation._id),
+                    "versions._id": new ObjectID(versionId)
+                },
                 {$set: version}, (err) => {
                     if (err) {
                         reject(err);
@@ -174,63 +177,50 @@ const newVersion = (formation, version) => {
     })
 };
 const updateImage = (formation, version1, version2) => {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
         let formations = db.get().collection('formations');
         formations.updateOne({
             '_id': new ObjectID(formation._id),
             'versions._id': new ObjectID(version1._id)
         }, {
             $set: {'versions.$.imageSrc': version2.imageSrc}
-        }).then(data=>{
+        }).then(data => {
             resolve(data);
-        }).catch(data=>{
+        }).catch(data => {
             reject(data);
         })
     })
 }
 
-const updateNote = (req, versionId, note)=> {
-    return new Promise((resolve, reject) => {
-        users.noteFormation(req, note, versionId)
-            .then(userNotation => {
-                getFormationById(req.params.id)
-                    .then((data) => {
-                        let formation = data;
-                        formation.versions.forEach(version => {
-                            if (version._id.toString() == versionId.toString()) {
-                                if (userNotation.newVoter) {
-                                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note)) / (Number(version.noteCounter) + 1)) : Number(note);
-                                    let newCounter = Number(version.noteCounter) ? (Number(version.noteCounter) + 1) : 1;
-                                    let formations = db.get().collection('formations');
-                                    formations.updateOne({
-                                        '_id': new ObjectID(req.params.id),
-                                        'versions._id': new ObjectID(versionId)
-                                    }, {
-                                        $set: {'versions.$.note': newAverage, 'versions.$.noteCounter': newCounter}
-                                    }).then(data => {
-                                        resolve(data);
-                                    }).catch(err => {
-                                        reject(err);
-                                    });
-                                }
-                                else{
-                                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note) - Number(userNotation.lastNote)) / Number(version.noteCounter)) : Number(note);
-                                    let formations = db.get().collection('formations');
-                                    formations.updateOne({
-                                        '_id': new ObjectID(req.params.id),
-                                        'versions._id': new ObjectID(versionId)
-                                    }, {
-                                        $set: {'versions.$.note': newAverage}
-                                    }).then(data => {
-                                        resolve(data);
-                                    }).catch(err => {
-                                        reject(err);
-                                    });
-                                }
-                            }
-                        });
+const updateNote = (req, versionId, note) => {
+    return users.noteFormation(req, note, versionId).then(userNotation => {
+        return getFormationById(req.params.id).then((formation) => {
+            let version = formation.versions.find((ver) => ver._id.toString() === versionId.toString());
+            if (version) {
+                if (userNotation.newVoter) {
+                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note)) / (Number(version.noteCounter) + 1)) : Number(note);
+                    let newCounter = Number(version.noteCounter) ? (Number(version.noteCounter) + 1) : 1;
+                    let formations = db.get().collection('formations');
+                    return formations.updateOne({
+                        '_id': new ObjectID(req.params.id),
+                        'versions._id': new ObjectID(versionId)
+                    }, {
+                        $set: {'versions.$.note': newAverage, 'versions.$.noteCounter': newCounter}
                     })
-            })
+                } else {
+                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note) - Number(userNotation.lastNote)) / Number(version.noteCounter)) : Number(note);
+                    let formations = db.get().collection('formations');
+                    return formations.updateOne({
+                        '_id': new ObjectID(req.params.id),
+                        'versions._id': new ObjectID(versionId)
+                    }, {
+                        $set: {'versions.$.note': newAverage}
+                    })
+                }
+            }else {
+                throw "version not found";
+            }
+        })
     })
 }
 
@@ -245,7 +235,7 @@ const replaceQuiz = (indexes, game, formation) => {
                 version.status = "Edited";
                 version._id = new ObjectID();
                 version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
-                collectionFormations.updateOne({ "_id": formation._id }, { $push: { versions: version } }, (err) => {
+                collectionFormations.updateOne({"_id": formation._id}, {$push: {versions: version}}, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -258,8 +248,8 @@ const replaceQuiz = (indexes, game, formation) => {
             // update last version
             version = formation.versions[formation.versions.length - 1];
             version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
-            collectionFormations.updateOne({ "_id": new ObjectID(formation._id) },
-                { $set: { versions: formation.versions } }, (err) => {
+            collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
+                {$set: {versions: formation.versions}}, (err) => {
                     if (err) {
                         reject(err);
                     }

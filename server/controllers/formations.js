@@ -53,9 +53,10 @@ module.exports = function (app) {
     app.post('/formations/userFormationEval/:id', function (req, res) {
         let userNote = req.body.starId.split('')[req.body.starId.length - 1];
         formations.updateNote(req, req.body.versionId, userNote).then(data => {
-            if (data.modifiedCount == 1) {
+            if (data.matchedCount === 1) {
                 res.status(200).send();
             } else {
+                console.log('problem while updating note', req.body, data);
                 res.status(404).send();
             }
         }).catch(err => {
