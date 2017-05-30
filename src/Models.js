@@ -540,16 +540,16 @@ exports.Models = function (globalVariables, mockResponses) {
             }
             let lastLevel = game.levelIndex;
             !newGame && this.levelsTab[lastLevel].getGamesTab().forEach(g => {
-                if (g.index > game.gameIndex) {
-                    g.index--;
+                if (g.gameIndex > game.gameIndex) {
+                    g.gameIndex--;
                 }
             });
             !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.gameIndex, 1);
             game.gameIndex = column - 1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
                 column - 1;
             this.levelsTab[level].getGamesTab().forEach(g => {
-                if (g.index >= game.gameIndex) {
-                    g.index++;
+                if (g.gameIndex >= game.gameIndex) {
+                    g.gameIndex++;
                 }
             })
             this.levelsTab[level].getGamesTab().splice(column - 1, 0, game);
