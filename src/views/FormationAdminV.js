@@ -41,7 +41,7 @@ exports.FormationAdminV = function(globalVariables) {
             this.arrowMode = false;
             this.mainManip = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
-
+            this.mapGameAndGui = {};
         }
 
         getFormation(){
@@ -205,14 +205,11 @@ exports.FormationAdminV = function(globalVariables) {
             games.list.forEach(game => {
 
                 let createMiniature = ()=> {
-
                     let miniature = {
                         border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).color(myColors.white, 1, myColors.grey).corners(10, 10),
                         content: new svg.Text(game.type).font('Arial', MINIATURE_FONT_SIZE),
                         manipulator: new Manipulator(this).mark(game.type + "LibManip")
-                    }
-
-
+                    };
                     return miniature
                 };
 
@@ -498,7 +495,6 @@ exports.FormationAdminV = function(globalVariables) {
                 }
             }
             let createGameMiniature = (game)=>{
-
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
@@ -608,6 +604,7 @@ exports.FormationAdminV = function(globalVariables) {
 
             level.getGamesTab().forEach(game => {
                 let gameMiniature = createGameMiniature(game);
+                this.mapGameAndGui[game.id] = gameMiniature;
                 gameMiniature.manipulator.set(0,gameMiniature.border)
                     .set(1,gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator);
@@ -711,9 +708,9 @@ exports.FormationAdminV = function(globalVariables) {
 
         arrow(parent,child) {
             this.graphMiniatureManipulator.add(this.arrowsManipulator);
-            let parentGlobalPoint = parent.miniatureGame.manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
+            let parentGlobalPoint = this.mapGameAndGui[parent.id].manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
                 parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
-                childGlobalPoint = child.miniatureGame.manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
+                childGlobalPoint = this.mapGameAndGui[child.id].manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
                 childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
             this.redCrossManipulator = new Manipulator(this);
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
