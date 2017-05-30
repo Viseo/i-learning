@@ -376,6 +376,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         setCorrect(){
 
         }
+
     }
     class AnswerVueCollab extends AnswerVue {
     }

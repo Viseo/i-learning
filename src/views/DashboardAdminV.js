@@ -190,6 +190,7 @@ exports.DashboardAdmin = function(globalVariables){
                 iconAddImage.addEvent('click', ()=>{this.displayPopUpImage(formation)});
 
 
+
                 return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
             }
             let placeMiniature = (miniature, i)=>{

@@ -378,6 +378,16 @@ exports.Tool = function (globalVariables, classContainer) {
 
             return icon;
         }
+        static createVoiceIcon(manipulator, layer){
+            let radiusSize = 20;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 0, myColors.none)
+                .setPictureContent("../images/speaker.png", (radiusSize*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
 
 
 

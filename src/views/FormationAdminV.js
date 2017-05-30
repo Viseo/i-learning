@@ -318,6 +318,9 @@ exports.FormationAdminV = function(globalVariables) {
 
 
         }
+
+
+
         saveFormation(){
             this.presenter.saveFormation();
         }
