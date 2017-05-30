@@ -12,13 +12,13 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{questions: [{}], answered: []}]}]},
+                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}], answered: []}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation undone");
@@ -35,13 +35,13 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{questions: [{}, {}], answered: [{}]}]}]},
+                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}, {}], answered: [{}]}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
@@ -58,13 +58,13 @@ describe('dashboard collab', function(){
                 "/formations": {
                     code: 200,
                     content: {myCollection: [
-                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{questions: [{}, {}], answered: [{}]}]}]},
+                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz', questions: [{}, {}], answered: [{}]}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
                 }
             };
             let user = {admin: false};
-            return loadPage('Dashboard', mockResponses, user);
+            return loadPage('Dashboard', {mockResponses, data:user});
         })
         when(()=>{
             assertMessage(root, "textMiniature1", "formation inProgress");
@@ -76,4 +76,5 @@ describe('dashboard collab', function(){
         })
     });
     it('should enter a formation');
+    it('should load lastAction');
 })

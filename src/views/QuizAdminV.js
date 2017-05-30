@@ -98,13 +98,18 @@ exports.QuizAdminV = function (globalVariables) {
                     titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
                 });
                 titleTextArea.color([myColors.lightgrey, 1, myColors.black]);
+                titleTextArea.mark('quizTitle');
                 this.titleManipulator.set(0, titleTextArea.component);
                 this.titleManipulator.move(MARGIN + dimensions.width / 2, currentY + dimensions.height / 2);
                 this.quizTitleField = titleTextArea;
 
-                let saveIcon = new util.Picture('../../images/save.png', false, this, '', null);
-                saveIcon.draw(titleTextArea.width / 2 + 12.5 + MARGIN, 0, 25, 25, this.titleManipulator, 1);
-                svg.addEvent(saveIcon.imageSVG, 'click', this.renameQuiz.bind(this));
+                let saveIcon = new svg.Image('../../images/save.png');
+                this.titleManipulator.add(saveIcon);
+                saveIcon
+                    .dimension(25, 25)
+                    .position(titleTextArea.width / 2 + 12.5 + MARGIN, 0)
+                    .mark('saveNameButton');
+                svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
                 currentY += dimensions.height + MARGIN;
             }
             var _displayQuestionsHeader = () => {
@@ -252,6 +257,7 @@ exports.QuizAdminV = function (globalVariables) {
         displayMessage(message) {
             let messageText = new svg.Text(message).font('Arial', 20);
             messageText.position(drawing.width / 2, this.header.height + 20);
+            messageText.mark('infoMessage');
             this.manipulator.add(messageText);
             svg.timeout(() => {
                 this.manipulator.remove(messageText);
@@ -312,6 +318,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                     IconCreator.createRedCrossIcon(questionManip)
                         .position(QUESTION_BUTTON_SIZE.w / 2, -QUESTION_BUTTON_SIZE.h / 2)
+                        .mark('questionRedCross'+lastQuestionIndex)
                         .addEvent('click', () => _deleteQuestion());
                 };
                 var _displayBlock = () => {
@@ -319,6 +326,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
 
                 let questionManip = new Manipulator(this).addOrdonator(2);
+                questionManip.mark('questionBlock'+lastQuestionIndex);
                 _initBlock(questionManip);
                 _displayBlock();
 
@@ -344,6 +352,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let iconAddNewQuestion = IconCreator.createPlusIcon(addNewQuestionManip, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
                 questionButton.onClick(() => onClickOnAddNewQuestion());
+                questionButton.glass.mark('newQuestionButton');
 
                 this.questionsBlockListView.add(addNewQuestionManip);
             };
@@ -455,6 +464,7 @@ exports.QuizAdminV = function (globalVariables) {
                     var _initGui = (answerGui, index) => {
                         var _initManipulators = () => {
                             answerGui.manipulator = new Manipulator(this).addOrdonator(5);
+                            answerGui.manipulator.mark('answer'+index);
                             questionGui.answersManipulator.add(answerGui.manipulator);
                         }
                         var _initInfos = () => {
@@ -475,6 +485,7 @@ exports.QuizAdminV = function (globalVariables) {
                     };
                     var _initRedCross = (answerGui) => {
                         answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
+                        answerGui.iconRedCross.mark('answerRedCross'+answerGui.index);
                         answerGui.iconRedCross.position(dimensions.w / 2, -dimensions.h / 2);
                         answerGui.iconRedCross.onClickRedCross = () => {
                             let indexAnswer = answerGui.index;
@@ -531,6 +542,7 @@ exports.QuizAdminV = function (globalVariables) {
                                         .frame.color(myColors.white, 0, myColors.black);
                                     popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
                                     popUpExplanation.textExplanation.onBlur(_onModificationText);
+                                    popUpExplanation.textExplanation.mark('explanationText');
 
 
                                     contentManip.add(popUpExplanation.textExplanation.component);
@@ -564,6 +576,7 @@ exports.QuizAdminV = function (globalVariables) {
                             contentManip.add(mediaManipulator);
 
                             popUpExplanation.manipulator = new Manipulator(popUpExplanation).addOrdonator(3);
+                            popUpExplanation.manipulator.mark('explanation');
                             popUpExplanation.manipulator.add(titleManip);
                             popUpExplanation.manipulator.add(contentManip);
 
@@ -596,13 +609,14 @@ exports.QuizAdminV = function (globalVariables) {
 
 
                         answerGui.iconExplanation = IconCreator.createExplanationIcon(answerGui.manipulator, 1);
-                        answerGui.iconExplanation.content.mark("explanation");
+                        answerGui.iconExplanation.mark("explanationButton"+answerGui.index);
                         answerGui.iconExplanation.position(dimensions.w / 2 - answerGui.iconExplanation.getContentSize() * 2 / 3, 0);
                         answerGui.iconExplanation.addEvent('click', _toggleExplanation);
 
                     };
                     var _addValidCheckbox = (answerGui) => {
                         answerGui.checkBoxManipulator = new Manipulator(this);
+                        answerGui.checkBoxManipulator.mark("answerCheckbox"+answerGui.index);
                         var _toggleChecked = () => {
                             if (answerGui.checked) {                           // modele or state
                                 answerGui.checkBoxManipulator.remove(checked);
@@ -653,6 +667,7 @@ exports.QuizAdminV = function (globalVariables) {
                     };
 
                     questionGui.addNewResponseManip = new Manipulator(this).addOrdonator(2);
+                    questionGui.addNewResponseManip.mark('addAnswerButton');
                     let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
 
                     let addNewResponseButton
@@ -791,6 +806,7 @@ exports.QuizAdminV = function (globalVariables) {
 
         renameQuiz() {
             this.presenter.renameQuiz(this.quizTitleField.textMessage).then(status => {
+                status.message && this.displayMessage(status.message);
                 if (status.saved) {
                     let formationLabel = this.getFormationLabel();
                     this.label = this.getLabel();
@@ -798,6 +814,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
             }).catch(error => {
                 console.log(error);
+                this.displayMessage(error);
             });
         }
 
@@ -814,7 +831,12 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         updateQuiz(quizData) {
-            this.presenter.updateQuiz(quizData);
+            this.presenter.updateQuiz(quizData).then((data)=>{
+                data.message && this.displayMessage(data.message);
+            }).catch((error)=>{
+                console.log(error);
+                this.displayMessage(error);
+            })
         }
 
         refresh() {

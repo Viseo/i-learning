@@ -182,6 +182,12 @@ exports.Tool = function (globalVariables, classContainer) {
                 : manipulator.add(this.manipulator);
         }
 
+        mark(id){
+            this.id = id;
+            this.manipulator.mark(id);
+            return this;
+        }
+
         changeContentPollygonColor(fillColor, strokeWidth, strokeColor) {
             if (this.iconSetting.contentProperties.type == "Polygon") {
                 this.iconSetting.changeContentColor(fillColor, strokeWidth, strokeColor);

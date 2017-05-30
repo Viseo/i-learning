@@ -20,9 +20,14 @@ let quizJson = {
 describe('quiz collab page', function () {
     it('should answer a question', function () {
         let {root, state} = given(() => {
-            let page = loadPage("GameCollab", mockResponses, quizJson, "Quiz");
-            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
-            return page;
+            return loadPage("GameCollab", {
+                mockResponses,
+                data:quizJson,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
         })
         when(() => {
             assertMessage(root, "questionTitle1", "question 1");
@@ -50,9 +55,14 @@ describe('quiz collab page', function () {
                     }
                 ]
             }
-            let page = loadPage("GameCollab", mockResponses, quizMultiple, "Quiz");
-            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
-            return page;
+            return loadPage("GameCollab", {
+                mockResponses,
+                data:quizMultiple,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
         })
         when(()=>{
             click(root, 'answer1');
@@ -65,8 +75,14 @@ describe('quiz collab page', function () {
 
     it('should navigate between questions', function(){
         let {root, state} = given(() => {
-            let page = loadPage("GameCollab", mockResponses, quizJson, "Quiz");
-            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+            let page = loadPage("GameCollab", {
+                mockResponses,
+                data:quizJson,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
             click(page.root, "answer1");
             return page;
         })
@@ -84,9 +100,14 @@ describe('quiz collab page', function () {
 
     it('should finish a quiz', function(){
         let {root, state} = given(() => {
-            let page = loadPage("GameCollab", mockResponses, quizJson, "Quiz");
-            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
-            return page;
+            return loadPage("GameCollab", {
+                mockResponses,
+                data:quizJson,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
         })
         when(()=>{
             click(root, "answer1");
@@ -98,8 +119,14 @@ describe('quiz collab page', function () {
 
     it('should display an answered question', function(){
         let {root, state} = given(() => {
-            let page = loadPage("GameCollab", mockResponses, quizJson, "Quiz");
-            page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+            let page = loadPage("GameCollab", {
+                mockResponses,
+                data:quizJson,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
             click(page.root, "answer1");
             click(page.root, "answer1");
             return page;

@@ -137,9 +137,9 @@ class APIRequester {
     getFormationsProgress(id) {
         return this.httpRequests.get('/formations/' + id + '/progression');
     }
-    replaceFormation(id, newFormation, ignoredData) {
+    replaceFormation(newFormation, ignoredData) {
         //newFormation.status = status;
-        return this.httpRequests.post("/formations/" + id, newFormation, ignoredData)
+        return this.httpRequests.post("/formations/update", newFormation, ignoredData)
     }
     insertFormation(newFormation, ignoredData) {
         // newFormation.status = status;
@@ -148,11 +148,8 @@ class APIRequester {
     deactivateFormation(id, ignoredData) {
         return this.httpRequests.post("/formations/deactivate", {id: id}, ignoredData);
     }
-    renameQuiz(formationId, levelIndex, gameIndex, newQuiz, ignoredData) {
-        return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex}, ignoredData);
-    }
-    replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-        return this.httpRequests.post('/formations/quiz/', {newQuiz:newQuiz, formationId:id, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
+    updateQuiz(newQuiz, formationId, levelIndex, gameIndex, ignoredData) {
+        return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
     }
 
     upload(file, onProgress) {

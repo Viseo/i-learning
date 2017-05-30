@@ -18,8 +18,37 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
         updateQuiz(quizData) {
-            const messageError = "Il manque des informations",
-                getObjectToSave = () => {
+            const getObjectToSave = () => {
+                return {
+                    id: this.getId(),
+                    gameIndex: this.getIndex(),
+                    levelIndex: this.getLevelIndex(),
+                    formationId: this.getFormationId(),
+                    label: this.getLabel(),
+                    lastQuestionIndex: this.getLastIndex(),
+                    questions: this.getQuestions(),
+                    type: 'Quiz'
+                };
+            };
+
+            if (quizData.label && quizData.label !== this.quiz.labelDefault && quizData.label.match(this.regex)) {
+                this.setLabel(quizData.label);
+                this.setQuestions(quizData.questions);
+                let quizToSave = getObjectToSave();
+                if (this.isQuizValid()) {
+                    return this.quiz.updateQuiz(quizToSave);
+                } else {
+                    return Promise.reject("Quiz non valide");
+                }
+            } else {
+                return Promise.reject("Le nom du quiz est incorrect");
+            }
+        }
+
+        renameQuiz(label) {
+            this.setLabel(label);
+            if (label && label !== this.quiz.labelDefault && label.match(this.regex)) {
+                const getObjectToSave = () => {
                     return {
                         id: this.getId(),
                         gameIndex: this.getIndex(),
@@ -27,44 +56,18 @@ exports.QuizAdminP = function (globalVariables) {
                         formationId: this.getFormationId(),
                         label: this.getLabel(),
                         lastQuestionIndex: this.getLastIndex(),
-                        questions: this.getQuestions()
+                        questions: this.getQuestions(),
+                        type: 'Quiz'
                     };
                 };
-
-            if (quizData.label && quizData.label !== this.quiz.labelDefault && quizData.label.match(this.regex)) {
-                this.setLabel(quizData.label);
+                return this.quiz.renameQuiz(getObjectToSave());
             } else {
-                this.view.displayMessage(messageError);
-                return;
+                return Promise.reject("Vous devez remplir correctement le nom du quiz.");
             }
-            this.setQuestions(quizData.questions);
-            let quizToSave = getObjectToSave(),
-                isValid = false;
-            quizToSave.questions.forEach(question => {
-                question.answers.forEach(answer => {
-                    if (!question.multipleChoice && isValid == false && answer.correct == true) {
-                        isValid = true;
-                    } else if (!question.multipleChoice && isValid == true && answer.correct == true) {
-                        isValid = false;
-                    } else if (question.multipleChoice && answer.correct == true) {
-                        isValid = true;
-                        return;
-                    }
-                });
+        }
 
-            });
-            if (isValid) {
-                return this.quiz.replaceQuiz(getObjectToSave()).then(data => {
-                    data.message && this.view.displayMessage(data.message);
-                    return data;
-                }).catch(error => {
-                    console.log(error);
-                    return error;
-                });
-            } else {
-                this.view.displayMessage(messageError);
-            }
-
+        isQuizValid() {
+            return this.quiz.isValid();
         }
 
         getFormationId() {
@@ -105,36 +108,6 @@ exports.QuizAdminP = function (globalVariables) {
 
         getLastQuestionIndex() {
             return this.quiz.getLastQuestionIndex();
-        }
-
-        renameQuiz(label) {
-            this.quiz.setLabel(label);
-            const messageError = "Vous devez remplir correctement le nom du quiz.";
-            if (label && label !== this.quiz.labelDefault && label.match(this.regex)) {
-                const getObjectToSave = () => {
-                    return {
-                        id: this.getId(),
-                        gameIndex: this.getIndex(),
-                        formationId: this.getFormationId(),
-                        label: this.getLabel(),
-                        lastQuestionIndex: this.getLastIndex(),
-                        levelIndex: this.getLevelIndex(),
-                    };
-                };
-                if (this.getId()) {
-                    return this.quiz.renameQuiz(getObjectToSave()).then(data => {
-                        data.message && this.view.displayMessage(data.message);
-                        return data;
-                    }).catch(error => {
-                        console.log(error);
-                        return error;
-                    });
-                }
-            } else {
-                this.view.displayMessage(messageError);
-                return Promise.resolve(false);
-            }
-
         }
 
         setLabel(quizLabel) {

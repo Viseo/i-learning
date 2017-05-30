@@ -241,7 +241,7 @@ exports.DashboardCollabV = function (globalVariables) {
             this.getFormations().forEach((formation) => {
                 if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
                 if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
-                if (this.undoneIcon.isInAction() && formation.progress != 'undone') return;
+                if (this.undoneIcon.isInAction() && formation.progress !== 'undone') return;
                 _displayMiniature(formation, i++);
             });
             this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
