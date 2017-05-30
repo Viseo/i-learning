@@ -77,6 +77,12 @@ exports.Models = function (globalVariables, mockResponses) {
             this.loadPresenterConnection();
         }
 
+        clearOldPageStackAndLoadPresenterDashboard() {
+            this.stackPage = [];
+            this.currentPresenter = null;
+            this.loadPresenterDashboard();
+        }
+
         tryLoadCookieForPresenter(ID) {
             apiRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);

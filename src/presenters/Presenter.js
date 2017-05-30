@@ -21,6 +21,9 @@ exports.Presenter = function(globalVariables){
             this.state.clearOldPageStackAndLoadPresenterConnection();
         }
 
+        clearOldPageStackAndLoadPresenterDashboard(){
+            this.state.clearOldPageStackAndLoadPresenterDashboard();
+        }
 
         /**
          * VIEW
