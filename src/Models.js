@@ -907,6 +907,10 @@ exports.Models = function (globalVariables, mockResponses) {
             return this.lastQuestionIndex;
         }
 
+        setLastQuestionIndex(index){
+            this.lastQuestionIndex = index;
+        }
+
         getIndex() {
             return this.gameIndex;
         }

@@ -176,7 +176,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         }
         previewQuiz(){
-
+            this.presenter.previewQuiz();
         }
 
         selectQuestion(index){
