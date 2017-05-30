@@ -11,15 +11,15 @@ exports.Models = function (globalVariables, mockResponses) {
             this.currentPresenter = null;
         }
 
-        createFormation(obj){
-            if(typeof obj == 'string') obj = JSON.parse(obj);
+        createFormation(obj) {
+            if (typeof obj == 'string') obj = JSON.parse(obj);
             let formation = new Formation(obj);
             formation.loadFormation(obj);
             return formation;
         }
 
-        createQuiz(obj){
-            if(typeof obj == 'string') obj = JSON.parse(obj);
+        createQuiz(obj) {
+            if (typeof obj == 'string') obj = JSON.parse(obj);
             let quiz = new Quiz(obj);
             return quiz;
         }
@@ -105,14 +105,14 @@ exports.Models = function (globalVariables, mockResponses) {
             });
         }
 
-        registerNewUser(userInfos){
+        registerNewUser(userInfos) {
             return apiRequester.inscription(userInfos);
         }
 
         loadPresenterDashboard(user) {
             this._addPageToStack();
 
-            if(user) {
+            if (user) {
                 this.user = new User(user);
                 drawing.username = `${user.firstName} ${user.lastName}`;
             }
@@ -128,7 +128,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 } else {
                     this.currentPresenter.displayView();
                 }
-            }).catch((err)=>{
+            }).catch((err) => {
                 console.log(err)
                 this.clearOldPageStackAndLoadPresenterConnection();
             });
@@ -230,6 +230,7 @@ exports.Models = function (globalVariables, mockResponses) {
         getVersionId() {
             return this.formation.getId();
         }
+
         getFormationLabel() {
             return this.formation.getFormationLabel();
         }
@@ -276,11 +277,12 @@ exports.Models = function (globalVariables, mockResponses) {
         getFormationByVersionId(id) {
             return this._formations.find((form) => form.getId() === id);
         }
-        getFormationById(id){
+
+        getFormationById(id) {
             return this._formations.find(form => form.getFormationId() === id);
         }
 
-        updateSingleFormationStars(formationId, starId, versionID){
+        updateSingleFormationStars(formationId, starId, versionID) {
             this.getFormationById(formationId).updateStars(starId);
         }
 
@@ -304,7 +306,7 @@ exports.Models = function (globalVariables, mockResponses) {
             tmpLevelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
-                    switch(game.type){
+                    switch (game.type) {
                         case'Quiz':
                             gamesTab.push(new Quiz(game, false, formation));
                             break;
@@ -343,11 +345,11 @@ exports.Models = function (globalVariables, mockResponses) {
             return this.levelsTab;
         }
 
-        setImage(src){
+        setImage(src) {
             this.imageSrc = src;
         }
 
-        updateStars(starId){
+        updateStars(starId) {
             apiRequester.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
         }
 
@@ -472,17 +474,19 @@ exports.Models = function (globalVariables, mockResponses) {
             const getObjectToSave = () => {
                 if (obj && obj.imageOnly) {
                     return {
+                        id: this._id,
                         label: this.label,
                         gamesCounter: this.gamesCounter,
                         links: this.links,
                         levelsTab: this.levelsTab,
                         imageSrc: this.imageSrc,
                         status: this.status,
-                        imageOnly : true
+                        imageOnly: true
                     }
                 }
                 else if (this.imageSrc) {
                     return {
+                        id: this._id,
                         label: this.label,
                         gamesCounter: this.gamesCounter,
                         links: this.links,
@@ -493,6 +497,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 }
                 else {
                     return {
+                        id: this._id,
                         label: this.label,
                         gamesCounter: this.gamesCounter,
                         links: this.links,
@@ -506,7 +511,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return apiRequester.replaceFormation(this._id, getObjectToSave(), ignoredData)
+            return apiRequester.replaceFormation(getObjectToSave(), ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -798,12 +803,27 @@ exports.Models = function (globalVariables, mockResponses) {
             this.imageSrc = quiz.imageSrc || null;
         }
 
-        setImage(src){
+        setImage(src) {
             this.imageSrc = src;
         }
 
         isDone() {
             return this.answered.length === this.questions.length;
+        }
+
+        isValid() {
+            return this.questions.length && this.questions.every(question => {
+                let nbCorrect = 0;
+                question.answers.forEach(answer => {
+                    if (answer.correct) nbCorrect++;
+                });
+                if (question.multipleChoice) {
+                    if (nbCorrect < 1) return false;
+                } else {
+                    if (nbCorrect !== 1) return false;
+                }
+                return true;
+            });
         }
 
         validateQuestion(questionIndex, answers) {
@@ -825,13 +845,13 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         getProgress() {
-            if (this.answered.length == this.questions.length) {
+            if (this.answered.length === this.questions.length) {
                 return 'done';
             }
             else if (this.answered.length > 0 && this.answered.length < this.questions.length) {
                 return 'inProgress';
             }
-            else if (this.answered.length == 0) {
+            else if (this.answered.length === 0) {
                 return 'undone';
             }
         }
@@ -875,20 +895,14 @@ exports.Models = function (globalVariables, mockResponses) {
             return false;
         }
 
-        getLastQuestionIndex(){
+        getLastQuestionIndex() {
             return this.lastQuestionIndex;
         }
+
         getIndex() {
             return this.gameIndex;
         }
 
-        getQuestionLabel(index) {
-            return this.questions[index] ? this.questions[index].label : "";
-        }
-
-        getAnswers(questionIndex) {
-            return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
-        }
         getWrongQuestions() {
             let wrongQuestions = [];
             this.answered.forEach((answered, index) => {
@@ -926,10 +940,6 @@ exports.Models = function (globalVariables, mockResponses) {
             return this.questions[questionsIndex].answers.reduce((nb, answer) => answer.correct ? nb + 1 : nb, 0);
         }
 
-        getAnswered() {
-            return this.answered;
-        }
-
         getCorrectAnswersIndex(questionIndex) {
             let correctAnswers = [];
             this.getAnswers(questionIndex).forEach((answer, index) => {
@@ -941,25 +951,27 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         renameQuiz(quiz) {
-            return apiRequester.renameQuiz(quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz, ignoredData).then((data) => {
-                let answer = JSON.parse(data);
-                if (answer.saved == false) {
-                    answer.message = "Il faut enregistrer le quiz avant !";
-                    reject(answer);
-                } else if (answer.saved == true) {
-                    answer.message = "Le nom du quiz a été bien modifié";
-                }
-                return answer;
-            }).catch(error => {
-                return error;
-            })
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, ignoredData)
+                .then((data) => {
+                    let answer = JSON.parse(data);
+                    if (answer.saved === false) {
+                        answer.message = "Il faut enregistrer le quiz avant !";
+                        throw answer;
+                    } else if (answer.saved === true) {
+                        answer.message = "Le nom du quiz a été bien modifié";
+                    }
+                    return answer;
+                })
+                .catch(error => {
+                    return error;
+                })
         }
 
-        replaceQuiz(object) {
+        updateQuiz(quiz) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return apiRequester.replaceQuiz(object, object.formationId, object.levelIndex, object.gameIndex, ignoredData)
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, ignoredData)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -968,7 +980,8 @@ exports.Models = function (globalVariables, mockResponses) {
                         return {message: incompleteQuizMessage, status: false};
                     }
                 }).catch(error => {
-                    return {message : errorQuizMessage, status: false};
+                    console.log(error);
+                    return {message: errorQuizMessage, status: false};
                 });
         };
 
@@ -991,11 +1004,11 @@ exports.Models = function (globalVariables, mockResponses) {
             this.imageSrc = game.imageSrc || null;
         }
 
-        setImage(src){
+        setImage(src) {
             this.imageSrc = src;
         }
 
-        getLabel(){
+        getLabel() {
             return this.label;
         }
     }
@@ -1031,7 +1044,7 @@ exports.Models = function (globalVariables, mockResponses) {
                     create: function (counter, level, column) {
                         var newQuiz = new Quiz({
                             label: 'Quiz ' + (counter ? counter.quizz : 0),
-                            gameIndex: column-1,
+                            gameIndex: column - 1,
                             id: 'quizz' + (counter ? counter.quizz : 0),
                             levelIndex: level
                         });

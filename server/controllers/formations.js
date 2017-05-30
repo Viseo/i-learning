@@ -89,8 +89,8 @@ module.exports = function (app) {
         })
     });
 
-    app.post('/formations/:id', function (req, res) {
-        formations.getFormationByVersionId(req.params.id).then(formation => {
+    app.post('/formations/update', function (req, res) {
+        formations.getFormationByVersionId(req.body.id).then(formation => {
             if (formation) {
                 return formations.getFormationsByName(req.body.label).then(data => {
                     let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
