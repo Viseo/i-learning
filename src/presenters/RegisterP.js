@@ -22,7 +22,7 @@ exports.RegisterP = function (globalVariables) {
                         index: 0,
                         iconSrc: "../images/user.png",
                         valid: false,
-                        pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g
+                        pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/
                     },
                     {
                         title: "Prénom :",
@@ -31,7 +31,7 @@ exports.RegisterP = function (globalVariables) {
                         index: 1,
                         iconSrc: "../images/user.png",
                         valid: false,
-                        pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g
+                        pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/
                     },
                     {
                         title: "Adresse mail :",
