@@ -5,8 +5,8 @@ const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
     FModels = require('../src/Models').Models,
-    models = FModels({},{}),
-    {given, when, loadPage, mouseDown, mouseUp} = testutils;
+    models = FModels({}, {}),
+    {given, when, loadPage, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -34,15 +34,15 @@ let answers, gamesTab, formationMock, mockResponses;
 
 describe('formation admin page', function () {
     beforeEach(function () {
-         answers = [{
-                correct: true,
-                label: "Bibi",
-                explanation: {label: "Hello"}
-            }, {
-                correct: false,
-                label: "Baba",
-                explanation: {label: "Baba"}
-            }],
+        answers = [{
+            correct: true,
+            label: "Bibi",
+            explanation: {label: "Hello"}
+        }, {
+            correct: false,
+            label: "Baba",
+            explanation: {label: "Baba"}
+        }],
             gamesTab = [{
                 formationId: "591ec683aabd34544c5bcedb",
                 gameIndex: 0,
@@ -50,6 +50,7 @@ describe('formation admin page', function () {
                 label: "Introduction aux méthodes agiles",
                 lastQuestionIndex: 0,
                 levelIndex: 0,
+                type: 'Quiz',
                 questions: {
                     answers: [answers],
                     label: "Boubou",
@@ -71,21 +72,75 @@ describe('formation admin page', function () {
                 levelsTab: [{gamesTab: gamesTab}]
             },
             mockResponses = {
-                'boo': {data: 200, content: {}}
+                '/formations/update': {content: {saved: true}},
+                '/medias/images': {
+                    content: {
+                        images: [{
+                            imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
+                            name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
+                        }]
+                    }
+                },
+                '/medias/upload': {}
             }
     });
-    it("should", function (done) {
+
+    it("should add a new quiz and save the new formation", function () {
         let {root, state, runtime} = given(() => {
-            return loadPage("FormationAdmin", {mockResponses, data:formationMock, className: "Formation"});
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
         });
         when(() => {
             mouseDown(root, "QuizLibManip");
         }).then(() => {
-            mouseUp(root, "draggedGameCadre", {
-                pageX: 165, pageY: 300, preventDefault: () => {
+            mouseMove(root, "draggedGameCadre", {
+                pageX: 500, pageY: 0, preventDefault: () => {
                 }
             });
+            mouseUp(root, "draggedGameCadre", {
+                pageX: 0, pageY: 0, preventDefault: () => {
+                }
+            });
+            when(() => {
+                clickElement(root, "saveFormation");
+            }).then(() => {
+                assertMessage(root, "formationAdminMsg", "Votre travail a bien été enregistré.");
+            });
         });
-        done();
+    });
+
+    it("should select and unselect a quiz", function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
+        when(() => {
+            mouseDown(root, "miniatureGameManipquizz0");
+            mouseUp(root, "miniatureGameManipquizz0");
+        }).then(() => {
+            clickElement(root, "whitePanel");
+        });
+    });
+
+    it("should add an image into a quiz", function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
+        when(() => {
+            clickElement(root, "popUpImgquizz0");
+        }).then(() => {
+            clickElement(root, "image0-0");
+        });
+    });
+
+    it("should add up an image to the library", function () {
+        let {root, state, runtime} = given(() => {
+                return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+            });
+        when(() => {
+            clickElement(root, "popUpImgquizz0");
+            clickElement(root, "addPictureButtonGlass");
+            onChangeElement(root, "fileExplorer");
+        }).then(() => {
+
+        });
     });
 });

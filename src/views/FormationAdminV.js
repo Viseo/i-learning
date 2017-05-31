@@ -88,6 +88,7 @@ exports.FormationAdminV = function(globalVariables) {
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
                 this.returnButton = new gui.Button(this.inputSize.width, this.inputSize.height, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton.glass.mark('returnDashboard');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5,5);
                 this.returnButton.text.font('Arial', 20).position(0,6.6);
@@ -284,6 +285,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width/2, this.graphSize.height/2);
                 let backRect = new svg.Rect(5000,5000).color(myColors.white, 0, myColors.none);
+                backRect.mark('whitePanel');
                 backRect.notTarget = true;
                 svg.addEvent(backRect, 'click', ()=>{
                     this.unselectMiniature();
@@ -293,6 +295,7 @@ exports.FormationAdminV = function(globalVariables) {
             let createButtons = ()=>{
                 this.buttonsManipulator = new Manipulator(this);
                 this.saveButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Enregistrer');
+                this.saveButton.glass.mark('saveFormation');
                 this.saveButton.position(0.4*this.graphPanel.width, 0);
                 this.saveButton.back.corners(5,5);
                 this.saveButton.onClick(this.saveFormation.bind(this));
@@ -320,6 +323,7 @@ exports.FormationAdminV = function(globalVariables) {
         }
         saveFormation(){
             this.presenter.saveFormation();
+            /** TODO valeur de retour non testée sur la vue DMA **/
         }
 
         publishFormation(){
@@ -354,6 +358,7 @@ exports.FormationAdminV = function(globalVariables) {
             addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
             util.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
             addPictureButton.component.add(addPictureButton.text);
+            addPictureButton.glass.mark('addPictureButtonGlass');
             mediaPanel.content.add(rectWhite);
             this.mediasManipulator.add( borderLibrary);
             this.mediasManipulator.add( mediaPanel.component);
@@ -382,7 +387,8 @@ exports.FormationAdminV = function(globalVariables) {
                     let picture = new svg.Image(image.imgSrc);
                     picture
                         .dimension(imageWidth, imageWidth)
-                        .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN));
+                        .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
+                        .mark('image' + indexX + '-' + indexY);
                     imagesManipulator.add(picture);
                     svg.addEvent(picture, 'click', ()=>{
                       pictureClickHandler(picture);
@@ -439,7 +445,7 @@ exports.FormationAdminV = function(globalVariables) {
                     this.selectedTab = 0;
                     if (file.type === 'video/mp4') {
                         this.selectedTab = 1;
-                        progressDisplay = _progressDisplayer();
+                        // progressDisplay = _progressDisplayer();
                     }
                     this.presenter.uploadImage(file, progressDisplay).then(() => {
                         this.displayPopUpImage(miniature);
@@ -488,10 +494,10 @@ exports.FormationAdminV = function(globalVariables) {
         displayLevel(level){
             let miniatureSelection = (miniature) => {
                 if(!this.arrowMode) {
-                    this.unselectMiniature();
-                    miniature.border.color(myColors.white, 2, myColors.darkBlue);
-                    miniature.manipulator.set(3, miniature.redCrossManipulator);
-                    this.miniatureSelected = miniature;
+                        this.unselectMiniature();
+                        miniature.border.color(myColors.white, 2, myColors.darkBlue);
+                        miniature.manipulator.set(3, miniature.redCrossManipulator);
+                        this.miniatureSelected = miniature;
                 }
             }
             let createGameMiniature = (game)=>{
@@ -499,10 +505,11 @@ exports.FormationAdminV = function(globalVariables) {
                 let miniature = {
                     border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10,10).color(myColors.white, 1, myColors.grey),
                     content: new svg.Text(game.label).font('Arial', 15).position(0,5),
-                    manipulator : new Manipulator(this).addOrdonator(4),
+                    manipulator : new Manipulator(this).addOrdonator(4).mark('miniatureGameManip'+game.id),
                 }
                 let iconAddImage = IconCreator.createAddImage(miniature.manipulator);
                 iconAddImage.position(MINIATURE_WIDTH/2 - 2*MARGIN, -MINIATURE_HEIGHT/2+2*MARGIN);
+                iconAddImage.manipulator.mark("popUpImg" +game.id);
                 iconAddImage.addEvent('click', ()=>{this.displayPopUpImage(miniature)});
 
                 if(game.imageSrc){
@@ -699,6 +706,7 @@ exports.FormationAdminV = function(globalVariables) {
         displayMessage(message){
             let messageText = new svg.Text(message).font('Arial', 20);
             messageText.position(drawing.width/2, this.header.height + 20);
+            messageText.mark('formationAdminMsg');
             this.manipulator.add(messageText);
             svg.timeout(()=>{
                 this.manipulator.remove(messageText);

@@ -95,7 +95,7 @@ module.exports = function (app) {
                 return formations.getFormationsByName(req.body.label).then(data => {
                     let version1 = data.formation ? data.formation.versions[data.formation.versions.length - 1] : null;
                     let version2 = req.body;
-                    if (req.body.onlyImage && version1) {
+                    if (req.body.imageOnly && version1) {
                         formations.updateImage(formation, version1, version2);
                         return {saved: true};
                     }

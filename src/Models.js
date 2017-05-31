@@ -163,7 +163,7 @@ exports.Models = function (globalVariables, mockResponses) {
 
             this.currentPresenter && this.currentPresenter.flushView();
             switch (game.type) {
-                case GameType.Quiz:
+                case GameType.QUIZ:
                     this.currentPresenter = new globalVariables.QuizCollabP(this, game);break;
                 case GameType.DOLL:
                     this.currentPresenter = new globalVariables.DollCollabP(this, game); break;

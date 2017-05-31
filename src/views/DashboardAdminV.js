@@ -262,6 +262,7 @@ exports.DashboardAdmin = function(globalVariables){
             addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
             util.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
             addPictureButton.component.add(addPictureButton.text);
+            addPictureButton.glass.mark('addPictureButtonGlass');
             mediaPanel.content.add(rectWhite);
             this.mediasManipulator.add( borderLibrary);
             this.mediasManipulator.add( mediaPanel.component);
@@ -290,8 +291,10 @@ exports.DashboardAdmin = function(globalVariables){
                     let picture = new svg.Image(image.imgSrc);
                     picture
                         .dimension(imageWidth, imageWidth)
-                        .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN));
-                    imagesManipulator.add(picture);svg.addEvent(picture, 'click', ()=>{
+                        .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
+                        .mark('image' + indexX + '-' + indexY);
+                    imagesManipulator.add(picture);
+                    svg.addEvent(picture, 'click', ()=>{
                         pictureClickHandler(picture);
                         redCrossHandler();
                     });
@@ -307,7 +310,7 @@ exports.DashboardAdmin = function(globalVariables){
             var uploadFiles = (files) => {
                 var _progressDisplayer = () => {
                     var _displayUploadIcon = manipulator => {
-                        let icon = drawUploadIcon({x: -w / 2, y: 5, size: 20});
+                        let icon = drawUploadIcon({x: -this.w / 2, y: 5, size: 20});
                         manipulator.set(0, icon);
                     }
                     var _displayRect = manipulator => {
@@ -347,7 +350,7 @@ exports.DashboardAdmin = function(globalVariables){
                     this.selectedTab = 0;
                     if (file.type === 'video/mp4') {
                         this.selectedTab = 1;
-                        progressDisplay = _progressDisplayer();
+                        // progressDisplay = _progressDisplayer();
                     }
                     this.presenter.uploadImage(file, progressDisplay).then(() => {
                         this.displayPopUpImage(formation);

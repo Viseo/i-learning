@@ -4,7 +4,11 @@
 const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {given, when, clickElement, clickPos, enterValue, assertMessage, loadPage, assertMissing, mouseEnter, mouseLeave, checkBorderColor} = testutils;
+    {
+        given, when, clickElement, clickPos, enterValue, assertMessage, loadPage, assertMissing, mouseEnter,
+        mouseLeave, checkBorderColor, onChangeElement
+    } = testutils;
+
 
 const ImageRuntime = {
     images: {},
@@ -87,14 +91,14 @@ const user = {
 describe('dashboard admin page', function () {
     it('should add a new formation', function () {
         let mockResponses = {
-            '/formations': {code: 200, content: jsonFormation},
-            '/formations/insert': {
-                code: 200,
-                content: {saved: true, id: "59230077e7bee64594a41612", idVersion: "59230077e7bee64594a41611"}
-            }
-        },
+                '/formations': {code: 200, content: jsonFormation},
+                '/formations/insert': {
+                    code: 200,
+                    content: {saved: true, id: "59230077e7bee64594a41612", idVersion: "59230077e7bee64594a41611"}
+                }
+            },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", {mockResponses, data:user});
+                return loadPage("Dashboard", {mockResponses, data: user});
             });
         assertMessage(root, "addFormationText", "Ajouter une formation");
 
@@ -129,10 +133,10 @@ describe('dashboard admin page', function () {
     });
     it("should enter in a formation", function () {
         let mockResponses = {
-            '/formations': {code: 200, content: jsonFormation},
-        },
+                '/formations': {code: 200, content: jsonFormation},
+            },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", {mockResponses, data:user});
+                return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
             clickElement(root, "miniatureManipAgilité");
@@ -142,10 +146,10 @@ describe('dashboard admin page', function () {
     });
     it("should highlight some formations", function () {
         let mockResponses = {
-            '/formations': {code: 200, content: jsonFormation},
-        },
+                '/formations': {code: 200, content: jsonFormation},
+            },
             {root, state, runtime} = given(() => {
-                return loadPage("Dashboard", {mockResponses, data:user});
+                return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
             mouseEnter(root, "miniatureManipAgilité");
@@ -160,15 +164,51 @@ describe('dashboard admin page', function () {
     });
     it("should set up an image to a formation", function () {
         let mockResponses = {
-            '/formations': {code: 200, content: jsonFormation},
-            '/medias/images': {images: "boo", content: 'image'}
-        },
+                '/formations': {code: 200, content: jsonFormation},
+                '/medias/images': {
+                    content: {
+                        images: [{
+                            imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
+                            name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
+                        }]
+                    }
+                },
+                '/formations/update': {content: {saved: true}}
+            },
             {root, state} = given(() => {
-                return loadPage("Dashboard", {mockResponses, data:user});
+                return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
             clickElement(root, "popUpImgAgilité");
         }).then(() => {
+            clickElement(root, "image0-0");
         });
-    })
+
+    });
+
+    it("should add up an image to the library", function () {
+        let mockResponses = {
+                '/formations': {code: 200, content: jsonFormation},
+                '/medias/images': {
+                    content: {
+                        images: [{
+                            imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
+                            name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
+                        }]
+                    }
+                },
+                '/formations/591ec683aabd34544c5bceda': {content: {saved: true}},
+                '/medias/upload': {}
+            },
+            {root, state} = given(() => {
+                return loadPage("Dashboard", {mockResponses, data: user});
+            });
+        when(() => {
+            clickElement(root, "popUpImgAgilité");
+            clickElement(root, "addPictureButtonGlass");
+            onChangeElement(root, "fileExplorer");
+        }).then(() => {
+
+        });
+    });
 });
