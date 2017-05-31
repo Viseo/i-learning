@@ -76,13 +76,20 @@ exports.FormationAdminV = function(globalVariables) {
                     nameFieldFormation.text.position(-nameFieldFormation.width/2+MARGIN, 7.5);
                 });
                 nameFieldFormation.color([myColors.lightgrey, 1, myColors.black]);
+                nameFieldFormation.mark('formationTitle');
                 this.headHeight += 30 + MARGIN;
                 this.nameFieldManipulator.set(0,nameFieldFormation.component);
                 this.nameFieldManipulator.move(MARGIN + nameFieldFormation.width/2, this.header.height + MARGIN + this.inputSize.height*2);
 
-                let saveIcon = new util.Picture('../../images/save.png', false, this,'',null);
-                saveIcon.draw(nameFieldFormation.width/2 + 12.5 + MARGIN, 0, 25,25, this.nameFieldManipulator, 3);
-                svg.addEvent(saveIcon.imageSVG, 'click', this.renameFormation.bind(this));
+                let saveIcon = new svg.Image('../../images/save.png');
+                this.nameFieldManipulator.add(saveIcon);
+                // let saveIcon = new util.Picture('../../images/save.png', false, this,'',null);
+                // saveIcon.draw(nameFieldFormation.width/2 + 12.5 + MARGIN, 0, 25,25, this.nameFieldManipulator, 3);
+                saveIcon
+                    .dimension(25, 25)
+                    .position(nameFieldFormation.width / 2 + 12.5 + MARGIN, 0)
+                    .mark('saveNameButton');
+                svg.addEvent(saveIcon, 'click', this.renameFormation.bind(this));
                 this.nameFormationField = nameFieldFormation;
             }
             let createReturnButton = () => {
@@ -146,15 +153,16 @@ exports.FormationAdminV = function(globalVariables) {
                     arrowRect.manipulator.move(0, this.librarySize.height*0.7/2)
                     this.gameLibraryManipulator.add(arrowRect.manipulator);
                     let arrowStraight = drawStraightArrow(-0.3 * this.librarySize.width, 0, 0.3 * this.librarySize.width, 0);
-                    let arrowManip = new Manipulator(this);
+                    let arrowManip = new Manipulator(this).mark('toggleArrowManip');
                     this.gameLibraryManipulator.add(arrowManip);
                     let arrowBorder = new svg.Rect(0.8*this.librarySize.width, 50)
                         .color(myColors.white, 1, myColors.grey)
                         .corners(10,10);
                     arrowManip.add(arrowBorder);
                     arrowManip.add(arrowStraight).move(0, this.librarySize.height*0.85/2);
-                    svg.addEvent(arrowBorder, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
-                    svg.addEvent(arrowStraight, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
+                    arrowManip.addEvent('click', ()=>{this.toggleArrowMode(arrowBorder)});
+                    // svg.addEvent(arrowBorder, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
+                    // svg.addEvent(arrowStraight, 'click', ()=>{this.toggleArrowMode(arrowBorder)});
 
                 }
                 createArrowMode();
@@ -533,12 +541,15 @@ exports.FormationAdminV = function(globalVariables) {
                         return true;
                     }
                 };
-                svg.addEvent(miniature.border, 'dblclick', ()=>{
+                miniature.manipulator.addEvent('dblclick', ()=>{
                     this.dbClickMiniature(miniature)
                 });
-                svg.addEvent(miniature.content, 'dblclick', ()=>{
-                    this.dbClickMiniature(miniature)
-                });
+                // svg.addEvent(miniature.border, 'dblclick', ()=>{
+                //     this.dbClickMiniature(miniature)
+                // });
+                // svg.addEvent(miniature.content, 'dblclick', ()=>{
+                //     this.dbClickMiniature(miniature)
+                // });
 
                 installDnD(miniature.manipulator, drawings.component.glass.parent.manipulator.last, miniature.conf);
                 return miniature;
@@ -563,7 +574,8 @@ exports.FormationAdminV = function(globalVariables) {
             let levelRedCross = drawRedCross(0,5,18, levelRedCrossManipulator);
             levelManipulator.add(levelRedCrossManipulator);
             levelRedCrossManipulator.add(levelRedCross);
-            svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
+            levelRedCrossManipulator.addEvent('click', ()=>{this.removeLevel(level)});
+            // svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
 
 
 
@@ -672,7 +684,7 @@ exports.FormationAdminV = function(globalVariables) {
         displayMessage(message){
             let messageText = new svg.Text(message).font('Arial', 20);
             messageText.position(drawing.width/2, this.header.height + 20);
-            messageText.mark('formationAdminMsg');
+            messageText.mark('infoMessage');
             this.manipulator.add(messageText);
             svg.timeout(()=>{
                 this.manipulator.remove(messageText);

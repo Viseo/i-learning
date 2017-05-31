@@ -384,6 +384,7 @@ exports.Util = function (globalVariables) {
                     svg.event(this.target, "mousedown", event);
                 }
             };
+            this.component.glass.mark('drawingsGlass');
             svg.addEvent(this.component.glass, "mousedown", onmousedownHandler);
 
             const ondblclickHandler = event => {

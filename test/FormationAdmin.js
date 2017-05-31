@@ -6,7 +6,10 @@ const
     testutils = require('../lib/testutils'),
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
-    {given, when, loadPage, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement} = testutils;
+    {
+        given, when, loadPage, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement, inputValue,
+        mouseDownOnGlassElement, mouseUpOnGlassElement, mouseMoveOnGlassElement, getElement
+    } = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -30,7 +33,7 @@ const ImageRuntime = {
     }
 };
 
-let answers, gamesTab, formationMock, mockResponses;
+let answers, gamesTab, gamesTab2, formationMock, formationMock2, mockResponses;
 
 describe('formation admin page', function () {
     beforeEach(function () {
@@ -58,6 +61,22 @@ describe('formation admin page', function () {
 
                 },
             }],
+            gamesTab2 = [
+                {
+                    formationId: "591ec683aabd34544c5bcedb",
+                    gameIndex: 0,
+                    id: "quizz1",
+                    label: "Introduction aux méthodes agiles Suite",
+                    lastQuestionIndex: 0,
+                    levelIndex: 1,
+                    type: 'Quiz',
+                    questions: {
+                        answers: [answers],
+                        label: "Boubou",
+                        multipleChoice: false,
+
+                    },
+                }],
             formationMock = {
                 links: [],
                 _id: "591ec683aabd34544c5bceda",
@@ -70,6 +89,19 @@ describe('formation admin page', function () {
                 noteCounter: 0,
                 status: "NotPublished",
                 levelsTab: [{gamesTab: gamesTab}]
+            },
+            formationMock2 = {
+                links: [],
+                _id: "591ec683aabd34544c5bceda",
+                formationId: "591ec683aabd34544c5bcedb",
+                gamesCounter: {doll: 0, quizz: 2},
+                label: "Agilité",
+                progress: undefined,
+                imageSrc: undefined,
+                note: 0,
+                noteCounter: 0,
+                status: "NotPublished",
+                levelsTab: [{gamesTab: gamesTab}, {gamesTab: gamesTab2}]
             },
             mockResponses = {
                 '/formations/update': {content: {saved: true}},
@@ -103,7 +135,7 @@ describe('formation admin page', function () {
             when(() => {
                 clickElement(root, "saveFormation");
             }).then(() => {
-                assertMessage(root, "formationAdminMsg", "Votre travail a bien été enregistré.");
+                assertMessage(root, "infoMessage", "Votre travail a bien été enregistré.");
             });
         });
     });
@@ -133,14 +165,68 @@ describe('formation admin page', function () {
 
     it("should add up an image to the library", function () {
         let {root, state, runtime} = given(() => {
-                return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
-            });
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
         when(() => {
             clickElement(root, "popUpImgquizz0");
             clickElement(root, "addPictureButtonGlass");
             onChangeElement(root, "fileExplorer");
         }).then(() => {
 
+        });
+    });
+
+    it('should not rename formation (wrong name)', function () {
+        let {root, runtime} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
+        when(() => {
+            inputValue(root, 'formationTitle', 'AAAAAAA-_-56+626fa0&ér');
+            clickElement(root, 'saveNameButton');
+        }).then(() => {
+            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            runtime.advance();
+        })
+    });
+
+    it('should rename formation', function () {
+        let {root} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
+        when(() => {
+            assertMessage(root, 'headerMessage', 'Agilité');
+            inputValue(root, 'formationTitle', 'Agility');
+            clickElement(root, 'saveNameButton');
+        }).then(() => {
+            assertMessage(root, 'headerMessage', 'Agility');
+        })
+    });
+
+    it('should set arrow dependencies', function () {
+        let {root} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
+        });
+        when(() => {
+            clickElement(root, 'toggleArrowManip');
+            mouseDownOnGlassElement(root, 'miniatureGameManipquizz0');
+            mouseMoveOnGlassElement(root, 'miniatureGameManipquizz0');
+            mouseUpOnGlassElement(root, 'miniatureGameManipquizz1');
+        }).then(() => {
+            // isLinked("quizz0", "quizz1"); TODO DMA **/
+        });
+    });
+
+    it('should delete a quizz', function () {
+        let {root} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
+        });
+        when(() => {
+            mouseDown(root, "miniatureGameManipquizz0");
+            mouseUp(root, "miniatureGameManipquizz0");
+            let miniatureGameManip = getElement(root, 'miniatureGameManipquizz0'),
+                redCrossGame = miniatureGameManip.handler.parentManip.components['3'];
+            redCrossGame.listeners['click']();
+        }).then(() => {
         });
     });
 });
