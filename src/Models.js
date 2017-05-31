@@ -167,6 +167,8 @@ exports.Models = function (globalVariables, mockResponses) {
                     this.currentPresenter = new globalVariables.QuizCollabP(this, game);break;
                 case GameType.DOLL:
                     this.currentPresenter = new globalVariables.DollCollabP(this, game); break;
+                default:
+                    console.error('wrong type of game', game.type);break;
             }
             this.currentPresenter.displayView();
         }
@@ -198,6 +200,8 @@ exports.Models = function (globalVariables, mockResponses) {
                 case GameType.DOLL:
                     this.currentPresenter = new globalVariables.DollAdminP(this, game);
                     break;
+                default:
+                    console.error('wrong type of game', game.type);break;
             }
             this.currentPresenter.displayView();
         }
@@ -315,6 +319,8 @@ exports.Models = function (globalVariables, mockResponses) {
                         case GameType.DOLL:
                             gamesTab.push(new Doll(game));
                             break;
+                        default:
+                            console.error('wrong type of game', game.type);break;
                     }
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
@@ -620,6 +626,8 @@ exports.Models = function (globalVariables, mockResponses) {
                 case GameType.DOLL:
                     this.gamesCounter.doll++;
                     break;
+                default:
+                    console.error('wrong type of game', game.game.type);break;
             }
             return newGame
         }
