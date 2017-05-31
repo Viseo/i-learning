@@ -117,47 +117,6 @@ exports.FormationAdminV = function(globalVariables) {
                     what.flush();
                     return true;
                 }
-                // clicked: (item) => {
-                //     if (!this.gameSelected) {
-                //         this.gameSelected = this.draggedObject;
-                //         item.flush();
-                //
-                //         for (let it in this.itemsTab) {
-                //             if (this.itemsTab[it].label == this.draggedObject.label) {
-                //                 this.miniatureSelected = this.itemsTab[it];
-                //                 this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
-                //                 this.miniatureSelected.miniature.border.mark('miniatureSelected');
-                //                 this.miniatureSelected.miniature.content.mark('miniatureSelected');
-                //             }
-                //         }
-                //         let clickPanelToAdd = (event) => {
-                //             if (this.gameSelected && this.formation) {
-                //                 this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
-                //                 this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
-                //                 this.miniatureSelected = null;
-                //                 this.gameSelected = null;
-                //             }
-                //             svg.removeEvent(this.formation.panel.back, 'click');
-                //         }
-                //         this.draggedObject.manipulator.mark('');
-                //         this.draggedObject = null;
-                //         svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
-                //     }
-                //     else {
-                //         for (let it in this.itemsTab) {
-                //             if (this.itemsTab[it].label == this.draggedObject.label) {
-                //                 this.miniatureSelected = null;
-                //                 this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
-                //                 this.itemsTab[it].miniature.border.mark('miniInLibrary' + this.itemsTab[it].label + 'Border');
-                //                 this.itemsTab[it].miniature.content.mark('miniInLibrary' + this.itemsTab[it].label + 'Content');
-                //             }
-                //         }
-                //         this.gameSelected = null;
-                //         this.draggedObject.manipulator.mark('');
-                //         this.draggedObject = null;
-                //         item.flush();
-                //     }
-                // }
             };
             let createGameLibrary = ()=>{
                 this.gamePanel = new gui.Panel(this.librarySize.width, this.librarySize.height);
@@ -616,6 +575,9 @@ exports.FormationAdminV = function(globalVariables) {
             this.currentParentMiniature = null;
             this.presenter.createLink(parentGame, childGame);
         }
+        unLink(parentId, childId){
+            this.presenter.unLink(parentId, childId);
+        }
 
         updateAllLinks(){
             this.arrowsManipulator.flush();
@@ -707,20 +669,34 @@ exports.FormationAdminV = function(globalVariables) {
 
 
         arrow(parent,child) {
+            var _onClickArrow = () => {
+                this.arrowsManipulator.add(redCrossManipulator);
+            };
+
+            var _onClickRedCross = (parentId, childId) => {
+                this.arrowsManipulator.remove(arrowPath);
+                this.arrowsManipulator.remove(redCrossManipulator);
+                this.unLink(parentId, childId);
+            }
+
             this.graphMiniatureManipulator.add(this.arrowsManipulator);
             let parentGlobalPoint = this.mapGameAndGui[parent.id].manipulator.last.globalPoint(0, MINIATURE_HEIGHT / 2),
                 parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
                 childGlobalPoint = this.mapGameAndGui[child.id].manipulator.last.globalPoint(0, -MINIATURE_HEIGHT / 2),
                 childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-            this.redCrossManipulator = new Manipulator(this);
-            let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
+            let redCrossManipulator = new Manipulator(this);
+            let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2,
+                20, redCrossManipulator);
             redCross.mark('redCross');
-            this.redCrossManipulator.add(redCross);
+            redCrossManipulator.add(redCross);
+            redCross.onClick(() => _onClickRedCross(parent.id, child.id));
 
-            this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-            this.arrowsManipulator.add(this.arrowPath);
+            let arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+            this.arrowsManipulator.add(arrowPath);
             this.selected = false;
-            this.arrowPath.color(myColors.black, 0, myColors.black);
+            arrowPath.color(myColors.black, 0, myColors.black);
+
+            arrowPath.onClick(_onClickArrow)
             return this;
 
         }

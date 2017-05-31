@@ -676,6 +676,15 @@ exports.Models = function (globalVariables, mockResponses) {
             this.links.push({parentGame: parent, childGame: child});
         }
 
+        unLink(parentId, childId){
+            this.links.forEach(element => {
+                if(element.parentGame.id == parentId && element.childGame.id == childId){
+                    this.links.remove(element);
+                    return;
+                }
+            });
+        }
+
         checkAllGameValidity() {
             // this.formation.levelsTab.forEach(level => {
             //     level.gamesTab.forEach(game => {
