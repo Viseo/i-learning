@@ -8,6 +8,7 @@ exports.FormationCollabV = function (globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
+        IconCreator = globalVariables.domain.IconCreator,
         MINIATURE_FONT_SIZE = 20,
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
@@ -156,9 +157,18 @@ exports.FormationCollabV = function (globalVariables) {
 
                 let requirementsID = this.requirementsForThis(game.id);
                 if(requirementsID.length > 0){
+                    let pic = new svg.Image("../../images/lock.png");
+                    pic.dimension(30,30);
+                    pic.position(miniature.border.width/2, -miniature.border.height/2);
+                    miniature.manipulator.add(pic);
+
                     miniature.border.color(myColors.grey, 1, myColors.greyerBlue);
                     miniature.manipulator.addEvent('click', () => displayLockAnimation(game.id, requirementsID));
                 }else{
+                    let statusGame = game.getProgress();
+                    let icon = new IconCreator().createIconByName(statusGame, miniature.manipulator, 3);
+                    icon.position(miniature.border.width/2, -miniature.border.height/2);
+
                     miniature.border.color(myColors.white, 1, myColors.grey);
                     miniature.manipulator.addEvent('click', () => this.onClickGame(game));
                 }
