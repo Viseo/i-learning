@@ -384,6 +384,16 @@ exports.Tool = function (globalVariables, classContainer) {
 
             return icon;
         }
+        static createVoiceIcon(manipulator, layer){
+            let radiusSize = 20;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 0, myColors.none)
+                .setPictureContent("../images/speaker.png", (radiusSize*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
 
 
 
@@ -496,20 +506,27 @@ exports.Tool = function (globalVariables, classContainer) {
                 this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
             };
 
-
             this.listElements = listElements;
             this.direction = direction;
             this.indexShow = 0;
-
-            _declareDimension();
-
+            this.chevrons = {};
             this.component = new svg.Translation();
             this.component.focus = this;
 
+            _declareDimension();
             _declareManipulator();
 
-
-            this.chevrons = {};
+            let self = this;
+            Object.defineProperty(self, "length", {
+                get: function(){
+                    return self.listElements.length;
+                },
+                set: function(len){
+                    self.listElements.length = len;
+                },
+                configurable: true,
+                enumerable: true
+            })
 
             if(direction == "V"){
                 var onClickChevronTop = () => {
@@ -626,6 +643,9 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
+        get(index){
+            return this.listElements[index];
+        }
 
         _showActualChevron(){
             var _showAllChevron = () => {
@@ -713,6 +733,11 @@ exports.Tool = function (globalVariables, classContainer) {
         add(manip){
             this.listElements.push(manip);
             this.contentManip.add(manip.component);
+        }
+
+        empty(){
+            this.listElements = [];
+            this.contentManip.flush();
         }
 
         addManipInIndex(manip, index){

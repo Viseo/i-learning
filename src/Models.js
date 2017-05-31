@@ -77,6 +77,12 @@ exports.Models = function (globalVariables, mockResponses) {
             this.loadPresenterConnection();
         }
 
+        clearOldPageStackAndLoadPresenterDashboard() {
+            this.stackPage = [];
+            this.currentPresenter = null;
+            this.loadPresenterDashboard();
+        }
+
         tryLoadCookieForPresenter(ID) {
             apiRequester.checkCookie().then(data => {
                 data = data && JSON.parse(data);
@@ -545,16 +551,16 @@ exports.Models = function (globalVariables, mockResponses) {
             }
             let lastLevel = game.levelIndex;
             !newGame && this.levelsTab[lastLevel].getGamesTab().forEach(g => {
-                if (g.index > game.gameIndex) {
-                    g.index--;
+                if (g.gameIndex > game.gameIndex) {
+                    g.gameIndex--;
                 }
             });
             !newGame && this.levelsTab[lastLevel].getGamesTab().splice(game.gameIndex, 1);
             game.gameIndex = column - 1 > this.levelsTab[level].getGamesTab().length ? this.levelsTab[level].getGamesTab().length :
                 column - 1;
             this.levelsTab[level].getGamesTab().forEach(g => {
-                if (g.index >= game.gameIndex) {
-                    g.index++;
+                if (g.gameIndex >= game.gameIndex) {
+                    g.gameIndex++;
                 }
             })
             this.levelsTab[level].getGamesTab().splice(column - 1, 0, game);
@@ -676,6 +682,15 @@ exports.Models = function (globalVariables, mockResponses) {
 
         createLink(parent, child) {
             this.links.push({parentGame: parent, childGame: child});
+        }
+
+        unLink(parentId, childId){
+            this.links.forEach(element => {
+                if(element.parentGame.id == parentId && element.childGame.id == childId){
+                    this.links.remove(element);
+                    return;
+                }
+            });
         }
 
         checkAllGameValidity() {
@@ -907,6 +922,10 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getLastQuestionIndex() {
             return this.lastQuestionIndex;
+        }
+
+        setLastQuestionIndex(index){
+            this.lastQuestionIndex = index;
         }
 
         getIndex() {

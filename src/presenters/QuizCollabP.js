@@ -2,18 +2,18 @@
  * Created by TBE3610 on 05/05/2017.
  */
 
-const QuizCollabV = require('../views/QuizQuestionV').QuizQuestionV;
+const QuizQuestionV = require('../views/QuizQuestionV').QuizQuestionV;
 const QuizScoreV = require('../views/QuizScoreV').QuizScoreV;
 
-exports.QuizCollabP = function (globalVariable) {
-    const QuizCollabView = QuizCollabV(globalVariable);
-    const QuizScoreView = QuizScoreV(globalVariable),
-        Presenter = globalVariable.Presenter;
+exports.QuizCollabP = function (globalVariables) {
+    const QuizQuestionView = QuizQuestionV(globalVariables);
+    const QuizScoreView = QuizScoreV(globalVariables),
+        Presenter = globalVariables.Presenter;
 
     class QuizCollabP extends Presenter{
         constructor(state, quiz) {
             super(state);
-            this.questionView = new QuizCollabView(this);
+            this.questionView = new QuizQuestionView(this);
             this.scoreView = new QuizScoreView(this);
             this.view;
             this.quiz = quiz;

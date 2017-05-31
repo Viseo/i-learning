@@ -13,7 +13,8 @@ exports.DashboardCollabV = function (globalVariables) {
     const TILE_SIZE = {w: 490, h: 100, rect: {w: 400, h: 100}},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
-        IMAGE_SIZE = 90;
+        CLIP_SIZE = 45,
+        IMAGE_SIZE = 150;
 
 
     class DashboardCollabV extends View{
@@ -119,12 +120,12 @@ exports.DashboardCollabV = function (globalVariables) {
             var _displayMiniature = (formation, i) => {
                 let createMiniature = (formation) => {
                     let border =
-                        new svg.Rect(TILE_SIZE.w-IMAGE_SIZE, TILE_SIZE.h)
+                        new svg.Rect(TILE_SIZE.w-2*CLIP_SIZE, TILE_SIZE.h)
                             .corners(2,2)
                             .color(myColors.lightgrey, 0.5, myColors.grey)
-                            .position(IMAGE_SIZE/2, 0);
+                            .position(2*CLIP_SIZE/2, 0);
                     let clip = new ClipPath('image' + formation.label);
-                    clip.add(new svg.Circle(IMAGE_SIZE/2).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0))
+                    clip.add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w/2+ 2*CLIP_SIZE, 0))
                     let manipulator = new Manipulator(this).addOrdonator(4);
                     let picture;
                     if(formation.imageSrc){
@@ -133,12 +134,12 @@ exports.DashboardCollabV = function (globalVariables) {
                     else{
                         picture = new util.Picture('../../images/viseo.png', false, this, '', null);
                     }
-                    picture.draw(-TILE_SIZE.w/2 + IMAGE_SIZE, 0, IMAGE_SIZE,IMAGE_SIZE,manipulator, 3);
+                    picture.draw(-TILE_SIZE.w/2 + 2*CLIP_SIZE, 0, IMAGE_SIZE,2*CLIP_SIZE,manipulator, 3);
                     picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
-                    let backCircle = new svg.Circle(IMAGE_SIZE/2 +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ IMAGE_SIZE, 0);
+                    let backCircle = new svg.Circle(CLIP_SIZE +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+2* CLIP_SIZE, 0);
                     manipulator.set(0,border).set(1,backCircle).add(clip);
                     let content = new svg.Text(formation.label)
-                        .position(IMAGE_SIZE/2, -TILE_SIZE.h/4)
+                        .position(CLIP_SIZE, -TILE_SIZE.h/4)
                         .font('Arial',20)
                         .mark('textMiniature'+formation._id);
                     util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
@@ -190,7 +191,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     };
 
                     let starMiniatures = createRating(miniature.manipulator);
-                    starMiniatures.popMark(formation.label).popPosition(IMAGE_SIZE/2, TILE_SIZE.h/2 + 0.5*MARGIN);
+                    starMiniatures.popMark(formation.label).popPosition(CLIP_SIZE, TILE_SIZE.h/2 + 0.5*MARGIN);
                     starMiniatures.forEach(
                         star => {
                             svg.addEvent(star, "click", () => onStarClick(star));
@@ -199,10 +200,10 @@ exports.DashboardCollabV = function (globalVariables) {
                         }
                     );
                     starMiniatures.scaleStar(factor);
-                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3 - TILE_SIZE.rect.w/2 + 3/2*IMAGE_SIZE, TILE_SIZE.h/3);
+                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3 - TILE_SIZE.rect.w/2 + 3*CLIP_SIZE, TILE_SIZE.h/3);
 
-                    let notationText = new svg.Text('Notez cette \n formation :')
-                        .position(- TILE_SIZE.rect.w/2 +IMAGE_SIZE + MARGIN, TILE_SIZE.h/8).font('Arial', 14, 15)
+                    let notationText = new svg.Text('Notez cette formation :')
+                        .position(-TILE_SIZE.rect.w/2 + 2* CLIP_SIZE , TILE_SIZE.h/8 + 2*MARGIN).font('Arial', 14, 15)
                         .anchor('left');
                     miniature.manipulator.add(notationText);
                 };

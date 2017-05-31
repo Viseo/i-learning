@@ -60,7 +60,6 @@ exports.QuizAdminV = function (globalVariables) {
             }
 
             this.label = this.getLabel();
-            this.questionsBlock = [];
 
             _declareManipulator();
             _createReturnButton();
@@ -118,7 +117,7 @@ exports.QuizAdminV = function (globalVariables) {
                     height: this.height * 1 / 6
                 };
 
-                this.questionsBlockListView = new ListManipulatorView(this.questionsBlock, 'H',
+                this.questionsBlockListView = new ListManipulatorView([], 'H',
                     dimensions.width - 100, dimensions.height, 50, 80,
                     QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
 
@@ -208,7 +207,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 let previewButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Aperçu");
                 previewButton.glass.mark('previewButton');
-                previewButton.onClick(this.previewQuiz);
+                previewButton.onClick(this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
                 this.previewButtonManipulator.move(this.width / 2 - dimensions.width / 2 - MARGIN, currentY + dimensions.height / 2);
             }
@@ -219,7 +218,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 let saveButton = new gui.Button(dimensions.width, dimensions.height, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
                 saveButton.glass.mark('saveButtonQuiz');
-                saveButton.onClick(this._updateQuizData.bind(this));
+                saveButton.onClick(this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
                 this.saveQuizButtonManipulator.move(this.width / 2 + dimensions.width / 2 + MARGIN, currentY + dimensions.height / 2);
             }
@@ -235,12 +234,15 @@ exports.QuizAdminV = function (globalVariables) {
             _displaySaveButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
-            this.questionsBlock.length >= 2 && this.questionsBlock[0].select();
+            if(this.selectedQuestionIndex){
+                this.questionsBlockListView.get(this.selectedQuestionIndex).select();
+            }else {
+                this.questionsBlockListView.length >= 2 && this.questionsBlockListView.get(0).select();
+            }
         }
 
-
         _dropMediaAction(item, parent, x, y) {
-            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlock.length) {
+            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlockListView.length) {
                 let globalPoints = parent.globalPoint(x, y);
                 let target = this.questionsDetail[this.selectedQuestionIndex].guiManipulator
                     .last.getTarget(globalPoints.x, globalPoints.y);
@@ -272,9 +274,9 @@ exports.QuizAdminV = function (globalVariables) {
                     var _deleteQuestion = () => {
                         if (this.selectedQuestionIndex === questionManip.index) {
                             if (questionManip.index > 0) {
-                                this.questionsBlock[questionManip.index - 1].select();
-                            } else if (this.questionsBlock.length > 2) {
-                                this.questionsBlock[questionManip.index + 1].select();
+                                this.questionsBlockListView.get(questionManip.index - 1).select();
+                            } else if (this.questionsBlockListView.length > 2) {
+                                this.questionsBlockListView.get(questionManip.index + 1).select();
                             } else {
                                 this.unselectQuestion();
                             }
@@ -284,9 +286,9 @@ exports.QuizAdminV = function (globalVariables) {
                         this.questionDetailsManipulator.remove(this.questionsDetail[questionManip.index].manipulator);
                         this.questionsDetail.splice(questionManip.index, 1);
 
-                        for (let i = questionManip.index; i < this.questionsBlock.length; i++) {
-                            if (this.selectedQuestionIndex === this.questionsBlock[i].index) this.selectedQuestionIndex = i;
-                            this.questionsBlock[i].index = i;
+                        for (let i = questionManip.index; i < this.questionsBlockListView.length; i++) {
+                            if (this.selectedQuestionIndex === this.questionsBlockListView.get(i).index) this.selectedQuestionIndex = i;
+                            this.questionsBlockListView.get(i).index = i;
                         }
 
                         this.questionsBlockListView.refreshListView();
@@ -311,6 +313,7 @@ exports.QuizAdminV = function (globalVariables) {
                             this.selectQuestion(questionManip.index);
                         }
                     };
+                    questionManip.buttonText = questionButton.text;
 
                     questionButton.back.corners(5, 5);
                     questionButton.onClick(() => questionManip.select());
@@ -342,6 +345,7 @@ exports.QuizAdminV = function (globalVariables) {
                     this.questionsDetail.add(questionInDetail);
                     questionGui.select();
                     this.questionsBlockListView.refreshListView();
+                    this.setLastQuestionIndex(this.lastQuestionIndex);
                 };
 
                 let addNewQuestionManip = new Manipulator(this).addOrdonator(2);
@@ -356,15 +360,13 @@ exports.QuizAdminV = function (globalVariables) {
 
                 this.questionsBlockListView.add(addNewQuestionManip);
             };
-            
+
+            this.questionsBlockListView.empty();
             this.questions = this.getQuestions();
             this.lastQuestionIndex = this.getLastQuestionIndex();
-
-
             this.questions.forEach((itQuestion, i) => {
                 _displayQuestionBlock(itQuestion, i);
             });
-
             _displayNewQuestionBlock();
             this.questionsBlockListView.refreshListView();
         }
@@ -419,6 +421,11 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.answersDimension.height -= dimensions.height;
             };
             var _displayTextArea = (questionGui, index, question) => {
+                var _setQuestionBlockTitle = (oldMessage, newMessage) => {
+                    let questionManip = this.questionsBlockListView.get(this.selectedQuestionIndex);
+                    questionManip.buttonText.message(newMessage);
+                }
+
                 let dimensions = {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
                     height: this.questionDetailsDim.height / 4 - 2 * MARGIN
@@ -440,6 +447,7 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
+                questionGui.textArea.onInput(_setQuestionBlockTitle);
                 questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
                 questionGui.answersDimension.height -= dimensions.height;
             };
@@ -796,12 +804,13 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLastQuestionIndex();
         }
 
-        _updateQuizData() {
-            let quizData = {
-                label: this.getNewLabel(),
-                questions: this.getNewQuestions(),
-            }
-            this.updateQuiz(quizData);
+        previewQuiz(){
+            this.updateQuiz();
+            this.presenter.previewQuiz(this.selectedQuestionIndex);
+        }
+
+        setLastQuestionIndex(index){
+            this.presenter.setLastQuestionIndex(index);
         }
 
         renameQuiz() {
@@ -819,18 +828,23 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         selectQuestion(index) {
-            if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
+            if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex !== index)
+                this.questionsBlockListView.get(this.selectedQuestionIndex).unselect();
             this.selectedQuestionIndex = index;
             this.questionDetailsManipulator.set(1, this.questionsDetail[index].guiManipulator);
         }
 
         unselectQuestion() {
-            if (this.selectedQuestionIndex >= 0) this.questionsBlock[this.selectedQuestionIndex].unselect();
+            if (this.selectedQuestionIndex >= 0) this.questionsBlockListView.get(this.selectedQuestionIndex).unselect();
             this.selectedQuestionIndex = -1;
             this.questionDetailsManipulator.unset(1);
         }
 
-        updateQuiz(quizData) {
+        updateQuiz() {
+            let quizData = {
+                label: this.getNewLabel(),
+                questions: this.getNewQuestions(),
+            }
             this.presenter.updateQuiz(quizData).then((data)=>{
                 data.message && this.displayMessage(data.message);
             }).catch((error)=>{

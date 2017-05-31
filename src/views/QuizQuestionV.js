@@ -7,6 +7,7 @@ exports.QuizQuestionV = function (globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         util = globalVariables.util,
+        runtime = globalVariables.runtime,
         Manipulator = util.Manipulator,
         IconCreator = globalVariables.domain.IconCreator,
         drawing = globalVariables.drawing,
@@ -94,18 +95,25 @@ exports.QuizQuestionV = function (globalVariables) {
                     .mark('questionTitle'+this.getId());
                 this.questionManipulator.set(3, title);
                 //Title in the left corner  with limit 15 char
+
                 let formationTitle = autoAdjustText(
                     this.getLabel(),
                     util.getStringWidthByFontSize(15, FONT_SIZE),
                     FONT_SIZE,
                     FONT_SIZE,
                     FONT,
-                    this.questionManipulator,
-                    2
+                    this.questionManipulator, 2
                 );
+
                 formationTitle.text.position(-drawing.width / 2 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
                 this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
                 currentY += border.height + 2 * MARGIN;
+
+                let voiceIcon = IconCreator.createVoiceIcon(this.questionManipulator);
+                voiceIcon.position(drawing.width / 4 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
+                voiceIcon.addEvent( 'click', () => {
+                    runtime.speechSynthesisSpeak(this.getCurrentQuestionLabel());
+                });
             }
             var _displayChevrons = () => {
                 var _displayLeftChevron = () => {
@@ -185,8 +193,17 @@ exports.QuizQuestionV = function (globalVariables) {
                     let answerManip = _displayAnswer(answer, index);
                     this.answers.push(answerManip);
                     this.answersManipulator.add(answerManip);
+                    let voiceIcon = IconCreator.createVoiceIcon(answerManip);
+                    voiceIcon.position(  this.answerWidth/2 -2*MARGIN,-this.answerHeight/2+2*MARGIN);
+                    voiceIcon.addEvent( 'click', () => {
+                        runtime.speechSynthesisSpeak(answer.label) ;
+                    });
                 });
+
+
                 this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2, currentY + this.answerHeight / 2);
+
+
             }
             var _displayMultipleChoiceButtons = () => {
                 var _displayValidateButton = () => {
@@ -276,6 +293,12 @@ exports.QuizQuestionV = function (globalVariables) {
                         redCross.addEvent('click', _hideExplanation);
                         this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + EXPLANATION_HEIGHT/2);
                         displayed = explanation;
+                        let voiceIcon = IconCreator.createVoiceIcon(this.explanationManipulator);
+                        voiceIcon.position(drawing.width /2- 3*MARGIN, -EXPLANATION_HEIGHT /2 + 2* MARGIN);
+                        voiceIcon.addEvent( 'click', () => {
+                            runtime.speechSynthesisSpeak(explanation.label);
+                        });
+
                     }
                 }
 

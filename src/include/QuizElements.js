@@ -176,7 +176,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         }
         previewQuiz(){
-
+            this.presenter.previewQuiz();
         }
 
         selectQuestion(index){
@@ -376,6 +376,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         setCorrect(){
 
         }
+
     }
     class AnswerVueCollab extends AnswerVue {
     }

@@ -4,6 +4,8 @@
 const QuizAdminV = require('../views/QuizAdminV').QuizAdminV;
 
 exports.QuizAdminP = function (globalVariables) {
+    const QuizQuestionV = require('../views/QuizQuestionV').QuizQuestionV;
+    const QuizQuestionView = QuizQuestionV(globalVariables);
     const QuizAdminView = QuizAdminV(globalVariables),
         Presenter = globalVariables.Presenter,
         TITLE_QUIZ_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ °'-]){0,50}$/g;
@@ -13,8 +15,48 @@ exports.QuizAdminP = function (globalVariables) {
             super(state);
             this.quiz = quiz;
             this.view = new QuizAdminView(this);
+            this.previewVue = new QuizQuestionView(this);
             this.mediaLibrary = state.getMediasLibrary();
             this.regex = TITLE_QUIZ_REGEX;
+        }
+
+        previewQuiz(questionIndex){
+            this.previewIndex = questionIndex;
+            this.previewVue.display();
+            this.previewVue.displayResult();
+        }
+
+        getCurrentQuestionLabel(){
+            return this.quiz.getQuestionLabel(this.previewIndex);
+        }
+
+        isLastAnsweredQuestion(){
+            return true;
+        }
+        isFirstQuestion(){
+            return true;
+        }
+        getCurrentAnswers(){
+            return this.quiz.getAnswers(this.previewIndex);
+        }
+        isMultipleChoice(){
+            return this.quiz.isMultipleChoice();
+        }
+        getScore(){
+            return {
+                message: "",
+                color: [],
+                emojiSrc: ""
+            }
+        }
+        getCurrentAnswered(){
+            return [];
+        }
+        getCorrectAnswersIndex(){
+            return this.quiz.getCorrectAnswersIndex(this.previewIndex);
+        }
+        returnHandler(){
+            this.view.display();
         }
 
         updateQuiz(quizData) {
@@ -116,6 +158,10 @@ exports.QuizAdminP = function (globalVariables) {
 
         setQuestions(questions) {
             this.quiz.setQuestions(questions);
+        }
+
+        setLastQuestionIndex(index){
+            this.quiz.setLastQuestionIndex(index);
         }
     }
 

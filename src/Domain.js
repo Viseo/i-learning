@@ -169,6 +169,10 @@ exports.Domain = function (globalVariables) {
         }
 
         render(message) {
+            var _onClickLogo = () => {
+                this.presenter.clearOldPageStackAndLoadPresenterDashboard();
+            };
+
             const width = drawing.width,
                 height = HEADER_SIZE * drawing.height,
                 font_size = 20,
@@ -178,6 +182,8 @@ exports.Domain = function (globalVariables) {
                 rect = new svg.Rect(width, height).color(myColors.customBlue, 0.5, myColors.black).position(width/2, height/2);
             this.manipulator.set(1, text);
             this.manipulator.set(0, rect);
+
+            text.onMouseDown(_onClickLogo);
 
             const displayUser = () => {
                 let pos = -MARGIN;

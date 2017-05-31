@@ -81,6 +81,9 @@ exports.FormationAdminP = function(globalVariables){
             }
             this.view.updateAllLinks();
         }
+        unLink(parentId, childId){
+            this.formation.unLink(parentId, childId);
+        }
         getLinks(){
             return this.formation.getLinks();
         }
