@@ -243,7 +243,8 @@ exports.FormationAdminV = function(globalVariables) {
                 backRect.notTarget = true;
                 svg.addEvent(backRect, 'click', ()=>{
                     this.unselectMiniature();
-                })
+                    this.updateAllLinks();
+                });
                 this.graphMiniatureManipulator.set(0, backRect);
             }
             let createButtons = ()=>{
@@ -671,6 +672,7 @@ exports.FormationAdminV = function(globalVariables) {
         arrow(parent,child) {
             var _onClickArrow = () => {
                 this.arrowsManipulator.add(redCrossManipulator);
+                this.unselectMiniature();
             };
 
             var _onClickRedCross = (parentId, childId) => {
