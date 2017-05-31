@@ -763,7 +763,9 @@ exports.Models = function (globalVariables, mockResponses) {
             let requirements = [];
             this.links.forEach(element => {
                 if(element.childGame.id == gameId){
-                    requirements.push(element.parentGame.id);
+                    let quiz = this.levelsTab[element.parentGame.levelIndex].getGameByIndex(element.parentGame.gameIndex);
+                    let done = quiz.isDone();
+                    !quiz.isDone() && requirements.push(element.parentGame.id);
                 }
             });
 
@@ -779,6 +781,13 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getGamesTab() {
             return this.gamesTab;
+        }
+
+        getGameByIndex(index){
+            if(this.gamesTab && index < this.gamesTab.length){
+                return this.gamesTab[index];
+            }
+            return null;
         }
     }
 
