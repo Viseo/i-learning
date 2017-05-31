@@ -758,6 +758,17 @@ exports.Models = function (globalVariables, mockResponses) {
                 return 'undone';
             }
         }
+
+        requirementsForThis(gameId){
+            let requirements = [];
+            this.links.forEach(element => {
+                if(element.childGame.id == gameId){
+                    requirements.push(element.parentGame.id);
+                }
+            });
+
+            return requirements;
+        }
     }
 
     class Level {

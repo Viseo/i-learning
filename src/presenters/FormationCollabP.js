@@ -27,6 +27,10 @@ exports.FormationCollabP = function(globalVariables){
         onClickGame(game){
             this.state.loadPresenterGameCollab(game);
         }
+
+        requirementsForThis(gameId){
+            return this.formation.requirementsForThis(gameId);
+        }
     };
 
 

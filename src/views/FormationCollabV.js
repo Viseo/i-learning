@@ -29,6 +29,7 @@ exports.FormationCollabV = function (globalVariables) {
                 width: drawing.width - 2 * MARGIN,
                 height: drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height,
             };
+            this.mapGameIdAndGui = {};
         }
 
 
@@ -94,12 +95,55 @@ exports.FormationCollabV = function (globalVariables) {
 
 
         displayLevel(level) {
+            let displayLockAnimation = (targetId, requirementsId) =>{
+                let resetAnimation = (targetId)=>{
+                    clearTimeout(this.animation.timeOutID);
+                    let target = this.mapGameIdAndGui[targetId];
+                    target.manipulator.scalor.steppy(10, 10).scaleTo(1);
+                    for (let parentId of this.animation.parents){
+                        let parentGame = this.mapGameIdAndGui[parentId];
+                        parentGame.border.steppy(10,10)
+                            .colorTo(parentGame.border.fillColor, 2, myColors.grey);
+                    }
+                    this.animation.status = false;
+                    this.animation.target = null;
+                    target.manipulator.set(1, target.content);
+                }
+
+                this.animation && this.animation.status && resetAnimation(this.animation.target);
+                this.animation = {}
+                this.animation.status = true;
+                this.animation.target = targetId;
+                this.animation.parents = requirementsId;
+                let target = this.mapGameIdAndGui[targetId];
+                target.manipulator.scalor.steppy(10, 10).scaleTo(1.10);
+                target.manipulator.rotator.steppy(10,10).rotate(0,10);
+                target.manipulator.rotator.steppy(10,10).rotate(10,-10);
+                target.manipulator.rotator.steppy(10,10).rotate(-10,0);
+                let text = new svg.Text("Vous devez finir les test\n en rouge \npour débloquer celui ci")
+                    .position(0, -target.border.height/3 + MARGIN)
+                    .font('Arial', 10)
+                    .color(myColors.white);
+                target.manipulator.set(1, text);
+                for (let parentId of requirementsId){
+                    let parentGame = this.mapGameIdAndGui[parentId];
+                    parentGame.border.steppy(10,10)
+                        .colorTo(parentGame.border.fillColor, 2,myColors.red);
+                }
+
+                this.animation.timeOutID = setTimeout(()=>{
+                    resetAnimation(targetId);
+                }, 5000)
+            }
+
+
             let createGameMiniature = (game) => {
                 let miniature = {
-                    border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10, 10).color(myColors.white, 1, myColors.grey),
+                    border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).corners(10, 10),
                     content: new svg.Text(game.label).font('Arial', 15).position(0, 5),
                     manipulator: new Manipulator(this).addOrdonator(4)
-                }
+                };
+
                 miniature.manipulator.mini = miniature;
                 miniature.game = game;
                 miniature.manipulator.mark('miniature' + game.label);
@@ -109,6 +153,18 @@ exports.FormationCollabV = function (globalVariables) {
                     miniature.picture.position(-MINIATURE_WIDTH/2 + IMAGE_MINIATURE/2 + MARGIN, 0);
                     miniature.manipulator.add(miniature.picture);
                 }
+
+                let requirementsID = this.requirementsForThis(game.id);
+                if(requirementsID.length > 0){
+                    miniature.border.color(myColors.grey, 1, myColors.greyerBlue);
+                    miniature.manipulator.addEvent('click', () => displayLockAnimation(game.id, requirementsID));
+                }else{
+                    miniature.border.color(myColors.white, 1, myColors.grey);
+                    miniature.manipulator.addEvent('click', () => this.onClickGame(game));
+                }
+
+                miniature.manipulator.set(0, miniature.border)
+                    .set(1, miniature.content);
                 return miniature;
             };
             let levelManipulator = new Manipulator(this).addOrdonator(4);
@@ -130,11 +186,8 @@ exports.FormationCollabV = function (globalVariables) {
 
             level.gamesTab.forEach(game => {
                 let gameMiniature = createGameMiniature(game);
-                gameMiniature.manipulator.set(0, gameMiniature.border)
-                    .set(1, gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator).mark('level');
-                gameMiniature.manipulator.addEvent('click', () => this.onClickGame(game));
-
+                this.mapGameIdAndGui[game.id] = gameMiniature;
                 gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_WIDTH + MARGIN) + MINIATURE_WIDTH / 2, 5);
             });
         }
@@ -143,6 +196,9 @@ exports.FormationCollabV = function (globalVariables) {
             this.presenter.onClickGame(game);
         }
 
+        requirementsForThis(gameId){
+            return this.presenter.requirementsForThis(gameId);
+        }
 
     }
     return FormationCollabV;
