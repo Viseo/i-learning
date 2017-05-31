@@ -313,6 +313,7 @@ exports.QuizAdminV = function (globalVariables) {
                             this.selectQuestion(questionManip.index);
                         }
                     };
+                    questionManip.buttonText = questionButton.text;
 
                     questionButton.back.corners(5, 5);
                     questionButton.onClick(() => questionManip.select());
@@ -420,6 +421,11 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.answersDimension.height -= dimensions.height;
             };
             var _displayTextArea = (questionGui, index, question) => {
+                var _setQuestionBlockTitle = (oldMessage, newMessage) => {
+                    let questionManip = this.questionsBlockListView.get(this.selectedQuestionIndex);
+                    questionManip.buttonText.message(newMessage);
+                }
+
                 let dimensions = {
                     width: this.questionDetailsDim.width - 2 * MARGIN,
                     height: this.questionDetailsDim.height / 4 - 2 * MARGIN
@@ -441,6 +447,7 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.textArea.font('Arial', 15);
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
+                questionGui.textArea.onInput(_setQuestionBlockTitle);
                 questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.height / 2 + dimensions.height / 2 + 2 * MARGIN + BUTTON_HEIGHT);
                 questionGui.answersDimension.height -= dimensions.height;
             };
