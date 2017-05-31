@@ -4,17 +4,22 @@
 
 exports.HeaderV = function(globalVariables){
     const util = globalVariables.util,
+        runtime = globalVariables.runtime,
         Manipulator = util.Manipulator;
 
-    const HEADER_SIZE = 0.07;
+    const HEADER_SIZE = 0.07,
+          FONT_SIZE = 20,
+          BUTTON_WIDTH = 150;
 
     class HeaderVue {
         constructor(presenter) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
-            this.userManipulator = new Manipulator(this).addOrdonator(6);
+            this.userManipulator = new Manipulator(this);
+            this.userIconManipulator = new Manipulator(this).addOrdonator(2)
             this.label = "I-learning";
             this.height = HEADER_SIZE * drawing.height;
             this.presenter = presenter;
+            this.manipulator.add(this.userManipulator);
         }
 
         disconnect(){
@@ -22,69 +27,93 @@ exports.HeaderV = function(globalVariables){
         }
 
         display(message) {
-            var _onClickLogo = () => {
-                this.presenter.clearOldPageStackAndLoadPresenterDashboard();
-            };
-            var displayUser = () => {
-                let pos = -MARGIN;
-                const deconnexion = displayText("Déconnexion", width * 0.1, pos_text_y, myColors.white, myColors.none, 20, null, userManip, 4, 5),
-                    deconnexionWidth = deconnexion.content.boundingRect().width,
-                    ratio = 0.65,
-                    body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.white),
-                    head = new svg.Circle(12 * ratio).color(myColors.white, 1, myColors.customBlue),
-                    userText = autoAdjustText(drawing.username, width * 0.23, height, 20, null, userManip, 3);
+            var _resetManip = () => {
+                this.manipulator.flush();
+                this.manipulator.add(this.userManipulator);
+                this.userManipulator.add(this.userIconManipulator);
+                this.userManipulator.move(width - MARGIN, height/2);
+            }
+            var _displayHeaderRect = () => {
+                let rect = new svg.Rect(width, height)
+                    .color(myColors.customBlue, 0.5, myColors.black)
+                    .position(width/2, height/2);
+                this.manipulator.set(0, rect);
+            }
+            var _displayHomeText = ()=> {
+                var _onClickLogo = () => {
+                    this.presenter.clearOldPageStackAndLoadPresenterDashboard();
+                };
+                let text = new svg.Text(this.label)
+                    .position(MARGIN, height/2 + FONT_SIZE/4)
+                    .font('Arial', FONT_SIZE)
+                    .anchor('start')
+                    .color(myColors.white)
+                    .mark('homeText');
+                text.onMouseDown(_onClickLogo);
+                this.manipulator.set(1, text);
+            }
+            var _displayMessage = () => {
+                if (message) {
+                    let messageText = new svg.Text(message)
+                        .dimension(width * 0.3, height)
+                        .font('Arial', 32)
+                        .position(width / 2, height / 2 + MARGIN)
+                        .color(myColors.white)
+                        .mark("headerMessage");
+                    this.manipulator.set(2, messageText);
+                } else {
+                    this.manipulator.unset(2);
+                }
+            }
+            var _displayUserName = () => {
+                let userText = new svg.Text(drawing.username)
+                    .font('Arial', 20)
+                    .anchor('end')
+                    .position(-BUTTON_WIDTH - 2*MARGIN, FONT_SIZE/2)
+                    .color(myColors.white);
 
-                deconnexion.border.corners(5,5);
-                pos -= deconnexionWidth / 2;
-                deconnexion.content.position(0, -font_size/4);
-                deconnexion.border.position(0, -font_size/4).mark('deconnection');
-                deconnexion.content.color(myColors.white);
-                pos -= deconnexionWidth / 2 + 40;
-                userText.text.anchor('end').position(-deconnexionWidth, 0).color(myColors.white);
-                pos -= userText.finalWidth;
-                userManip.set(0, body);
-                userManip.set(1, head);
+                this.userManipulator.add(userText);
+                textWidth = userText.boundingRect().width;
+                userText.dimension(textWidth, height)
+            }
+            var _displayUserIcon = () => {
+                let ratio = 0.65;
+                let body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.white),
+                    head = new svg.Circle(12 * ratio).color(myColors.white, 1, myColors.customBlue);
 
-                pos -= body.boundingRect().width / 2 + MARGIN;
-                body.position(-deconnexionWidth -userText.finalWidth -body.width, -5 * ratio);
-                head.position(-deconnexionWidth -userText.finalWidth -body.width, -20 * ratio);
-                userManip.move(width - deconnexionWidth, pos_text_y);
-
-                const deconnexionHandler = () => {
+                body.position(0, -5 * ratio);
+                head.position(0, -20 * ratio);
+                
+                this.userIconManipulator.set(0, body);
+                this.userIconManipulator.set(1, head);
+                this.userIconManipulator.move(-BUTTON_WIDTH - 2*MARGIN - textWidth - body.width/2 - 2*MARGIN, 0);
+            }
+            var _displayDeconnectionButton = () => {
+                var disconnect = () => {
                     runtime.setCookie("token=; path=/; max-age=0;");
-                    drawings.component.clean();
                     drawing.username = null;
-                    drawing.manipulator.flush();
                     this.disconnect();
                 };
-                svg.addEvent(deconnexion.content, "click", deconnexionHandler);
-                svg.addEvent(deconnexion.border, "click", deconnexionHandler);
-            };
-
-            const width = drawing.width,
-                height = HEADER_SIZE * drawing.height,
-                font_size = 20,
-                pos_text_y = height/2 +font_size/4,
-                userManip = this.userManipulator,
-                text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white).mark('homeText'),
-                rect = new svg.Rect(width, height).color(myColors.customBlue, 0.5, myColors.black).position(width/2, height/2);
-            this.manipulator.set(1, text);
-            this.manipulator.set(0, rect);
-
-            text.onMouseDown(_onClickLogo);
-
-            if (message) {
-                const messageText = autoAdjustText(message, width * 0.3, height, 32, 'Arial', this.manipulator, 2);
-                messageText.text.position(width / 2, height / 2 + MARGIN)
-                    .color(myColors.white)
-                    .mark("headerMessage");
-            } else {
-                this.manipulator.unset(2);
+                let button = new gui.Button(BUTTON_WIDTH, height*2/3, [myColors.none, 1, myColors.white], "Déconnexion");
+                button.text.color(myColors.white);
+                button.back.corners(5, 5);
+                button.position(-BUTTON_WIDTH/2, 0);
+                button.glass.mark('deconnection');
+                button.onClick(disconnect);
+                this.userManipulator.add(button.component);
             }
 
-            this.manipulator.add(userManip);
-            if (drawing.username) {
-                displayUser();
+            const width = drawing.width, height = HEADER_SIZE * drawing.height;
+            let textWidth = width * 0.23;
+
+            _resetManip();
+            _displayHeaderRect();
+            _displayHomeText();
+            _displayMessage();
+            if(drawing.username){
+                _displayUserName();
+                _displayUserIcon();
+                _displayDeconnectionButton();
             }
         }
 
