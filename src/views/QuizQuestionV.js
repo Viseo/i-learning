@@ -98,7 +98,7 @@ exports.QuizQuestionV = function (globalVariables) {
 
                 let formationTitle = autoAdjustText(
                     this.getLabel(),
-                    util.getStringWidthByFontSize(15, FONT_SIZE),
+                    FONT_SIZE/2 *15,
                     FONT_SIZE,
                     FONT_SIZE,
                     FONT,

@@ -157,7 +157,7 @@ exports.ConnectionV = function (globalVariables) {
                     }
 
                     let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                    let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                     this.cookieManipulator.add(checkbox);
                     _displayChecked(true);
                 }

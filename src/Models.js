@@ -267,10 +267,7 @@ exports.Models = function (globalVariables, mockResponses) {
         sync() {
             return apiRequester.getAllFormations().then(data => {
                 var _sortFormationsList = () => {
-                    const sortAlphabetical = function (array) {
-                        return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
-                    };
-                    this._formations = sortAlphabetical(this._formations);
+                    this._formations.sort((a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
                 };
 
                 this._formations = [];

@@ -6,6 +6,7 @@ exports.DashboardAdmin = function(globalVariables){
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.Tool.IconCreator,
+        resizeStringForText = globalVariables.Tool.resizeStringForText,
         ClipPath = globalVariables.clipPath;
 
     const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
@@ -166,18 +167,19 @@ exports.DashboardAdmin = function(globalVariables){
                 let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip"+formation.label);
                 let picture;
                 if(formation.imageSrc){
-                    picture = new util.Picture(formation.imageSrc, false, this)
+                    picture = new svg.Image(formation.imageSrc);
                 }
                 else{
-                    picture = new util.Picture('../../images/viseo.png', false, this, '', null);
+                    picture = new svg.Image('../../images/viseo.png');
                 }
-                picture.draw(-TILE_SIZE.w/2 + 2* CLIP_SIZE, 0, IMAGE_SIZE,2*CLIP_SIZE,manipulator, 3);
-                picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
+                picture.position(-TILE_SIZE.w/2 + 2* CLIP_SIZE, 0).dimension(IMAGE_SIZE,2*CLIP_SIZE)
+                manipulator.set(3, picture);
+                picture.attr('clip-path', 'url(#image' + formation.label +')');
                 let backCircle = new svg.Circle(CLIP_SIZE +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+ 2*CLIP_SIZE, 0);
                 let content = new svg.Text(formation.label)
                     .position(CLIP_SIZE, -TILE_SIZE.h/4)
                     .font('Arial', 20);
-                util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
+                resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
                 manipulator.set(0,border)
                     .set(1,backCircle)
                     .add(clip)
@@ -217,7 +219,7 @@ exports.DashboardAdmin = function(globalVariables){
                         + '/5 (' + formation.noteCounter
                         + ' votes)')
                         .font('Arial', 14, 15).anchor('end');
-                    util.resizeStringForText(textNotation, 120, 10);
+                    resizeStringForText(textNotation, 120, 10);
                     displayNotationManip.add(textNotation);
                     displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
                     miniature.manipulator.add(displayNotationManip);
@@ -261,7 +263,7 @@ exports.DashboardAdmin = function(globalVariables){
             let addPictureButton = new gui.Button(3*BUTTON_SIZE.w,BUTTON_SIZE.h,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
                 .position( borderLibrary.width /2 - BUTTON_SIZE.w*3/2 -2*MARGIN ,borderLibrary.height/2-BUTTON_SIZE.h/2 - MARGIN);
             addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
-            util.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
+            resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.glass.mark('addPictureButtonGlass');
             mediaPanel.content.add(rectWhite);

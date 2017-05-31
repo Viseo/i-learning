@@ -635,7 +635,7 @@ exports.QuizAdminV = function (globalVariables) {
                             }
                         }
                         let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                        let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                        let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                         answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
                         answerGui.checkBoxManipulator.add(checkbox).move(-dimensions.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
                         if (answerGui.checked) {

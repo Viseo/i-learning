@@ -6,6 +6,7 @@ exports.DashboardCollabV = function (globalVariables) {
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.Tool.IconCreator,
         createRating = globalVariables.Tool.createRating,
+        resizeStringForText = globalVariables.Tool.resizeStringForText,
         View = globalVariables.View,
         ClipPath = globalVariables.clipPath;
     const TILE_SIZE = {w: 490, h: 100, rect: {w: 400, h: 100}},
@@ -127,20 +128,21 @@ exports.DashboardCollabV = function (globalVariables) {
                     let manipulator = new Manipulator(this).addOrdonator(4);
                     let picture;
                     if(formation.imageSrc){
-                        picture = new util.Picture(formation.imageSrc, false, this)
+                        picture = new svg.Image(formation.imageSrc)
                     }
                     else{
-                        picture = new util.Picture('../../images/viseo.png', false, this, '', null);
+                        picture = new svg.Image('../../images/viseo.png');
                     }
-                    picture.draw(-TILE_SIZE.w/2 + 2*CLIP_SIZE, 0, IMAGE_SIZE,2*CLIP_SIZE,manipulator, 3);
-                    picture.imageSVG.attr('clip-path', 'url(#image' + formation.label +')');
+                    picture.position(-TILE_SIZE.w/2 + 2*CLIP_SIZE, 0).dimension(IMAGE_SIZE,2*CLIP_SIZE);
+                    manipulator.set(3, picture);
+                    picture.attr('clip-path', 'url(#image' + formation.label +')');
                     let backCircle = new svg.Circle(CLIP_SIZE +5).color(myColors.lightgrey, 0.5, myColors.grey).position(-TILE_SIZE.w/2+2* CLIP_SIZE, 0);
                     manipulator.set(0,border).set(1,backCircle).add(clip);
                     let content = new svg.Text(formation.label)
                         .position(CLIP_SIZE, -TILE_SIZE.h/4)
                         .font('Arial',20)
                         .mark('textMiniature'+formation._id);
-                    util.resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
+                    resizeStringForText(content, TILE_SIZE.rect.w - 8*MARGIN, TILE_SIZE.rect.h)
                     manipulator.add(content);
                     return {border: border, clip: clip, manipulator: manipulator, backCircle: backCircle, content:content};
                 };
@@ -212,7 +214,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         + '/5 (' + formation.noteCounter
                         + ' votes)')
                         .font('Arial', 14, 15).anchor('end');
-                    util.resizeStringForText(textNotation, 120, 10);
+                    resizeStringForText(textNotation, 120, 10);
                     displayNotationManip.add(textNotation);
                     displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
                     miniature.manipulator.add(displayNotationManip);
