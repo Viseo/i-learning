@@ -245,7 +245,10 @@ exports.FormationAdminV = function(globalVariables) {
                 backRect.notTarget = true;
                 svg.addEvent(backRect, 'click', ()=>{
                     this.unselectMiniature();
-                    this.updateAllLinks();
+                    if(this.selectedArrowRedCross){
+                        this.arrowsManipulator.remove(this.selectedArrowRedCross);
+                        this.selectedArrowRedCross = null;
+                    }
                 });
                 this.graphMiniatureManipulator.set(0, backRect);
             }
@@ -679,13 +682,18 @@ exports.FormationAdminV = function(globalVariables) {
 
         arrow(parent,child) {
             var _onClickArrow = () => {
+                if(this.selectedArrowRedCross){
+                    this.arrowsManipulator.remove(this.selectedArrowRedCross);
+                }
                 this.arrowsManipulator.add(redCrossManipulator);
+                this.selectedArrowRedCross = redCrossManipulator;
                 this.unselectMiniature();
             };
 
             var _onClickRedCross = (parentId, childId) => {
                 this.arrowsManipulator.remove(arrowPath);
                 this.arrowsManipulator.remove(redCrossManipulator);
+                this.selectedArrowRedCross = null;
                 this.unLink(parentId, childId);
             }
 
@@ -706,7 +714,7 @@ exports.FormationAdminV = function(globalVariables) {
             this.selected = false;
             arrowPath.color(myColors.black, 0, myColors.black);
 
-            arrowPath.onClick(_onClickArrow)
+            arrowPath.onClick(_onClickArrow);
             return this;
 
         }
