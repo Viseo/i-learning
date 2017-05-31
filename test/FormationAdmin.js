@@ -8,7 +8,7 @@ const
     models = FModels({}, {}),
     {
         given, when, loadPage, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement, inputValue,
-        mouseDownOnGlassElement, mouseUpOnGlassElement, mouseMoveOnGlassElement, getElement
+        mouseDownOnGlassElement, mouseUpOnGlassElement, mouseMoveOnGlassElement, getElement, dblclickElement
     } = testutils;
 
 const ImageRuntime = {
@@ -54,12 +54,12 @@ describe('formation admin page', function () {
                 lastQuestionIndex: 0,
                 levelIndex: 0,
                 type: 'Quiz',
-                questions: {
+                questions: [{
                     answers: [answers],
                     label: "Boubou",
-                    multipleChoice: false,
-
-                },
+                    multipleChoice: false
+                }
+                ],
             }],
             gamesTab2 = [
                 {
@@ -70,12 +70,12 @@ describe('formation admin page', function () {
                     lastQuestionIndex: 0,
                     levelIndex: 1,
                     type: 'Quiz',
-                    questions: {
+                    questions: [{
                         answers: [answers],
                         label: "Boubou",
-                        multipleChoice: false,
-
-                    },
+                        multipleChoice: false
+                    }
+                    ],
                 }],
             formationMock = {
                 links: [],
@@ -117,7 +117,7 @@ describe('formation admin page', function () {
             }
     });
 
-    it("should add a new quiz and save the new formation", function () {
+    it("should add a new quiz and save the new formation then publish it", function () {
         let {root, state, runtime} = given(() => {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
         });
@@ -137,6 +137,11 @@ describe('formation admin page', function () {
             }).then(() => {
                 assertMessage(root, "infoMessage", "Votre travail a bien été enregistré.");
             });
+            when(() => {
+                clickElement(root, "publishFormation");
+            }).then(() => {
+
+            });
         });
     });
 
@@ -150,6 +155,17 @@ describe('formation admin page', function () {
         }).then(() => {
             clickElement(root, "whitePanel");
         });
+    });
+
+    it('should enter in a quiz', function () {
+       let {root} = given(() => {
+           return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
+       });
+       when(() => {
+            dblclickElement(root, "miniatureGameManipquizz0");
+       }).then(() => {
+
+       })
     });
 
     it("should add an image into a quiz", function () {
@@ -186,6 +202,12 @@ describe('formation admin page', function () {
         }).then(() => {
             assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
             runtime.advance();
+            clickElement(root, "saveFormation");
+            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            runtime.advance();
+            clickElement(root, "publishFormation");
+            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            runtime.advance();
         })
     });
 
@@ -202,6 +224,16 @@ describe('formation admin page', function () {
         })
     });
 
+    it('should not publish an empty formation', function () {
+        let {root} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: {}, className: "Formation"});
+        });
+        when(() => {
+            clickElement(root, "publishFormation")
+        }).then(() => {
+            assertMessage(root, "infoMessage", "Veuillez ajouter au moins un jeu à votre formation.");
+        })
+    });
     it('should set arrow dependencies', function () {
         let {root} = given(() => {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
@@ -228,5 +260,16 @@ describe('formation admin page', function () {
             redCrossGame.listeners['click']();
         }).then(() => {
         });
+    });
+
+    it('should delete a level', function () {
+        let {root} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
+        });
+        when(() => {
+            clickElement(root, "redCrossLevel0");
+        }).then(() => {
+
+        })
     });
 });

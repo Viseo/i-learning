@@ -272,6 +272,7 @@ exports.FormationAdminV = function(globalVariables) {
                 this.buttonsManipulator.move(this.gamePanel.width + MARGIN*2,
                     this.buttonSize.height/2 + this.graphPanel.height + this.header.height + 3*MARGIN);
                 this.publishButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Publier');
+                this.publishButton.glass.mark('publishFormation');
                 this.publishButton.position(this.graphPanel.width*0.6, 0);
                 this.publishButton.back.corners(5,5);
                 this.publishButton.onClick(this.publishFormation.bind(this));
@@ -289,8 +290,6 @@ exports.FormationAdminV = function(globalVariables) {
 
 
         }
-
-
 
         saveFormation(){
             this.presenter.saveFormation();
@@ -573,7 +572,9 @@ exports.FormationAdminV = function(globalVariables) {
             let levelRedCrossManipulator = new Manipulator(this);
             let levelRedCross = drawRedCross(0,5,18, levelRedCrossManipulator);
             levelManipulator.add(levelRedCrossManipulator);
-            levelRedCrossManipulator.add(levelRedCross);
+            levelRedCrossManipulator
+                .add(levelRedCross)
+                .mark('redCrossLevel' + levelIndex);
             levelRedCrossManipulator.addEvent('click', ()=>{this.removeLevel(level)});
             // svg.addEvent(levelRedCross, 'click', ()=>{this.removeLevel(level)});
 

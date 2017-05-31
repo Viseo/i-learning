@@ -1043,7 +1043,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     game.miniature.updateSelectionDesign();
                 });
 
-            const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+            const messageErrorNoNameFormation = "Vous devez remplir correctement le nom de la formation.",
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
 
             this.displayPublicationMessage = (messagePublication) => {
