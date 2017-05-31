@@ -310,13 +310,11 @@ exports.FormationAdminV = function(globalVariables) {
                 height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_HEIGHT)
             };
 
-            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
+            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height );
             borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
             let mediaPanel = new gui.Panel( dimensions.width - 2* MARGIN , dimensions.height - BUTTON_HEIGHT - 4* MARGIN);
             mediaPanel.position(0,(borderLibrary.height - mediaPanel.height)/2 - 2*MARGIN - BUTTON_HEIGHT);
             mediaPanel.border.color( myColors.none, 1  , myColors.grey);
-
-
             let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(mediaPanel.width/2, mediaPanel.height/2);
             let titleLibrary = new svg.Text('Library :').color(myColors.grey).font('Arial', 25);
             let titleLibraryBack = new svg.Rect(100 ,3).color(myColors.white);
@@ -347,8 +345,9 @@ exports.FormationAdminV = function(globalVariables) {
             let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
             let imagesManipulator = new Manipulator(this);
 
-            mediaPanel.content.add(imagesManipulator.first);
+
             imagesManipulator.move(imageWidth/2 + MARGIN, imageWidth/2 + MARGIN);
+            mediaPanel.content.add(imagesManipulator.first);
             this.getImages().then((images) => {
 
                 images.images.forEach((image, index) => {

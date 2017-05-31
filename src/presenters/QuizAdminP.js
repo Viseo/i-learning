@@ -55,6 +55,11 @@ exports.QuizAdminP = function (globalVariables) {
         getCorrectAnswersIndex(){
             return this.quiz.getCorrectAnswersIndex(this.previewIndex);
         }
+
+        uploadImage(file, progressDisplay){
+            return this.state.uploadImage(file, progressDisplay);
+        }
+
         returnHandler(){
             this.view.display();
         }
@@ -162,6 +167,11 @@ exports.QuizAdminP = function (globalVariables) {
 
         setLastQuestionIndex(index){
             this.quiz.setLastQuestionIndex(index);
+        }
+        setImageOnMiniature(panel, src){
+            panel.setImage(src);
+            this.view._();
+            //miniature.replaceFormation({imageOnly:true});
         }
     }
 
