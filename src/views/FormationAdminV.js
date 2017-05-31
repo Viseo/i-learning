@@ -5,10 +5,9 @@ exports.FormationAdminV = function(globalVariables) {
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        domain = globalVariables.domain,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         LEVEL_HEIGHT = 150,
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,
@@ -326,7 +325,7 @@ exports.FormationAdminV = function(globalVariables) {
             this.mediasManipulator.add( titleLibrary);
             this.mediasManipulator.add(addPictureButton.component);
 
-           let redCross = domain.IconCreator.createRedCrossIcon( this.mediasManipulator ).position(dimensions.width/2,-dimensions.height/2 ) ;
+           let redCross = IconCreator.createRedCrossIcon( this.mediasManipulator ).position(dimensions.width/2,-dimensions.height/2 ) ;
            let redCrossHandler = () => {this.mediasManipulator.flush()};
              svg.addEvent( redCross.border,'click', redCrossHandler);
              svg.addEvent( redCross.content,'click', redCrossHandler);

@@ -5,8 +5,7 @@ exports.DashboardAdmin = function(globalVariables){
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        domain = globalVariables.domain,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         ClipPath = globalVariables.clipPath;
 
     const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
@@ -272,7 +271,7 @@ exports.DashboardAdmin = function(globalVariables){
             this.mediasManipulator.add( titleLibrary);
             this.mediasManipulator.add(addPictureButton.component);
 
-            let redCross = domain.IconCreator.createRedCrossIcon( this.mediasManipulator ).position(dimensions.width/2,-dimensions.height/2 ) ;
+            let redCross = IconCreator.createRedCrossIcon( this.mediasManipulator ).position(dimensions.width/2,-dimensions.height/2 ) ;
             let redCrossHandler = () => {this.mediasManipulator.flush()};
             svg.addEvent( redCross.border,'click', redCrossHandler);
             svg.addEvent( redCross.content,'click', redCrossHandler);

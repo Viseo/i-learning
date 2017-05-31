@@ -3,12 +3,12 @@
  */
 exports.View = function(globalVariables){
     const drawing = globalVariables.drawing,
-        HeaderVue = globalVariables.domain.HeaderVue;
+        HeaderVue = globalVariables.HeaderVue;
 
     class View {
         constructor(presenter){
             this.presenter = presenter;
-            this.header = new HeaderVue(null, this.presenter);
+            this.header = new HeaderVue(this.presenter);
         }
 
         flush(){
@@ -19,8 +19,6 @@ exports.View = function(globalVariables){
             this.presenter.returnToOldPage();
         }
     };
-
-
 
     return {View};
 };

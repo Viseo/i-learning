@@ -6,13 +6,14 @@ const
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
-    Domain = require('./Domain').Domain,
+    FHeaderV = require('./views/HeaderV').HeaderV,
     Util = require('./Util').Util,
     FModels = require('./Models').Models,
+    FTool = require('./Tool').Tool,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
 function main(mockResponses) {
-    let domain, util, gui, drawing, drawings, root;
+    let util, gui, drawing, drawings, root;
     let runtime = mockResponses ? mockRuntime() : targetRuntime();
     let svg = SVG(runtime);
     let globalVariables = {svg, runtime};
@@ -40,8 +41,9 @@ function main(mockResponses) {
     drawing = drawings.drawing;
     globalVariables.drawing = drawing;
 
-    domain = Domain(globalVariables);
-    globalVariables.domain = domain;
+    globalVariables.HeaderVue = FHeaderV(globalVariables);
+    globalVariables.Tool = FTool(globalVariables);
+
     util.setGlobalVariables();
 
     presenterFactory(globalVariables);

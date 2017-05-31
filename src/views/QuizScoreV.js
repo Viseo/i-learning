@@ -9,7 +9,7 @@ exports.QuizScoreV = function (globalVariables) {
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         View = globalVariables.View;
 
     const

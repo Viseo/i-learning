@@ -1,13 +1,11 @@
 exports.DashboardCollabV = function (globalVariables) {
     const util = globalVariables.util,
         Manipulator = util.Manipulator,
-        Server = util.Server,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        HeaderVue = globalVariables.domain.HeaderVue,
-        IconCreator = globalVariables.domain.IconCreator,
-        createRating = globalVariables.domain.createRating,
+        IconCreator = globalVariables.Tool.IconCreator,
+        createRating = globalVariables.Tool.createRating,
         View = globalVariables.View,
         ClipPath = globalVariables.clipPath;
     const TILE_SIZE = {w: 490, h: 100, rect: {w: 400, h: 100}},

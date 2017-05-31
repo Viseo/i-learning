@@ -8,8 +8,6 @@ exports.Util = function (globalVariables) {
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
         library = globalVariables.library,
-        AddEmptyElementVue,
-        QuizVue,
         BdVue,
         IconCreator,
         createRating,
@@ -24,11 +22,8 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg;
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
-        AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
-        QuizVue = globalVariables.domain.QuizVue;
-        BdVue = globalVariables.domain.BdVue;
-        IconCreator = globalVariables.domain.IconCreator;
-        createRating = globalVariables.domain.createRating;
+        IconCreator = globalVariables.Tool.IconCreator;
+        createRating = globalVariables.Tool.createRating;
         svgr = globalVariables.runtime;
     };
 

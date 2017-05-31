@@ -138,11 +138,9 @@ class APIRequester {
         return this.httpRequests.get('/formations/' + id + '/progression');
     }
     replaceFormation(newFormation, ignoredData) {
-        //newFormation.status = status;
         return this.httpRequests.post("/formations/update", newFormation, ignoredData)
     }
     insertFormation(newFormation, ignoredData) {
-        // newFormation.status = status;
         return this.httpRequests.post("/formations/insert", newFormation, ignoredData)
     }
     deactivateFormation(id, ignoredData) {

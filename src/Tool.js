@@ -2,9 +2,7 @@
  * Created by minhhuyle on 25/04/17.
  */
 
-exports.Tool = function (globalVariables, classContainer) {
-
-
+exports.Tool = function (globalVariables) {
     let
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator,
@@ -14,7 +12,6 @@ exports.Tool = function (globalVariables, classContainer) {
     const
         ICON_SIZE = 15,
         MARGIN = 10;
-
 
     class IconSetting {
         constructor(borderProperties) {

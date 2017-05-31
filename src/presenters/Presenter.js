@@ -9,7 +9,6 @@ exports.Presenter = function(globalVariables){
             this.view;
         }
 
-
         /**
          * STATE
          * */
@@ -36,8 +35,6 @@ exports.Presenter = function(globalVariables){
             this.view.flush();
         }
     };
-
-
 
     return {Presenter};
 };
