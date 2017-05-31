@@ -252,9 +252,12 @@ exports.Tool = function (globalVariables) {
                             .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
                         break;
                     case "Text":
-                        this.content = autoAdjustText(contentProperties.label, contentProperties.size, contentProperties.size,
-                            contentProperties.fontSize, contentProperties.font, this.manipulator).text;
-                        this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
+                        this.content = new svg.Text(contentProperties.label)
+                            .dimension(contentProperties.size, contentProperties.size)
+                            .font(contentProperties.font, contentProperties.fontSize)
+                            .color(contentProperties.color)
+                            .position(contentProperties.x, contentProperties.y)
+                        this.manipulator.set(1, this.content);
                         break;
                     case "Path":
                         let middlePoint = {x: this.border.x, y: this.border.y};
@@ -402,7 +405,7 @@ exports.Tool = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 1, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, 0, ICON_SIZE, "...", 20, "Arial", myColors.white);
+                .setTextContent(0, -ICON_SIZE/2, ICON_SIZE, "...", 20, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -426,7 +429,7 @@ exports.Tool = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 0, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, ICON_SIZE / 2, ICON_SIZE, "!", 23, "Arial", myColors.white);
+                .setTextContent(0, 0, ICON_SIZE, "!", 23, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }

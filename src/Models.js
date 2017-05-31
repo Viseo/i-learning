@@ -386,7 +386,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 }
             };
 
-            return apiRequester.insertFormation(getObjectToSave(), ignoredData)
+            return apiRequester.insertFormation(getObjectToSave())
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -431,7 +431,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return apiRequester.insertFormation(object, status, ignoredData)
+            return apiRequester.insertFormation(object, status)
                 .then(data => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -520,7 +520,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return apiRequester.replaceFormation(getObjectToSave(), ignoredData)
+            return apiRequester.replaceFormation(getObjectToSave())
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {
@@ -940,7 +940,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         renameQuiz(quiz) {
-            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, ignoredData)
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved === false) {
@@ -960,7 +960,7 @@ exports.Models = function (globalVariables, mockResponses) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, ignoredData)
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.saved) {

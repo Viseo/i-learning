@@ -1,3 +1,34 @@
+MARGIN = 10;
+HEADER_SIZE = 0.07;
+STAR_SPACE = 4;
+myColors = {
+    ultraLightGrey: [184, 187, 196],
+    customBlue: [43, 120, 228],
+    darkBlue: [25, 25, 112],
+    blue: [25, 122, 230],
+    primaryBlue: [0, 0, 255],
+    grey: [125, 122, 117],
+    lightyellow: [239, 239, 78],
+    lighteryellow: [239, 239, 0],
+    halfGrey: [150, 150, 150],
+    lightgrey: [232, 232, 238],
+    lightwhite: [250, 250, 250],
+    orange: [230, 122, 25],
+    purple: [170, 100, 170],
+    green: [155, 222, 17],
+    raspberry: [194, 46, 83],
+    black: [0, 0, 0],
+    white: [255, 255, 255],
+    red: [255, 0, 0],
+    yellow: [240, 212, 25],
+    pink: [255, 20, 147],
+    brown: [128, 0, 0],
+    primaryGreen: [0, 255, 0],
+    darkerGreen: [34, 179, 78],
+    greyerBlue: [74, 113, 151],
+    none: []
+};
+
 exports.Util = function (globalVariables) {
     let runtime = globalVariables.runtime,
         svg = globalVariables.svg,
@@ -214,14 +245,6 @@ exports.Util = function (globalVariables) {
             .color(myColors.none, 3, myColors.black);
     };
 
-    const hexagonDefaultColors = () => {
-        return {
-            fillColor: myColors.lightwhite,
-            strokeWidth: 1,
-            strokeColor: myColors.grey
-        };
-    };
-
     let drawHexagon = (w, h, orientation, ratio) => {
         let factor = ratio || 1;
         if (orientation == 'V') {
@@ -245,8 +268,7 @@ exports.Util = function (globalVariables) {
             ];
         }
 
-        let shape = new svg.Polygon().add(points).color(
-            hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+        let shape = new svg.Polygon(0, 0).add(points).color(myColors.lightwhite, 1, myColors.grey);
         shape.width = orientation == 'V' ? w : w*factor;
         shape.height = orientation == 'V' ? h*factor : h;
 

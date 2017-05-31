@@ -43,7 +43,7 @@ class HTTPRequests {
         }
     }
 
-    post(theUrl, body, ignoredData) {
+    post(theUrl, body) {
         var _post = () => {
             return new Promise((resolve, reject) => {
                 var request = new XMLHttpRequest();
@@ -58,7 +58,7 @@ class HTTPRequests {
                 };
                 request.open('POST', theUrl, true); // true for asynchronous
                 request.setRequestHeader('Content-type', 'application/json');
-                let obj = ignoredData ? JSON.stringify(body, ignoredData) : JSON.stringify(body);
+                let obj = JSON.stringify(body);
                 request.send(obj);
             })
         }
@@ -137,17 +137,17 @@ class APIRequester {
     getFormationsProgress(id) {
         return this.httpRequests.get('/formations/' + id + '/progression');
     }
-    replaceFormation(newFormation, ignoredData) {
-        return this.httpRequests.post("/formations/update", newFormation, ignoredData)
+    replaceFormation(newFormation) {
+        return this.httpRequests.post("/formations/update", newFormation)
     }
-    insertFormation(newFormation, ignoredData) {
-        return this.httpRequests.post("/formations/insert", newFormation, ignoredData)
+    insertFormation(newFormation) {
+        return this.httpRequests.post("/formations/insert", newFormation)
     }
-    deactivateFormation(id, ignoredData) {
-        return this.httpRequests.post("/formations/deactivate", {id: id}, ignoredData);
+    deactivateFormation(id) {
+        return this.httpRequests.post("/formations/deactivate", {id: id});
     }
-    updateQuiz(newQuiz, formationId, levelIndex, gameIndex, ignoredData) {
-        return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex} , ignoredData);
+    updateQuiz(newQuiz, formationId, levelIndex, gameIndex) {
+        return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId, levelIndex:levelIndex, gameIndex:gameIndex} );
     }
 
     upload(file, onProgress) {
