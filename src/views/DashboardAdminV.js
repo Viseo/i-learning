@@ -4,6 +4,7 @@ exports.DashboardAdmin = function(globalVariables){
         View = globalVariables.View,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        drawings = globalVariables.drawings,
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.Tool.IconCreator,
         resizeStringForText = globalVariables.Tool.resizeStringForText,

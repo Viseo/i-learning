@@ -700,7 +700,7 @@ exports.FormationAdminV = function (globalVariables) {
             let redCrossManipulator = new Manipulator(this);
             let redCross = IconCreator.createRedCrossIcon(redCrossManipulator);
             redCross.mark('redCross');
-            redCross.onClick(() => _onClickRedCross(parent.id, child.id));
+            redCross.addEvent('click', () => _onClickRedCross(parent.id, child.id));
 
             let arrowPath = this.drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             this.arrowsManipulator.add(arrowPath);

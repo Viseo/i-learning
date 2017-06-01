@@ -4,11 +4,10 @@ exports.FormationCollabV = function (globalVariables) {
         Manipulator = util.Manipulator,
         View = globalVariables.View;
 
-    svg = globalVariables.svg,
+    const svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        drawings = globalVariables.drawings,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         MINIATURE_FONT_SIZE = 20,
         MINIATURE_WIDTH = 200,
         MINIATURE_HEIGHT = 75,

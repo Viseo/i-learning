@@ -10,9 +10,10 @@ exports.QuizAdminV = function (globalVariables) {
         BUTTON_SIZE = {w: 40, h: 30},
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        IconCreator = globalVariables.Tool.IconCreator,
-        ListManipulatorView = globalVariables.Tool.ListManipulatorView,
-        installDnD = globalVariables.gui.installDnD,
+        Tool = globalVariables.Tool,
+        IconCreator = Tool.IconCreator,
+        ListManipulatorView = Tool.ListManipulatorView,
+        installDnD = gui.installDnD,
         BUTTON_WIDTH = 250,
         BUTTON_HEIGHT = 30,
         ANSWERS_PER_LINE = 4,
@@ -150,7 +151,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let addPictureButton = new gui.Button(3*BUTTON_SIZE.w,BUTTON_SIZE.h,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
                     .position( dimensions.width /2 - BUTTON_SIZE.w*3/2 -2*MARGIN ,dimensions.height/2-BUTTON_SIZE.h/2 +2*MARGIN);
                 addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
-                util.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
+                Tool.resizeStringForText(addPictureButton.text, 3*BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
                 addPictureButton.component.add(addPictureButton.text);
                 mediasPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, mediasPanel.component);

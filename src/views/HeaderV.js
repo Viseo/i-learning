@@ -3,8 +3,12 @@
  */
 
 exports.HeaderV = function(globalVariables){
-    const util = globalVariables.util,
+    const
+        svg = globalVariables.svg,
+        gui = globalVariables.gui,
+        util = globalVariables.util,
         runtime = globalVariables.runtime,
+        drawing = globalVariables.drawing,
         Manipulator = util.Manipulator;
 
     const HEADER_SIZE = 0.07,
