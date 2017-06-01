@@ -253,20 +253,28 @@ exports.DollAdminV = function(globalVariables){
         }
 
         resizeElement(elem, manipulator){
-            let manipinitx = manipulator.x, manipinity = manipulator.y;
-            console.log(manipinitx, manipinity);
+            let manipInitx = manipulator.x, manipInity = manipulator.y;
+            manipulator.corners = [];
             let br = function(x, y){
-                let delta = {x:x-this.initx, y:y-this.inity}
-                elem.dimension(this.iw+ delta.x,this.ih + delta.y)
-                manipulator.move(manipinitx + delta.x/2,manipinity + delta.y/2);
+                let delta = {x:x-this.getX(), y:y-this.getY()};
+                elem.dimension(this.iw+delta.x,this.ih +delta.y)
+                elem.position(+delta.x/2,+delta.y/2);
+                let updateCorners = ()=>{
+                    manipulator.corners.forEach(corner=>{
+                        corner.move(corner.point.getX() + delta.x/2, corner.point.getY()+delta.y/2);
+                    });
+                }
+                updateCorners();
                 elem.refresh();
             }
-            let posArr = [{x:-elem.width/2, y:-elem.height/2},{x:-elem.width/2, y:+elem.height/2},
-                {x:+elem.width/2, y:-elem.height/2},{x:+elem.width/2, y:+elem.height/2, drag: br,iw:elem.width, ih:elem.height}];
+            let posArr = [
+                {x:-elem.width/2, y:-elem.height/2,  getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:-elem.width/2, y:+elem.height/2,  getX: function(){return -elem.width/2}, getY: function(){return +elem.height/2}},
+                {x:+elem.width/2, y:-elem.height/2,  getX: function(){return +elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:+elem.width/2, y:+elem.height/2, drag: br, iw:elem.width, ih:elem.height,  getX: function(){return +elem.width/2}, getY: function(){return +elem.height/2}}
+            ];
             for (let point of posArr) {
                 let rect = new svg.Rect(10,10).color(myColors.lightgrey, 1, myColors.grey);
-                point.initx = point.x;
-                point.inity = point.y;
                 let manip = new Manipulator(this);
                 manip.add(rect)
                 let conf ={
@@ -278,19 +286,29 @@ exports.DollAdminV = function(globalVariables){
                     drop: (what, whatParent, finalX, finalY)=>{
                         console.log(finalY,finalY);
                         elem.position(0,0);
-                        manipulator.move(manipinitx - (point.initx - finalX)/2, manipinity - (point.inity - finalY)/2);
+                        manipulator.move(manipInitx - (point.x - finalX)/2, manipInity - (point.y - finalY)/2);
+                        manipulator.corners.forEach(corner=>{
+                            if (point.x != corner.point.x || point.y != corner.point.y) {
+                                corner.move(corner.point.getX(), corner.point.getY())
+                            }
+                        });
+                        point.iw = elem.width;
+                        point.ih = elem.height;
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
                     moved: (what)=>{
-                        this.objectivesList.resetAllMove();
-                        this.objectivesList.refreshListView();
-                        return true;
+
+                        return false;
+                    },
+                    revert: (item)=>{
+                        item.move(point.getX(), point.getY());
                     }
                 }
                 installDnD(manip, drawings.component.glass.parent.manipulator.last, conf)
                 manip.move(point.x, point.y);
+                manip.point = point;
+                manipulator.corners.push(manip);
                 manipulator.add(manip.component);
-                let a = 5;
             }
         }
 
