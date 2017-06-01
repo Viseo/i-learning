@@ -25,10 +25,6 @@ exports.FormationCollabV = function (globalVariables) {
             this.graphMiniatureManipulator = new Manipulator(this);
             this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
             this.label = this.getLabel();
-            this.graphSize = {
-                width: drawing.width - 2 * MARGIN,
-                height: drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height,
-            };
             this.mapGameIdAndGui = {};
         }
 
@@ -42,6 +38,11 @@ exports.FormationCollabV = function (globalVariables) {
         }
 
         display() {
+            this.graphSize = {
+                width: drawing.width - 2 * MARGIN,
+                height: drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height,
+            };
+
             drawing.manipulator.set(0, this.manipulator);
             this.manipulator.add(this.header.getManipulator());
             this.header.getManipulator().mark('header');
@@ -209,8 +210,9 @@ exports.FormationCollabV = function (globalVariables) {
             return this.presenter.requirementsForThis(gameId);
         }
 
-        resize() {
-
+        resize(){
+            this.graphMiniatureManipulator.flush();
+            super.resize();
         }
     }
     return FormationCollabV;

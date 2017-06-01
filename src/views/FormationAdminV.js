@@ -28,14 +28,7 @@ exports.FormationAdminV = function (globalVariables) {
             this.mediasManipulator = new Manipulator(this);
             this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
             this.label = this.getLabel();
-            this.graphSize = {
-                width: drawing.width - this.inputSize.width - 3 * MARGIN,
-                height: drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height,
-            };
-            this.librarySize = {
-                width: this.inputSize.width,
-                height: drawing.height - this.header.height - 7 * MARGIN - 2 * this.buttonSize.height
-            }
+
             this.arrowMode = false;
             this.mainManip = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
@@ -52,6 +45,14 @@ exports.FormationAdminV = function (globalVariables) {
 
 
         display() {
+            this.librarySize = {
+                width: this.inputSize.width,
+                height: Math.max(drawing.height - this.header.height - 7 * MARGIN - 2 * this.buttonSize.height, 500)
+            };
+            this.graphSize = {
+                width: Math.max(drawing.width - this.inputSize.width - 3 * MARGIN, 2*this.librarySize.width),
+                height: Math.max(drawing.height - this.header.height - 4 * MARGIN - this.buttonSize.height, this.librarySize.height)
+            };
             drawing.manipulator.set(0, this.mainManip);
             this.mainManip.set(0, this.manipulator);
             this.manipulator.add(this.header.getManipulator());
@@ -229,7 +230,9 @@ exports.FormationAdminV = function (globalVariables) {
                 this.graphManipulator = new Manipulator(this).addOrdonator(3);
                 this.graphManipulator.set(0, this.graphPanel.component);
                 this.manipulator.add(this.graphManipulator);
-                this.graphManipulator.move(-this.graphSize.width / 2 + drawing.width - MARGIN,
+                //this.graphManipulator.move(-this.graphSize.width / 2 + drawing.width - MARGIN,
+                 //   this.header.height + 2 * MARGIN + this.graphSize.height / 2);
+                this.graphManipulator.move(this.librarySize.width + this.graphSize.width / 2 + 2 * MARGIN,
                     this.header.height + 2 * MARGIN + this.graphSize.height / 2);
                 this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
                 this.titleGraph = new svg.Text('Formation : ' + this.label).font('Arial', 25).color(myColors.grey).anchor('left');
@@ -266,7 +269,7 @@ exports.FormationAdminV = function (globalVariables) {
                     this.buttonSize.height / 2 + this.graphPanel.height + this.header.height + 3 * MARGIN);
                 this.publishButton = new gui.Button(this.buttonSize.width, this.buttonSize.height, [myColors.white, 1, myColors.grey], 'Publier');
                 this.publishButton.glass.mark('publishFormation');
-                this.publishButton.position(this.graphPanel.width * 0.6, 0);
+                this.publishButton.position(0.4 * this.graphPanel.width + 1.5*this.buttonSize.width, 0);
                 this.publishButton.back.corners(5, 5);
                 this.publishButton.onClick(this.publishFormation.bind(this));
                 this.buttonsManipulator.add(this.publishButton.component);
@@ -724,10 +727,6 @@ exports.FormationAdminV = function (globalVariables) {
 
         getImages() {
             return this.presenter.getImages();
-        }
-
-        resize() {
-
         }
     }
 
