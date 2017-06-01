@@ -18,8 +18,7 @@ exports.DashboardAdminP = function(globalVariables) {
             return this.formations.getFormations();
         }
 
-        getImages()
-        {
+        getImages() {
             return this.mediaLibrary.getImages();
         }
 
@@ -52,9 +51,8 @@ exports.DashboardAdminP = function(globalVariables) {
             if(check.status){
                 this.formations.createFormation(label).then(data=>{
                     if(data.status) {
-                        let newFormation = data.formation;
                         this.updateFormations();
-                        this.view.addFormationMiniature(newFormation);
+                        this.view.displayMiniatures();
                     }
                     else{
                         this.view.displayErrorMessage(data.error);

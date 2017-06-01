@@ -64,6 +64,12 @@ exports.FormationAdminV = function (globalVariables) {
             }
 
             let createNameFieldFormation = () => {
+                var _renameWhenEnter = (event) => {
+                    if(event.keyCode === 13){
+                        this.renameFormation();
+                        nameFieldFormation.hideControl();
+                    }
+                }
                 let nameFieldFormation = new gui.TextField(0, 0, this.inputSize.width - 25 - MARGIN, this.inputSize.height, this.label)
                 nameFieldFormation.font('Arial', 15);
                 nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
@@ -72,8 +78,10 @@ exports.FormationAdminV = function (globalVariables) {
                     if (!message || !oldMessage) {
                         nameFieldFormation.text.message('Titre de la formation');
                     }
-                    nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
                 });
+                nameFieldFormation.onBlur(()=>{
+                    nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
+                })
                 nameFieldFormation.color([myColors.lightgrey, 1, myColors.black]);
                 nameFieldFormation.mark('formationTitle');
                 this.headHeight += 30 + MARGIN;
@@ -87,6 +95,7 @@ exports.FormationAdminV = function (globalVariables) {
                     .mark('saveNameButton');
                 this.nameFieldManipulator.set(3, saveIcon);
                 svg.addEvent(saveIcon, 'click', this.renameFormation.bind(this));
+                svg.addGlobalEvent('keydown', _renameWhenEnter);
                 this.nameFormationField = nameFieldFormation;
             }
             let createReturnButton = () => {
@@ -165,7 +174,6 @@ exports.FormationAdminV = function (globalVariables) {
             let games = this.getGamesLibrary();
             let count = 0;
             games.list.forEach(game => {
-
                 let createMiniature = () => {
                     let miniature = {
                         border: new svg.Rect(MINIATURE_WIDTH, MINIATURE_HEIGHT).color(myColors.white, 1, myColors.grey).corners(10, 10),
@@ -175,13 +183,9 @@ exports.FormationAdminV = function (globalVariables) {
                     return miniature
                 };
 
-
                 let miniature = createMiniature();
                 miniature.manipulator.move(0, (2 * MARGIN + MINIATURE_HEIGHT / 2) + count * (MINIATURE_HEIGHT + 2 * MARGIN) - this.librarySize.height / 2);
-                miniature.manipulator.add(miniature.border)
-                    .add(miniature.content);
-
-
+                miniature.manipulator.add(miniature.border).add(miniature.content);
                 this.gameLibraryManipulator.add(miniature.manipulator);
                 let createDraggableCopy = event => {
                     let manipulator = new Manipulator(this).addOrdonator(2);

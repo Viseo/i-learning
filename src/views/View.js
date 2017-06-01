@@ -2,7 +2,9 @@
  * Created by minhhuyle on 09/05/2017.
  */
 exports.View = function(globalVariables){
-    const drawing = globalVariables.drawing,
+    const
+        svg = globalVariables.svg,
+        drawing = globalVariables.drawing,
         HeaderVue = globalVariables.HeaderVue;
 
     class View {
@@ -11,7 +13,12 @@ exports.View = function(globalVariables){
             this.header = new HeaderVue(this.presenter);
         }
 
+        removeActions(){
+            svg.removeGlobalEvent('keydown');
+        }
+
         flush(){
+            this.removeActions();
             drawing.manipulator.flush();
         }
 

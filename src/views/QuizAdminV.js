@@ -86,6 +86,13 @@ exports.QuizAdminV = function (globalVariables) {
                 currentY += buttonSize + MARGIN;
             }
             var _displayTitleArea = () => {
+                var _renameWhenEnter = (event) => {
+                    if(event.keyCode === 13){
+                        this.renameQuiz();
+                        titleTextArea.hideControl();
+                    }
+                }
+
                 let dimensions = {
                     width: this.width * 1 / 4,
                     height: BUTTON_HEIGHT
@@ -98,8 +105,10 @@ exports.QuizAdminV = function (globalVariables) {
                     if (!message || !oldMessage) {
                         titleTextArea.text.message('Titre du quiz');
                     }
-                    titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
                 });
+                titleTextArea.onBlur(() => {
+                    titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
+                })
                 titleTextArea.color([myColors.lightgrey, 1, myColors.black]);
                 titleTextArea.mark('quizTitle');
                 this.titleManipulator.set(0, titleTextArea.component);
@@ -113,6 +122,7 @@ exports.QuizAdminV = function (globalVariables) {
                     .position(titleTextArea.width / 2 + 12.5 + MARGIN, 0)
                     .mark('saveNameButton');
                 svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
+                svg.addGlobalEvent('keydown', _renameWhenEnter);
                 currentY += dimensions.height + MARGIN;
             }
             var _displayQuestionsHeader = () => {

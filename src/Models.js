@@ -270,14 +270,10 @@ exports.Models = function (globalVariables, mockResponses) {
 
         sync() {
             return apiRequester.getAllFormations().then(data => {
-                var _sortFormationsList = () => {
-                    this._formations.sort((a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
-                };
-
                 this._formations = [];
                 let formation = JSON.parse(data).myCollection;
                 formation.forEach(form => this._formations.push(new Formation(form)));
-                _sortFormationsList();
+                this.sort();
             });
         }
 
@@ -300,8 +296,8 @@ exports.Models = function (globalVariables, mockResponses) {
         createFormation(label) {
             let newFormation = new Formation({label: label});
             this._formations.push(newFormation);
-            let result = newFormation.saveNewFormation();
-            return result;
+            this.sort();
+            return newFormation.saveNewFormation();
         }
 
         loadAllFormations() {
@@ -330,6 +326,10 @@ exports.Models = function (globalVariables, mockResponses) {
                 });
                 formation.levelsTab.push(new Level(gamesTab, formation.levelsTab.length));
             });
+        }
+
+        sort(){
+            this._formations.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()));
         }
     }
 

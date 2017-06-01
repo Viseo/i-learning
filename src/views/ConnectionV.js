@@ -21,7 +21,7 @@ exports.ConnectionV = function (globalVariables) {
         BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white];
 
-    class ConnectionV extends View{
+    class ConnectionV extends View {
         constructor(presenter) {
             super(presenter);
             var _initV = () => {
@@ -86,7 +86,7 @@ exports.ConnectionV = function (globalVariables) {
 
                                 let src = isShown ? '../images/hide.png' : '../images/view.png';
                                 let icon = IconCreator.createImageIcon(src, fieldManip, 2);
-                                icon.position(INPUT_WIDTH/2 + MARGIN + icon.getContentSize() / 2, 0);
+                                icon.position(INPUT_WIDTH / 2 + MARGIN + icon.getContentSize() / 2, 0);
                                 icon.addEvent('click', _toggleIcon);
                                 fieldArea.type(isShown ? 'text' : 'password');
                             }
@@ -108,7 +108,7 @@ exports.ConnectionV = function (globalVariables) {
                         fieldArea.onClick(_selectInput);
                         this.inputs.push(fieldArea);
 
-                        if(field.type === "password"){
+                        if (field.type === "password") {
                             _displayEye();
                         }
                     }
@@ -148,9 +148,9 @@ exports.ConnectionV = function (globalVariables) {
                         }
 
                         this.setStayConnected(isChecked);
-                        if(isChecked){
+                        if (isChecked) {
                             this.cookieManipulator.add(checked);
-                        }else {
+                        } else {
                             this.cookieManipulator.remove(checked);
                         }
                         this.cookieManipulator.addEvent('click', _toggleChecked);
@@ -168,7 +168,7 @@ exports.ConnectionV = function (globalVariables) {
             };
             var _displayForgotPWD = () => {
                 var _forgotHandler = () => {
-                    this.forgotPWD().then(()=> {
+                    this.forgotPWD().then(() => {
                         let forgotttenPassText = new svg.Text('Un mail a été envoyé pour réinitialiser votre mot de passe.')
                             .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
                             .color(myColors.greyerBlue)
@@ -207,7 +207,7 @@ exports.ConnectionV = function (globalVariables) {
                         .color(myColors.greyerBlue)
                         .font(FONT, FONT_SIZE_TITLE * 2 / 3);
                     this.registerTextManipulator.add(registerText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
-                    this.registerTextManipulator.addEvent('click',() => this.goToRegister.call(this));
+                    this.registerTextManipulator.addEvent('click', () => this.goToRegister.call(this));
                 }
 
                 _displayButton();
@@ -227,7 +227,7 @@ exports.ConnectionV = function (globalVariables) {
 
         }
 
-        tryLogin(){
+        tryLogin() {
             this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 let error = new svg.Text(message)
@@ -287,22 +287,28 @@ exports.ConnectionV = function (globalVariables) {
         logIn() {
             return this.presenter.logIn();
         }
-        goToRegister(){
+
+        goToRegister() {
             this.presenter.goToRegister();
         }
-        forgotPWD(){
+
+        forgotPWD() {
             return this.presenter.forgotPWD();
         }
+
         getFields() {
             return this.presenter.getFields();
         }
+
         setValid(field, valid) {
             this.presenter.setValid(field, valid);
         }
+
         setFieldText(field, text) {
             this.presenter.setFieldText(field, text);
         }
-        setStayConnected(isStay){
+
+        setStayConnected(isStay) {
             this.presenter.setStayConnected(isStay);
         }
     }

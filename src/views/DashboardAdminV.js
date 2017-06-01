@@ -80,21 +80,27 @@ exports.DashboardAdmin = function(globalVariables){
                 captionManipulator.move(positionCaption.x, positionCaption.y);
             }
 
-            let addFormationDisplay = ()=>{
+            let addNewFormationInput = ()=>{
+                var _addNewWhenEnter = (event) => {
+                    if(event.keyCode === 13){
+                        this.addFormationHandler();
+                        addFormationTextArea.hideControl();
+                    }
+                }
+
                 let addFormationTextArea = new gui.TextField(0,0, INPUT_SIZE.w, INPUT_SIZE.h, 'Ajouter une formation')
-                // addFormationTextArea.component.mark('addFormationTextArea');
-                addFormationTextArea.text.mark('addFormationText');
-                addFormationTextArea.glass.mark('addFormationGlass');
                 addFormationTextArea.font('Arial', 15).color(myColors.grey);
                 addFormationTextArea.text.position(-INPUT_SIZE.w/2 + MARGIN, 7.5);
                 addFormationTextArea.control.placeHolder('Ajouter une formation');
-                addFormationTextArea.control.mark('addFormationTextInput');
+                addFormationTextArea.mark('addFormationTextInput');
                 addFormationTextArea.onInput((oldMessage, message, valid)=>{
                     if (!message || !oldMessage){
                         addFormationTextArea.text.message('Ajouter une formation');
                     }
-                    addFormationTextArea.text.position(-INPUT_SIZE.w/2+MARGIN, 7.5);
                 });
+                addFormationTextArea.onBlur(()=>{
+                    addFormationTextArea.text.position(-INPUT_SIZE.w/2+MARGIN, 7.5);
+                })
                 addFormationTextArea.color([myColors.lightgrey, 1, myColors.black]);
                 this.addFormationManipulator.add(addFormationTextArea.component);
                 this.addFormationManipulator.move(MARGIN + INPUT_SIZE.w/2, this.header.height + MARGIN + INPUT_SIZE.h/2);
@@ -107,8 +113,9 @@ exports.DashboardAdmin = function(globalVariables){
                 this.addFormationField = addFormationTextArea;
                 this.addFormationManipulator.set(1, addButton.component);
                 addButton.onClick(this.addFormationHandler.bind(this));
+                svg.addGlobalEvent('keydown', _addNewWhenEnter);
             }
-            addFormationDisplay();
+            addNewFormationInput();
             addIconCaption();
 
             this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
@@ -118,16 +125,11 @@ exports.DashboardAdmin = function(globalVariables){
         }
 
         displayMiniatures(){
+            this.miniaturesManipulator.flush();
             let formations = this.getFormations();
-            this.numberFormation = formations.length;
             formations.forEach((formation,i) => {
                 this._displayMiniature(formation, i);
             });
-        }
-
-        addFormationMiniature(formation){
-            this._displayMiniature(formation, this.numberFormation);
-            this.numberFormation ++;
         }
 
         addFormationHandler(){
