@@ -25,31 +25,15 @@ exports.QuizAdminV = function (globalVariables) {
     class QuizAdminV extends View {
         constructor(presenter) {
             super(presenter);
-            let _createReturnButton = () => {
-                this.returnButtonManipulator = new Manipulator(this);
-                this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
-                this.returnButton.onClick(this.returnToOldPage.bind(this));
-                this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font('Arial', 20).position(0, 6.6);
-                this.returnButtonManipulator.add(this.returnButton.component)
-                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
-                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
-                chevron.position(-BUTTON_WIDTH / 2, 0);
-                this.returnButtonManipulator.add(chevron);
-                this.manipulator.add(this.returnButtonManipulator);
-                this.mainManip = new Manipulator(this).addOrdonator(2);
-            }
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
                 this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
                 this.questionDetailsManipulator = new Manipulator(this).addOrdonator(4);
-
-
                 this.titleManipulator = new Manipulator(this).addOrdonator(2);
                 this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(3);
                 this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
                 this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
-
+                this.returnButtonManipulator = new Manipulator(this);
                 this.manipulator
                     .add(this.questionsBlockManipulator)
                     .add(this.questionDetailsManipulator)
@@ -57,17 +41,12 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.mediasLibraryManipulator)
                     .add(this.previewButtonManipulator)
                     .add(this.saveQuizButtonManipulator)
+                    .add(this.returnButtonManipulator)
                     .add(this.header.getManipulator());
             };
-            var _initMediaLibrary = () => {
-                // this.library = classContainer.createClass('MediaLibraryVue');
-            }
 
             this.label = this.getLabel();
-
             _declareManipulator();
-            _createReturnButton();
-            _initMediaLibrary();
         }
 
         display() {
@@ -84,6 +63,17 @@ exports.QuizAdminV = function (globalVariables) {
                 let formationLabel = this.getFormationLabel();
                 this.header.display(formationLabel + " - " + this.label);
                 currentY += buttonSize + MARGIN;
+            }
+            var _displayReturnButton = () => {
+                this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton.onClick(this.returnToOldPage.bind(this));
+                this.returnButton.back.corners(5, 5);
+                this.returnButton.text.font('Arial', 20).position(0, 6.6);
+                this.returnButtonManipulator.add(this.returnButton.component)
+                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
+                chevron.position(-BUTTON_WIDTH / 2, 0);
+                this.returnButtonManipulator.add(chevron);
             }
             var _displayTitleArea = () => {
                 var _renameWhenEnter = (event) => {
@@ -140,9 +130,6 @@ exports.QuizAdminV = function (globalVariables) {
                 currentY += dimensions.height + MARGIN;
             }
             var _displayMediaLibrary = () => {
-             //   this.mediasLibraryManipulator.flush();
-              // this.mainManip.set(1, this.mediasLibraryManipulator);
-
                 let dimensions = {
                     width: this.width * 1 / 5 - MARGIN,
                     height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
@@ -223,8 +210,6 @@ exports.QuizAdminV = function (globalVariables) {
                         });
                     }
                 };
-
-
                 let fileExplorer;
                 const fileExplorerHandler = () => {
                     if (!fileExplorer) {
@@ -264,7 +249,7 @@ exports.QuizAdminV = function (globalVariables) {
             };
             var _displayQuestionDetails = () => {
                 let dimensions = {
-                    width: this.width * 4 / 5,
+                    width: Math.max(this.width * 4 / 5, 540),
                     height: drawing.height - currentY - (2 * MARGIN + BUTTON_HEIGHT)
                 }
                 this.questionDetailsDim = dimensions;
@@ -299,6 +284,7 @@ exports.QuizAdminV = function (globalVariables) {
             var currentY = drawing.height * HEADER_SIZE + MARGIN;
             _resetDrawings();
             _updateHeader();
+            _displayReturnButton();
             _displayTitleArea();
             _displayQuestionsHeader();
             _displayMediaLibrary();
@@ -345,8 +331,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let indexX = Math.floor(index % IMAGES_PER_LINE);
                     let indexY = Math.floor(index / IMAGES_PER_LINE);
                     let picture = new svg.Image(image.imgSrc);
-                    picture
-                        .dimension(imageWidth, imageWidth)
+                    picture.dimension(imageWidth, imageWidth);
                     let picManip = new Manipulator(this);
                     picManip.move(indexX * (imageWidth + MARGIN/2) + imageWidth/2, indexY * (imageWidth + MARGIN))
                     picManip.add(picture);
@@ -971,9 +956,6 @@ exports.QuizAdminV = function (globalVariables) {
             })
         }
 
-        resize() {
-
-        }
     }
 
     return QuizAdminV;

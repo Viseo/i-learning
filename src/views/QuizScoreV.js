@@ -149,9 +149,6 @@ exports.QuizScoreV = function (globalVariables) {
             return this.presenter.getWrongQuestions();
         }
 
-        resize() {
-
-        }
     }
 
     return QuizScoreV;
