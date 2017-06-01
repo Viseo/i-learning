@@ -376,6 +376,16 @@ exports.Util = function (globalVariables) {
                     drawings.component.children[i] !== drawing && drawings.component.children[i] !== survival && drawings.component.remove(drawings.component.children[i]);
                 }
             }
+            const onmousedownHandler = event => {
+                runtime.activeElement() && runtime.activeElement().blur();
+                this.target = this.component.background.getTarget(event.pageX, event.pageY);
+                this.drag = this.target;
+                if (this.target) {
+                    svg.event(this.target, "mousedown", event);
+                }
+            };
+
+            svg.addEvent(this.component.glass, "mousedown", onmousedownHandler);
             this.component.glass.onRightClick(event=>{
                 if (!event.processed) {
                     let target = this.component.background.getTarget(event.pageX, event.pageY);
