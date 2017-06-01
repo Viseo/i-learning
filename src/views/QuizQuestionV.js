@@ -291,7 +291,7 @@ exports.QuizQuestionV = function (globalVariables) {
 
                 let displayed = false;
                 this.getCurrentAnswers().forEach((answer, index) => {
-                    if(answer.explanation){
+                    if(answer.explanation && Object.keys(answer.explanation).length > 0){
                         let manip = this.answers[index];
                         let icon = IconCreator.createExplanationIcon(manip);
                         icon.position(this.answerWidth/2 - MARGIN - 25, this.answerHeight/2 - 25 - MARGIN)

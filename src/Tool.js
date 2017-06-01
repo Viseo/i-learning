@@ -341,8 +341,7 @@ exports.Tool = function (globalVariables) {
 
         addEvent(eventName, handler) {
             this.manipulator.addEvent(eventName, handler);
-            /*svg.addEvent(this.border, eventName, handler);
-             (this.content) && svg.addEvent(this.content, eventName, handler);*/
+            return this;
         }
 
         changeStatusActionIcon() {
