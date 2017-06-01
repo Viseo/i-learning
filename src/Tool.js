@@ -516,20 +516,21 @@ exports.Tool = function (globalVariables, classContainer) {
                 this.nbElementToshow = Math.floor((this.listDim.h - this.marge) / this.eleDim.h);
 
                 this.border = new svg.Rect(listW, listH + chevronH*2);
+                this.chevronManip.add(this.border);
+                if (chevronW !=0 && chevronH !=0) {
+                    this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
+                        .color(myColors.black, 0, myColors.none)
+                        .position(0, -listH / 2 - chevronH / 2);
+                    this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
+                        .color(myColors.black, 0, myColors.none)
+                        .position(0, listH / 2 + chevronH / 2);
+                    this.chevronManip
+                        .add(this.chevrons.top)
+                        .add(this.chevrons.down);
+                    this.chevrons.top.onClick(onClickChevronTop);
+                    this.chevrons.down.onClick(onClickChevronDown);
+                }
 
-                this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
-                    .color(myColors.black, 0, myColors.none)
-                    .position(0, -listH/2 - chevronH/2);
-                this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
-                    .color(myColors.black, 0, myColors.none)
-                    .position(0, listH/2 + chevronH/2);
-                this.chevronManip
-                    .add(this.border)
-                    .add(this.chevrons.top)
-                    .add(this.chevrons.down);
-
-                this.chevrons.top.onClick(onClickChevronTop);
-                this.chevrons.down.onClick(onClickChevronDown);
                 this.height = listH + this.chevronDim.h;
                 this.width = listW;
                 this.contentManip.move(listW/2, eleH/2);
@@ -547,21 +548,22 @@ exports.Tool = function (globalVariables, classContainer) {
                 };
 
                 this.nbElementToshow = Math.floor((this.listDim.w - this.marge) / this.eleDim.w);
+                this.border = new svg.Rect(listW + chevronW * 2, listH);
+                this.chevronManip.add(this.border);
+                if (chevronW !=0 && chevronH !=0) {
+                    this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
+                        .color(myColors.black, 0, myColors.none)
+                        .position(-listW / 2 - chevronW / 2, 0);
+                    this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
+                        .color(myColors.black, 0, myColors.none)
+                        .position(listW / 2 + chevronW / 2, 0);
+                    this.chevronManip
+                        .add(this.chevrons.left)
+                        .add(this.chevrons.right);
+                    this.chevrons.left.onClick(onClickChevronLeft);
+                    this.chevrons.right.onClick(onClickChevronRight);
+                }
 
-                this.border = new svg.Rect(listW + chevronW*2, listH);
-                this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
-                    .color(myColors.black, 0, myColors.none)
-                    .position(-listW/2 - chevronW/2, 0);
-                this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
-                    .color(myColors.black, 0, myColors.none)
-                    .position(listW/2 + chevronW/2, 0);
-                this.chevronManip
-                    .add(this.border)
-                    .add(this.chevrons.left)
-                    .add(this.chevrons.right);
-
-                this.chevrons.left.onClick(onClickChevronLeft);
-                this.chevrons.right.onClick(onClickChevronRight);
                 this.height = listH;
                 this.width = listW + this.chevronDim.w;
                 this.contentManip.move(eleW/2, listH/2);

@@ -22,6 +22,54 @@ exports.DollAdminV = function(globalVariables){
             this.manipulator = new Manipulator(this);
             this.mainPanelManipulator = new Manipulator(this);
             this.rules = false;
+            let declareActions = ()=>{
+                this.actions = [];
+                this.actionTabs = [];
+                let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3);
+                let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue);
+                let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE);
+                let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE);
+                this.actionModes = {
+                    actions: {
+                        'text':()=>{
+                            svg.addEvent(this.sandboxMain.component, 'mousedown', (event)=>{this.textZoning(event)});
+                        },
+                        'rect': ()=>{
+                            document.getElementById('content').style.cursor = 'crosshair';
+                            svg.addEvent(this.sandboxMain.component, 'mousedown', (event)=>{
+                                this.rectZoning(event);
+                            })
+                        },
+                        'picture': ()=>{
+
+                        },
+                        'help': ()=>{
+
+                        }, 'none' : ()=>{
+                            svg.removeEvent(this.sandboxMain.component, 'mousedown');
+                            svg.removeEvent(this.sandboxMain.component, 'mousemove');
+                            svg.removeEvent(this.sandboxMain.component, 'mouseup');
+                            document.getElementById('content').style.cursor = 'auto';
+                            this.actionModes.currentMode = 'none';
+                        }},
+                    currentMode: 'none'
+                };
+                this.actions.push(textA, rectA, pictureA, helpA);
+                svg.addEvent(textA, 'click', ()=>{this.toggleMode('text')});
+                svg.addEvent(rectA, 'click', ()=>{this.toggleMode('rect')});
+                svg.addEvent(pictureA, 'click', ()=>{this.toggleMode('picture')});
+                svg.addEvent(helpA, 'click', ()=>{this.toggleMode('help')});
+                for (let i =0; i< this.actions.length; i++){
+                    let manip = new Manipulator(this);
+                    let rect = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.white, 1, myColors.grey).corners(3,3);
+                    manip.add(rect);
+                    manip.add(this.actions[i]);
+                    manip.addEvent('click', this.actions[i].component.listeners['click']);
+                    this.actionTabs.push(manip);
+                }
+            }
+            declareActions();
+            svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
 
         display(){
@@ -124,52 +172,199 @@ exports.DollAdminV = function(globalVariables){
         }
 
         toggleMode(mode){
-            if(mode=='text'){
-                this.textMode = true;
-                svg.addEvent(this.sandboxMain, 'mousedown', this.textZoning.bind(this));
+            this.actionModes.actions['none']();
+            if(Object.keys(this.actionModes.actions).indexOf(mode)>=0){
+                this.actionModes.currentMode = mode;
+                this.actionModes.actions[mode]();
             }
         }
 
         textZoning(event){
-            let point = this.sandboxManip.component.localPoint(event.x,event.y);
+            let point = this.sandboxMain.content.localPoint(event.x,event.y);
             let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 1, myColors.black);
-            this.sandboxManip.add(rect);
+            this.sandboxMain.content.add(rect);
             let moveHandler = (eventMove)=>{
-                if (eventMove.x - event.x > 0 && eventMove.y - event.y > 0 && this.textMode) {
+                if (eventMove.x - event.x > 0 && eventMove.y - event.y > 0 && this.actionModes.currentMode == 'text') {
                     rect.dimension(eventMove.x - event.x, eventMove.y - event.y);
                     rect.position(point.x + rect.width / 2, point.y + rect.height / 2);
                 }
             }
-            let mouseupHandler = ()=>{
-                svg.removeEvent(this.sandboxMain, 'mousemove');
-                this.sandboxManip.remove(rect);
-                let text = new gui.TextField(rect.x, rect.y, rect.width, rect.height, '');
-                this.sandboxManip.add(text.component);
-                this.textMode=false;
+            let mouseupHandler = (eventUp)=>{
+                if (eventUp.x - event.x == 0 && eventUp.y - event.y == 0){
+                    this.sandboxMain.content.remove(rect);
+                    this.clickPanelHandler(event);
+                }
+                svg.removeEvent(this.sandboxMain.component, 'mousemove');
+                this.sandboxMain.content.remove(rect);
+                let text = new gui.TextField(0,0, rect.width, rect.height, '');
+                text.color([myColors.white, 1, myColors.grey]);
+                let tmpHandler = text.glass.component.listeners['click'];
+                let manip = new Manipulator(this);
+                manip.move(rect.x,rect.y);
+                manip.add(text.component);
+                text.glass.component.listeners['click'] = (event) =>{
+                    this.removeContextMenu();
+                    if(event.which == 3){
+                        this.textRightClick(text,manip, event);
+                    }else{
+                        this.selectElement(text);
+                        tmpHandler();
+                    }
+                }
+                this.sandboxMain.content.add(manip.component);
+                this.actionModes.actions['none']();
             }
-            svg.addEvent(this.sandboxMain, 'mousemove', moveHandler)
-            svg.addEvent(this.sandboxMain, 'mouseup', mouseupHandler)
+            svg.addEvent(this.sandboxMain.component, 'mousemove', moveHandler)
+            svg.addEvent(this.sandboxMain.component, 'mouseup', mouseupHandler)
+        }
+
+        textRightClick(text,manipulator,event){
+            let makeClickableItem = (message, handler)=>{
+                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
+                let rect = new svg.Rect(150, 27).color(myColors.white, 0.5, myColors.none);
+                let manip = new Manipulator(this);
+                manip.add(rect).add(txt);
+                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
+                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
+                manip.addEvent('click', handler);
+                return manip;
+            }
+            let arr = [];
+            let color = makeClickableItem('Couleur', ()=>{
+                text.color([myColors.blue, 1, myColors.grey]);
+                text.editColor([myColors.blue, 1, myColors.grey])
+                text.refresh();
+                this.removeContextMenu()
+            });
+            let resize = makeClickableItem('Redimensionner', ()=>{
+                this.resizeElement(text, manipulator);
+                this.removeContextMenu();
+            });
+            arr.push(color,resize)
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,81, 0,0,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 0, undefined, 0);
+            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.border.corners(2,2);
+            this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
+        }
+
+        selectElement(elem){
+            this.selectedElement = elem;
+        }
+
+        resizeElement(elem, manipulator){
+            let manipinitx = manipulator.x, manipinity = manipulator.y;
+            console.log(manipinitx, manipinity);
+            let br = function(x, y){
+                let delta = {x:x-this.initx, y:y-this.inity}
+                elem.dimension(this.iw+ delta.x,this.ih + delta.y)
+                manipulator.move(manipinitx + delta.x/2,manipinity + delta.y/2);
+                elem.refresh();
+            }
+            let posArr = [{x:-elem.width/2, y:-elem.height/2},{x:-elem.width/2, y:+elem.height/2},
+                {x:+elem.width/2, y:-elem.height/2},{x:+elem.width/2, y:+elem.height/2, drag: br,iw:elem.width, ih:elem.height}];
+            for (let point of posArr) {
+                let rect = new svg.Rect(10,10).color(myColors.lightgrey, 1, myColors.grey);
+                point.initx = point.x;
+                point.inity = point.y;
+                let manip = new Manipulator(this);
+                manip.add(rect)
+                let conf ={
+                    drag: (what, x, y)=>{
+                        point.drag(x,y);
+                        console.log(x,y);
+                        return{x:x,y:y};
+                     },
+                    drop: (what, whatParent, finalX, finalY)=>{
+                        console.log(finalY,finalY);
+                        elem.position(0,0);
+                        manipulator.move(manipinitx - (point.initx - finalX)/2, manipinity - (point.inity - finalY)/2);
+                        return {x: finalX, y: finalY, parent: whatParent};
+                    },
+                    moved: (what)=>{
+                        this.objectivesList.resetAllMove();
+                        this.objectivesList.refreshListView();
+                        return true;
+                    }
+                }
+                installDnD(manip, drawings.component.glass.parent.manipulator.last, conf)
+                manip.move(point.x, point.y);
+                manipulator.add(manip.component);
+                let a = 5;
+            }
+        }
+
+        rectZoning(event){
+            let point = this.sandboxMain.content.localPoint(event.x,event.y);
+            let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 1, myColors.black);
+            this.sandboxMain.content.add(rect);
+            let moveHandler = (eventMove)=>{
+                if (eventMove.x - event.x > 0 && eventMove.y - event.y > 0 && this.actionModes.currentMode == 'rect') {
+                    rect.dimension(eventMove.x - event.x, eventMove.y - event.y);
+                    rect.position(point.x + rect.width / 2, point.y + rect.height / 2);
+                }
+            }
+            let mouseupHandler = (eventUp)=>{
+                if (eventUp.x - event.x == 0 && eventUp.y - event.y == 0){
+                    this.sandboxMain.content.remove(rect);
+                    this.clickPanelHandler(event);
+                }
+                svg.removeEvent(this.sandboxMain.component, 'mousemove');
+                rect.color(myColors.blue);
+                svg.addEvent(rect,'click',()=>{
+                   this.selectElement(rect);
+                });
+                this.actionModes.actions['none']();
+            }
+            svg.addEvent(this.sandboxMain.component, 'mousemove', moveHandler)
+            svg.addEvent(this.sandboxMain.component, 'mouseup', mouseupHandler)
+        }
+
+        keyDown(event){
+            if (event.keyCode == 8 || event.keyCode == 46){
+                if (this.selectedElement){
+                    if (this.selectedElement instanceof gui.TextField){
+                        this.selectedElement.hideControl();
+                        this.sandboxMain.content.remove(this.selectedElement.component.parentManip.component);
+                    }
+                    else {
+                        this.sandboxMain.content.remove(this.selectedElement);
+                    }
+                    this.selectedElement = null;
+                }
+            }
+        }
+
+        removeContextMenu(){
+            if (this.contextMenu) {
+                this.manipulator.remove(this.contextMenu.manipulator);
+            }
+        }
+
+        clickPanelHandler(event){
+            this.removeContextMenu()
+            let target = this.manipulator.translator.getTarget(event.x,event.y);
+            if(target != this.sandboxMain.back){
+                svg.event(target, 'click', event);
+            }
+        }
+        rightClickPanelHandler(event){
+            event.preventDefault();
         }
 
         displaySandBoxZone(){
             this.sandboxManip = new Manipulator(this);
-            let actionTabs = [
-                new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3),
-                new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue),
-                new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE),
-                new svg.Image('../../images/svg-guy.png').dimension(HEADER_TILE, HEADER_TILE)
-                ]
-            svg.addEvent(actionTabs[0], 'click', ()=>{this.toggleMode('text')});
-            let actionList = new ListSvgView(actionTabs, 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
+
+            let actionList = new ListManipulatorView(this.actionTabs, 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
                 HEADER_TILE, 5, undefined, 25);
 
-            this.sandboxMain = new svg.Rect(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h)
-                .color(myColors.white, 1, myColors.grey)
-                .corners(2,2);
+            this.sandboxMain = new gui.Panel(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h, myColors.white);
+            this.sandboxMain.border.corners(2,2).color(myColors.none, 1, myColors.black);
             this.sandboxMain.position(0, SANDBOX_SIZE.header.h/2 + this.sandboxMain.height/2);
             this.sandboxManip.add(actionList.manipulator)
-                .add(this.sandboxMain);
+                .add(this.sandboxMain.component);
 
+            svg.addEvent(this.sandboxMain.component, 'click', this.clickPanelHandler.bind(this));
 
             this.sandboxManip.move(-PANEL_SIZE.w/2 + SANDBOX_SIZE.header.w/2 + MARGIN, -PANEL_SIZE.h/2 + SANDBOX_SIZE.header.h/2 + 2*MARGIN);
             this.mainPanelManipulator.add(this.sandboxManip);
