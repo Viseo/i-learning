@@ -4,7 +4,6 @@ exports.FormationCollabP = function(globalVariables){
     const FormationsCollabV = FormationCollab(globalVariables),
         Presenter = globalVariables.Presenter;
 
-
     class FormationCollabP extends Presenter{
 
         constructor(state, formation,user){
@@ -32,8 +31,6 @@ exports.FormationCollabP = function(globalVariables){
             return this.formation.requirementsForThis(gameId);
         }
     };
-
-
 
     return FormationCollabP;
 }

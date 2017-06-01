@@ -15,7 +15,6 @@ app.use(session({secret: 'sEcrEt_iLearning', cookie: {httpOnly: false}, resave: 
 
 require('./server/controllers/auth')(app);
 require('./server/controllers/formations')(app);
-require("./server/controllers/logger")(app, fs);
 require('./server/controllers/medias')(app, fs);
 require('./server/controllers/users')(app);
 

@@ -5,7 +5,6 @@ const ConnectionV = require('../views/ConnectionV').ConnectionV;
 
 exports.ConnectionP = function(globalVariables) {
     const connectionView = ConnectionV(globalVariables),
-        Server = globalVariables.util.Server,
         Presenter = globalVariables.Presenter;
 
     class ConnectionP extends Presenter{
@@ -63,7 +62,7 @@ exports.ConnectionP = function(globalVariables) {
         }
 
         forgotPWD(){
-            return Server.resetPassword({mailAddress: this._fields[0].text});
+            return this.state.resetPassword({mailAddress: this._fields[0].text});
         }
 
         getFields () {

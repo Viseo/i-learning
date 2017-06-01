@@ -9,7 +9,7 @@ exports.QuizQuestionV = function (globalVariables) {
         util = globalVariables.util,
         runtime = globalVariables.runtime,
         Manipulator = util.Manipulator,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         drawing = globalVariables.drawing,
         View = globalVariables.View;
 
@@ -90,30 +90,17 @@ exports.QuizQuestionV = function (globalVariables) {
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
                 this.questionManipulator.set(0, line);
-                let title = new svg.Text(this.getCurrentQuestionLabel())
+                let questionTitle = new svg.Text(this.getCurrentQuestionLabel())
                     .font(FONT, FONT_SIZE)
                     .mark('questionTitle'+this.getId());
-                this.questionManipulator.set(3, title);
-                //Title in the left corner  with limit 15 char
-
-                let formationTitle = autoAdjustText(
-                    this.getLabel(),
-                    util.getStringWidthByFontSize(15, FONT_SIZE),
-                    FONT_SIZE,
-                    FONT_SIZE,
-                    FONT,
-                    this.questionManipulator, 2
-                );
-
-                formationTitle.text.position(-drawing.width / 2 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
-                this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
-                currentY += border.height + 2 * MARGIN;
-
+                this.questionManipulator.set(3, questionTitle);
                 let voiceIcon = IconCreator.createVoiceIcon(this.questionManipulator);
-                voiceIcon.position(drawing.width / 4 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
+                voiceIcon.position(drawing.width / 4 + MARGIN, 0);
                 voiceIcon.addEvent( 'click', () => {
                     runtime.speechSynthesisSpeak(this.getCurrentQuestionLabel());
                 });
+                this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
+                currentY += border.height + 2 * MARGIN;
             }
             var _displayChevrons = () => {
                 var _displayLeftChevron = () => {

@@ -8,7 +8,7 @@ exports.ConnectionV = function (globalVariables) {
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
-        IconCreator = globalVariables.domain.IconCreator,
+        IconCreator = globalVariables.Tool.IconCreator,
         FONT = 'Arial',
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
@@ -157,7 +157,7 @@ exports.ConnectionV = function (globalVariables) {
                     }
 
                     let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                    let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                     this.cookieManipulator.add(checkbox);
                     _displayChecked(true);
                 }

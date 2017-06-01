@@ -2,19 +2,126 @@
  * Created by minhhuyle on 25/04/17.
  */
 
-exports.Tool = function (globalVariables, classContainer) {
-
-
+exports.Tool = function (globalVariables) {
     let
         svg = globalVariables.svg,
-        Manipulator = globalVariables.util.Manipulator,
-        Picture = globalVariables.util.Picture,
-        PopOut = globalVariables.util.PopOut;
+        drawings = globalVariables.drawings,
+        Manipulator = globalVariables.util.Manipulator;
 
     const
         ICON_SIZE = 15,
         MARGIN = 10;
 
+    class PopOut {
+        constructor(width, height, classToDisplay, parentManipulator, isOnlyText){
+            this.width = width;
+            this.height = height;
+            this.classToDisplay = classToDisplay;
+            this.parentManipulator = parentManipulator;
+            this.redCrossManipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
+            let tmpFlush = parentManipulator.flush;
+            let self = this;
+            if (isOnlyText){
+                this.text = new svg.Text('');
+            }
+            this.onlyText = isOnlyText;
+            parentManipulator.flush = function (handler){
+                let result = tmpFlush.apply(this, arguments);
+                self.hide();
+                return result;
+            }
+        }
+
+        setText(text){
+            if(this.text){
+                this.text.messageText = text;
+            }
+        }
+
+        show(){
+            let computeBox = ()=>{
+                if (this.width > drawing.width){
+                    this.width = drawing.width - 20;
+                }
+                if (this.x - this.width/2 < 0){
+                    this.x = this.width/2 + 10;
+                }
+                if (this.x + this.width/2 > drawing.width){
+                    this.x = drawing.width - this.width/2 - 10;
+                }
+                if (this.y - this.height/2 < 0){
+                    this.y = this.height/2 + 10;
+                }
+                if (this.y + this.height/2 > drawing.height){
+                    this.y = drawing.height - this.height/2 - 10;
+                }
+            }
+            this.manipulator && this.hide();
+            if (this.panel){
+                this.setPanel();
+            }
+            drawings.piste.set(0,this.manipulator.component);
+            let point = {
+                x : this.parentManipulator.first.globalPoint(0, 0).x ,
+                y : this.parentManipulator.first.globalPoint(0, 0).y
+            }
+            this.x = point.x;
+            this.y = point.y - this.height/2;
+            if (this.onlyText){
+                this.manipulator.set(1, this.text.dimension(this.width, this.height));
+                //this.manipulator.first.steppy(5,50).opacity(0,1);
+            }
+            else{
+                this.manipulator.set(1, this.classToDisplay.manipulator);
+                this.manipulator.first.opacity(0);
+                this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
+                    this.manipulator.first.steppy(5,50).opacity(0,1);
+                });
+                this.manipulator.scalor.scale(0.5);
+                this.redCross = IconCreator.createRedCrossIcon(this.redCrossManipulator);
+                this.redCross.mark('popupRedcross');
+            }
+            if(this.xAdd != undefined && this.yAdd != undefined){
+                this.x += this.xAdd;
+                this.y += this.yAdd;
+            }
+            computeBox();
+            this.manipulator.move(this.x , this.y);
+            this.manipulator.add(this.redCrossManipulator);
+            this.redCrossManipulator.move(this.width, -this.height);
+            this.redCross && svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+            if (this.cb){
+                this.cb();
+            }
+        }
+
+        defineProperty(x, y, callback){
+            this.xAdd = x;
+            this.yAdd = y;
+            this.cb = callback;
+        }
+
+
+        hide(){
+            this.manipulator.flush();
+            //this.manipulator = null;
+        }
+        setPanel(w, h, fillColor, strokeColor) {
+            this.panel = true;
+            w = w || this.width;
+            h = h || this.height;
+            this.panelWidth = w;
+            this.panelHeight = h;
+            fillColor = fillColor || myColors.white;
+            strokeColor = strokeColor || myColors.grey;
+            this.manipulator.set(0,new svg.Rect(this.panelWidth,this.panelHeight)
+                .color(fillColor, 1, strokeColor)
+                .corners(5,5)
+                .opacity(0.8)
+                .position(0,-this.panelHeight/4));
+        }
+    }
 
     class IconSetting {
         constructor(borderProperties) {
@@ -145,9 +252,12 @@ exports.Tool = function (globalVariables, classContainer) {
                             .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
                         break;
                     case "Text":
-                        this.content = autoAdjustText(contentProperties.label, contentProperties.size, contentProperties.size,
-                            contentProperties.fontSize, contentProperties.font, this.manipulator).text;
-                        this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
+                        this.content = new svg.Text(contentProperties.label)
+                            .dimension(contentProperties.size, contentProperties.size)
+                            .font(contentProperties.font, contentProperties.fontSize)
+                            .color(contentProperties.color)
+                            .position(contentProperties.x, contentProperties.y)
+                        this.manipulator.set(1, this.content);
                         break;
                     case "Path":
                         let middlePoint = {x: this.border.x, y: this.border.y};
@@ -295,7 +405,7 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 1, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, 0, ICON_SIZE, "...", 20, "Arial", myColors.white);
+                .setTextContent(0, -ICON_SIZE/2, ICON_SIZE, "...", 20, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -319,7 +429,7 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 0, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, ICON_SIZE / 2, ICON_SIZE, "!", 23, "Arial", myColors.white);
+                .setTextContent(0, 0, ICON_SIZE, "!", 23, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -487,6 +597,55 @@ exports.Tool = function (globalVariables, classContainer) {
         return star;
     }
 
+    function resizeStringForText(text, width, height) {
+        let glass = drawings.piste.last;
+        let pointToSave = {x:text.x, y:text.y};
+        text.position(10000, 10000);
+        glass.add(text);
+        if (text.boundingRect().width > width) {
+            let splitonspace = text.messageText.split(' ');
+            if(splitonspace.length == 1){
+                let count = -3;
+                while(text.boundingRect().width > width){
+                    text.message(text.messageText.slice(0, count) + '...');
+                    count--;
+                }
+                glass.remove(text);
+                return text;
+            }
+            let result = '';
+            var nbLines = 0;
+            let computeWidth = (array) => {
+                if(nbLines >= 1 && text.message(result + array.join(' ')).boundingRect().height > height){
+                    result = result.split('').slice(0,-3).join('') + '...';
+                    return;
+                }
+                if (array.length === 1){
+                    result += array[0];
+                    return;
+                }
+                text.message(array.join(' '));
+                if (text.boundingRect().width > width) {
+                    let line1 = array, lines = [];
+                    while (text.boundingRect().width > width && line1.length > 1 ) {
+                        lines.unshift(line1.pop());
+                        text.message(line1.join(' '));
+                    }
+                    nbLines ++;
+                    result += line1.join(' ') + '\n';
+                    computeWidth(lines);
+                }
+                else{
+                    result += array.join(' ');
+                }
+            }
+            computeWidth(splitonspace);
+            text.message(result);
+        }
+        text.position(pointToSave.x, pointToSave.y - (nbLines ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
+        glass.remove(text);
+        return text;
+    }
 
     class ListView {
 
@@ -688,9 +847,7 @@ exports.Tool = function (globalVariables, classContainer) {
         }
     }
 
-
     class ListSVGView extends ListView{
-
         refreshListView() {
             if(this.direction == "V"){
                 for (let i = 0; i < this.listElements.length; i++) {
@@ -752,8 +909,10 @@ exports.Tool = function (globalVariables, classContainer) {
     }
 
     return {
+        PopOut,
         IconCreator,
         createRating,
+        resizeStringForText,
         ListSVGView,
         ListManipulatorView
     };

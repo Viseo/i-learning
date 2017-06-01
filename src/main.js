@@ -6,13 +6,14 @@ const
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
-    Domain = require('./Domain').Domain,
+    FHeaderV = require('./views/HeaderV').HeaderV,
     Util = require('./Util').Util,
     FModels = require('./Models').Models,
+    FTool = require('./Tool').Tool,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
 function main(mockResponses) {
-    let domain, util, gui, drawing, drawings, root;
+    let util, gui, drawings, root;
     let runtime = mockResponses ? mockRuntime() : targetRuntime();
     let svg = SVG(runtime);
     let globalVariables = {svg, runtime};
@@ -22,7 +23,7 @@ function main(mockResponses) {
     gui = svggui(svg, {speed: 5, step: 100});
     globalVariables.gui = gui;
 
-    if(mockResponses){
+    if (mockResponses) {
         runtime.declareAnchor('content');
         svg.screenSize(1920, 947);
         root = runtime.anchor("content");
@@ -31,24 +32,19 @@ function main(mockResponses) {
     util = Util(globalVariables);
     globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
     globalVariables.util = util;
-    util.SVGGlobalHandler();
-    util.Bdd();
-    util.SVGUtil();
 
     drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
-    drawing = drawings.drawing;
-    globalVariables.drawing = drawing;
+    globalVariables.drawing = drawings.drawing;
 
-    domain = Domain(globalVariables);
-    globalVariables.domain = domain;
-    util.setGlobalVariables();
+    globalVariables.HeaderVue = FHeaderV(globalVariables);
+    globalVariables.Tool = FTool(globalVariables);
 
     presenterFactory(globalVariables);
     let models = FModels(globalVariables, mockResponses);
     let state = new models.State();
 
-    if(!mockResponses){
+    if (!mockResponses) {
         let params = (new URL(document.location)).searchParams;
         let ID = params.get("ID");
 
