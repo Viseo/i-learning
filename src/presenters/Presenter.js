@@ -24,6 +24,10 @@ exports.Presenter = function(globalVariables){
             this.state.clearOldPageStackAndLoadPresenterDashboard();
         }
 
+        resizeView(){
+            this.view.resize();
+        }
+
         /**
          * VIEW
          * */

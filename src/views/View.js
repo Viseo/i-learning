@@ -18,6 +18,10 @@ exports.View = function(globalVariables){
         returnToOldPage(){
             this.presenter.returnToOldPage();
         }
+
+        resize(){
+            alert("Resize Event");
+        }
     };
 
     return {View};

@@ -11,6 +11,10 @@ exports.Models = function (globalVariables, mockResponses) {
             this.currentPresenter = null;
         }
 
+        resize(){
+            this.currentPresenter && this.currentPresenter.resizeView();
+        }
+
         createFormation(obj) {
             if (typeof obj == 'string') obj = JSON.parse(obj);
             let formation = new Formation(obj);

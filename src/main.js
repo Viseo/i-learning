@@ -51,6 +51,9 @@ function main(mockResponses) {
         state.tryLoadCookieForPresenter(ID);
     }
 
+
+    svg.addGlobalEvent("resize", state.resize.bind(state));
+
     return {state, root, runtime};
 };
 exports.main = main;
