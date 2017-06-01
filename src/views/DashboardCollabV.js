@@ -34,26 +34,41 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.spaceBetween = 20;
                 this.headHeight = this.header.height + MARGIN;
             };
+
+            _declareDimension();
+            _declareManipulator();
+        }
+
+        display() {
+            drawing.manipulator.set(0, this.manipulator);
+            let createBack = ()=>{
+                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
+                this.panel.position(this.panel.width/2 +MARGIN ,
+                    this.panel.height/2 + this.headHeight + 2*MARGIN + 2*this.doneIcon.getSize());
+                this.backRect = new svg.Rect(5000, 5000) //TODO
+                    .position(this.panel.width/2, this.panel.height/2)
+                    .color(myColors.white, 0, myColors.none);
+                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
+                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
+                this.title.position(200, this.headHeight + 2*MARGIN + 8.3  + 2*this.doneIcon.getSize())
+                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
+                this.titleBack.position(200, this.headHeight + 2*MARGIN  + 2*this.doneIcon.getSize());
+                this.manipulator.add(this.panel.component)
+                    .add(this.titleBack)
+                    .add(this.title)
+                this.panel.content.add(this.backRect);
+                this.panel.content.add(this.miniaturesManipulator.first);
+            }
             var _declareIcons = () => {
                 var _createIcon = () => {
                     let iconCreator = new IconCreator();
-
                     let paddingIconX =  (IconCreator.getRadiusContent() * 2 + MARGIN);
                     this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
                     this.undoneIcon.content.mark("unDoneIcon");
-
                     this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
                     this.inProgressIcon.position(paddingIconX, 0).content.mark('inProgressIcon');
-
                     this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
                     this.doneIcon.position(2 * paddingIconX, 0).content.mark("doneIcon");
-
-                    let positionCaption = {
-                        x: drawing.width - 4 * (IconCreator.getRadiusContent() + MARGIN) - MARGIN,
-                        y: this.headHeight + IconCreator.getRadiusContent()
-                    };
-
-                    this.toggleFormationsManipulator.move(positionCaption.x, positionCaption.y);
                 }
                 var _createFilter = () => {
                     var _drawBorderFilter = () => {
@@ -85,34 +100,11 @@ exports.DashboardCollabV = function (globalVariables) {
                 _createFilter();
             };
 
-            _declareDimension();
-            _declareManipulator();
             _declareIcons();
-        }
-
-        display() {
-            drawing.manipulator.set(0, this.manipulator);
-            let createBack = ()=>{
-                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
-                this.panel.position(this.panel.width/2 +MARGIN ,
-                    this.panel.height/2 + this.headHeight + 2*MARGIN + 2*this.doneIcon.getSize());
-                this.backRect = new svg.Rect(5000, 5000) //TODO
-                    .position(this.panel.width/2, this.panel.height/2)
-                    .color(myColors.white, 0, myColors.none);
-                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
-                this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
-                this.title.position(200, this.headHeight + 2*MARGIN + 8.3  + 2*this.doneIcon.getSize())
-                this.titleBack = new svg.Rect(200, 3).color(myColors.white,0,myColors.none);
-                this.titleBack.position(200, this.headHeight + 2*MARGIN  + 2*this.doneIcon.getSize());
-                this.manipulator.add(this.panel.component)
-                    .add(this.titleBack)
-                    .add(this.title)
-                this.panel.content.add(this.backRect);
-                this.panel.content.add(this.miniaturesManipulator.first);
-            }
             createBack();
             this._displayHeader("Dashboard");
             this._displayFormations();
+            this._displayFilterIcons();
         }
 
         _displayFormations(){
@@ -251,6 +243,15 @@ exports.DashboardCollabV = function (globalVariables) {
             this.header.display(label);
         }
 
+        _displayFilterIcons() {
+            let positionCaption = {
+                x: drawing.width - 4 * (IconCreator.getRadiusContent() + MARGIN) - MARGIN,
+                y: this.headHeight + IconCreator.getRadiusContent()
+            };
+
+            this.toggleFormationsManipulator.move(positionCaption.x, positionCaption.y);
+        }
+
         _getHeaderManipulator() {
             return this.header.getManipulator();
         }
@@ -271,9 +272,6 @@ exports.DashboardCollabV = function (globalVariables) {
             this.presenter.updateSingleFormationStars(formationId, starId, versionId);
         }
 
-        resize() {
-
-        }
     }
     return DashboardCollabV;
 }

@@ -30,7 +30,7 @@ exports.View = function(globalVariables){
             let newWidth = document.documentElement.clientWidth,
                 newHeight = document.documentElement.clientHeight;
             globalVariables.drawing.dimension(newWidth, newHeight);
-            this.flush()
+            this.flush();
             this.display();
         }
     };
