@@ -328,8 +328,7 @@ exports.FormationAdminV = function (globalVariables) {
             let redCrossHandler = () => {
                 this.mediasManipulator.flush()
             };
-            svg.addEvent(redCross.border, 'click', redCrossHandler);
-            svg.addEvent(redCross.content, 'click', redCrossHandler);
+            redCross.addEvent('click', redCrossHandler);
 
             let pictureClickHandler = (picture) => {
                 this.setImageOnMiniature(miniature, picture.src);
@@ -478,6 +477,7 @@ exports.FormationAdminV = function (globalVariables) {
                     miniature.manipulator.add(miniature.picture);
                 }
                 miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
+                miniature.redCrossManipulator.move(MINIATURE_WIDTH/ 2, -MINIATURE_HEIGHT / 2);
                 IconCreator.createRedCrossIcon(miniature.redCrossManipulator, 0);
                 miniature.redCrossManipulator.addEvent('click', () => {
                     this.removeGame(miniature.manipulator.game);
