@@ -344,7 +344,7 @@ exports.DollAdminV = function(globalVariables){
             let manipInitx = manipulator.x, manipInity = manipulator.y;
             manipulator.corners = [];
             let br = function(x, y){
-                let delta = {x:x-this.getX(), y:y-this.getY()};
+                let delta = {x:x-this.x, y:y-this.y};
                 elem.dimension(this.iw+delta.x,this.ih +delta.y)
                 elem.position(+delta.x/2,+delta.y/2);
                 let updateCorners = ()=>{
@@ -372,21 +372,25 @@ exports.DollAdminV = function(globalVariables){
                         return{x:x,y:y};
                      },
                     drop: (what, whatParent, finalX, finalY)=>{
+                        manipInitx = manipulator.x; manipInity = manipulator.y;
+
                         console.log(finalY,finalY);
                         elem.position(0,0);
-                        manipulator.move(manipInitx - (point.x - finalX)/2, manipInity - (point.y - finalY)/2);
+                        manipulator.move(manipInitx - (point.x - finalX)/2 , manipInity - (point.y - finalY)/2);
                         manipulator.corners.forEach(corner=>{
                             if (point.x != corner.point.x || point.y != corner.point.y) {
                                 corner.move(corner.point.getX(), corner.point.getY())
                             }
                         });
+                        point.x = point.getX();
+                        point.y = point.getY();
                         point.iw = elem.width;
                         point.ih = elem.height;
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
                     moved: (what)=>{
 
-                        return false;
+                        //return false;
                     },
                     revert: (item)=>{
                         item.move(point.getX(), point.getY());
