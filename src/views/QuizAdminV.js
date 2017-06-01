@@ -961,7 +961,7 @@ exports.QuizAdminV = function (globalVariables) {
             })
         }
 
-        refresh() {
+        resize() {
 
         }
     }

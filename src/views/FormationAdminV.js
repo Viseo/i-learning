@@ -725,6 +725,10 @@ exports.FormationAdminV = function (globalVariables) {
         getImages() {
             return this.presenter.getImages();
         }
+
+        resize() {
+
+        }
     }
 
     return FormationAdminV;

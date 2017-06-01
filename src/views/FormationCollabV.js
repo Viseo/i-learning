@@ -209,6 +209,9 @@ exports.FormationCollabV = function (globalVariables) {
             return this.presenter.requirementsForThis(gameId);
         }
 
+        resize() {
+
+        }
     }
     return FormationCollabV;
 };

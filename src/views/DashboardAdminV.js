@@ -402,6 +402,10 @@ exports.DashboardAdmin = function(globalVariables){
         getImages() {
             return this.presenter.getImages();
         }
+
+        resize() {
+
+        }
     }
     return DashboardAdminV;
 }

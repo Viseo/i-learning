@@ -249,6 +249,9 @@ exports.RegisterV = function (globalVariables) {
         setFieldText(field, text) {
             this.presenter.setFieldText(field, text);
         }
+        resize() {
+
+        }
     }
 
     return RegisterV;

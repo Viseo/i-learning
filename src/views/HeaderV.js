@@ -124,6 +124,10 @@ exports.HeaderV = function(globalVariables){
         getManipulator(){
             return this.manipulator;
         }
+
+        resize() {
+
+        }
     }
 
     return HeaderVue;

@@ -285,6 +285,10 @@ exports.DollAdminV = function(globalVariables){
                 this.displayMainPanel();
             }
         }
+
+        resize() {
+
+        }
     }
 
     return DollAdminV;

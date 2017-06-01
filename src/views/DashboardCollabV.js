@@ -271,7 +271,7 @@ exports.DashboardCollabV = function (globalVariables) {
             this.presenter.updateSingleFormationStars(formationId, starId, versionId);
         }
 
-        refresh() {
+        resize() {
 
         }
     }

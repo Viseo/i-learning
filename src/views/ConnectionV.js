@@ -305,6 +305,8 @@ exports.ConnectionV = function (globalVariables) {
         setStayConnected(isStay){
             this.presenter.setStayConnected(isStay);
         }
+        resize() {
+        }
     }
     return ConnectionV;
 }

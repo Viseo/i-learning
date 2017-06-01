@@ -19,8 +19,12 @@ exports.View = function(globalVariables){
             this.presenter.returnToOldPage();
         }
 
-        resize(){
-            alert("Resize Event");
+        resize() {
+            let newWidth = document.documentElement.clientWidth,
+                newHeight = document.documentElement.clientHeight;
+            globalVariables.drawing.dimension(newWidth, newHeight);
+            this.flush()
+            this.display();
         }
     };
 

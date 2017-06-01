@@ -391,6 +391,10 @@ exports.QuizQuestionV = function (globalVariables) {
         getScore() {
             return this.presenter.getScore();
         }
+
+        resize() {
+
+        }
     }
 
     return QuizQuestionV;
