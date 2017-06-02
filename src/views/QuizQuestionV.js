@@ -9,7 +9,8 @@ exports.QuizQuestionV = function (globalVariables) {
         util = globalVariables.util,
         runtime = globalVariables.runtime,
         Manipulator = util.Manipulator,
-        IconCreator = globalVariables.Tool.IconCreator,
+        Tool = globalVariables.Tool,
+        IconCreator = Tool.IconCreator,
         drawing = globalVariables.drawing,
         View = globalVariables.View;
 
@@ -42,7 +43,7 @@ exports.QuizQuestionV = function (globalVariables) {
                 this.answersManipulator = new Manipulator(this);
                 this.helpManipulator = new Manipulator(this);
                 this.scoreManipulator = new Manipulator(this);
-                this.explanationManipulator = new Manipulator(this);
+                this.explanationManipulator = new Manipulator(this).addOrdonator(3);
                 this.buttonsManipulator = new Manipulator(this);
             }
 
@@ -268,30 +269,64 @@ exports.QuizQuestionV = function (globalVariables) {
                         this.explanationManipulator.flush();
                         displayed = false;
                     }
-
-                    if(displayed === explanation){
-                        _hideExplanation()
-                    }else {
-                        let border = new svg.Rect(drawing.width - 2*MARGIN, EXPLANATION_HEIGHT).color(myColors.white, 1, myColors.black).corners(5, 5);
-                        let text = new svg.Text(explanation.label).font(FONT, FONT_SIZE);
-                        this.explanationManipulator.add(border).add(text);
+                    var _displayBorder = () => {
+                        let border = new svg.Rect(explanationDim.w, explanationDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
+                        this.explanationManipulator.set(0, border);
+                    }
+                    var _displayRedCross = () => {
                         let redCross = IconCreator.createRedCrossIcon(this.explanationManipulator);
-                        redCross.position(drawing.width/2 - MARGIN, -EXPLANATION_HEIGHT/2);
+                        redCross.position(explanationDim.w/2, -explanationDim.h/2);
                         redCross.addEvent('click', _hideExplanation);
-                        this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + EXPLANATION_HEIGHT/2);
-                        displayed = explanation;
+                    }
+                    var _displayText = () => {
+                        if(explanation.label){
+                            let text = new svg.Text(explanation.label)
+                                .font(FONT, FONT_SIZE)
+                                .anchor('left');
+                            Tool.resizeStringForText(text, contentDim.w*2/3, contentDim.h);
+                            this.explanationManipulator.set(1, text);
+                            text.position(-contentDim.w/2 + contentDim.w/3 + MARGIN, -text.boundingRect().height/2);
+                        }
+                    }
+                    var _displayMedia = () => {
+                        if(explanation.imageSrc){
+                            let img = new svg.Image(explanation.imageSrc)
+                                .dimension(contentDim.w/3, contentDim.h);
+                            img.position(-contentDim.w/2 + img.width/2, 0);
+                            this.explanationManipulator.set(2, img);
+                        }
+                    }
+                    var _displayVoiceIcon = () => {
                         let voiceIcon = IconCreator.createVoiceIcon(this.explanationManipulator);
-                        voiceIcon.position(drawing.width /2- 3*MARGIN, -EXPLANATION_HEIGHT /2 + 2* MARGIN);
+                        voiceIcon.position(contentDim.w/2 - voiceIcon.getContentSize()/2, -contentDim.h/2 + voiceIcon.getContentSize()/2);
                         voiceIcon.addEvent( 'click', () => {
                             runtime.speechSynthesisSpeak(explanation.label);
                         });
+                    }
 
+                    var explanationDim = {
+                        w: drawing.width - 2*MARGIN, h: EXPLANATION_HEIGHT
+                    }
+                    var contentDim = {
+                        w: explanationDim.w - 2*MARGIN, h: explanationDim.h - 2*MARGIN
+                    }
+                    if(displayed === explanation){
+                        _hideExplanation()
+                    }else {
+                        if(displayed) this.explanationManipulator.flush();
+                        displayed = explanation;
+                        _displayBorder();
+                        _displayRedCross();
+                        _displayText();
+                        _displayMedia();
+                        _displayVoiceIcon();
+                        this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + explanationDim.h/2);
                     }
                 }
 
                 let displayed = false;
                 this.getCurrentAnswers().forEach((answer, index) => {
-                    if(answer.explanation && Object.keys(answer.explanation).length > 0){
+                    if(answer.explanation && (answer.explanation.label || answer.explanation.imageSrc)){
                         let manip = this.answers[index];
                         let icon = IconCreator.createExplanationIcon(manip);
                         icon.position(this.answerWidth/2 - MARGIN - 25, this.answerHeight/2 - 25 - MARGIN)
