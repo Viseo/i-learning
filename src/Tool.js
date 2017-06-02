@@ -6,6 +6,7 @@ exports.Tool = function (globalVariables) {
     let
         svg = globalVariables.svg,
         drawings = globalVariables.drawings,
+        drawing = globalVariables.drawing,
         Manipulator = globalVariables.util.Manipulator;
 
     const
