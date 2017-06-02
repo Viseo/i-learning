@@ -3,6 +3,7 @@ exports.DollAdminV = function(globalVariables){
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         drawing = globalVariables.drawing,
+        gui = globalVariables.gui,
         svg = globalVariables.svg,
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w:drawing.width-2*MARGIN, h: drawing.height * 0.7},
@@ -14,21 +15,65 @@ exports.DollAdminV = function(globalVariables){
         ListSvgView = globalVariables.domain.ListSVGView,
         HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
-        IMAGE_SIZE = {w:30, h:30}
+        IMAGE_SIZE = {w:30, h:30},
+        STATUS_FILE_DEFAULT = "Aucun fichier sélectionné";
 
     class DollAdminV extends View{
         constructor(presenter){
             super(presenter);
             this.manipulator = new Manipulator(this);
             this.mainPanelManipulator = new Manipulator(this);
+            this.picturePanelManipulator = new Manipulator(this).addOrdonator(2);
             this.rules = false;
             let declareActions = ()=>{
+                var _createPanelPicture = () => {
+                    this.picturePanelManipulator.flush();
+                    let panelPicture = new svg.Rect(this.width/2, this.height/2);
+                    panelPicture.color(myColors.white, 2 , myColors.black);
+                    panelPicture.corners(8, 8);
+
+                    let textURL = new svg.Text("URL :");
+                    textURL.font("arial", 25).position(-panelPicture.width/3, -panelPicture.height*3/8  + 25/3);
+                    let textOu = new svg.Text("Ou");
+                    textOu.font("arial", 20).position(-panelPicture.width/3, -panelPicture.height*1.5/8);
+
+                    let buttonExplore = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Parcourir");
+                    buttonExplore.position(-panelPicture.width/3, 0);
+
+                    let textStatusFile = new svg.Text(STATUS_FILE_DEFAULT);
+                    textStatusFile.font("arial", 20).position(0, 20/3);
+
+                    let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
+
+                    let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
+                    buttonCancel.position(-buttonCancel.width, panelPicture.height/4);
+
+                    let buttonOk = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.blue, 2, myColors.black], "OK");
+                    buttonOk.position(buttonOk.width, panelPicture.height/4);
+                    
+                    this.picturePanelManipulator
+                        .add(panelPicture)
+                        .add(textURL)
+                        .add(textOu)
+                        .add(textStatusFile)
+                        .add(urlField.component)
+                        .add(buttonExplore.component)
+                        .add(buttonOk.component)
+                        .add(buttonCancel.component);
+
+
+                    this.picturePanelManipulator.move(this.width/2, this.height/2);
+                    this.manipulator.add(this.picturePanelManipulator);
+                };
+
                 this.actions = [];
                 this.actionTabs = [];
                 let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3);
                 let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue);
                 let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE);
                 let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE);
+                this.width = drawing.width;
+                this.height = drawing.height;
                 this.actionModes = {
                     actions: {
                         'text':()=>{
@@ -41,7 +86,7 @@ exports.DollAdminV = function(globalVariables){
                             })
                         },
                         'picture': ()=>{
-
+                            _createPanelPicture();
                         },
                         'help': ()=>{
 
