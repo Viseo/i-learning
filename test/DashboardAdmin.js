@@ -5,7 +5,7 @@ const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
     {
-        given, when, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnter,
+        given, when, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
         mouseLeave, checkBorderColor, onChangeElement
     } = testutils;
 
@@ -162,7 +162,7 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
-            mouseEnter(root, "miniatureManipAgilité");
+            mouseEnterElement(root, "miniatureManipAgilité");
         }).then(() => {
             checkBorderColor(root, "miniatureBorderAgilité", [130, 180, 255]);
         });
