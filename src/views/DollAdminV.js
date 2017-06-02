@@ -563,8 +563,8 @@ exports.DollAdminV = function(globalVariables){
             objectivesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - objectivesAddButton.width/2, RIGHTBOX_SIZE.header.h);
             objectivesAddButton.onClick(addObjectiveHandler);
 
-            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
-            this.objectivesList.position(0,RIGHTBOX_SIZE.h -this.objectivesList.height);
+            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.objectivesList.position(0,RIGHTBOX_SIZE.h  -this.objectivesList.height - MARGIN);
             this.objectivesList.markDropID('objectivesDrop')
 
             objectivesManip.add(objectivesHeader)
@@ -643,8 +643,8 @@ exports.DollAdminV = function(globalVariables){
             responsesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - responsesAddButton.width/2, RIGHTBOX_SIZE.header.h);
             responsesAddButton.onClick(addResponseHandler);
 
-            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
-            this.responsesList.position(0,RIGHTBOX_SIZE.h -this.responsesList.height);
+            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.responsesList.position(0,RIGHTBOX_SIZE.h -this.responsesList.height - MARGIN);
             this.responsesList.markDropID('responsesDrop')
 
             responsesManip.add(responsesHeader)
