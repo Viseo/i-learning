@@ -367,6 +367,15 @@ exports.QuizQuestionV = function (globalVariables) {
             this.presenter.returnHandler();
         }
 
+        resize(){
+            super.resize();
+            if(this.isDone()) this.displayResult();
+        }
+
+        isDone(){
+            return this.presenter.isDone;
+        }
+
         nextQuestion() {
             this.presenter.nextQuestion();
         }
