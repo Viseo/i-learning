@@ -667,6 +667,10 @@ exports.Tool = function (globalVariables, classContainer) {
                 _hideAllQuestionChevron();
             }
         }
+
+        getListElements(){
+            return this.listElements;
+        }
     }
 
 

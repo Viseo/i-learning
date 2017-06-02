@@ -26,45 +26,6 @@ exports.DollAdminV = function(globalVariables){
             this.picturePanelManipulator = new Manipulator(this).addOrdonator(2);
             this.rules = false;
             let declareActions = ()=>{
-                var _createPanelPicture = () => {
-                    this.picturePanelManipulator.flush();
-                    let panelPicture = new svg.Rect(this.width/2, this.height/2);
-                    panelPicture.color(myColors.white, 2 , myColors.black);
-                    panelPicture.corners(8, 8);
-
-                    let textURL = new svg.Text("URL :");
-                    textURL.font("arial", 25).position(-panelPicture.width/3, -panelPicture.height*3/8  + 25/3);
-                    let textOu = new svg.Text("Ou");
-                    textOu.font("arial", 20).position(-panelPicture.width/3, -panelPicture.height*1.5/8);
-
-                    let buttonExplore = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Parcourir");
-                    buttonExplore.position(-panelPicture.width/3, 0);
-
-                    let textStatusFile = new svg.Text(STATUS_FILE_DEFAULT);
-                    textStatusFile.font("arial", 20).position(0, 20/3);
-
-                    let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
-
-                    let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
-                    buttonCancel.position(-buttonCancel.width, panelPicture.height/4);
-
-                    let buttonOk = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.blue, 2, myColors.black], "OK");
-                    buttonOk.position(buttonOk.width, panelPicture.height/4);
-                    
-                    this.picturePanelManipulator
-                        .add(panelPicture)
-                        .add(textURL)
-                        .add(textOu)
-                        .add(textStatusFile)
-                        .add(urlField.component)
-                        .add(buttonExplore.component)
-                        .add(buttonOk.component)
-                        .add(buttonCancel.component);
-
-
-                    this.picturePanelManipulator.move(this.width/2, this.height/2);
-                    this.manipulator.add(this.picturePanelManipulator);
-                };
 
                 this.actions = [];
                 this.actionTabs = [];
@@ -86,7 +47,7 @@ exports.DollAdminV = function(globalVariables){
                             })
                         },
                         'picture': ()=>{
-                            _createPanelPicture();
+                            this.displayPictureNavigation();
                         },
                         'help': ()=>{
 
@@ -112,10 +73,92 @@ exports.DollAdminV = function(globalVariables){
                     manip.addEvent('click', this.actions[i].component.listeners['click']);
                     this.actionTabs.push(manip);
                 }
-            }
+            };
             declareActions();
             svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
+
+        displayPictureNavigation(){
+            let _createPopUpPicture = () => {
+                let _onClickCancelButton = () => {
+                    this.picturePanelManipulator.flush();
+                };
+
+                this.picturePanelManipulator.flush();
+                let panelPicture = new svg.Rect(this.width/2, this.height/2);
+                panelPicture.color(myColors.white, 2 , myColors.black);
+                panelPicture.corners(8, 8);
+
+                let textURL = new svg.Text("URL :");
+                textURL.font("arial", 25).position(-panelPicture.width/3, -panelPicture.height*3/8  + 25/3);
+                let textOu = new svg.Text("Ou");
+                textOu.font("arial", 20).position(-panelPicture.width/3, -panelPicture.height*1.5/8);
+
+                let buttonExplore = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Parcourir");
+                buttonExplore.position(-panelPicture.width/3, 0);
+
+                let textStatusFile = new svg.Text(STATUS_FILE_DEFAULT);
+                textStatusFile.font("arial", 20).position(0, 20/3);
+
+                let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
+
+                let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
+                buttonCancel
+                    .position(-buttonCancel.width, panelPicture.height/4)
+                    .onClick(_onClickCancelButton);
+
+                let buttonOk = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.blue, 2, myColors.black], "OK");
+                buttonOk.position(buttonOk.width, panelPicture.height/4);
+
+                this.picturePanelManipulator
+                    .add(panelPicture)
+                    .add(textURL)
+                    .add(textOu)
+                    .add(textStatusFile)
+                    .add(urlField.component)
+                    .add(buttonExplore.component)
+                    .add(buttonOk.component)
+                    .add(buttonCancel.component);
+
+
+                this.picturePanelManipulator.move(this.width/2, this.height/2);
+                this.manipulator.add(this.picturePanelManipulator);
+            };
+
+            if(!this.listViewPicture){
+                var _onClickBack = () =>{
+                    this.sandboxManip.remove(this.listViewPicture.manipulator);
+                };
+
+                this.listViewPicture =
+                    new ListManipulatorView([], 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE, HEADER_TILE, 5, undefined, 25);
+
+                let picBackManip = new Manipulator(this);
+                let picBack = new svg.Image('../../images/doll/back.png').dimension(HEADER_TILE, HEADER_TILE);
+                picBackManip.add(picBack);
+                this.listViewPicture.add(picBackManip);
+
+                let picAddImageManip = new Manipulator(this);
+                let picAddImage = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE);
+                picAddImageManip.add(picAddImage);
+                this.listViewPicture.add(picAddImageManip);
+
+                picBackManip.addEvent('click', _onClickBack);
+                picAddImageManip.addEvent('click', _createPopUpPicture);
+
+                this.listViewPicture.getListElements().forEach(ele =>{
+                    let rect = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.none, 1, myColors.grey).corners(3,3);
+                    ele.add(rect);
+                });
+
+                this.sandboxManip.add(this.listViewPicture.manipulator);
+            }else{
+                this.sandboxManip.add(this.listViewPicture.manipulator);
+            }
+
+            this.listViewPicture.refreshListView();
+
+        };
 
         display(){
             drawing.manipulator.set(0, this.manipulator);
