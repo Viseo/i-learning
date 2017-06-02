@@ -52,9 +52,6 @@ exports.RegisterV = function (globalVariables) {
             };
             var _displayFields = () => {
                 var _displayField = (field) => {
-                    let _createIdFromName = (field)=>{
-                        return field.title.split('').splice(0, field.title.length-2).join('');
-                    }
                     var _displayIcon = () => {
                         let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
                         icon.position(-INPUT_WIDTH / 2 + icon.getContentSize() / 2 + MARGIN, 0);
@@ -100,7 +97,7 @@ exports.RegisterV = function (globalVariables) {
                             .pattern(field.pattern)
                             .type(field.type)
                             .anchor("center")
-                            .mark(_createIdFromName(field));
+                            .mark(field.id);
                         fieldManip.set(0, fieldArea.component);
 
                         fieldArea.onInput(_updatePresenter);

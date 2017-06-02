@@ -61,4 +61,19 @@ describe('connection page', function () {
             assertMessage(root, "msgFieldError", "Veuillez remplir correctement tous les champs");
         })
     });
+
+    it('should find new focused field, ', function(){
+        let {root, state, runtime} = given(()=>{
+            return loadPage("Connection")
+        })
+        when(()=>{
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:9, shiftKey:true, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
+        }).then(()=>{
+            let focus = retrieve(root, '[loginselectedInput]');
+            assert(focus);
+        });
+
+    });
 })

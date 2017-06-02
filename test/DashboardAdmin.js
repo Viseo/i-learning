@@ -127,6 +127,20 @@ describe('dashboard admin page', function () {
             assertMissing(root, "formationErrorMessage");
         });
     });
+    it('should try create a new formation (Enter keydown)', function(){
+        let mockResponses = {
+                '/formations': {code: 200, content: {myCollection: []}}
+            },
+            {root, state, runtime} = given(() => {
+                return loadPage("Dashboard", {mockResponses, data: user});
+            });
+        when(() => {
+            runtime.listeners['keydown']({keyCode:13, preventDefault: () => {}})
+        }).then(() => {
+            assertMessage(root, "formationErrorMessage", "Veuillez entrer un titre valide.");
+            runtime.advance();
+        });
+    });
     it("should enter in a formation", function () {
         let mockResponses = {
                 '/formations': {code: 200, content: jsonFormation},

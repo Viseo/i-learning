@@ -211,6 +211,17 @@ describe('formation admin page', function () {
         })
     });
 
+    it('should press Enter (rename)', function(){
+        let {root, state, runtime} = given(() => {
+            return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
+        });
+        when(() => {
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: () => {}})
+        }).then(() => {
+            assertMessage(root, "infoMessage", "Votre travail a bien été enregistré.");
+        })
+    })
+
     it('should rename formation', function () {
         let {root} = given(() => {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});

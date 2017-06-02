@@ -272,6 +272,7 @@ exports.ConnectionV = function (globalVariables) {
                 let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
                 svg.event(this.inputs[newIndex].glass, 'click');
                 this.selectedInput = this.inputs[newIndex];
+                this.selectedInput.mark(this.selectedInput.id + 'selectedInput');
             }
 
             if (event.keyCode === 9) { // TAB
