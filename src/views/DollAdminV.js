@@ -82,15 +82,11 @@ exports.DollAdminV = function(globalVariables){
         displayPictureNavigation(){
             let _createPopUpPicture = () => {
                 let _onClickCancelButton = () => {
-                    this.picturePanelManipulator.flush();
+                    this.manipulator.remove(this.picturePanelManipulator);
                 };
 
-                let _onClickOkButton = (picFile) => {
+                let _onClickOkButton = (picFile, textStatusFile) => {
                     if(picFile.fileSelected){
-
-                        this.picturePanelManipulator.flush();
-
-
                         switch(picFile.type){
                             case "desktop":
                                 this.uploadImageByFile(picFile.fileSelected, () => {}).then((data) => {
@@ -106,7 +102,8 @@ exports.DollAdminV = function(globalVariables){
                                 break;
                             default: break;
                         }
-
+                        textStatusFile.message(STATUS_FILE_DEFAULT);
+                        this.manipulator.remove(this.picturePanelManipulator);
                     }else{
                         if(picFile.textError){
                             this.picturePanelManipulator.remove(picFile.textError);
@@ -124,15 +121,14 @@ exports.DollAdminV = function(globalVariables){
                             picFile.textError && this.picturePanelManipulator.remove(picFile.textError);
                             picFile.textError = null;
                         }, 2000);
-
                     }
                 };
 
-                const onChangeFileExplorerHandler = (picFile) => {
-                    uploadFiles(picFile, fileExplorer.component.files)
+                const onChangeFileExplorerHandler = (picFile, textStatusFile) => {
+                    uploadFiles(picFile, this.fileExplorer.component.files, textStatusFile)
                 };
 
-                var uploadFiles = (picFile, files) => {
+                var uploadFiles = (picFile, files, textStatusFile) => {
                     if(files && files[0]){
                         picFile.fileSelected = files[0];
                         picFile.type = "desktop";
@@ -145,9 +141,8 @@ exports.DollAdminV = function(globalVariables){
                 };
 
                 let picFile = {};
-                let fileExplorer;
-                const fileExplorerHandler = () => {
-                    if (!fileExplorer) {
+                const fileExplorerHandler = (textStatusFile) => {
+                    if (!this.fileExplorer) {
                         let globalPointCenter ={x:drawing.w/2, y:drawing.h/2};
                         var fileExplorerStyle = {
                             leftpx: globalPointCenter.x,
@@ -155,64 +150,66 @@ exports.DollAdminV = function(globalVariables){
                             width: this.width / 5,
                             height: this.height / 2
                         };
-                        fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                        fileExplorer.type("file");
-                        svg.addEvent(fileExplorer, "change", () => onChangeFileExplorerHandler(picFile));
-                        svg.runtime.attr(fileExplorer.component, "accept", "image/*");
-                        svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
-                        svg.runtime.attr(fileExplorer.component, "hidden", "true");
-                        drawings.component.add(fileExplorer);
-                        fileExplorer.fileClick = function () {
+                        this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                        this.fileExplorer.type("file");
+                        svg.addEvent(this.fileExplorer, "change", () => onChangeFileExplorerHandler(picFile, textStatusFile));
+                        svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
+                        svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
+                        svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
+                        drawings.component.add(this.fileExplorer);
+                        this.fileExplorer.fileClick = function () {
                             svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
                         }
                     }
-                    fileExplorer.fileClick();
+                    this.fileExplorer.fileClick();
                 };
 
 
-                this.picturePanelManipulator.flush();
-                let panelPicture = new svg.Rect(this.width/2, this.height/2);
-                panelPicture.color(myColors.white, 2 , myColors.black);
-                panelPicture.corners(8, 8);
+                if(!this.fileExplorer){
+                    let panelPicture = new svg.Rect(this.width/2, this.height/2);
+                    panelPicture.color(myColors.white, 2 , myColors.black);
+                    panelPicture.corners(8, 8);
 
-                let buttonSize = {w: panelPicture.width/5, h: panelPicture.height/10};
+                    let buttonSize = {w: panelPicture.width/5, h: panelPicture.height/10};
 
-                let textURL = new svg.Text("URL :");
-                textURL.font("arial", 25).position(-panelPicture.width/3, -panelPicture.height*3/8  + 25/3);
-                let textOu = new svg.Text("Ou");
-                textOu.font("arial", 20).position(-panelPicture.width/3, -panelPicture.height*1.5/8);
+                    let textURL = new svg.Text("URL :");
+                    textURL.font("arial", 25).position(-panelPicture.width/3, -panelPicture.height*3/8  + 25/3);
+                    let textOu = new svg.Text("Ou");
+                    textOu.font("arial", 20).position(-panelPicture.width/3, -panelPicture.height*1.5/8);
 
-                let buttonExplore = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Parcourir");
-                buttonExplore
-                    .position(-panelPicture.width/3, 0)
-                    .onClick(fileExplorerHandler);
+                    let textStatusFile = new svg.Text(STATUS_FILE_DEFAULT);
+                    textStatusFile.font("arial", 20).position(-panelPicture.width/2  + buttonSize.w * 2, 20/3).anchor("start");
 
-                let textStatusFile = new svg.Text(STATUS_FILE_DEFAULT);
-                textStatusFile.font("arial", 20).position(-panelPicture.width/2  + buttonSize.w * 2, 20/3).anchor("start");
+                    let buttonExplore = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Parcourir");
+                    buttonExplore
+                        .position(-panelPicture.width/3, 0)
+                        .onClick(() => fileExplorerHandler(textStatusFile));
 
-                let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
-                urlField.color([myColors.white, 1, myColors.black]).control.placeHolder("Url de l'image...");
 
-                let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
-                buttonCancel
-                    .position(-buttonCancel.width, panelPicture.height*3/8)
-                    .onClick(_onClickCancelButton);
+                    let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
+                    urlField.color([myColors.white, 1, myColors.black]).control.placeHolder("Url de l'image...");
 
-                let buttonOk = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.blue, 2, myColors.black], "OK");
-                buttonOk
-                    .position(buttonOk.width, panelPicture.height*3/8)
-                    .onClick(() => _onClickOkButton(picFile));
+                    let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
+                    buttonCancel
+                        .position(-buttonCancel.width, panelPicture.height*3/8)
+                        .onClick(_onClickCancelButton);
 
-                this.picturePanelManipulator
-                    .add(panelPicture)
-                    .add(textURL)
-                    .add(textOu)
-                    .add(textStatusFile)
-                    .add(urlField.component)
-                    .add(buttonExplore.component)
-                    .add(buttonOk.component)
-                    .add(buttonCancel.component);
+                    let buttonOk = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.blue, 2, myColors.black], "OK");
+                    buttonOk
+                        .position(buttonOk.width, panelPicture.height*3/8)
+                        .onClick(() => _onClickOkButton(picFile, textStatusFile));
 
+                    this.picturePanelManipulator
+                        .add(panelPicture)
+                        .add(textURL)
+                        .add(textOu)
+                        .add(textStatusFile)
+                        .add(urlField.component)
+                        .add(buttonExplore.component)
+                        .add(buttonOk.component)
+                        .add(buttonCancel.component);
+
+                }
 
                 this.picturePanelManipulator.move(this.width/2, this.height/2);
                 this.manipulator.add(this.picturePanelManipulator);
