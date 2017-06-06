@@ -1107,7 +1107,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         static upload(file, onProgress) {
-            return apiRequester.upload(file, onProgress);
+            return apiRequester.upload(file, onProgress).then(data => JSON.parse(data));
         }
 
         getImages() {

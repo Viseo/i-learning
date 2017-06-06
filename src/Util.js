@@ -384,7 +384,19 @@ exports.Util = function (globalVariables) {
                     svg.event(this.target, "mousedown", event);
                 }
             };
+
             svg.addEvent(this.component.glass, "mousedown", onmousedownHandler);
+            this.component.glass.onRightClick(event=>{
+                if (!event.processed) {
+                    let target = this.component.background.getTarget(event.pageX, event.pageY);
+                    this.manageInOut(target, event);
+                    event.preventDefault();
+                    if (target) {
+                        svg.event(target, 'contextmenu', event);
+                    }
+                    this.activated();
+                }
+            })
 
             const ondblclickHandler = event => {
                 let target = this.component.background.getTarget(event.pageX, event.pageY);
@@ -1386,7 +1398,7 @@ exports.Util = function (globalVariables) {
             computeWidth(splitonspace);
             text.message(result);
         }
-        text.position(pointToSave.x, pointToSave.y - (nbLines ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
+        text.position(pointToSave.x, pointToSave.y - (nbLines>1 ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
         glass.remove(text);
         return text;
     }
