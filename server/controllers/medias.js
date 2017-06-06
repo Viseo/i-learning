@@ -33,7 +33,7 @@ module.exports = function (app, fs) {
                             if (err) {
                                 reject(err)
                             }
-                            resolve()
+                            resolve({src: "../resource/" + file.filename, name: file.originalname})
                         })
                     } else { // delete unwanted file
                         fs.unlink(file.path, () => {
@@ -46,9 +46,10 @@ module.exports = function (app, fs) {
 
         upload(req, res, (err) => {
             console.log(err);
-            insertInDB(req.file).then(() => {
+            insertInDB(req.file).then((data) => {
                 console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
-                res.send('ok')
+                data.ack = "ok";
+                res.send(data)
             }).catch((err) => {
                 console.error(err.message);
                 res.send('err')
