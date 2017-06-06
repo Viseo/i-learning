@@ -397,6 +397,7 @@ exports.DollAdminV = function(globalVariables){
                     this.removeContextMenu();
                     if(event.which == 3){
                         this.textRightClick(text,manip, event);
+                        this.selectElement(text);
                     }else{
                         this.selectElement(text);
                         tmpHandler();
@@ -479,7 +480,7 @@ exports.DollAdminV = function(globalVariables){
                     let man = new Manipulator(this);
                     let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2).color(colors[i], 0.5, myColors.grey);
                     man.add(rec);
-                    man.addEvent('click', ()=>{rect.color(color, 0.5, myColors.grey)});
+                    man.addEvent('click', ()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )});
                     colors[i]=man;
                 }
                 this.contextMenu.setList(colors);
@@ -497,6 +498,28 @@ exports.DollAdminV = function(globalVariables){
         }
 
         selectElement(elem){
+            if(this.selectedElement && this.selectedElement.parentManip){//Rect
+                this.selectedElement.parentManip.corners && this.selectedElement.parentManip.corners.forEach(corner=>{
+                    corner.flush();
+                });
+                this.selectedElement.color(this.selectedElement.fillColor, 0.5, myColors.grey);
+            }
+            else if (this.selectedElement && this.selectedElement.component.parentManip){//Text
+                this.selectedElement.component.parentManip.corners && this.selectedElement.component.parentManip.corners.forEach(corner=>{
+                    corner.flush();
+                });
+                let textColors = new Array(this.selectedElement._colors[0]);
+                textColors.push(0.5,myColors.grey);
+                this.selectedElement.color(textColors)
+            }
+            if (elem && elem instanceof gui.TextField){
+                let textColors = new Array(elem._colors[0]);
+                textColors.push(4,myColors.blue);
+                elem.color(textColors);
+            }
+            else{
+                elem && elem.color(elem.fillColor, 4, myColors.blue)
+            }
             this.selectedElement = elem;
         }
 
@@ -593,6 +616,7 @@ exports.DollAdminV = function(globalVariables){
                 manip.add(rect);
                 svg.removeEvent(this.sandboxMain.component, 'mousemove');
                 rect.color(myColors.blue);
+                svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
                 svg.addEvent(rect,'contextmenu',(event)=>{
                    this.selectElement(rect);
                    this.rectRightClick(rect, manip, event);
@@ -606,13 +630,13 @@ exports.DollAdminV = function(globalVariables){
         keyDown(event){
             if (event.keyCode == 8 || event.keyCode == 46){
                 if (this.selectedElement){
-                    if (this.selectedElement instanceof gui.TextField){
-                        this.selectedElement.hideControl();
-                        this.sandboxMain.content.remove(this.selectedElement.component.parentManip.component);
+                    if (this.selectedElement.parentManip){
+                        this.selectedElement.parentManip.flush();
                     }
-                    else {
-                        this.sandboxMain.content.remove(this.selectedElement);
+                    else if (this.selectedElement.component) {
+                        this.selectedElement.component.parentManip.flush();
                     }
+
                     this.selectedElement = null;
                 }
             }
@@ -632,6 +656,7 @@ exports.DollAdminV = function(globalVariables){
                     svg.event(target, 'click', event);
                 }
             }
+            this.selectElement(null);
             this.removeContextMenu();
         }
         rightClickPanelHandler(event){
