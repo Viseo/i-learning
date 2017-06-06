@@ -501,11 +501,13 @@ exports.DollAdminV = function(globalVariables){
         }
 
         resizeElement(elem, manipulator){
+            let initW = elem.width, initH = elem.height;
             let manipInitx = manipulator.x, manipInity = manipulator.y;
             manipulator.corners = [];
-            let br = function(x, y){
-                let delta = {x:x-this.x, y:y-this.y};
-                elem.dimension(this.iw+delta.x,this.ih +delta.y)
+            let br = function(x, y, Xcoeff, Ycoeff){
+                let delta = {x:x -this.x, y:y -this.y};
+                console.log(initW+delta.x,initH +delta.y);
+                elem.dimension(initW+Xcoeff*delta.x,initH+Ycoeff*delta.y)
                 elem.position(+delta.x/2,+delta.y/2);
                 let updateCorners = ()=>{
                     manipulator.corners.forEach(corner=>{
@@ -516,19 +518,24 @@ exports.DollAdminV = function(globalVariables){
                 elem.refresh && elem.refresh();
             }
             let posArr = [
-                {x:-elem.width/2, y:-elem.height/2,  getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
-                {x:-elem.width/2, y:+elem.height/2,  getX: function(){return -elem.width/2}, getY: function(){return +elem.height/2}},
-                {x:+elem.width/2, y:-elem.height/2,  getX: function(){return +elem.width/2}, getY: function(){return -elem.height/2}},
-                {x:+elem.width/2, y:+elem.height/2, drag: br, iw:elem.width, ih:elem.height,  getX: function(){return +elem.width/2}, getY: function(){return +elem.height/2}}
+                {x:-elem.width/2, y:-elem.height/2, drag: function(x,y){br.call(this,x,y,-1,-1)}, getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:-elem.width/2, y:+elem.height/2, drag: function(x,y){br.call(this,x,y,-1,1)}, getX: function(){return -elem.width/2}, getY: function(){return +elem.height/2}},
+                {x:+elem.width/2, y:-elem.height/2, drag: function(x,y){br.call(this,x,y,1,-1)}, getX: function(){return +elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:+elem.width/2, y:+elem.height/2, drag: function(x,y){br.call(this,x,y,1,1)}, getX: function(){return +elem.width/2}, getY: function(){return +elem.height/2}}
             ];
+            let updatePoints = ()=>{
+                for (let point of posArr){
+                    point.x = point.getX();
+                    point.y = point.getY();
+                }
+            }
             for (let point of posArr) {
                 let rect = new svg.Rect(10,10).color(myColors.lightgrey, 1, myColors.grey);
                 let manip = new Manipulator(this);
                 manip.add(rect)
                 let conf ={
                     drag: (what, x, y)=>{
-                        point.drag(x,y);
-                        console.log(x,y);
+                        point.drag.call(point,x,y);
                         return{x:x,y:y};
                      },
                     drop: (what, whatParent, finalX, finalY)=>{
@@ -542,10 +549,9 @@ exports.DollAdminV = function(globalVariables){
                                 corner.move(corner.point.getX(), corner.point.getY())
                             }
                         });
-                        point.x = point.getX();
-                        point.y = point.getY();
-                        point.iw = elem.width;
-                        point.ih = elem.height;
+                        updatePoints();
+                        initW = elem.width;
+                        initH = elem.height;
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
                     moved: (what)=>{
