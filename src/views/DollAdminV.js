@@ -15,6 +15,7 @@ exports.DollAdminV = function(globalVariables){
         ListSvgView = globalVariables.domain.ListSVGView,
         HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
+        CONTEXT_TILE_SIZE = {w:150 - 2*MARGIN,h:27}
         IMAGE_SIZE = {w:30, h:30},
         STATUS_FILE_DEFAULT = "Aucun fichier sélectionné";
 
@@ -319,19 +320,76 @@ exports.DollAdminV = function(globalVariables){
             }
             let arr = [];
             let color = makeClickableItem('Couleur', ()=>{
-                text.color([myColors.blue, 1, myColors.grey]);
-                text.editColor([myColors.blue, 1, myColors.grey])
-                text.refresh();
-                this.removeContextMenu()
+                let colors = [[43, 120, 228],
+                    [125, 122, 117],
+                    [230, 122, 25],
+                    [155, 222, 17],
+                    [0, 0, 0],
+                    [255, 255, 255],
+                    [255, 20, 147]];
+                for (let i = 0; i< colors.length; i++){
+                    let color = colors[i];
+                    let man = new Manipulator(this);
+                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2).color(colors[i], 0.5, myColors.grey);
+                    man.add(rec);
+                    man.addEvent('click', ()=>{
+                        text.color([color, 0.5, myColors.grey])
+                        text.editColor([color, 0.5, myColors.grey])
+                    });
+                    colors[i]=man;
+                }
+                this.contextMenu.setList(colors);
             });
             let resize = makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
             arr.push(color,resize)
-            this.contextMenu = new ListManipulatorView(arr, 'V',150,81, 0,0,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 0, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
-            this.contextMenu.border.corners(2,2);
+            this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
+            this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
+        }
+
+        rectRightClick(rect, manipulator, event){
+            let makeClickableItem = (message, handler)=>{
+                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
+                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
+                let manip = new Manipulator(this);
+                manip.add(rect).add(txt);
+                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
+                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
+                manip.addEvent('click', handler);
+                return manip;
+            }
+            let arr = [];
+            let color = makeClickableItem('Couleur', ()=>{
+                let colors = [[43, 120, 228],
+                    [125, 122, 117],
+                    [230, 122, 25],
+                    [155, 222, 17],
+                    [0, 0, 0],
+                    [255, 255, 255],
+                    [255, 20, 147]];
+                for (let i = 0; i< colors.length; i++){
+                    let color = colors[i];
+                    let man = new Manipulator(this);
+                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2).color(colors[i], 0.5, myColors.grey);
+                    man.add(rec);
+                    man.addEvent('click', ()=>{rect.color(color, 0.5, myColors.grey)});
+                    colors[i]=man;
+                }
+                this.contextMenu.setList(colors);
+            });
+            let resize = makeClickableItem('Redimensionner', ()=>{
+                this.resizeElement(rect, manipulator);
+                this.removeContextMenu();
+            });
+            arr.push(color,resize)
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
             this.contextMenu.refreshListView();
         }
@@ -353,7 +411,7 @@ exports.DollAdminV = function(globalVariables){
                     });
                 }
                 updateCorners();
-                elem.refresh();
+                elem.refresh && elem.refresh();
             }
             let posArr = [
                 {x:-elem.width/2, y:-elem.height/2,  getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
@@ -407,6 +465,7 @@ exports.DollAdminV = function(globalVariables){
         rectZoning(event){
             let point = this.sandboxMain.content.localPoint(event.x,event.y);
             let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 1, myColors.black);
+
             this.sandboxMain.content.add(rect);
             let moveHandler = (eventMove)=>{
                 if (eventMove.x - event.x > 0 && eventMove.y - event.y > 0 && this.actionModes.currentMode == 'rect') {
@@ -417,12 +476,18 @@ exports.DollAdminV = function(globalVariables){
             let mouseupHandler = (eventUp)=>{
                 if (eventUp.x - event.x == 0 && eventUp.y - event.y == 0){
                     this.sandboxMain.content.remove(rect);
-                    this.clickPanelHandler(event);
                 }
+                let manip = new Manipulator(this);
+                this.sandboxMain.content.add(manip.component);
+                manip.move(rect.x, rect.y);
+                rect.position(0,0);
+                this.sandboxMain.content.remove(rect)
+                manip.add(rect);
                 svg.removeEvent(this.sandboxMain.component, 'mousemove');
                 rect.color(myColors.blue);
-                svg.addEvent(rect,'click',()=>{
+                svg.addEvent(rect,'contextmenu',(event)=>{
                    this.selectElement(rect);
+                   this.rectRightClick(rect, manip, event);
                 });
                 this.actionModes.actions['none']();
             }
@@ -451,12 +516,15 @@ exports.DollAdminV = function(globalVariables){
             }
         }
 
-        clickPanelHandler(event){
-            this.removeContextMenu()
-            let target = this.manipulator.translator.getTarget(event.x,event.y);
-            if(target != this.sandboxMain.back){
-                svg.event(target, 'click', event);
+        clickPanelHandler(event, bool){
+            if (!bool) {
+                this.removeContextMenu()
+                let target = this.manipulator.translator.getTarget(event.x, event.y);
+                if (target != this.sandboxMain.back) {
+                    svg.event(target, 'click', event);
+                }
             }
+            this.removeContextMenu();
         }
         rightClickPanelHandler(event){
             event.preventDefault();
@@ -474,7 +542,7 @@ exports.DollAdminV = function(globalVariables){
             this.sandboxManip.add(actionList.manipulator)
                 .add(this.sandboxMain.component);
 
-            svg.addEvent(this.sandboxMain.component, 'click', this.clickPanelHandler.bind(this));
+            svg.addEvent(this.sandboxMain.component, 'click', (event)=>{this.clickPanelHandler(event, true)});
 
             this.sandboxManip.move(-PANEL_SIZE.w/2 + SANDBOX_SIZE.header.w/2 + MARGIN, -PANEL_SIZE.h/2 + SANDBOX_SIZE.header.h/2 + 2*MARGIN);
             this.mainPanelManipulator.add(this.sandboxManip);
@@ -577,11 +645,6 @@ exports.DollAdminV = function(globalVariables){
                 installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
                 return miniature;
             }
-            let addObjectiveHandler = ()=>{
-                let mini = createMiniature();
-                this.objectivesList.add(mini.manip);
-                this.objectivesList.refreshListView();
-            }
             let objectivesManip = new Manipulator(this);
             let objectivesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -595,19 +658,40 @@ exports.DollAdminV = function(globalVariables){
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
             objectivesBody.position(0, objectivesHeader.height/2 + objectivesBody.height/2);
-
             this.objectivesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black]);
+
             this.objectivesInput.font('Arial', 18);
             this.objectivesInput.position(-RIGHTBOX_SIZE.w/2+this.objectivesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
             this.objectivesInput.frame.corners(5,5);
-
             let objectivesAddButton = new gui.Button(0.25*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey],'Ajouter');
+
             objectivesAddButton.text
                 .font('Arial', 18)
                 .position(0,6);
             objectivesAddButton.back.corners(5,5);
             objectivesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - objectivesAddButton.width/2, RIGHTBOX_SIZE.header.h);
+            let addObjectiveHandler = ()=>{
+                let mini = createMiniature();
+                if (mini.text.messageText == ''){
+                    let errorMsg = new svg.Text('Veuiller entrer un texte');
+                    errorMsg.position(-RIGHTBOX_SIZE.w/2 + 2*MARGIN,  RIGHTBOX_SIZE.header.h + 6)
+                        .anchor('left')
+                        .font('Arial', 18)
+                        .color(myColors.red);
+                    util.resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
+                    objectivesManip.add(errorMsg);
+
+                    svg.timeout(()=>{
+                        objectivesManip.remove(errorMsg);
+                    }, 3000);
+                }
+                else {
+                    this.objectivesList.add(mini.manip);
+                    this.objectivesList.refreshListView();
+                }
+
+            }
             objectivesAddButton.onClick(addObjectiveHandler);
 
             this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
@@ -657,11 +741,6 @@ exports.DollAdminV = function(globalVariables){
                 installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
                 return miniature;
             }
-            let addResponseHandler = ()=>{
-                let mini = createMiniature();
-                this.responsesList.add(mini.manip);
-                this.responsesList.refreshListView();
-            }
             let responsesManip = new Manipulator(this);
             let responsesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -675,19 +754,40 @@ exports.DollAdminV = function(globalVariables){
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
             responsesBody.position(0, responsesHeader.height/2 + responsesBody.height/2);
-
             this.responsesInput = new gui.TextField(0, 0, 2/3*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black])
+
             this.responsesInput.font('Arial', 18);
             this.responsesInput.position(-RIGHTBOX_SIZE.w/2+this.responsesInput.width/2 + MARGIN,  RIGHTBOX_SIZE.header.h)
             this.responsesInput.frame.corners(5,5);
-
             let responsesAddButton = new gui.Button(0.25*RIGHTBOX_SIZE.w, 0.8*INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey],'Ajouter');
+
             responsesAddButton.text
                 .font('Arial', 18)
                 .position(0,6);
             responsesAddButton.back.corners(5,5);
             responsesAddButton.position(RIGHTBOX_SIZE.w/2 - MARGIN - responsesAddButton.width/2, RIGHTBOX_SIZE.header.h);
+            let addResponseHandler = ()=>{
+                let mini = createMiniature();
+                if (mini.text.messageText == ''){
+                    let errorMsg = new svg.Text('Veuiller entrer un texte');
+                    errorMsg.position(-RIGHTBOX_SIZE.w/2 + 2*MARGIN,  RIGHTBOX_SIZE.header.h + 6)
+                        .anchor('left')
+                        .font('Arial', 18)
+                        .color(myColors.red);
+                    util.resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
+                    responsesManip.add(errorMsg);
+
+                    svg.timeout(()=>{
+                        responsesManip.remove(errorMsg);
+                    }, 3000);
+                }
+                else {
+                    this.objectivesList.add(mini.manip);
+                    this.objectivesList.refreshListView();
+                }
+
+            }
             responsesAddButton.onClick(addResponseHandler);
 
             this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);

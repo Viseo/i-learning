@@ -746,6 +746,13 @@ exports.Tool = function (globalVariables, classContainer) {
         resetAllMove(){
             this.listElements.forEach(manip => manip.move(0,0));
         }
+
+        setList(list){
+            let tmp = this.listElements.slice();
+            tmp.forEach(elem=>this.removeElementFromList(elem))
+            list.forEach(elem=>this.add(elem));
+            this.refreshListView();
+        }
     }
 
     return {
