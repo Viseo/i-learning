@@ -1065,8 +1065,8 @@ exports.Models = function (globalVariables, mockResponses) {
     class MediasLibrary {
         constructor() {}
 
-        static upload(file, onProgress) {
-            return apiRequester.upload(file, onProgress);
+        static upload(file) {
+            return apiRequester.upload(file);
         }
 
         getImages() {

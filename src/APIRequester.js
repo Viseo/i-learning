@@ -70,7 +70,7 @@ class HTTPRequests {
         }
     }
 
-    upload(theUrl, file, onProgress) {
+    upload(theUrl, file) {
         var _upload = () => {
             return new Promise((resolve, reject) => {
                 const formData = new FormData();

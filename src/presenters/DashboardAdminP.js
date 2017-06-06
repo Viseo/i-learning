@@ -67,11 +67,11 @@ exports.DashboardAdminP = function(globalVariables) {
             this.formationsList = this.formations.getFormations();
         }
 
-        uploadImage(file, progressDisplay){
-            return this.state.uploadImage(file, progressDisplay);
+        uploadImage(file){
+            return this.state.uploadImage(file);
         }
 
-        miniatureClickHandler(formation){
+        enterFormation(formation){
             this.state.loadPresenterFormationAdmin(formation);
         }
     }
