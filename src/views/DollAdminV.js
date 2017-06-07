@@ -112,7 +112,7 @@ exports.DollAdminV = function(globalVariables){
 
                         picFile.textError = new svg.Text("Veuillez indiquer une image !");
                         picFile.textError.font("arial", 25)
-                            .position(0, panelPicture.height*1.5/8  + 25/3)
+                            .position(picFile.pos.x, picFile.pos.y)
                             .color(myColors.red);
 
                         this.picturePanelManipulator.add(picFile.textError);
@@ -122,6 +122,22 @@ exports.DollAdminV = function(globalVariables){
                             picFile.textError = null;
                         }, 2000);
                     }
+                };
+
+                let _onInputUrlField = (url, picFile) => {
+                    this.checkImage(url, () => console.log("good"), () => {
+                        if(picFile.textError){
+                            this.picturePanelManipulator.remove(picFile.textError);
+                            picFile.textError = null;
+                        }
+
+                        picFile.textError = new svg.Text("Veuillez indiquer une image !");
+                        picFile.textError.font("arial", 25)
+                            .position(picFile.pos.x, picFile.pos.y)
+                            .color(myColors.red);
+
+                        this.picturePanelManipulator.add(picFile.textError);
+                    });
                 };
 
                 const onChangeFileExplorerHandler = (picFile, textStatusFile) => {
@@ -169,6 +185,7 @@ exports.DollAdminV = function(globalVariables){
                     let panelPicture = new svg.Rect(this.width/2, this.height/2);
                     panelPicture.color(myColors.white, 2 , myColors.black);
                     panelPicture.corners(8, 8);
+                    picFile.pos = {x: 0, y:panelPicture.height*1.5/8  + 25/3};
 
                     let buttonSize = {w: panelPicture.width/5, h: panelPicture.height/10};
 
@@ -188,6 +205,7 @@ exports.DollAdminV = function(globalVariables){
 
                     let urlField = new gui.TextField(0,-panelPicture.height*3/8, panelPicture.width/2, panelPicture.height/10);
                     urlField.color([myColors.white, 1, myColors.black]).control.placeHolder("Url de l'image...");
+                    urlField.onInput(() => _onInputUrlField(urlField.textMessage, picFile));
 
                     let buttonCancel = new gui.Button(panelPicture.width/5, panelPicture.height/10, [myColors.white, 2, myColors.black], "Annuler");
                     buttonCancel
@@ -951,6 +969,14 @@ exports.DollAdminV = function(globalVariables){
 
         getImages(){
             return this.presenter.getImages();
+        }
+
+        checkImage(imageSrc, good, bad) {
+            var img = new Image();
+            img.onload = good;
+            img.onerror = bad;
+            img.src = imageSrc;
+            return img;
         }
     }
 
