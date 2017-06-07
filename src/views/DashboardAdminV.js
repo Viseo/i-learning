@@ -38,31 +38,28 @@ exports.DashboardAdmin = function (globalVariables) {
                 this.header.display("Dashboard");
             }
             let _displayBack = () => {
-                let _displayTitle = () => {
-                    let title = new svg.Text('Formations :')
-                        .font('Arial', 25).color(myColors.grey)
-                        .position(INPUT_SIZE.w / 2 + MARGIN, headHeight + INPUT_SIZE.h + 2 * MARGIN + 8.3)
-                    let titleBack = new svg.Rect(200, 3)
-                        .color(myColors.white, 0, myColors.none)
-                        .position(INPUT_SIZE.w / 2 + MARGIN, headHeight + INPUT_SIZE.h + 2 * MARGIN);
-                    this.manipulator.add(titleBack).add(title);
-                }
-                let _displayPanel = () => {
-                    let panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none)
-                    panel.position(panel.width / 2 + MARGIN, panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
-                    panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
-                    let backRect = new svg.Rect(5000, 5000) //TODO
-                        .position(panel.width / 2, panel.height / 2)
-                        .color(myColors.white, 0, myColors.none);
-                    this.manipulator.add(panel.component);
-                    panel.add(this.miniaturesManipulator.first)
-                    this.miniaturesManipulator.add(backRect);
-                    this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
-                }
-                
                 let headHeight = this.header.height + MARGIN;
-                _displayPanel();
-                _displayTitle();
+                let titlePos = {
+                    x: INPUT_SIZE.w / 2 + MARGIN,
+                    y: headHeight + INPUT_SIZE.h + 2 * MARGIN
+                }
+                let title = new svg.Text('Formations :')
+                    .font('Arial', 25).color(myColors.grey)
+                    .position(titlePos.x, titlePos.y + 8.3)
+                let titleBack = new svg.Rect(200, 3)
+                    .color(myColors.white, 0, myColors.none)
+                    .position(titlePos.x, titlePos.y);
+
+                let panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none)
+                panel.position(panel.width / 2 + MARGIN, panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
+                panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
+                let backRect = new svg.Rect(5000, 5000) //TODO
+                    .position(panel.width / 2, panel.height / 2)
+                    .color(myColors.white, 0, myColors.none);
+                panel.add(this.miniaturesManipulator.first)
+                this.manipulator.add(panel.component).add(titleBack).add(title);
+                this.miniaturesManipulator.add(backRect);
+                this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             }
             let _addIconCaption = () => {
                 let captionManipulator = new Manipulator(this);
@@ -73,12 +70,12 @@ exports.DashboardAdmin = function (globalVariables) {
                 let publishedCaption = new svg.Text('Publiée').font('Arial', 20).anchor('left');
                 this.manipulator.add(captionManipulator);
                 captionManipulator.add(editedCaption).add(publishedCaption);
-                editedCaption.position(editedIcon.getSize()+ MARGIN, 6.6);
+                editedCaption.position(editedIcon.getSize() + MARGIN, 6.6);
                 publishedIcon.position(editedCaption.x + editedCaption.boundingRect().width + MARGIN + publishedIcon.getSize(), 0);
-                publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize()*2 + 2*MARGIN, 6.6);
+                publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize() * 2 + 2 * MARGIN, 6.6);
                 let positionCaption = {
-                    x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 3*MARGIN,
-                    y : this.header.height + publishedIcon.getSize() + MARGIN
+                    x: drawing.width - 4 * editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 3 * MARGIN,
+                    y: this.header.height + publishedIcon.getSize() + MARGIN
                 };
                 captionManipulator.move(positionCaption.x, positionCaption.y);
             }
@@ -132,26 +129,14 @@ exports.DashboardAdmin = function (globalVariables) {
 
         displayMiniatures() {
             let _displayMiniature = (formation, i) => {
-                let _displayBorder = () => {
+                let _displayMiniature = () => {
                     border = new svg.Rect(TILE_SIZE.rect.w, TILE_SIZE.rect.h)
                         .corners(2, 2)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
                         .position(CLIP_SIZE, 0)
                         .mark("miniatureBorder" + formation.label);
-                    manipulator.set(0, border)
-                }
-                let _displayCircleAroundPicture = () => {
-                    backCircle = new svg.Circle(CLIP_SIZE + 5)
-                        .color(myColors.lightgrey, 0.5, myColors.grey)
-                        .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
-                    manipulator.set(1, backCircle)
-                }
-                let _displayIconStatus = () => {
-                    let iconCreator = new IconCreator();
-                    let icon = iconCreator.createIconByName(formation.status, manipulator, 2);
-                    icon && icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - icon.getSize() / 2)
-                }
-                let _displayPicture = () => {
+                    let statusIcon = new IconCreator().createIconByName(formation.status, manipulator, 3);
+                    statusIcon && statusIcon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - statusIcon.getSize() / 2)
                     let clip = new ClipPath('image' + formation.label)
                         .add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w / 2 + CLIP_SIZE * 2, 0))
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
@@ -159,28 +144,27 @@ exports.DashboardAdmin = function (globalVariables) {
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0)
                         .dimension(IMAGE_SIZE, 2 * CLIP_SIZE)
                         .attr('clip-path', 'url(#image' + formation.label + ')');
-                    manipulator.add(clip);
-                    manipulator.set(3, picture);
-                }
-                let _displayContent = () => {
+                    backCircle = new svg.Circle(CLIP_SIZE + 5)
+                        .color(myColors.lightgrey, 0.5, myColors.grey)
+                        .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
                     let content = new svg.Text(formation.label)
                         .position(CLIP_SIZE, -TILE_SIZE.h / 4)
                         .font('Arial', 20);
                     resizeStringForText(content, TILE_SIZE.rect.w - 8 * MARGIN, TILE_SIZE.rect.h)
-                    manipulator.add(content);
-                }
-                let _displayIconAddPicture = () => {
                     let iconAddPicture = IconCreator.createAddImage(manipulator);
                     iconAddPicture.position(TILE_SIZE.w / 2 - 3 * MARGIN, -TILE_SIZE.h / 4);
                     iconAddPicture.manipulator.mark("popUpImg" + formation.label);
                     iconAddPicture.addEvent('click', () => {
                         this.displayPopUpImage(formation)
                     });
-                }
-                let _displayNotation = () => {
+                    manipulator.add(content).add(clip);
+                    manipulator.set(0, border)
+                    manipulator.set(1, backCircle)
+                    manipulator.set(2, picture);
+
                     if (formation.status === 'Published') {
                         let displayNotationManip = new Manipulator(this);
-                        let textNotation = new svg.Text(formation.note.toString().split('').slice(0, 4).join('')
+                        let textNotation = new svg.Text(formation.note
                             + '/5 (' + formation.noteCounter
                             + ' votes)')
                             .font('Arial', 14, 15).anchor('end');
@@ -210,58 +194,22 @@ exports.DashboardAdmin = function (globalVariables) {
                     };
                     manipulator.addEvent("mouseenter", () => onMouseOverSelect());
                 }
-                let _enterFormation = () => {
-                    this.presenter.enterFormation(formation);
-                }
 
                 let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip" + formation.label);
                 let border, backCircle;
-                _displayBorder();
-                _displayCircleAroundPicture();
-                _displayIconStatus();
-                _displayPicture();
-                _displayContent();
-                _displayIconAddPicture();
-                _displayNotation();
+                _displayMiniature();
                 _placeMiniature();
                 _colorWhenHover();
-                manipulator.addEvent('click', () => { _enterFormation(formation) });
+                manipulator.addEvent('click', () => { this.enterFormation(formation)});
                 this.miniaturesManipulator.add(manipulator);
             }
 
-            let formations = this.getFormations();
-            formations.forEach((formation, i) => {
+            this.getFormations().forEach((formation, i) => {
                 _displayMiniature(formation, i);
             });
         }
 
         displayPopUpImage(formation){
-            let dimensions = {
-                width: drawing.width * 1 / 2 - MARGIN,
-                height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_HEIGHT)
-            };
-
-            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
-            borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
-            let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_HEIGHT - 4 * MARGIN);
-            mediaPanel.position(0, (borderLibrary.height - mediaPanel.height) / 2 - 2 * MARGIN - BUTTON_HEIGHT);
-            mediaPanel.border.color(myColors.none, 1, myColors.grey);
-
-            let titleLibrary = new svg.Text('Library :').color(myColors.grey).font('Arial', 25);
-            let titleLibraryBack = new svg.Rect(100, 3).color(myColors.white);
-            titleLibraryBack.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2,
-                -borderLibrary.height / 2 + 2 * MARGIN);
-            titleLibrary.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2, -borderLibrary.height / 2 + 2 * MARGIN + 8.33);
-            let addPictureButton = new gui.Button(3 * BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
-                .position(borderLibrary.width / 2 - BUTTON_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - BUTTON_SIZE.h / 2 - MARGIN);
-            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
-            addPictureButton.glass.mark('addPictureButtonGlass');
-            this.mediasManipulator.add(borderLibrary);
-            this.mediasManipulator.add(mediaPanel.component);
-            this.mediasManipulator.add(titleLibraryBack);
-            this.mediasManipulator.add(titleLibrary);
-            this.mediasManipulator.add(addPictureButton.component);
-
             let _hideMediaPopup = () => {
                 this.mediasManipulator.flush()
             };
@@ -330,6 +278,32 @@ exports.DashboardAdmin = function (globalVariables) {
                 svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
             }
 
+            let dimensions = {
+                width: drawing.width * 1 / 2 - MARGIN,
+                height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_HEIGHT)
+            };
+
+            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
+            borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
+            let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_HEIGHT - 4 * MARGIN);
+            mediaPanel.position(0, (borderLibrary.height - mediaPanel.height) / 2 - 2 * MARGIN - BUTTON_HEIGHT);
+            mediaPanel.border.color(myColors.none, 1, myColors.grey);
+
+            let titleLibrary = new svg.Text('Library :').color(myColors.grey).font('Arial', 25);
+            let titleLibraryBack = new svg.Rect(100, 3).color(myColors.white);
+            titleLibraryBack.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2,
+                -borderLibrary.height / 2 + 2 * MARGIN);
+            titleLibrary.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2, -borderLibrary.height / 2 + 2 * MARGIN + 8.33);
+            let addPictureButton = new gui.Button(3 * BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
+                .position(borderLibrary.width / 2 - BUTTON_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - BUTTON_SIZE.h / 2 - MARGIN);
+            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
+            addPictureButton.glass.mark('addPictureButtonGlass');
+            this.mediasManipulator.add(borderLibrary);
+            this.mediasManipulator.add(mediaPanel.component);
+            this.mediasManipulator.add(titleLibraryBack);
+            this.mediasManipulator.add(titleLibrary);
+            this.mediasManipulator.add(addPictureButton.component);
+
             _displayRedCross();
             _displayPictures();
             _displayFileExplorerWhenClick();
@@ -361,6 +335,9 @@ exports.DashboardAdmin = function (globalVariables) {
             return this.presenter.getImages();
         }
 
+        enterFormation(formation){
+            this.presenter.enterFormation(formation);
+        }
     }
     return DashboardAdminV;
 }
