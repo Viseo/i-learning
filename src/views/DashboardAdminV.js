@@ -28,7 +28,6 @@ exports.DashboardAdmin = function (globalVariables) {
                 this.mediasManipulator = new Manipulator(this);
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
                 this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
-                this.manipulator.add(this.mediasManipulator);
             }
             let _displayBack = () => {
                 let headHeight = this.header.height + MARGIN;
@@ -273,6 +272,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_SIZE.h)
             };
 
+            this.manipulator.add(this.mediasManipulator);
             let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
             borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
             let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_SIZE.h - 4 * MARGIN);
