@@ -945,7 +945,7 @@ exports.QuizAdminV = function (globalVariables) {
                 if (status.saved) {
                     let formationLabel = this.getFormationLabel();
                     this.label = this.getLabel();
-                    this.header.display(formationLabel + " - " + this.label);
+                    this.displayHeader(formationLabel + " - " + this.label);
                 }
             }).catch(error => {
                 console.log(error);
