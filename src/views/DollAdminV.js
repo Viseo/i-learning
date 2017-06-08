@@ -143,12 +143,54 @@ exports.DollAdminV = function(globalVariables){
                 picBackManip.addEvent('click', _onClickBack);
                 picAddImageManip.addEvent('click', _createPopUpPicture);
 
+                let conf = {
+                    drop: (what, whatParent, x, y) => {
+                        let globalPoints = whatParent.globalPoint(x, y);
+                        let target = this.sandboxManip.last.getTarget(globalPoints.x, globalPoints.y);
+
+                        if(target && target == this.sandboxMain.back){
+                            let imgForDim  = new Image();
+                            imgForDim.src = what.components[0].src;
+
+                            let picCopy = new svg.Image(what.components[0].src);
+                            picCopy.dimension(imgForDim.width, imgForDim.height);
+
+                            let localPoints = this.sandboxMain.content.localPoint(x, y);
+                            picCopy.position(localPoints.x, localPoints.y);
+
+                            this.sandboxMain.content.add(picCopy);
+                        }
+                        return {x: what.x, y: what.y, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        what.flush();
+                        return true;
+                    }
+                };
+
                 this.getImages().then((images) => {
+                    var createDraggableCopy = (pic) => {
+                        let picManip = new Manipulator(this).addOrdonator(1);
+                        let point = pic.globalPoint(0, 0);
+                        picManip.move(point.x, point.y);
+
+
+                        let picCopy = pic.duplicate(pic);
+                        picManip.set(0, picCopy);
+                        drawings.piste.add(picManip);
+
+                        installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
+                        svg.event(drawings.component.glass, "mousedown", event);
+                    };
+
                     images.images.forEach(ele=> {
                         let picManip = new Manipulator(this);
                         let pic = new svg.Image(ele.imgSrc).dimension(HEADER_TILE, HEADER_TILE);
                         picManip.add(pic);
                         this.listViewPicture.add(picManip);
+
+                        pic.onMouseDown(() => createDraggableCopy(pic));
+                        //installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
                     });
                     this.listViewPicture.refreshListView();
                 });
