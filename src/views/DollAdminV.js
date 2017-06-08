@@ -5,6 +5,7 @@ exports.DollAdminV = function(globalVariables){
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
         svg = globalVariables.svg,
+        svgr = globalVariables.runtime,
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w:drawing.width-2*MARGIN, h: drawing.height * 0.7},
         SANDBOX_SIZE = {w: PANEL_SIZE.w*6/9, h: PANEL_SIZE.h - 4*MARGIN, header: {w: PANEL_SIZE.w*6/9, h: 100 }},
@@ -25,14 +26,16 @@ exports.DollAdminV = function(globalVariables){
             this.manipulator = new Manipulator(this);
             this.mainPanelManipulator = new Manipulator(this);
             this.rules = false;
+            this.textElements = [];
+            this.rectElements = [];
             let declareActions = ()=>{
 
                 this.actions = [];
                 this.actionTabs = [];
-                let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3);
-                let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue);
-                let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE);
-                let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE);
+                let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3).mark('textTab');
+                let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue).mark('rectTab');
+                let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE).mark('pictureTab');
+                let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE).mark('helpTab');
                 this.width = drawing.width;
                 this.height = drawing.height;
                 this.actionModes = {
@@ -41,7 +44,7 @@ exports.DollAdminV = function(globalVariables){
                             svg.addEvent(this.sandboxMain.component, 'mousedown', (event)=>{this.textZoning(event)});
                         },
                         'rect': ()=>{
-                            document.getElementById('content').style.cursor = 'crosshair';
+                            svgr.attr(drawing.component, 'style', 'cursor: crosshair');
                             svg.addEvent(this.sandboxMain.component, 'mousedown', (event)=>{
                                 this.rectZoning(event);
                             })
@@ -55,7 +58,7 @@ exports.DollAdminV = function(globalVariables){
                             svg.removeEvent(this.sandboxMain.component, 'mousedown');
                             svg.removeEvent(this.sandboxMain.component, 'mousemove');
                             svg.removeEvent(this.sandboxMain.component, 'mouseup');
-                            document.getElementById('content').style.cursor = 'auto';
+                            svgr.attr(drawing.component, 'style', 'cursor: auto');
                             this.actionModes.currentMode = 'none';
                         }},
                     currentMode: 'none'
@@ -273,6 +276,7 @@ exports.DollAdminV = function(globalVariables){
             let statementText = new svg.Text('Enoncé')
                 .font('Arial', 18)
                 .position(-TAB_SIZE.w, 6);
+            statement.mark('statement');
 
             let rules = new svg.Rect(TAB_SIZE.w, TAB_SIZE.h)
                 .color(myColors.white, 1, myColors.grey)
@@ -280,6 +284,7 @@ exports.DollAdminV = function(globalVariables){
             let rulesText = new svg.Text('Règles')
                 .font('Arial', 18)
                 .position(0, 6);
+            rules.mark('rules');
 
             util.resizeStringForText(statementText, TAB_SIZE.w, TAB_SIZE.h);
             util.resizeStringForText(rulesText, TAB_SIZE.w, TAB_SIZE.h);
@@ -355,6 +360,9 @@ exports.DollAdminV = function(globalVariables){
                         tmpHandler();
                     }
                 }
+                this.textElements.push(text);
+                text.glass.mark('textElement' + this.textElements.length +'click');
+                text.mark('textElement' + this.textElements.length);
                 this.sandboxMain.content.add(manip.component);
                 this.actionModes.actions['none']();
             }
@@ -399,6 +407,8 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
+            color.mark('colorOption');
+            resize.mark('resizeOption');
             arr.push(color,resize)
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
@@ -441,7 +451,9 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(rect, manipulator);
                 this.removeContextMenu();
             });
-            arr.push(color,resize)
+            color.mark('colorOption');
+            resize.mark('resizeOption');
+            arr.push(color,resize);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
@@ -517,10 +529,10 @@ exports.DollAdminV = function(globalVariables){
                 elem.refresh && elem.refresh();
             }
             let posArr = [
-                {x:-elem.width/2, y:-elem.height/2, drag: function(x,y){br.call(this,x,y,-1,-1)}, getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
-                {x:-elem.width/2, y:+elem.height/2, drag: function(x,y){br.call(this,x,y,-1,1)}, getX: function(){return -elem.width/2}, getY: function(){return +elem.height/2}},
-                {x:+elem.width/2, y:-elem.height/2, drag: function(x,y){br.call(this,x,y,1,-1)}, getX: function(){return +elem.width/2}, getY: function(){return -elem.height/2}},
-                {x:+elem.width/2, y:+elem.height/2, drag: function(x,y){br.call(this,x,y,1,1)}, getX: function(){return +elem.width/2}, getY: function(){return +elem.height/2}}
+                {x:-elem.width/2, y:-elem.height/2, id: 'topLeft', drag: function(x,y){br.call(this,x,y,-1,-1)}, getX: function(){return -elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:-elem.width/2, y:+elem.height/2, id: 'topRight', drag: function(x,y){br.call(this,x,y,-1,1)}, getX: function(){return -elem.width/2}, getY: function(){return +elem.height/2}},
+                {x:+elem.width/2, y:-elem.height/2, id: 'botLeft', drag: function(x,y){br.call(this,x,y,1,-1)}, getX: function(){return +elem.width/2}, getY: function(){return -elem.height/2}},
+                {x:+elem.width/2, y:+elem.height/2, id: 'botRight', drag: function(x,y){br.call(this,x,y,1,1)}, getX: function(){return +elem.width/2}, getY: function(){return +elem.height/2}}
             ];
             let updatePoints = ()=>{
                 for (let point of posArr){
@@ -563,6 +575,7 @@ exports.DollAdminV = function(globalVariables){
                 }
                 installDnD(manip, drawings.component.glass.parent.manipulator.last, conf)
                 manip.move(point.x, point.y);
+                manip.mark(point.id);
                 manip.point = point;
                 manipulator.corners.push(manip);
                 manipulator.add(manip.component);
@@ -590,6 +603,8 @@ exports.DollAdminV = function(globalVariables){
                 rect.position(0,0);
                 this.sandboxMain.content.remove(rect)
                 manip.add(rect);
+                this.rectElements.push(rect);
+                rect.mark('rectElement' + this.rectElements.length);
                 svg.removeEvent(this.sandboxMain.component, 'mousemove');
                 rect.color(myColors.blue);
                 svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
@@ -650,6 +665,7 @@ exports.DollAdminV = function(globalVariables){
             this.sandboxMain.position(0, SANDBOX_SIZE.header.h/2 + this.sandboxMain.height/2);
             this.sandboxManip.add(actionList.manipulator)
                 .add(this.sandboxMain.component);
+            this.sandboxMain.component.mark('mainPanel');
 
             svg.addEvent(this.sandboxMain.component, 'click', (event)=>{this.clickPanelHandler(event, true)});
 
@@ -686,6 +702,7 @@ exports.DollAdminV = function(globalVariables){
                 let leftTemplateManip = new Manipulator(this).addOrdonator(2);
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.green],
                 'Ajouter une solution');
+                addSolutionButton.glass.mark('addSolutionButton');
                 let selectSolution = new svg.Rect(0.8*addSolutionButton.width, INPUT_SIZE.h)
                     .color(myColors.white, 1, myColors.grey)
                     .corners(5,5);

@@ -23,7 +23,11 @@ exports.Models = function (globalVariables, mockResponses) {
             let quiz = new Quiz(obj);
             return quiz;
         }
-
+        createDoll(data){
+            if (typeof data == 'string') data = JSON.parse(data);
+            let doll = new Doll(data);
+            return doll;
+        }
         uploadImage(file, progressDisplay) {
             return MediasLibrary.upload(file, progressDisplay);
         }
