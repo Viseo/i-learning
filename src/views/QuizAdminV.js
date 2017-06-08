@@ -25,6 +25,10 @@ exports.QuizAdminV = function (globalVariables) {
     class QuizAdminV extends View {
         constructor(presenter) {
             super(presenter);
+            this.label = this.getLabel();
+        }
+
+        display() {
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
                 this.questionsBlockManipulator = new Manipulator(this).addOrdonator(1);
@@ -43,12 +47,6 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.saveQuizButtonManipulator)
                     .add(this.returnButtonManipulator);
             };
-
-            this.label = this.getLabel();
-            _declareManipulator();
-        }
-
-        display() {
             var _resetDrawings = () => {
                 drawings.component.clean();
                 this.questionsBlockManipulator.flush();
@@ -245,7 +243,8 @@ exports.QuizAdminV = function (globalVariables) {
                 svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
 
 
-                let imageWidth = (mediaLibDim.w - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
+                let imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
+                // let imageWidth = (mediaLibDim.w - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
                 let imagesManipulator = new Manipulator(this);
                 mediasPanel.content.add(imagesManipulator.first);
                 this.mediasLibraryManipulator.add(imagesManipulator);
@@ -276,7 +275,10 @@ exports.QuizAdminV = function (globalVariables) {
                 previewButton.glass.mark('previewButton');
                 previewButton.onClick(this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
-                this.previewButtonManipulator.move(this.width / 2 - previewButtonDim.width / 2 - MARGIN, previewButtonDim.height / 2);
+                this.previewButtonManipulator.move(this.width / 2 - previewButtonDim.width / 2 - MARGIN,
+                    this.header.height + this.returnButton.height + this.quizTitleField.height
+                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + previewButtonDim.height / 2
+                    + 5 * MARGIN);
             }
             var _displaySaveButton = () => {
                 let saveButtonDim = {
@@ -287,10 +289,14 @@ exports.QuizAdminV = function (globalVariables) {
                 saveButton.glass.mark('saveButtonQuiz');
                 saveButton.onClick(this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
-                this.saveQuizButtonManipulator.move(this.width / 2 + saveButtonDim.width / 2 + MARGIN, saveButtonDim.height / 2);
+                this.saveQuizButtonManipulator.move(this.width / 2 + saveButtonDim.width / 2 + MARGIN,
+                    this.header.height + this.returnButton.height + this.quizTitleField.height
+                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + saveButtonDim.height / 2
+                    + 5 * MARGIN);
             }
             // var currentY;
 
+            _declareManipulator();
             _resetDrawings();
             _updateHeader();
             _displayReturnButton();
@@ -342,7 +348,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let picture = new svg.Image(image.imgSrc);
                     picture.dimension(imageWidth, imageWidth);
                     let picManip = new Manipulator(this);
-                    picManip.move(indexX * (imageWidth + MARGIN/2) + imageWidth/2, indexY * (imageWidth + MARGIN))
+                    picManip.move(indexX * (imageWidth + MARGIN/2) + imageWidth/2 + MARGIN, imageWidth/2 + indexY * (imageWidth + 2*MARGIN))
                     picManip.add(picture);
 
                     panel.content.add(picManip.component);
@@ -624,6 +630,138 @@ exports.QuizAdminV = function (globalVariables) {
                                 }
                             };
                         };
+                        var _addExplanationPen = (answerGui) => {
+                            var _createExplanationPopUp = () => {
+                                var _createRedCross = () => {
+                                    var _closeExplanation = () => {
+                                        questionGui.explanationManipulator.remove(answerGui.popUpExplanation.manipulator);
+                                    };
+
+                                    let iconRedCross = IconCreator.createRedCrossIcon(popUpExplanation.manipulator, 2);
+                                    iconRedCross.position(dimExplanation.w / 2, -dimExplanation.h / 2);
+                                    iconRedCross.addEvent('click', _closeExplanation);
+                                };
+                                var _drawBackPanel = () => {
+                                    let panel = new svg.Rect(dimExplanation.w, dimExplanation.h)
+                                        .color(myColors.white, 2, myColors.black);
+                                    popUpExplanation.manipulator.set(0, panel);
+                                }
+                                var _drawTitle = () => {
+                                    popUpExplanation.setTextTitle = function (msg) {
+                                        this.textTitle.message("Explication de la réponse : " + msg);
+                                    };
+
+                                    let titleManip = new Manipulator(popUpExplanation).addOrdonator(1);
+                                    popUpExplanation.textTitle = new svg.Text("Explication de la réponse : Réponse").font('Arial', 25).color(myColors.grey);
+                                    titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h / 2 + 50);
+                                    // titleManip.add(popUpExplanation.textTitle).move(0, 50);
+                                    popUpExplanation.manipulator.add(titleManip);
+                                };
+                                var _drawContent = () => {
+                                    var _drawContentRect = () => {
+                                        let contentRect = new svg.Rect(dimensionContent.w, dimensionContent.h)
+                                            .color(myColors.white, 1, myColors.grey).corners(MARGIN);
+                                        contentManip.add(contentRect);
+                                    }
+                                    var _drawTextExplanation = () => {
+                                        var _onModificationText = () => {
+                                            if (popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
+                                                answerGui.iconExplanation.activeStatusActionIcon();
+                                                answerGui.iconExplanation.showActualBorder();
+                                            }
+                                        };
+
+                                        let explanationLabel = (answerGui.explanation && answerGui.explanation.label) ? answerGui.explanation.label : EXPLANATION_DEFAULT_TEXT;
+                                        popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w * 2 / 3 - MARGIN,
+                                            dimensionContent.h - MARGIN, explanationLabel);
+                                        popUpExplanation.textExplanation.font('Arial', 20)
+                                            .frame.color(myColors.white, 0, myColors.black);
+                                        popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
+                                        popUpExplanation.textExplanation.onBlur(_onModificationText);
+                                        popUpExplanation.textExplanation.mark('explanationText');
+
+                                        contentManip.add(popUpExplanation.textExplanation.component);
+                                    };
+                                    var _drawMediaPic = () => {
+                                        let imgSrc = (answerGui.explanation && answerGui.explanation.imageSrc) ? answerGui.explanation.imageSrc : "../images/quiz/newImage.png";
+                                        popUpExplanation.media = new svg.Image(imgSrc);
+                                        popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
+                                        popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
+                                        contentManip.add(popUpExplanation.media);
+                                    };
+
+                                    let contentManip = new Manipulator(popUpExplanation);
+                                    popUpExplanation.manipulator.add(contentManip);
+                                    _drawContentRect();
+                                    _drawTitle();
+                                    _drawTextExplanation();
+                                    _drawMediaPic();
+                                };
+
+                                let dimExplanation = {w: this.questionDetailsDim.w, h: this.questionDetailsDim.h};
+                                let dimensionContent = {
+                                    w: dimExplanation.w - MARGIN * 2, h: dimExplanation.h / 2
+                                };
+                                let popUpExplanation = {};
+                                popUpExplanation.manipulator = new Manipulator(popUpExplanation).addOrdonator(3);
+                                popUpExplanation.manipulator.mark('explanation');
+
+                                _createRedCross();
+                                _drawBackPanel();
+                                // _drawTitle();
+                                _drawContent();
+
+                                return popUpExplanation;
+                            };
+                            var _createExplanationIcon = () => {
+                                let answerTextDim = {
+                                    w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                                    h: 70
+                                };
+                                var _toggleExplanation = () => {
+                                    questionGui.explanationManipulator.add(answerGui.popUpExplanation.manipulator);
+                                    answerGui.popUpExplanation.setTextTitle(answerGui.textArea.textMessage);
+                                };
+
+                                let icon = IconCreator.createExplanationIcon(answerGui.manipulator, 1)
+                                    .mark("explanationButton"+answerGui.index)
+                                    .addEvent('click', _toggleExplanation);
+                                icon.position(answerTextDim.w / 2 - icon.getContentSize() * 2 / 3, 0)
+                                if (answerGui.popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
+                                    icon.activeStatusActionIcon();
+                                    icon.showActualBorder();
+                                }
+                                return icon;
+                            }
+
+                            answerGui.explanationPenManipulator = new Manipulator(this);
+                            answerGui.linesManipulator = new Manipulator(this);
+                            answerGui.penManipulator = new Manipulator(this);
+                            answerGui.popUpExplanation = _createExplanationPopUp();
+                            answerGui.iconExplanation = _createExplanationIcon();
+
+                        };
+                        var _addValidCheckbox = (answerGui) => {
+                            answerGui.checkBoxManipulator = new Manipulator(this);
+                            answerGui.checkBoxManipulator.mark("answerCheckbox"+answerGui.index);
+                            var _toggleChecked = () => {
+                                if (answerGui.checked) {                           // modele or state
+                                    answerGui.checkBoxManipulator.remove(checked);
+                                    answerGui.checked = false;                     // modele or state
+                                } else {
+                                    answerGui.checkBoxManipulator.add(checked);
+                                    answerGui.checked = true;                      // modele or state
+                                }
+                            }
+                            let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                            let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                            answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
+                            answerGui.checkBoxManipulator.add(checkbox).move(-answerTextDim.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                            if (answerGui.checked) {
+                                answerGui.checkBoxManipulator.add(checked);
+                            }
+                            answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
+                        };
 
                         answerGui.textArea = new gui.TextArea(0, 0, answerTextDim.w, answerTextDim.h, answerLabel || "Réponse");
                         answerGui.manipulator.set(0, answerGui.textArea.component);
@@ -632,145 +770,20 @@ exports.QuizAdminV = function (globalVariables) {
                         let pos = _calculatePositionAnswer(questionGui, index);
                         answerGui.manipulator.move(pos.x, pos.y);
                         _initRedCross(answerGui);
+                        _addExplanationPen(answerGui);
+                        _addValidCheckbox(answerGui);
                     };
-
-                    var _addExplanationPen = (answerGui) => {
-                        var _createExplanationPopUp = () => {
-                            var _createRedCross = () => {
-                                var _closeExplanation = () => {
-                                    questionGui.explanationManipulator.remove(answerGui.popUpExplanation.manipulator);
-                                };
-
-                                let iconRedCross = IconCreator.createRedCrossIcon(popUpExplanation.manipulator, 2);
-                                iconRedCross.position(dimExplanation.w / 2, -dimExplanation.h / 2);
-                                iconRedCross.addEvent('click', _closeExplanation);
-                            };
-                            var _drawBackPanel = () => {
-                                let panel = new svg.Rect(dimExplanation.w, dimExplanation.h)
-                                    .color(myColors.white, 2, myColors.black);
-                                popUpExplanation.manipulator.set(0, panel);
-                            }
-                            var _drawTitle = () => {
-                                popUpExplanation.setTextTitle = function (msg) {
-                                    this.textTitle.message("Explication de la réponse : " + msg);
-                                };
-
-                                let titleManip = new Manipulator(popUpExplanation).addOrdonator(1);
-                                popUpExplanation.textTitle = new svg.Text("").font('Arial', 25).color(myColors.grey);
-                                titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h / 2 + 50);
-                                popUpExplanation.manipulator.add(titleManip);
-                            };
-                            var _drawContent = () => {
-                                var _drawContentRect = () => {
-                                    let contentRect = new svg.Rect(dimensionContent.w, dimensionContent.h)
-                                        .color(myColors.white, 1, myColors.grey).corners(MARGIN);
-                                    contentManip.add(contentRect);
-                                }
-                                var _drawTextExplanation = () => {
-                                    var _onModificationText = () => {
-                                        if (popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
-                                            answerGui.iconExplanation.activeStatusActionIcon();
-                                            answerGui.iconExplanation.showActualBorder();
-                                        }
-                                    };
-
-                                    let explanationLabel = (answerGui.explanation && answerGui.explanation.label) ? answerGui.explanation.label : EXPLANATION_DEFAULT_TEXT;
-                                    popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w * 2 / 3 - MARGIN,
-                                        dimensionContent.h - MARGIN, explanationLabel);
-                                    popUpExplanation.textExplanation.font('Arial', 20)
-                                        .frame.color(myColors.white, 0, myColors.black);
-                                    popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
-                                    popUpExplanation.textExplanation.onBlur(_onModificationText);
-                                    popUpExplanation.textExplanation.mark('explanationText');
-
-                                    contentManip.add(popUpExplanation.textExplanation.component);
-                                };
-                                var _drawMediaPic = () => {
-                                    let imgSrc = (answerGui.explanation && answerGui.explanation.imageSrc) ? answerGui.explanation.imageSrc : "../images/quiz/newImage.png";
-                                    popUpExplanation.media = new svg.Image(imgSrc);
-                                    popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
-                                    popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
-                                    contentManip.add(popUpExplanation.media);
-                                };
-
-                                let contentManip = new Manipulator(popUpExplanation);
-                                popUpExplanation.manipulator.add(contentManip);
-                                _drawContentRect();
-                                _drawTitle();
-                                _drawTextExplanation();
-                                _drawMediaPic();
-                            };
-
-                            let dimExplanation = {w: this.questionDetailsDim.width, h: this.questionDetailsDim.height};
-                            let dimensionContent = {
-                                w: dimExplanation.w - MARGIN * 2, h: dimExplanation.h / 2
-                            };
-                            let popUpExplanation = {};
-                            popUpExplanation.manipulator = new Manipulator(popUpExplanation).addOrdonator(3);
-                            popUpExplanation.manipulator.mark('explanation');
-
-                            _createRedCross();
-                            _drawBackPanel();
-                            _drawTitle();
-                            _drawContent();
-
-                            return popUpExplanation;
-                        };
-                        var _createExplanationIcon = () => {
-                            var _toggleExplanation = () => {
-                                questionGui.explanationManipulator.add(answerGui.popUpExplanation.manipulator);
-                            };
-
-                            let icon = IconCreator.createExplanationIcon(answerGui.manipulator, 1)
-                                .mark("explanationButton"+answerGui.index)
-                                .addEvent('click', _toggleExplanation);
-                            icon.position(dimensions.w / 2 - icon.getContentSize() * 2 / 3, 0)
-                            if (answerGui.popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
-                                icon.activeStatusActionIcon();
-                                icon.showActualBorder();
-                            }
-                            return icon;
-                        }
-
-                        answerGui.explanationPenManipulator = new Manipulator(this);
-                        answerGui.linesManipulator = new Manipulator(this);
-                        answerGui.penManipulator = new Manipulator(this);
-                        answerGui.popUpExplanation = _createExplanationPopUp();
-                        answerGui.iconExplanation = _createExplanationIcon();
-
-                    };
-                    var _addValidCheckbox = (answerGui) => {
-                        answerGui.checkBoxManipulator = new Manipulator(this);
-                        answerGui.checkBoxManipulator.mark("answerCheckbox"+answerGui.index);
-                        var _toggleChecked = () => {
-                            if (answerGui.checked) {                           // modele or state
-                                answerGui.checkBoxManipulator.remove(checked);
-                                answerGui.checked = false;                     // modele or state
-                            } else {
-                                answerGui.checkBoxManipulator.add(checked);
-                                answerGui.checked = true;                      // modele or state
-                            }
-                        }
-                        let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                        let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
-                        answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
-                        answerGui.checkBoxManipulator.add(checkbox).move(-dimensions.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
-                        if (answerGui.checked) {
-                            answerGui.checkBoxManipulator.add(checked);
-                        }
-                        answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
-                    };
-
                     let answerGui = {checked: answer.correct, explanation: answer.explanation};
 
                     _initGui(answerGui, index);
                     _initAnswerTextArea(answerGui, answer.label, index);
-                    _addExplanationPen(answerGui);
-                    _addValidCheckbox(answerGui);
-
                     return answerGui;
                 };
                 var _createAddNewResponse = () => {
+                    let answerTextDim = {
+                        w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
+                        h: 70
+                    };
                     var clickOnAddNewResponse = () => {
                         if (questionGui.answersGui.length < 8) {
                             let answerGui = _loadOneAnswerBlock({}, questionGui.answersGui.length);
@@ -791,7 +804,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
 
                     let addNewResponseButton
-                        = new gui.Button(dimensions.w, dimensions.h, [myColors.white, 1, myColors.black], "");
+                        = new gui.Button(answerTextDim.w, answerTextDim.h, [myColors.white, 1, myColors.black], "");
                     questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
 
                     questionGui.addNewResponseManip.move(pos.x, pos.y);
@@ -812,8 +825,6 @@ exports.QuizAdminV = function (globalVariables) {
                         });
                     }
                 }
-
-
 
                 if (!question.answers || question.answers.length < 1) {
                     question.answers = [{label: ""}, {label: ""}]
