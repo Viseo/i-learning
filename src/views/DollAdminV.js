@@ -152,13 +152,20 @@ exports.DollAdminV = function(globalVariables){
                             let imgForDim  = new Image();
                             imgForDim.src = what.components[0].src;
 
-                            let picCopy = new svg.Image(what.components[0].src);
-                            picCopy.dimension(imgForDim.width, imgForDim.height);
+                            let picInPanelManip = new Manipulator(this);
+                            let picInPanel = new svg.Image(what.components[0].src);
+                            picInPanel.dimension(imgForDim.width, imgForDim.height);
+                            picInPanelManip.add(picInPanel);
 
                             let localPoints = this.sandboxMain.content.localPoint(x, y);
-                            picCopy.position(localPoints.x, localPoints.y);
+                            picInPanelManip.move(localPoints.x, localPoints.y);
 
-                            this.sandboxMain.content.add(picCopy);
+                            svg.addEvent(picInPanel,'contextmenu',(event)=>{
+                                this.selectElement(picInPanel);
+                                this.imageRightClick(picInPanel, picInPanelManip, event);
+                            });
+                            
+                            this.sandboxMain.content.add(picInPanelManip.component);
                         }
                         return {x: what.x, y: what.y, parent: whatParent};
                     },
@@ -190,7 +197,6 @@ exports.DollAdminV = function(globalVariables){
                         this.listViewPicture.add(picManip);
 
                         pic.onMouseDown(() => createDraggableCopy(pic));
-                        //installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
                     });
                     this.listViewPicture.refreshListView();
                 });
@@ -436,6 +442,30 @@ exports.DollAdminV = function(globalVariables){
                 this.removeContextMenu();
             });
             arr.push(color,resize)
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
+            this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
+        }
+
+        imageRightClick(image, manipulator, event){
+            let makeClickableItem = (message, handler)=>{
+                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
+                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
+                let manip = new Manipulator(this);
+                manip.add(rect).add(txt);
+                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
+                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
+                manip.addEvent('click', handler);
+                return manip;
+            }
+            let arr = [];
+            let resize = makeClickableItem('Redimensionner', ()=>{
+                this.resizeElement(image, manipulator);
+                this.removeContextMenu();
+            });
+            arr.push(resize);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
