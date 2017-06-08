@@ -26,8 +26,7 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         display() {
-            var _declareManipulators = () => {
-                this.manipulator = new Manipulator(this);
+            var _initManips = () => {
                 this.fieldsManip = new Manipulator(this);
                 this.cookieManipulator = new Manipulator(this);
                 this.cookieManipulator.component.mark("cookieManipulator");
@@ -41,13 +40,7 @@ exports.ConnectionV = function (globalVariables) {
                     .add(this.newPasswordManipulator)
                     .add(this.connectionButtonManipulator)
                     .add(this.registerTextManipulator);
-                drawing.manipulator.set(0, this.manipulator);
             }
-            var _displayHeader = () => {
-                let headerManipulator = this.header.getManipulator();
-                this.manipulator.add(headerManipulator);
-                this.header.display("Connexion");
-            };
             var _displayFields = () => {
                 var _displayField = (field) => {
                     var _updatePresenter = (oldMessage, newMessage, valid) => {
@@ -195,8 +188,9 @@ exports.ConnectionV = function (globalVariables) {
                 _displayRegisterText();
             };
 
-            _declareManipulators();
-            _displayHeader();
+            super.display();
+            _initManips();
+            this.displayHeader("Connexion");
             _displayFields();
             _displayCookieCheckbox();
             _displayForgotPWD();

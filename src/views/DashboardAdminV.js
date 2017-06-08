@@ -25,16 +25,10 @@ exports.DashboardAdmin = function (globalVariables) {
 
         display() {
             let _initManips = () => {
-                this.manipulator = new Manipulator(this).addOrdonator(2);
                 this.mediasManipulator = new Manipulator(this);
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
                 this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
-                drawing.manipulator.set(0, this.manipulator);
-            }
-            let _updateHeader = () => {
-                let headerManipulator = this.header.getManipulator();
-                this.manipulator.add(headerManipulator);
-                this.header.display("Dashboard");
+                this.manipulator.add(this.mediasManipulator);
             }
             let _displayBack = () => {
                 let headHeight = this.header.height + MARGIN;
@@ -113,17 +107,14 @@ exports.DashboardAdmin = function (globalVariables) {
                 this.addFormationManipulator.set(1, addButton.component);
                 this.manipulator.add(this.addFormationManipulator);
             }
-            let _addMediasManip = () => {
-                this.manipulator.add(this.mediasManipulator);
-            }
 
+            super.display();
             _initManips();
             _displayBack();
-            _updateHeader();
+            this.displayHeader("Dashboard");
             _addIconCaption();
             _addNewFormationInput();
             this.displayMiniatures()
-            _addMediasManip();
         }
 
         displayMiniatures() {

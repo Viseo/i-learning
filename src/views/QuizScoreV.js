@@ -13,10 +13,8 @@ exports.QuizScoreV = function (globalVariables) {
         View = globalVariables.View;
 
     const
-        FONT = "Arial",
         FONT_SIZE = 20,
-        INPUT_WIDTH = 300,
-        INPUT_HEIGHT = 30,
+        INPUT_SIZE = {w:300, h:50},
         QUESTION_HEIGHT = 50,
         QUESTIONS_PER_LINE = 3,
         BUTTON_HEIGHT = 50;
@@ -24,31 +22,22 @@ exports.QuizScoreV = function (globalVariables) {
     class QuizScoreV extends View{
         constructor(presenter) {
             super(presenter);
-            this.manipulator = new Manipulator(this);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.titleManipulator = new Manipulator(this).addOrdonator(2);
-            this.questionsManipulator = new Manipulator(this);
-            this.resultButtonManipulator = new Manipulator(this);
         }
 
         display() {
-            var _cleanManipulators = () => {
-                this.manipulator.flush();
-            }
-            var _attachManipulators = () => {
-                let headerManipulator = this.header.getManipulator();
+            var _initManips = () => {
+                this.returnButtonManipulator = new Manipulator(this);
+                this.titleManipulator = new Manipulator(this).addOrdonator(2);
+                this.questionsManipulator = new Manipulator(this);
+                this.resultButtonManipulator = new Manipulator(this);
                 this.manipulator
-                    .add(headerManipulator)
                     .add(this.returnButtonManipulator)
                     .add(this.titleManipulator)
                     .add(this.questionsManipulator)
                     .add(this.resultButtonManipulator)
             }
-            var _displayHeader = () => {
-                this.header.display(this.getLabel());
-            };
             var _displayReturnButton = () => {
-                let returnButton = new gui.Button(INPUT_WIDTH, INPUT_HEIGHT, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
+                let returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
                 returnButton.back.corners(5, 5);
                 returnButton.text.font(FONT, FONT_SIZE).position(0, 6.6);
                 returnButton.onClick(this.returnToOldPage.bind(this));
@@ -118,11 +107,10 @@ exports.QuizScoreV = function (globalVariables) {
                 this.resultButtonManipulator.move(drawing.width / 2, drawing.height - MARGIN - dimensions.height / 2);
             }
 
-            drawing.manipulator.set(0, this.manipulator);
+            super.display();
             var currentY = this.header.height + MARGIN;
-            _cleanManipulators();
-            _attachManipulators();
-            _displayHeader();
+            _initManips();
+            this.displayHeader(this.getLabel());
             _displayReturnButton();
             _displayTitle();
             _displayWrongQuestions();

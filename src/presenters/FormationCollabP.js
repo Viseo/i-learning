@@ -23,7 +23,7 @@ exports.FormationCollabP = function(globalVariables){
             this.state.returnToOldPage();
         }
 
-        onClickGame(game){
+        enterGame(game){
             this.state.loadPresenterGameCollab(game);
         }
 

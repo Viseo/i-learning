@@ -1,6 +1,5 @@
 FONT = 'Arial';
 MARGIN = 10;
-HEADER_SIZE = 0.07;
 STAR_SPACE = 4;
 myColors = {
     ultraLightGrey: [184, 187, 196],
@@ -88,11 +87,18 @@ exports.Util = function (globalVariables) {
         addEvent(eventName, handler) {
             this.listeners[eventName] = handler;
             svg.addEvent(this.translator, eventName, handler);
+            return this;
         }
 
         removeEvent(eventName) {
             let handler = this.listeners[eventName];
             svg.removeEvent(this.translator, eventName, handler);
+            return this;
+        }
+
+        event(eventName){
+            svg.event(this.translator, eventName, this.listeners[eventName]);
+            return this;
         }
 
         addOrdonator(layerNumber) {

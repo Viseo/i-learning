@@ -11,57 +11,51 @@ exports.HeaderV = function(globalVariables){
         drawing = globalVariables.drawing,
         Manipulator = util.Manipulator;
 
-    const HEADER_SIZE = 0.07,
-          FONT_SIZE = 20,
-          BUTTON_WIDTH = 150;
+    const
+        HEADER_SIZE = 50,
+        FONT_SIZE = 20,
+        BUTTON_WIDTH = 150;
 
     class HeaderVue {
         constructor(presenter) {
-            this.manipulator = new Manipulator(this).addOrdonator(3);
-            this.userManipulator = new Manipulator(this);
-            this.userIconManipulator = new Manipulator(this).addOrdonator(2)
-            this.label = "I-learning";
-            this.height = HEADER_SIZE * drawing.height;
+            this.width = drawing.width;
+            this.height = HEADER_SIZE;
             this.presenter = presenter;
-            this.manipulator.add(this.userManipulator);
         }
 
-        disconnect(){
-            this.presenter && this.presenter.clearOldPageStackAndLoadPresenterConnection();
-        }
-
-        display(message) {
-            var _resetManip = () => {
-                this.manipulator.flush();
+        display(parentManipulator, message) {
+            var _resetManips = () => {
+                if(this.manipulator) parentManipulator.remove(this.manipulator);
+                this.manipulator = new Manipulator(this).addOrdonator(3);
+                this.userManipulator = new Manipulator(this);
+                this.userIconManipulator = new Manipulator(this).addOrdonator(2)
                 this.manipulator.add(this.userManipulator);
                 this.userManipulator.add(this.userIconManipulator);
-                this.userManipulator.move(width - MARGIN, height/2);
+                this.userManipulator.move(this.width - MARGIN, this.height/2);
+                parentManipulator.add(this.manipulator);
             }
             var _displayHeaderRect = () => {
-                let rect = new svg.Rect(width, height)
+                let rect = new svg.Rect(this.width, this.height)
                     .color(myColors.customBlue, 0.5, myColors.black)
-                    .position(width/2, height/2);
+                    .position(this.width/2, this.height/2);
                 this.manipulator.set(0, rect);
             }
             var _displayHomeText = ()=> {
-                var _onClickLogo = () => {
-                    this.presenter.clearOldPageStackAndLoadPresenterDashboard();
-                };
-                let text = new svg.Text(this.label)
-                    .position(MARGIN, height/2 + FONT_SIZE/4)
+                let text = new svg.Text("I-learning")
+                    .position(MARGIN, this.height/2 + FONT_SIZE/4)
                     .font('Arial', FONT_SIZE)
                     .anchor('start')
                     .color(myColors.white)
                     .mark('homeText');
-                text.onMouseDown(_onClickLogo);
+                text.onMouseDown(this.gotToDashboard.bind(this));
                 this.manipulator.set(1, text);
             }
             var _displayMessage = () => {
                 if (message) {
                     let messageText = new svg.Text(message)
-                        .dimension(width * 0.3, height)
+                        .dimension(this.width * 0.3, this.height)
                         .font('Arial', 32)
-                        .position(width / 2, height / 2 + MARGIN)
+                        .position(this.width / 2, this.height / 2 + MARGIN)
                         .color(myColors.white)
                         .mark("headerMessage");
                     this.manipulator.set(2, messageText);
@@ -69,28 +63,28 @@ exports.HeaderV = function(globalVariables){
                     this.manipulator.unset(2);
                 }
             }
-            var _displayUserName = () => {
+            var _displayUser = () => {
                 let userText = new svg.Text(drawing.username)
                     .font('Arial', 20)
                     .anchor('end')
-                    .position(-BUTTON_WIDTH - 2*MARGIN, FONT_SIZE/2)
+                    .position(-BUTTON_WIDTH - 2*MARGIN, this.height/2 - FONT_SIZE/2)
                     .color(myColors.white);
 
-                this.userManipulator.add(userText);
-                textWidth = userText.boundingRect().width;
-                userText.dimension(textWidth, height)
-            }
-            var _displayUserIcon = () => {
                 let ratio = 0.65;
                 let body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.white),
                     head = new svg.Circle(12 * ratio).color(myColors.white, 1, myColors.customBlue);
-
                 body.position(0, -5 * ratio);
                 head.position(0, -20 * ratio);
-                
+
+                this.userManipulator.add(userText);
+                textWidth = userText.boundingRect().width;
+                userText.dimension(textWidth, this.height)
                 this.userIconManipulator.set(0, body);
                 this.userIconManipulator.set(1, head);
-                this.userIconManipulator.move(-BUTTON_WIDTH - 2*MARGIN - textWidth - body.width/2 - 2*MARGIN, 0);
+                this.userIconManipulator.move(
+                    -BUTTON_WIDTH - MARGIN - textWidth - body.width/2 - 2*MARGIN,
+                    this.height/2 - (body.height+head.r*2)/2
+                );
             }
             var _displayDeconnectionButton = () => {
                 var disconnect = () => {
@@ -98,7 +92,7 @@ exports.HeaderV = function(globalVariables){
                     drawing.username = null;
                     this.disconnect();
                 };
-                let button = new gui.Button(BUTTON_WIDTH, height*2/3, [myColors.none, 1, myColors.white], "Déconnexion");
+                let button = new gui.Button(BUTTON_WIDTH, this.height*2/3, [myColors.none, 1, myColors.white], "Déconnexion");
                 button.text.color(myColors.white);
                 button.back.corners(5, 5);
                 button.position(-BUTTON_WIDTH/2, 0);
@@ -107,26 +101,26 @@ exports.HeaderV = function(globalVariables){
                 this.userManipulator.add(button.component);
             }
 
-            const width = drawing.width, height = HEADER_SIZE * drawing.height;
-            let textWidth = width * 0.23;
-
-            _resetManip();
+            this.width = drawing.width;
+            let textWidth = this.width * 0.23;
+            _resetManips();
             _displayHeaderRect();
             _displayHomeText();
             _displayMessage();
             if(drawing.username){
-                _displayUserName();
-                _displayUserIcon();
+                _displayUser();
                 _displayDeconnectionButton();
             }
-        }
 
-        getManipulator(){
             return this.manipulator;
         }
 
-        resize() {
+        gotToDashboard(){
+            this.presenter.clearOldPageStackAndLoadPresenterDashboard();
+        }
 
+        disconnect(){
+            this.presenter.clearOldPageStackAndLoadPresenterConnection();
         }
     }
 

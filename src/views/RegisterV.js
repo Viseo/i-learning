@@ -27,7 +27,6 @@ exports.RegisterV = function (globalVariables) {
 
         display() {
             var _declareManipulator = () => {
-                this.manipulator = new Manipulator(this);
                 this.fieldsManip = new Manipulator(this);
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.saveButtonManipulator.component.mark('saveButton');
@@ -37,13 +36,7 @@ exports.RegisterV = function (globalVariables) {
                     .add(this.fieldsManip)
                     .add(this.saveButtonManipulator)
                     .add(this.connectionTextManipulator);
-                drawing.manipulator.add(this.manipulator);
             }
-            var _displayHeader = () => {
-                let headerManipulator = this.header.getManipulator();
-                this.manipulator.add(headerManipulator);
-                this.header.display("Inscription");
-            };
             var _displayFields = () => {
                 var _displayField = (field) => {
                     var _updatePresenter = (oldMessage, newMessage, valid) => {
@@ -130,16 +123,13 @@ exports.RegisterV = function (globalVariables) {
                 this.connectionTextManipulator.addEvent('click',() => this.returnToOldPage());
             };
 
+            super.display();
             _declareManipulator();
-            _displayHeader();
+            this.displayHeader('Inscription');
             _displayFields();
             _displaySaveButton();
             _displayConnectionLabel();
             svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
-        }
-
-        refresh() {
-
         }
 
         tryRegister(){
