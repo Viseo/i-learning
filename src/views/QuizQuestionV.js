@@ -9,67 +9,42 @@ exports.QuizQuestionV = function (globalVariables) {
         util = globalVariables.util,
         runtime = globalVariables.runtime,
         Manipulator = util.Manipulator,
-        IconCreator = globalVariables.domain.IconCreator,
+        Tool = globalVariables.Tool,
+        IconCreator = Tool.IconCreator,
         drawing = globalVariables.drawing,
         View = globalVariables.View;
 
     const
-        FONT = "Arial",
         FONT_SIZE = 20,
         HEXAGON_HEIGHT_RATIO = 1 / 6,
-        INPUT_WIDTH = 300,
-        INPUT_HEIGHT = 30,
-        CHEVRON_WIDTH = 50,
-        CHEVRON_HEIGHT = 75,
-        CHEVRON_STROKE = 10,
+        INPUT_SIZE = {w: 300, h: 30},
+        CHEVRON_SIZE = {w:50, h:75, stroke:10},
         ANSWERS_PER_LINE = 2,
         EXPLANATION_HEIGHT = 200,
-        BUTTON_WIDTH = 200,
-        BUTTON_HEIGHT = 40;
+        BUTTON_SIZE = {w:200, h:40};
 
     class QuizQuestionV  extends View{
         constructor(presenter) {
             super(presenter);
-            var _initVariables = () => {
-                this.answers = [];
-            }
-            var _defineManipulators = () => {
-                this.manipulator = new Manipulator(this);
+            this.answers = [];
+        }
+
+        display() {
+            var _initManips = () => {
                 this.questionManipulator = new Manipulator(this).addOrdonator(4);
                 this.returnButtonManipulator = new Manipulator(this);
                 this.leftChevronManipulator = new Manipulator(this).mark('leftChevron');
                 this.rightChevronManipulator = new Manipulator(this).mark('rightChevron');
                 this.answersManipulator = new Manipulator(this);
-                this.helpManipulator = new Manipulator(this);
-                this.scoreManipulator = new Manipulator(this);
-                this.explanationManipulator = new Manipulator(this);
-                this.buttonsManipulator = new Manipulator(this);
-            }
-
-            _initVariables();
-            _defineManipulators();
-        }
-
-        display() {
-            var _cleanManipulators = () => {
-                this.manipulator.flush();
-                this.answers = [];
-            }
-            var _attachManipulators = () => {
-                let headerManipulator = this.header.getManipulator();
                 this.manipulator
-                    .add(headerManipulator)
                     .add(this.questionManipulator)
                     .add(this.returnButtonManipulator)
                     .add(this.leftChevronManipulator)
                     .add(this.rightChevronManipulator)
                     .add(this.answersManipulator);
             }
-            var _displayHeader = () => {
-                this.header.display(this.getLabel());
-            };
             var _displayReturnButton = () => {
-                this.returnButton = new gui.Button(INPUT_WIDTH, INPUT_HEIGHT, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
+                this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
                 this.returnButton.back.corners(5, 5);
                 this.returnButton.text.font(FONT, FONT_SIZE).position(0, 6.6);
                 this.returnButton.onClick(this.returnHandler.bind(this));
@@ -90,35 +65,22 @@ exports.QuizQuestionV = function (globalVariables) {
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
                 this.questionManipulator.set(0, line);
-                let title = new svg.Text(this.getCurrentQuestionLabel())
+                let questionTitle = new svg.Text(this.getCurrentQuestionLabel())
                     .font(FONT, FONT_SIZE)
                     .mark('questionTitle'+this.getId());
-                this.questionManipulator.set(3, title);
-                //Title in the left corner  with limit 15 char
-
-                let formationTitle = autoAdjustText(
-                    this.getLabel(),
-                    util.getStringWidthByFontSize(15, FONT_SIZE),
-                    FONT_SIZE,
-                    FONT_SIZE,
-                    FONT,
-                    this.questionManipulator, 2
-                );
-
-                formationTitle.text.position(-drawing.width / 2 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
-                this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
-                currentY += border.height + 2 * MARGIN;
-
+                this.questionManipulator.set(3, questionTitle);
                 let voiceIcon = IconCreator.createVoiceIcon(this.questionManipulator);
-                voiceIcon.position(drawing.width / 4 + formationTitle.finalWidth / 2 + MARGIN, -MARGIN);
+                voiceIcon.position(drawing.width / 4 + MARGIN, 0);
                 voiceIcon.addEvent( 'click', () => {
                     runtime.speechSynthesisSpeak(this.getCurrentQuestionLabel());
                 });
+                this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
+                currentY += border.height + 2 * MARGIN;
             }
             var _displayChevrons = () => {
                 var _displayLeftChevron = () => {
-                    let glass = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 0, myColors.white);
-                    let leftChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "W");
+                    let glass = new svg.Rect(chevronDim.width, chevronDim.height).color(myColors.white, 0, myColors.white);
+                    let leftChevron = new svg.Chevron(chevronDim.width, chevronDim.height, chevronDim.stroke, "W");
                     if (this.isFirstQuestion()) {
                         leftChevron.color(myColors.grey, 1, myColors.grey);
                     } else {
@@ -126,11 +88,11 @@ exports.QuizQuestionV = function (globalVariables) {
                         this.leftChevronManipulator.addEvent('click', this.previousQuestion.bind(this));
                     }
                     this.leftChevronManipulator.add(glass).add(leftChevron);
-                    this.leftChevronManipulator.move(MARGIN + dimensions.width / 2, (drawing.height + currentY) / 2);
+                    this.leftChevronManipulator.move(MARGIN + chevronDim.width / 2, (drawing.height + currentY) / 2);
                 }
                 var _displayRightChevron = () => {
-                    let glass = new svg.Rect(dimensions.width, dimensions.height).color(myColors.white, 0, myColors.white);
-                    let rightChevron = new svg.Chevron(dimensions.width, dimensions.height, dimensions.stroke, "E");
+                    let glass = new svg.Rect(chevronDim.width, chevronDim.height).color(myColors.white, 0, myColors.white);
+                    let rightChevron = new svg.Chevron(chevronDim.width, chevronDim.height, chevronDim.stroke, "E");
                     if (this.isLastAnsweredQuestion()) {
                         rightChevron.color(myColors.grey, 1, myColors.grey);
                     } else {
@@ -138,13 +100,13 @@ exports.QuizQuestionV = function (globalVariables) {
                         this.rightChevronManipulator.addEvent('click', this.nextQuestion.bind(this));
                     }
                     this.rightChevronManipulator.add(glass).add(rightChevron);
-                    this.rightChevronManipulator.move(drawing.width - MARGIN - dimensions.width / 2, (drawing.height + currentY) / 2);
+                    this.rightChevronManipulator.move(drawing.width - MARGIN - chevronDim.width / 2, (drawing.height + currentY) / 2);
                 }
 
-                let dimensions = {
-                    width: CHEVRON_WIDTH,
-                    height: CHEVRON_HEIGHT,
-                    stroke: CHEVRON_STROKE
+                let chevronDim = {
+                    width: CHEVRON_SIZE.w,
+                    height: CHEVRON_SIZE.h,
+                    stroke: CHEVRON_SIZE.stroke
                 }
                 _displayRightChevron();
                 _displayLeftChevron();
@@ -183,7 +145,7 @@ exports.QuizQuestionV = function (globalVariables) {
 
                 let dimensions = {
                     width: drawing.width * 3 / 5,
-                    height: drawing.height - currentY - BUTTON_HEIGHT - 2*MARGIN
+                    height: drawing.height - currentY - BUTTON_SIZE.h - 2*MARGIN
                 }
                 let answers = this.getCurrentAnswers();
                 let nbLines = Math.ceil(answers.length / ANSWERS_PER_LINE);
@@ -199,16 +161,12 @@ exports.QuizQuestionV = function (globalVariables) {
                         runtime.speechSynthesisSpeak(answer.label) ;
                     });
                 });
-
-
                 this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2, currentY + this.answerHeight / 2);
-
-
             }
             var _displayMultipleChoiceButtons = () => {
                 var _displayValidateButton = () => {
-                    let validateButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Valider");
-                    validateButton.position(BUTTON_WIDTH/2 + MARGIN/2, 0);
+                    let validateButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [[43, 120, 228], 1, myColors.black], "Valider");
+                    validateButton.position(BUTTON_SIZE.w/2 + MARGIN/2, 0);
                     validateButton.onClick(this.confirmQuestion.bind(this));
                     validateButton.glass.mark('validateButton');
                     this.buttonsManipulator.add(validateButton.component)
@@ -219,29 +177,31 @@ exports.QuizQuestionV = function (globalVariables) {
                         this.answers.forEach((manip)=> manip.resetHandler());
                     }
 
-                    let resetButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], "Réinitialiser")
-                    resetButton.position(-BUTTON_WIDTH/2 - MARGIN/2, 0);
+                    let resetButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [[43, 120, 228], 1, myColors.black], "Réinitialiser")
+                    resetButton.position(-BUTTON_SIZE.w/2 - MARGIN/2, 0);
                     resetButton.onClick(_resetAnswers);
                     this.buttonsManipulator.add(resetButton.component);
                 }
 
+                this.buttonsManipulator = new Manipulator(this);
                 _displayValidateButton();
                 _displayResetButton();
-                this.buttonsManipulator.move(drawing.width/2, drawing.height - MARGIN - BUTTON_HEIGHT/2);
+                this.buttonsManipulator.move(drawing.width/2, drawing.height - MARGIN - BUTTON_SIZE.h/2);
                 this.manipulator.add(this.buttonsManipulator);
             }
             var _displayHelpText = () => {
+                this.helpManipulator = new Manipulator(this);
                 let helpText = new svg.Text("cliquez sur une réponse pour passer à la question suivante").font(FONT, FONT_SIZE);
                 this.helpManipulator.add(helpText);
                 this.helpManipulator.move(drawing.width / 2, drawing.height - FONT_SIZE - MARGIN);
                 this.manipulator.add(this.helpManipulator);
             }
 
-            drawing.manipulator.set(0, this.manipulator);
+            super.display();
+            this.answers = [];
             var currentY = this.header.height + MARGIN;
-            _cleanManipulators();
-            _attachManipulators();
-            _displayHeader();
+            _initManips();
+            this.displayHeader(this.getLabel());
             _displayReturnButton();
             _addMarginForScoreText();
             _displayQuestionTitle();
@@ -256,55 +216,77 @@ exports.QuizQuestionV = function (globalVariables) {
 
         displayResult() {
             var _hidebottomElements = () => {
-                this.helpManipulator.flush();
-                this.buttonsManipulator.flush();
-            }
-            var _attachManipulators = () => {
-                this.manipulator
-                    .add(this.scoreManipulator)
-                    .add(this.explanationManipulator)
+                this.helpManipulator && this.helpManipulator.flush();
+                this.buttonsManipulator && this.buttonsManipulator.flush();
             }
             var _modifyReturnButtonText = () => {
                 this.returnButton.text.message("Retour aux résultats");
             }
             var _displayText = () => {
+                this.scoreManipulator = new Manipulator(this);
                 let score = this.getScore();
                 let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreText');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.scoreManipulator);
                 this.scoreManipulator.add(scoreText);
                 icon.position(-scoreText.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
-                this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_HEIGHT + 2*MARGIN);
+                this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_SIZE.h + 2*MARGIN);
+                this.manipulator.add(this.scoreManipulator);
             }
             var _addExplanations = () => {
                 var _toggleExplanation = (explanation) => {
                     var _hideExplanation = () => {
-                        this.explanationManipulator.flush();
+                        this.manipulator.remove(this.explanationManipulator);
                         displayed = false;
                     }
-
-                    if(displayed === explanation){
-                        _hideExplanation()
-                    }else {
-                        let border = new svg.Rect(drawing.width - 2*MARGIN, EXPLANATION_HEIGHT).color(myColors.white, 1, myColors.black).corners(5, 5);
-                        let text = new svg.Text(explanation.label).font(FONT, FONT_SIZE);
-                        this.explanationManipulator.add(border).add(text);
+                    var _displayExplanation = () => {
+                        let border = new svg.Rect(explanationDim.w, explanationDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
+                        this.explanationManipulator.set(0, border);
                         let redCross = IconCreator.createRedCrossIcon(this.explanationManipulator);
-                        redCross.position(drawing.width/2 - MARGIN, -EXPLANATION_HEIGHT/2);
+                        redCross.position(explanationDim.w/2, -explanationDim.h/2);
                         redCross.addEvent('click', _hideExplanation);
-                        this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + EXPLANATION_HEIGHT/2);
-                        displayed = explanation;
+                        if(explanation.label){
+                            let text = new svg.Text(explanation.label)
+                                .font(FONT, FONT_SIZE)
+                                .anchor('left');
+                            Tool.resizeStringForText(text, contentDim.w*2/3, contentDim.h);
+                            this.explanationManipulator.set(1, text);
+                            text.position(-contentDim.w/2 + contentDim.w/3 + MARGIN, -text.boundingRect().height/2);
+                        }
+                        if(explanation.imageSrc){
+                            let img = new svg.Image(explanation.imageSrc)
+                                .dimension(contentDim.w/3, contentDim.h);
+                            img.position(-contentDim.w/2 + img.width/2, 0);
+                            this.explanationManipulator.set(2, img);
+                        }
                         let voiceIcon = IconCreator.createVoiceIcon(this.explanationManipulator);
-                        voiceIcon.position(drawing.width /2- 3*MARGIN, -EXPLANATION_HEIGHT /2 + 2* MARGIN);
+                        voiceIcon.position(contentDim.w/2 - voiceIcon.getContentSize()/2, -contentDim.h/2 + voiceIcon.getContentSize()/2);
                         voiceIcon.addEvent( 'click', () => {
                             runtime.speechSynthesisSpeak(explanation.label);
                         });
 
                     }
+
+                    var explanationDim = {
+                        w: drawing.width - 2*MARGIN, h: EXPLANATION_HEIGHT
+                    }
+                    var contentDim = {
+                        w: explanationDim.w - 2*MARGIN, h: explanationDim.h - 2*MARGIN
+                    }
+                    if(displayed === explanation){
+                        _hideExplanation()
+                    }else {
+                        if(displayed) _hideExplanation();
+                        displayed = explanation;
+                        this.explanationManipulator = new Manipulator(this).addOrdonator();
+                        _displayExplanation();
+                        this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + explanationDim.h/2);
+                        this.manipulator.add(this.explanationManipulator);
+                    }
                 }
 
                 let displayed = false;
                 this.getCurrentAnswers().forEach((answer, index) => {
-                    if(answer.explanation){
+                    if(answer.explanation && (answer.explanation.label || answer.explanation.imageSrc)){
                         let manip = this.answers[index];
                         let icon = IconCreator.createExplanationIcon(manip);
                         icon.position(this.answerWidth/2 - MARGIN - 25, this.answerHeight/2 - 25 - MARGIN)
@@ -312,15 +294,12 @@ exports.QuizQuestionV = function (globalVariables) {
                     }
                 })
             }
-            var _displayAnswered = () => {
+            var _displayAnswersResults = () => {
                 this.getCurrentAnswered().forEach((answeredIndex) => {
                     let answerManip = this.answers[answeredIndex];
                     let colorRect = new svg.Rect(this.answerWidth, this.answerHeight).color(myColors.greyerBlue, 1, myColors.black).corners(10, 10);
                     answerManip.set(0, colorRect);
                 })
-
-            }
-            var _displayCorrects = () => {
                 this.getCorrectAnswersIndex().forEach((answerIndex)=>{
                     let answerManip = this.answers[answerIndex];
                     let colorRect = new svg.Rect(this.answerWidth, this.answerHeight).color(myColors.none, 3, myColors.green).corners(10, 10);
@@ -332,17 +311,24 @@ exports.QuizQuestionV = function (globalVariables) {
             }
 
             _hidebottomElements();
-            _attachManipulators();
             _modifyReturnButtonText();
             _displayText();
             _addExplanations();
-            _displayAnswered();
-            _displayCorrects();
+            _displayAnswersResults();
             _removeClickEvents();
         }
 
         returnHandler() {
             this.presenter.returnHandler();
+        }
+
+        resize(){
+            super.resize();
+            if(this.isDone()) this.displayResult();
+        }
+
+        isDone(){
+            return this.presenter.isDone;
         }
 
         nextQuestion() {

@@ -3,6 +3,7 @@ exports.DollAdminV = function(globalVariables){
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         drawing = globalVariables.drawing,
+        drawings = globalVariables.drawings,
         gui = globalVariables.gui,
         svg = globalVariables.svg,
         svgr = globalVariables.runtime,
@@ -12,24 +13,20 @@ exports.DollAdminV = function(globalVariables){
         RIGHTBOX_SIZE = {w: PANEL_SIZE.w - SANDBOX_SIZE.w - 3*MARGIN,h: (PANEL_SIZE.h - 6*MARGIN)/2,
         header: {w :PANEL_SIZE.w - SANDBOX_SIZE.w, h: 0.2*(PANEL_SIZE.h - 5*MARGIN)/2}},
         TAB_SIZE={w:0.1*PANEL_SIZE.w, h: 0.1*PANEL_SIZE.h},
-        ListManipulatorView = globalVariables.domain.ListManipulatorView,
-        ListSvgView = globalVariables.domain.ListSVGView,
+        ListManipulatorView = globalVariables.Tool.ListManipulatorView,
+        resizeStringForText = globalVariables.Tool.resizeStringForText,
         HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
-        CONTEXT_TILE_SIZE = {w:150 - 2*MARGIN,h:27}
-        IMAGE_SIZE = {w:30, h:30},
-        STATUS_FILE_DEFAULT = "Aucun fichier sélectionné";
+        CONTEXT_TILE_SIZE = {w:150 - 2*MARGIN,h:27},
+        IMAGE_SIZE = {w:30, h:30};
 
     class DollAdminV extends View{
         constructor(presenter){
             super(presenter);
-            this.manipulator = new Manipulator(this);
-            this.mainPanelManipulator = new Manipulator(this);
             this.rules = false;
             this.textElements = [];
             this.rectElements = [];
             let declareActions = ()=>{
-
                 this.actions = [];
                 this.actionTabs = [];
                 let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0,HEADER_TILE/3).mark('textTab');
@@ -219,9 +216,8 @@ exports.DollAdminV = function(globalVariables){
         };
 
         display(){
-            drawing.manipulator.set(0, this.manipulator);
-            this.manipulator.add(this.header.getManipulator());
-            this.header.display(this.getLabel());
+            super.display();
+            this.displayHeader(this.getLabel());
             this.displayTitle();
             this.displayMainPanel();
             this.displayTabs();
@@ -286,8 +282,8 @@ exports.DollAdminV = function(globalVariables){
                 .position(0, 6);
             rules.mark('rules');
 
-            util.resizeStringForText(statementText, TAB_SIZE.w, TAB_SIZE.h);
-            util.resizeStringForText(rulesText, TAB_SIZE.w, TAB_SIZE.h);
+            resizeStringForText(statementText, TAB_SIZE.w, TAB_SIZE.h);
+            resizeStringForText(rulesText, TAB_SIZE.w, TAB_SIZE.h);
             svg.addEvent(statement, 'click', () => {this.toggleTabs(false)})
             svg.addEvent(statementText, 'click', () => {this.toggleTabs(false)})
             svg.addEvent(rules, 'click', () => {this.toggleTabs(true)})
@@ -303,7 +299,7 @@ exports.DollAdminV = function(globalVariables){
         }
 
         displayMainPanel(){
-            this.mainPanelManipulator.flush();
+            this.mainPanelManipulator = new Manipulator(this);
             let backRect = new svg.Rect(PANEL_SIZE.w, PANEL_SIZE.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(5,5);
@@ -710,8 +706,8 @@ exports.DollAdminV = function(globalVariables){
                     [myColors.lightgrey, 0, myColors.none], 'X');
                 let framedRollPanel = new svg.Rect(0.3*addSolutionButton.width, INPUT_SIZE.h)
                     .color(myColors.white, 1, myColors.grey);
-                let linkImage = new util.Picture('../../images/unlink.png', false, this);
-                let pictureImage = new util.Picture('../../images/picture.png', false, this);
+                let linkImage = new svg.Image('../../images/unlink.png');
+                let pictureImage = new svg.Image('../../images/picture.png');
                 let rollPanel = new svg.Rect(0.4*addSolutionButton.width, INPUT_SIZE.h)
                     .color(myColors.white, 1, myColors.grey);
 
@@ -720,12 +716,15 @@ exports.DollAdminV = function(globalVariables){
                 framedRollPanel.position(-0.35*addSolutionButton.width, 2*(addSolutionButton.height + 2*MARGIN));
                 rollPanel.position(-addSolutionButton.width/2 + framedRollPanel.width + IMAGE_SIZE.w + rollPanel.width/2 + 1.5*MARGIN,
                     2*(addSolutionButton.height + 2*MARGIN));
-                linkImage.draw(-addSolutionButton.width/2 + rollPanel.width - IMAGE_SIZE.w/2 + 0.5*MARGIN, 2*(addSolutionButton.height + 2*MARGIN),
-                IMAGE_SIZE.w,IMAGE_SIZE.h, leftTemplateManip, 0);
-                pictureImage.draw(addSolutionButton.width/2 - IMAGE_SIZE.w/2, 2*(addSolutionButton.height + 2*MARGIN),
-                IMAGE_SIZE.w, IMAGE_SIZE.h, leftTemplateManip, 1);
+                linkImage
+                    .position(-addSolutionButton.width/2 + rollPanel.width - IMAGE_SIZE.w/2 + 0.5*MARGIN, 2*(addSolutionButton.height + 2*MARGIN))
+                    .dimension(IMAGE_SIZE.w,IMAGE_SIZE.h)
+                pictureImage
+                    .position(addSolutionButton.width/2 - IMAGE_SIZE.w/2, 2*(addSolutionButton.height + 2*MARGIN))
+                    .dimension(IMAGE_SIZE.w,IMAGE_SIZE.h)
 
-
+                leftTemplateManip.set(0, linkImage);
+                leftTemplateManip.set(1, pictureImage);
                 leftTemplateManip.add(selectSolution)
                     .add(addSolutionButton.component)
                     .add(deleteSolutionButton.component)
@@ -779,7 +778,7 @@ exports.DollAdminV = function(globalVariables){
                 .font('Arial', 20)
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w/2 + 2*MARGIN, 8.33);
-            util.resizeStringForText(objectivesTitle, RIGHTBOX_SIZE.w - 3*MARGIN, 15);
+            resizeStringForText(objectivesTitle, RIGHTBOX_SIZE.w - 3*MARGIN, 15);
             let objectivesBody = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
@@ -805,7 +804,7 @@ exports.DollAdminV = function(globalVariables){
                         .anchor('left')
                         .font('Arial', 18)
                         .color(myColors.red);
-                    util.resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
+                    resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
                     objectivesManip.add(errorMsg);
 
                     svg.timeout(()=>{
@@ -875,7 +874,7 @@ exports.DollAdminV = function(globalVariables){
                 .font('Arial', 20)
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w/2 + 2*MARGIN, 8.33);
-            util.resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3*MARGIN, 15);
+            resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3*MARGIN, 15);
             let responsesBody = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
@@ -901,7 +900,7 @@ exports.DollAdminV = function(globalVariables){
                         .anchor('left')
                         .font('Arial', 18)
                         .color(myColors.red);
-                    util.resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
+                    resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
                     responsesManip.add(errorMsg);
 
                     svg.timeout(()=>{
@@ -940,16 +939,15 @@ exports.DollAdminV = function(globalVariables){
                 this.displayMainPanel();
             }
         }
-
+        
         uploadImageByFile(file, progressDisplay){
             return this.presenter.uploadImageByFile(file, progressDisplay);
         }
 
-        getImages(){
+        getImages() {
             return this.presenter.getImages();
         }
     }
 
     return DollAdminV;
-
 }

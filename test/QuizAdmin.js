@@ -47,6 +47,23 @@ describe('quiz admin', function () {
             assertMessage(root, "headerMessage", 'formation - quizname');
         })
     })
+    it('should press Enter (rename)', function(){
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {label: "quiz"},
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(() => {
+           runtime.listeners['keydown']({keyCode: 13, preventDefault: () => {}})
+        }).then(() => {
+            assertMessage(root, "infoMessage", 'Le nom du quiz a été bien modifié');
+        })
+    })
     it('should create a question', function () {
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
@@ -217,6 +234,32 @@ describe('quiz admin', function () {
             clickElement(root, "saveButtonQuiz");
         }).then(()=>{
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées")
+        })
+    })
+    it('should previw a quiz', function(){
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {
+                            label: "question 1",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        }
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(()=>{
+            clickElement(root, 'previewButton');
+        }).then(()=>{
+            assertPresent(root, "questionTitle1");
         })
     })
 })

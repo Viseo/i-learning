@@ -9,7 +9,6 @@ exports.Presenter = function(globalVariables){
             this.view;
         }
 
-
         /**
          * STATE
          * */
@@ -25,6 +24,10 @@ exports.Presenter = function(globalVariables){
             this.state.clearOldPageStackAndLoadPresenterDashboard();
         }
 
+        resizeView(){
+            this.view.resize();
+        }
+
         /**
          * VIEW
          * */
@@ -36,8 +39,6 @@ exports.Presenter = function(globalVariables){
             this.view.flush();
         }
     };
-
-
 
     return {Presenter};
 };

@@ -9,26 +9,24 @@ exports.RegisterV = function (globalVariables) {
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
-        IconCreator = globalVariables.domain.IconCreator,
-        FONT = 'Arial',
+        IconCreator = globalVariables.Tool.IconCreator,
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         BUTTON_MARGIN = 80,
+        TITLE_COLOR = [myColors.white, 0, myColors.white],
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
-        INPUT_WIDTH = 550,
-        INPUT_HEIGHT = 30,
-        BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
-        TITLE_COLOR = [myColors.white, 0, myColors.white];
+        INPUT_SIZE = {w:550, h: 30},
+        BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
 
     class RegisterV extends View {
         constructor(presenter) {
             super(presenter);
-            var _initV = () => {
-                this.inputs = [];
-            }
+            this.inputs = [];
+        }
+
+        display() {
             var _declareManipulator = () => {
-                this.manipulator = new Manipulator(this);
                 this.fieldsManip = new Manipulator(this);
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.saveButtonManipulator.component.mark('saveButton');
@@ -39,86 +37,59 @@ exports.RegisterV = function (globalVariables) {
                     .add(this.saveButtonManipulator)
                     .add(this.connectionTextManipulator);
             }
-
-            _initV();
-            _declareManipulator();
-        }
-
-        display() {
-            var _displayHeader = () => {
-                let headerManipulator = this.header.getManipulator();
-                this.manipulator.add(headerManipulator);
-                this.header.display("Inscription");
-            };
             var _displayFields = () => {
                 var _displayField = (field) => {
-                    let _createIdFromName = (field)=>{
-                        return field.title.split('').splice(0, field.title.length-2).join('');
+                    var _updatePresenter = (oldMessage, newMessage, valid) => {
+                        this.setValid(field, valid);
+                        if (valid) this.setFieldText(field, newMessage);
                     }
-                    var _displayIcon = () => {
-                        let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
-                        icon.position(-INPUT_WIDTH / 2 + icon.getContentSize() / 2 + MARGIN, 0);
+                    var _selectInput = () => {
+                        this.selectedInput = fieldArea;
                     }
-                    var _displayTitle = () => {
-                        let fieldTitle = new svg.Text(field.title);
-                        fieldTitle
-                            .dimension(INPUT_WIDTH, FONT_SIZE_TITLE)
-                            .font(FONT, FONT_SIZE_TITLE)
-                            .color(TITLE_COLOR)
-                            .anchor("start")
-                            .position(-INPUT_WIDTH / 2, -INPUT_HEIGHT);
-                        fieldManip.add(fieldTitle);
-                    }
-                    var _displayArea = () => {
-                        var _updatePresenter = (oldMessage, newMessage, valid) => {
-                            this.setValid(field, valid);
-                            if (valid) this.setFieldText(field, newMessage);
-                        }
-                        var _selectInput = () => {
-                            this.selectedInput = fieldArea;
-                        }
-                        var _displayEye = () => {
-                            var _displayPwdIcon = (isShown) => {
-                                var _toggleIcon = () => {
-                                    _displayPwdIcon(!isShown);
-                                }
-
-                                let src = isShown ? '../images/hide.png' : '../images/view.png';
-                                let icon = IconCreator.createImageIcon(src, fieldManip, 2);
-                                icon.position(INPUT_WIDTH/2 + MARGIN + icon.getContentSize() / 2, 0);
-                                icon.addEvent('click', _toggleIcon);
-                                fieldArea.type(isShown ? 'text' : 'password');
-                            }
-
-                            _displayPwdIcon(false);
+                    var _displayPwdIcon = (isShown) => {
+                        var _toggleIcon = () => {
+                            _displayPwdIcon(!isShown);
                         }
 
-                        let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
-                        fieldArea.font(FONT, FONT_SIZE_INPUT)
-                            .color(COLORS)
-                            .editColor(EDIT_COLORS)
-                            .pattern(field.pattern)
-                            .type(field.type)
-                            .anchor("center")
-                            .mark(_createIdFromName(field));
-                        fieldManip.set(0, fieldArea.component);
-
-                        fieldArea.onInput(_updatePresenter);
-                        fieldArea.onClick(_selectInput);
-                        this.inputs.push(fieldArea);
-
-                        if(field.type === "password"){
-                            _displayEye();
-                        }
+                        let src = isShown ? '../images/hide.png' : '../images/view.png';
+                        let icon = IconCreator.createImageIcon(src, fieldManip, 2);
+                        icon.position(INPUT_SIZE.w/2 + MARGIN + icon.getContentSize() / 2, 0);
+                        icon.addEvent('click', _toggleIcon);
+                        fieldArea.type(isShown ? 'text' : 'password');
                     }
 
                     let fieldManip = new Manipulator(this).addOrdonator(3);
-                    let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
+                    let manipHeight = (INPUT_SIZE.h + FONT_SIZE_TITLE);
+
+                    let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
+                    icon.position(-INPUT_SIZE.w / 2 + icon.getContentSize() / 2 + MARGIN, 0);
+                    let fieldTitle = new svg.Text(field.title);
+                    fieldTitle
+                        .dimension(INPUT_SIZE.w, FONT_SIZE_TITLE)
+                        .font(FONT, FONT_SIZE_TITLE)
+                        .color(TITLE_COLOR)
+                        .anchor("start")
+                        .position(-INPUT_SIZE.w / 2, -INPUT_SIZE.h);
+
+                    let fieldArea = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, "");
+                    fieldArea.font(FONT, FONT_SIZE_INPUT)
+                        .color(COLORS)
+                        .editColor(EDIT_COLORS)
+                        .pattern(field.pattern)
+                        .type(field.type)
+                        .anchor("center")
+                        .mark(field.id);
+                    fieldArea.onInput(_updatePresenter);
+                    fieldArea.onClick(_selectInput);
+                    fieldManip.add(fieldTitle);
+                    fieldManip.set(0, fieldArea.component);
                     fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
 
-                    _displayTitle();
-                    _displayArea()
-                    _displayIcon();
+                    this.inputs.push(fieldArea);
+
+                    if(field.type === "password"){
+                        _displayPwdIcon(false);
+                    }
 
                     return fieldManip;
                 };
@@ -132,18 +103,18 @@ exports.RegisterV = function (globalVariables) {
 
             };
             var _displaySaveButton = () => {
-                let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Inscription');
+                let saveButton = new gui.Button(INPUT_SIZE.w, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Inscription');
                 saveButton.text.color(myColors.lightgrey, 0, myColors.white);
                 saveButton.component.mark('saveButton');
                 saveButton.activeShadow();
                 this.saveButtonManipulator
                     .add(saveButton.component)
-                    .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
+                    .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
                 this.saveButtonManipulator.addEvent('click', () => this.tryRegister.call(this));
             };
             var _displayConnectionLabel = () => {
                 let connexionText = new svg.Text("Vous êtes déjà inscrit ? Se connecter")
-                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
                     .color(myColors.greyerBlue)
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                     .mark('connexionText');
@@ -152,22 +123,19 @@ exports.RegisterV = function (globalVariables) {
                 this.connectionTextManipulator.addEvent('click',() => this.returnToOldPage());
             };
 
-            drawing.manipulator.add(this.manipulator);
-            _displayHeader();
+            super.display();
+            _declareManipulator();
+            this.displayHeader('Inscription');
             _displayFields();
             _displaySaveButton();
             _displayConnectionLabel();
             svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
 
-        refresh() {
-
-        }
-
         tryRegister(){
             this.registerNewUser().then(() => {
                 let message = new svg.Text('Votre compte a bien été créé !')
-                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
                     .position(0, -MARGIN - BUTTON_HEIGHT)
                     .color(myColors.green)
                     .font(FONT, FONT_SIZE_INPUT)
@@ -179,8 +147,8 @@ exports.RegisterV = function (globalVariables) {
                 }, 3000);
             }).catch((data) => {
                 let error = new svg.Text(JSON.parse(data).reason)
-                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                    .position(0, -(INPUT_HEIGHT + MARGIN))
+                    .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
+                    .position(0, -(INPUT_SIZE.h + MARGIN))
                     .color(myColors.red)
                     .font(FONT, FONT_SIZE_INPUT)
                     .mark("msgFieldError");

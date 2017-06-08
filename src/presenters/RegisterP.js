@@ -16,6 +16,7 @@ exports.RegisterP = function (globalVariables) {
             var _declareTextFields = () => {
                 this._fields = [
                     {
+                        id: "name",
                         title: "Nom :",
                         type: "text",
                         errorMessage: "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés",
@@ -25,6 +26,7 @@ exports.RegisterP = function (globalVariables) {
                         pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/
                     },
                     {
+                        id: "surname",
                         title: "Prénom :",
                         type: "text",
                         errorMessage: "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés",
@@ -34,6 +36,7 @@ exports.RegisterP = function (globalVariables) {
                         pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/
                     },
                     {
+                        id: "mail",
                         title: "Adresse mail :",
                         type: "text",
                         errorMessage: "L'adresse email n'est pas valide",
@@ -43,6 +46,7 @@ exports.RegisterP = function (globalVariables) {
                         pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                     },
                     {
+                        id: "password",
                         title: "Mot de passe :",
                         type: "password",
                         errorMessage: "La confirmation du mot de passe n'est pas valide",
@@ -52,6 +56,7 @@ exports.RegisterP = function (globalVariables) {
                         pattern: /^[ -~]{6,63}$/
                     },
                     {
+                        id: "confirmPassword",
                         title: "Confirmer votre mot de passe :",
                         type: "password",
                         errorMessage: "La confirmation du mot de passe n'est pas valide",

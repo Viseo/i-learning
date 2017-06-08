@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, assertMessage, assertMissing} = testutils;
+    {given, when, loadPage, click, assertMessage, assertPresent, assertMissing, mouseEnterElement} = testutils;
 
 describe('dashboard collab', function(){
     it('should display undone formation', function(){
@@ -75,6 +75,25 @@ describe('dashboard collab', function(){
             assertMessage(root, "textMiniature2", "formation done");
         })
     });
+    it('should display popout when hover star', function(){
+        let {root, state} = given(()=> {
+            let mockResponses = {
+                "/formations": {
+                    code: 200,
+                    content: {myCollection: [
+                        {_id: "2", label: "f"}
+                    ]}
+                }
+            };
+            let user = {admin: false};
+            return loadPage('Dashboard', {mockResponses, data:user});
+        })
+        when(() => {
+            mouseEnterElement(root, "star1");
+        }).then(() => {
+            assertPresent(root, "fStarMiniatures");
+        })
+    })
     it('should enter a formation');
     it('should load lastAction');
 })

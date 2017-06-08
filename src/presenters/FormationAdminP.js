@@ -119,7 +119,7 @@ exports.FormationAdminP = function(globalVariables){
         }
 
         publishFormation(){
-            const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+            const messageErrorNoNameFormation = "Vous devez remplir correctement le nom de la formation.",
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
 
             if (this.formation.levelsTab.length === 0) {
@@ -139,10 +139,10 @@ exports.FormationAdminP = function(globalVariables){
             }
         }
 
-        loadQuiz(quiz) {
-            // this.quizz.loadQuiz(quizz);
-            this.state.loadPresenterQuizAdmin(quiz);
-        }
+        // loadQuiz(quiz) {
+        //     // this.quizz.loadQuiz(quizz);
+        //     this.state.loadPresenterQuizAdmin(quiz);
+        // }
 
         getGamesLibrary(){
             return this.state.getGamesLibrary();

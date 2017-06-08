@@ -4,7 +4,6 @@ exports.FormationCollabP = function(globalVariables){
     const FormationsCollabV = FormationCollab(globalVariables),
         Presenter = globalVariables.Presenter;
 
-
     class FormationCollabP extends Presenter{
 
         constructor(state, formation,user){
@@ -24,12 +23,14 @@ exports.FormationCollabP = function(globalVariables){
             this.state.returnToOldPage();
         }
 
-        onClickGame(game){
+        enterGame(game){
             this.state.loadPresenterGameCollab(game);
         }
+
+        requirementsForThis(gameId){
+            return this.formation.requirementsForThis(gameId);
+        }
     };
-
-
 
     return FormationCollabP;
 }

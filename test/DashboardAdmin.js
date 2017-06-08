@@ -5,7 +5,7 @@ const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
     {
-        given, when, clickElement, clickPos, enterValue, assertMessage, loadPage, assertMissing, mouseEnter,
+        given, when, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
         mouseLeave, checkBorderColor, onChangeElement
     } = testutils;
 
@@ -100,7 +100,6 @@ describe('dashboard admin page', function () {
             {root, state, runtime} = given(() => {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
-        assertMessage(root, "addFormationText", "Ajouter une formation");
 
         when(() => {
             clickPos(root, "addFormationButton");
@@ -109,26 +108,37 @@ describe('dashboard admin page', function () {
             runtime.advance();
         });
         when(() => {
-            clickElement(root, "addFormationGlass");
-            enterValue(root, "addFormationTextInput", "Test[");
+            inputValue(root, "addFormationTextInput", "Test[");
             clickPos(root, "addFormationButton");
         }).then(() => {
             assertMessage(root, "formationErrorMessage", "Caractère(s) non autorisé(s).");
             runtime.advance();
         });
         when(() => {
-            clickElement(root, "addFormationGlass");
-            enterValue(root, "addFormationTextInput", "Le");
+            inputValue(root, "addFormationTextInput", "Le");
             clickPos(root, "addFormationButton");
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
         });
         when(() => {
-            clickElement(root, "addFormationGlass");
-            enterValue(root, "addFormationTextInput", "MaFormation");
+            inputValue(root, "addFormationTextInput", "MaFormation");
             clickPos(root, "addFormationButton");
         }).then(() => {
             assertMissing(root, "formationErrorMessage");
+        });
+    });
+    it('should try create a new formation (Enter keydown)', function(){
+        let mockResponses = {
+                '/formations': {code: 200, content: {myCollection: []}}
+            },
+            {root, state, runtime} = given(() => {
+                return loadPage("Dashboard", {mockResponses, data: user});
+            });
+        when(() => {
+            runtime.listeners['keydown']({keyCode:13, preventDefault: () => {}})
+        }).then(() => {
+            assertMessage(root, "formationErrorMessage", "Veuillez entrer un titre valide.");
+            runtime.advance();
         });
     });
     it("should enter in a formation", function () {
@@ -152,7 +162,7 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
-            mouseEnter(root, "miniatureManipAgilité");
+            mouseEnterElement(root, "miniatureManipAgilité");
         }).then(() => {
             checkBorderColor(root, "miniatureBorderAgilité", [130, 180, 255]);
         });

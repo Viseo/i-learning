@@ -18,8 +18,7 @@ exports.DashboardAdminP = function(globalVariables) {
             return this.formations.getFormations();
         }
 
-        getImages()
-        {
+        getImages() {
             return this.mediaLibrary.getImages();
         }
 
@@ -52,9 +51,8 @@ exports.DashboardAdminP = function(globalVariables) {
             if(check.status){
                 this.formations.createFormation(label).then(data=>{
                     if(data.status) {
-                        let newFormation = data.formation;
                         this.updateFormations();
-                        this.view.addFormationMiniature(newFormation);
+                        this.view.displayMiniatures();
                     }
                     else{
                         this.view.displayErrorMessage(data.error);
@@ -69,11 +67,11 @@ exports.DashboardAdminP = function(globalVariables) {
             this.formationsList = this.formations.getFormations();
         }
 
-        uploadImage(file, progressDisplay){
-            return this.state.uploadImage(file, progressDisplay);
+        uploadImage(file){
+            return this.state.uploadImage(file);
         }
 
-        miniatureClickHandler(formation){
+        enterFormation(formation){
             this.state.loadPresenterFormationAdmin(formation);
         }
     }

@@ -182,6 +182,10 @@ exports.DollCollabV = function(globalVariables) {
         getLabel(){
             return this.presenter.getLabel();
         }
+
+        resize() {
+
+        }
     }
 
     return DollCollabV;
