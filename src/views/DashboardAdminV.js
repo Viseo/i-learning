@@ -13,7 +13,6 @@ exports.DashboardAdmin = function (globalVariables) {
     const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
-        BUTTON_HEIGHT = 30,
         IMAGES_PER_LINE = 3,
         CLIP_SIZE = 45,
         IMAGE_SIZE = 160;
@@ -44,7 +43,7 @@ exports.DashboardAdmin = function (globalVariables) {
                     y: headHeight + INPUT_SIZE.h + 2 * MARGIN
                 }
                 let title = new svg.Text('Formations :')
-                    .font('Arial', 25).color(myColors.grey)
+                    .font(FONT, 25).color(myColors.grey)
                     .position(titlePos.x, titlePos.y + 8.3)
                 let titleBack = new svg.Rect(200, 3)
                     .color(myColors.white, 0, myColors.none)
@@ -66,8 +65,8 @@ exports.DashboardAdmin = function (globalVariables) {
                 let iconCreator = new IconCreator();
                 let editedIcon = iconCreator.createEditedIcon(captionManipulator);
                 let publishedIcon = iconCreator.createDoneIcon(captionManipulator);
-                let editedCaption = new svg.Text('Editée').font('Arial', 20).anchor('left');
-                let publishedCaption = new svg.Text('Publiée').font('Arial', 20).anchor('left');
+                let editedCaption = new svg.Text('Editée').font(FONT, 20).anchor('left');
+                let publishedCaption = new svg.Text('Publiée').font(FONT, 20).anchor('left');
                 this.manipulator.add(captionManipulator);
                 captionManipulator.add(editedCaption).add(publishedCaption);
                 editedCaption.position(editedIcon.getSize() + MARGIN, 6.6);
@@ -88,7 +87,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 }
 
                 let addFormationTextArea = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, 'Ajouter une formation')
-                addFormationTextArea.font('Arial', 15).color(myColors.grey);
+                addFormationTextArea.font(FONT, 15).color(myColors.grey);
                 addFormationTextArea.text.position(-INPUT_SIZE.w / 2 + MARGIN, 7.5);
                 addFormationTextArea.control.placeHolder('Ajouter une formation');
                 addFormationTextArea.mark('addFormationTextInput');
@@ -106,7 +105,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 let addButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.grey, 0, myColors.none], '+');
                 addButton.component.mark('addFormationButton');
                 addButton.position(INPUT_SIZE.w / 2 + BUTTON_SIZE.w / 2 + MARGIN, 0);
-                addButton.text.color(myColors.white, 0, myColors.none).font('Arial', 30).position(0, 10);
+                addButton.text.color(myColors.white, 0, myColors.none).font(FONT, 30).position(0, 10);
                 addButton.back.corners(5, 5);
                 addButton.onClick(this.addFormationHandler.bind(this));
                 svg.addGlobalEvent('keydown', _addNewWhenEnter);
@@ -149,7 +148,7 @@ exports.DashboardAdmin = function (globalVariables) {
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
                     let content = new svg.Text(formation.label)
                         .position(CLIP_SIZE, -TILE_SIZE.h / 4)
-                        .font('Arial', 20);
+                        .font(FONT, 20);
                     resizeStringForText(content, TILE_SIZE.rect.w - 8 * MARGIN, TILE_SIZE.rect.h)
                     let iconAddPicture = IconCreator.createAddImage(manipulator);
                     iconAddPicture.position(TILE_SIZE.w / 2 - 3 * MARGIN, -TILE_SIZE.h / 4);
@@ -167,7 +166,7 @@ exports.DashboardAdmin = function (globalVariables) {
                         let textNotation = new svg.Text(formation.note
                             + '/5 (' + formation.noteCounter
                             + ' votes)')
-                            .font('Arial', 14, 15).anchor('end');
+                            .font(FONT, 14, 15).anchor('end');
                         resizeStringForText(textNotation, 120, 10);
                         displayNotationManip.add(textNotation);
                         displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
@@ -280,23 +279,23 @@ exports.DashboardAdmin = function (globalVariables) {
 
             let dimensions = {
                 width: drawing.width * 1 / 2 - MARGIN,
-                height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_HEIGHT)
+                height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_SIZE.h)
             };
 
             let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
             borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
-            let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_HEIGHT - 4 * MARGIN);
-            mediaPanel.position(0, (borderLibrary.height - mediaPanel.height) / 2 - 2 * MARGIN - BUTTON_HEIGHT);
+            let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_SIZE.h - 4 * MARGIN);
+            mediaPanel.position(0, (borderLibrary.height - mediaPanel.height) / 2 - 2 * MARGIN - BUTTON_SIZE.h);
             mediaPanel.border.color(myColors.none, 1, myColors.grey);
 
-            let titleLibrary = new svg.Text('Library :').color(myColors.grey).font('Arial', 25);
+            let titleLibrary = new svg.Text('Library :').color(myColors.grey).font(FONT, 25);
             let titleLibraryBack = new svg.Rect(100, 3).color(myColors.white);
             titleLibraryBack.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2,
                 -borderLibrary.height / 2 + 2 * MARGIN);
             titleLibrary.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2, -borderLibrary.height / 2 + 2 * MARGIN + 8.33);
             let addPictureButton = new gui.Button(3 * BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
                 .position(borderLibrary.width / 2 - BUTTON_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - BUTTON_SIZE.h / 2 - MARGIN);
-            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
+            addPictureButton.text.font(FONT, 13, 12).color(myColors.white).position(0, 4.33);
             addPictureButton.glass.mark('addPictureButtonGlass');
             this.mediasManipulator.add(borderLibrary);
             this.mediasManipulator.add(mediaPanel.component);
@@ -319,7 +318,7 @@ exports.DashboardAdmin = function (globalVariables) {
             let errorMessage = new svg.Text(message).color(myColors.red, 0, myColors.none);
             errorMessage.position(INPUT_SIZE.w / 2 + BUTTON_SIZE.w + 3 * MARGIN, 8.3)
                 .mark('formationErrorMessage')
-                .font('Arial', 25)
+                .font(FONT, 25)
                 .anchor('left');
             this.addFormationManipulator.set(2, errorMessage);
             svg.timeout(() => {

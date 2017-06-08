@@ -1,3 +1,4 @@
+FONT = 'Arial';
 MARGIN = 10;
 HEADER_SIZE = 0.07;
 STAR_SPACE = 4;

@@ -9,24 +9,23 @@ exports.ConnectionV = function (globalVariables) {
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
         IconCreator = globalVariables.Tool.IconCreator,
-        FONT = 'Arial',
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         BUTTON_MARGIN = 80,
         CHECKBOX_SIZE = 15,
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
-        INPUT_WIDTH = 550,
-        INPUT_HEIGHT = 30,
-        BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
+        INPUT_SIZE = {w:550, h: 30},
+        BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white];
 
     class ConnectionV extends View {
         constructor(presenter) {
             super(presenter);
-            var _initV = () => {
-                this.inputs = [];
-            }
+            this.inputs = [];
+        }
+
+        display() {
             var _declareManipulators = () => {
                 this.manipulator = new Manipulator(this);
                 this.fieldsManip = new Manipulator(this);
@@ -42,13 +41,8 @@ exports.ConnectionV = function (globalVariables) {
                     .add(this.newPasswordManipulator)
                     .add(this.connectionButtonManipulator)
                     .add(this.registerTextManipulator);
+                drawing.manipulator.set(0, this.manipulator);
             }
-
-            _initV();
-            _declareManipulators();
-        }
-
-        display() {
             var _displayHeader = () => {
                 let headerManipulator = this.header.getManipulator();
                 this.manipulator.add(headerManipulator);
@@ -56,70 +50,57 @@ exports.ConnectionV = function (globalVariables) {
             };
             var _displayFields = () => {
                 var _displayField = (field) => {
-                    var _displayIcon = () => {
-                        let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
-                        icon.position(-INPUT_WIDTH / 2 + icon.getContentSize() / 2 + MARGIN, 0);
+                    var _updatePresenter = (oldMessage, newMessage, valid) => {
+                        this.setValid(field, valid);
+                        if (valid) this.setFieldText(field, newMessage);
                     }
-                    var _displayTitle = () => {
-                        let fieldTitle = new svg.Text(field.title);
-                        fieldTitle
-                            .dimension(INPUT_WIDTH, FONT_SIZE_TITLE)
-                            .font(FONT, FONT_SIZE_TITLE)
-                            .color(TITLE_COLOR)
-                            .anchor("start")
-                            .position(-INPUT_WIDTH / 2, -INPUT_HEIGHT);
-                        fieldManip.add(fieldTitle);
+                    var _selectInput = () => {
+                        this.selectedInput = fieldArea;
                     }
-                    var _displayArea = () => {
-                        var _updatePresenter = (oldMessage, newMessage, valid) => {
-                            this.setValid(field, valid);
-                            if (valid) this.setFieldText(field, newMessage);
-                        }
-                        var _selectInput = () => {
-                            this.selectedInput = fieldArea;
-                        }
-                        var _displayEye = () => {
-                            var _displayPwdIcon = (isShown) => {
-                                var _toggleIcon = () => {
-                                    _displayPwdIcon(!isShown);
-                                }
-
-                                let src = isShown ? '../images/hide.png' : '../images/view.png';
-                                let icon = IconCreator.createImageIcon(src, fieldManip, 2);
-                                icon.position(INPUT_WIDTH / 2 + MARGIN + icon.getContentSize() / 2, 0);
-                                icon.addEvent('click', _toggleIcon);
-                                fieldArea.type(isShown ? 'text' : 'password');
-                            }
-
-                            _displayPwdIcon(false);
+                    var _displayPwdIcon = (isPasswordShown) => {
+                        var _toggleIcon = () => {
+                            _displayPwdIcon(!isPasswordShown);
                         }
 
-                        let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
-                        fieldArea.font(FONT, FONT_SIZE_INPUT)
-                            .color(COLORS)
-                            .editColor(EDIT_COLORS)
-                            .pattern(field.pattern)
-                            .type(field.type)
-                            .anchor("center")
-                        fieldArea.mark(field.id);
-                        fieldManip.set(0, fieldArea.component);
-
-                        fieldArea.onInput(_updatePresenter);
-                        fieldArea.onClick(_selectInput);
-                        this.inputs.push(fieldArea);
-
-                        if (field.type === "password") {
-                            _displayEye();
-                        }
+                        let src = isPasswordShown ? '../images/hide.png' : '../images/view.png';
+                        let icon = IconCreator.createImageIcon(src, fieldManip);
+                        icon.position(INPUT_SIZE.w / 2 + MARGIN + icon.getContentSize() / 2, 0);
+                        icon.addEvent('click', _toggleIcon);
+                        fieldArea.type(isPasswordShown ? 'text' : 'password');
                     }
 
-                    let fieldManip = new Manipulator(this).addOrdonator(3);
-                    let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
+                    let fieldManip = new Manipulator(this).addOrdonator(2);
+                    let manipHeight = (INPUT_SIZE.h + FONT_SIZE_TITLE);
+
+                    let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
+                    icon.position(-INPUT_SIZE.w / 2 + icon.getContentSize() / 2 + MARGIN, 0);
+                    let fieldTitle = new svg.Text(field.title);
+                    fieldTitle
+                        .dimension(INPUT_SIZE.w, FONT_SIZE_TITLE)
+                        .font(FONT, FONT_SIZE_TITLE)
+                        .color(TITLE_COLOR)
+                        .anchor("start")
+                        .position(-INPUT_SIZE.w / 2, -INPUT_SIZE.h);
+
+                    let fieldArea = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, "");
+                    fieldArea.font(FONT, FONT_SIZE_INPUT)
+                        .color(COLORS)
+                        .editColor(EDIT_COLORS)
+                        .pattern(field.pattern)
+                        .type(field.type)
+                        .anchor("center")
+                        .mark(field.id);
+                    fieldArea.onInput(_updatePresenter);
+                    fieldArea.onClick(_selectInput);
+                    fieldManip.add(fieldTitle);
+                    fieldManip.set(0, fieldArea.component);
                     fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
 
-                    _displayTitle();
-                    _displayArea()
-                    _displayIcon();
+                    this.inputs.push(fieldArea);
+
+                    if (field.type === "password") {
+                        _displayPwdIcon(false);
+                    }
 
                     return fieldManip;
                 };
@@ -135,7 +116,7 @@ exports.ConnectionV = function (globalVariables) {
             var _displayCookieCheckbox = () => {
                 var _displayTitle = () => {
                     let fieldTitle = new svg.Text("Se souvenir de moi");
-                    fieldTitle.dimension(INPUT_WIDTH / 2, FONT_SIZE_TITLE);
+                    fieldTitle.dimension(INPUT_SIZE.w / 2, FONT_SIZE_TITLE);
                     fieldTitle.font("Arial", FONT_SIZE_TITLE * 3 / 4).anchor("start");
                     fieldTitle.color(TITLE_COLOR);
                     fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE) / 2);
@@ -164,13 +145,13 @@ exports.ConnectionV = function (globalVariables) {
 
                 _displayTitle();
                 _displayCheckBox();
-                this.cookieManipulator.move(drawing.width / 2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                this.cookieManipulator.move(drawing.width / 2 - INPUT_SIZE.w / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayForgotPWD = () => {
                 var _forgotHandler = () => {
                     this.forgotPWD().then(() => {
                         let forgotttenPassText = new svg.Text('Un mail a été envoyé pour réinitialiser votre mot de passe.')
-                            .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
+                            .dimension(INPUT_SIZE.w / 2, INPUT_SIZE.h / 2)
                             .color(myColors.greyerBlue)
                             .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                             .mark("forgottenPassText");
@@ -182,28 +163,28 @@ exports.ConnectionV = function (globalVariables) {
                 }
                 let fieldTitle = new svg.Text("Mot de passe oublié ?")
                     .color(myColors.greyerBlue)
-                    .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
+                    .dimension(INPUT_SIZE.w / 2, INPUT_SIZE.h / 2)
                     .anchor('end')
                     .position(0, 0)
                     .font(FONT, FONT_SIZE_TITLE * 3 / 4);
                 this.newPasswordManipulator.set(0, fieldTitle)
-                    .move(drawing.width / 2 + INPUT_WIDTH / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                    .move(drawing.width / 2 + INPUT_SIZE.w / 2, this.header.height + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
                 this.newPasswordManipulator.addEvent('click', _forgotHandler);
             };
             var _displayButton = () => {
                 var _displayButton = () => {
-                    let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
+                    let button = new gui.Button(INPUT_SIZE.w, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
                     button.text.color(myColors.lightgrey, 0, myColors.white);
                     button.activeShadow();
                     this.connectionButtonManipulator
                         .add(button.component)
-                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5)
+                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 5)
                         .mark('connectionButton');
                     this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
                 }
                 var _displayRegisterText = () => {
                     let registerText = new svg.Text("Vous venez d'arriver ? Créer un compte")
-                        .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                        .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
                         .color(myColors.greyerBlue)
                         .font(FONT, FONT_SIZE_TITLE * 2 / 3);
                     this.registerTextManipulator.add(registerText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
@@ -214,7 +195,7 @@ exports.ConnectionV = function (globalVariables) {
                 _displayRegisterText();
             };
 
-            drawing.manipulator.set(0, this.manipulator);
+            _declareManipulators();
             _displayHeader();
             _displayFields();
             _displayCookieCheckbox();
@@ -223,16 +204,12 @@ exports.ConnectionV = function (globalVariables) {
             svg.addGlobalEvent("keydown", (event) => this.keyDown.call(this, event));
         }
 
-        refresh() {
-
-        }
-
         tryLogin() {
             this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 let error = new svg.Text(message)
-                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                    .position(0, -(INPUT_HEIGHT + MARGIN))
+                    .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
+                    .position(0, -(INPUT_SIZE.h + MARGIN))
                     .color(myColors.red)
                     .font(FONT, FONT_SIZE_INPUT)
                     .mark("msgFieldError");
