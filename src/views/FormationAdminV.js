@@ -202,7 +202,7 @@ exports.FormationAdminV = function (globalVariables) {
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
                 this.graphManipulator.set(1, this.titleGraphBack);
-                this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(1);
+                this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width / 2, this.graphSize.height / 2);
                 let backRect = new svg.Rect(5000, 5000).color(myColors.white, 0, myColors.none);
@@ -480,7 +480,7 @@ exports.FormationAdminV = function (globalVariables) {
 
         updateAllLinks() {
             this.arrowsManipulator = new Manipulator(this);
-            this.graphMiniatureManipulator.add(this.arrowsManipulator);
+            this.graphMiniatureManipulator.set(1, this.arrowsManipulator);
             let links = this.getLinks();
             links.forEach(link => {
                 if (!link.parentGame.manipulator || !link.childGame.manipulator) {
