@@ -888,6 +888,10 @@ exports.Models = function (globalVariables, mockResponses) {
             return this.questions[index] ? this.questions[index].label : "";
         }
 
+        getQuestionImageSrc(index){
+            return this.questions[index] ? this.questions[index].imageSrc : "";
+        }
+
         getAnswers(questionIndex) {
             return this.questions[questionIndex] ? this.questions[questionIndex].answers : [];
         }

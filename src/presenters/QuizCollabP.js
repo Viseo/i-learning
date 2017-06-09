@@ -123,6 +123,10 @@ exports.QuizCollabP = function (globalVariables) {
             return this.quiz.getQuestionLabel(this.currentQuestionIndex);
         }
 
+        getCurrentQuestionImageSrc(){
+            return this.quiz.getQuestionImageSrc(this.currentQuestionIndex);
+        }
+
         isMultipleChoice(){
             return this.quiz.isMultipleChoice(this.currentQuestionIndex);
         }

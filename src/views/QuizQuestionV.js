@@ -60,11 +60,18 @@ exports.QuizQuestionV = function (globalVariables) {
                 currentY += FONT_SIZE + MARGIN;
             }
             var _displayQuestionTitle = () => {
-                let border = util.drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
-                this.questionManipulator.set(1, border);
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
                 this.questionManipulator.set(0, line);
+                let border = util.drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
+                this.questionManipulator.set(1, border);
+                let imageSrc = this.getCurrentQuestionImageSrc();
+                if(imageSrc){
+                    let questionImage = new svg.Image(imageSrc)
+                        .position(-border.width/2, 0)
+                        .dimension(border.width/3, border.height - 2*MARGIN);
+                    this.questionManipulator.set(2, questionImage);
+                }
                 let questionTitle = new svg.Text(this.getCurrentQuestionLabel())
                     .font(FONT, FONT_SIZE)
                     .mark('questionTitle'+this.getId());
@@ -373,6 +380,10 @@ exports.QuizQuestionV = function (globalVariables) {
 
         getCurrentQuestionLabel() {
             return this.presenter.getCurrentQuestionLabel();
+        }
+
+        getCurrentQuestionImageSrc(){
+            return this.presenter.getCurrentQuestionImageSrc();
         }
 
         getCurrentAnswers() {
