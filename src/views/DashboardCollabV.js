@@ -114,7 +114,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         .position(2*CLIP_SIZE/2, 0);
                     let clip = new ClipPath('image' + formation.label);
                     clip.add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w/2+ 2*CLIP_SIZE, 0))
-                    let picture = new svg.Image(formation.imageSrc ? formation.imgSrc : '../../images/viseo.png');
+                    let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(-TILE_SIZE.w/2 + 2*CLIP_SIZE, 0).dimension(IMAGE_SIZE,2*CLIP_SIZE)
                         .attr('clip-path', 'url(#image' + formation.label +')');
