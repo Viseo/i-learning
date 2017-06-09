@@ -6,17 +6,20 @@ exports.DollCollabV = function(globalVariables) {
         util = globalVariables.util,
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
+        gui = globalVariables.gui,
         drawing = globalVariables.drawing;
 
     class DollCollabV extends View{
         constructor(presenter){
             super(presenter);
+        }
+
+        display(){
             var _declareManip = () => {
                 this.statementManip = new Manipulator(this);
                 this.goalManip = new Manipulator(this);
                 this.responseManip = new Manipulator(this);
                 this.actionbuttonZoneManip = new Manipulator(this);
-                this.manipulator = new Manipulator(this);
                 this.manipulator
                     .add(this.statementManip)
                     .add(this.goalManip)
@@ -24,7 +27,10 @@ exports.DollCollabV = function(globalVariables) {
                     .add(this.actionbuttonZoneManip);
             };
 
+            super.display();
             _declareManip();
+            this.displayHeader(this.getLabel());
+
             this.size = {w : drawing.width - 2 * MARGIN, h : drawing.height - this.header.height - 2*MARGIN}
             this.statementDim = {
                 w: (this.size.w - MARGIN)/2, h: this.size.h
@@ -33,13 +39,6 @@ exports.DollCollabV = function(globalVariables) {
 
             this.goalSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2 };
             this.responseSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2};
-
-        }
-
-        display(){
-            drawing.manipulator.set(0, this.manipulator);
-            this.manipulator.add(this.header.getManipulator());
-            this.header.display(this.getLabel());
 
             this._displayStatement();
             this._displayGoal();
