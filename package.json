@@ -7,20 +7,25 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
+    "express-session": "^1.15.2",
     "json-web-token": "^2.0.2",
     "method-override": "^2.3.5",
     "mmmagic": "^0.4.5",
     "mocha": "^2.5.3",
     "mocha-istanbul": "^0.2.0",
     "mongodb": "^2.1.19",
-    "multer": "^1.1.0",
-    "twin-bcrypt": "^2.1.1"
+    "multer": "^1.2.0",
+    "twin-bcrypt": "^2.1.1",
+    "nodemailer": "^3.1.8"
   },
   "devDependencies": {
+    "mock-promises": "^0.8.2",
+    "promise-mock": "^1.1.1",
     "test-module": "*"
   },
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive test/TestMocha.js "
+    "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive test",
+    "test-svg": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive lib/test "
   },
   "main": "karma.conf.js",
   "directories": {

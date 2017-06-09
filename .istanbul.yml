@@ -4,7 +4,7 @@ instrumentation:
     extensions:
         - .js
     default-excludes: true
-    excludes: ['**/lib/**', '**/log/**', '**/coverage/**', '**/server/**', '**/Server/**', '**/html-report/**', '**/app.js', '**/populate.js', '**/dbListener.js']
+    excludes: ['**/lib/**', '**/coverage/**', '**/server/**', '**/html-report/**', '**/app.js', '**/src/APIRequester.js']
     embed-source: false
     variable: __coverage__
     compact: true

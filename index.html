@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>I-learning</title>
+    <link rel="icon" href="images/logo/favicon.png" type="image/png">
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
@@ -12,17 +13,46 @@
 <script src="lib/runtimemock.js"></script>
 <script src="lib/svghandler.js"></script>
 <script src="lib/svggui.js"></script>
-<script src="src/dbListener.js"></script>
+<script src="lib/svghandlerPoly.js"></script>
+<script src="lib/svgguiPoly.js"></script>
+
+<script src="src/Models.js"></script>
+<!--VIEWS-->
+<script src="src/views/View.js"></script>
+<script src="src/views/HeaderV.js"></script>
+<script src="src/views/ConnectionV.js"></script>
+<script src="src/views/RegisterV.js"></script>
+<script src="src/views/DashboardCollabV.js"></script>
+<script src="src/views/DashboardAdminV.js"></script>
+<script src="src/views/FormationAdminV.js"></script>
+<script src="src/views/FormationCollabV.js"></script>
+<script src="src/views/QuizQuestionV.js"></script>
+<script src="src/views/QuizScoreV.js"></script>
+<script src="src/views/QuizAdminV.js"></script>
+<script src="src/views/DollAdminV.js"></script>
+<script src="src/views/DollCollabV.js"></script>
+
+<!--PRESENTERS-->
+<script src="src/presenters/Presenter.js"></script>
+<script src="src/presenters/ConnectionP.js"></script>
+<script src="src/presenters/RegisterP.js"></script>
+<script src="src/presenters/DashboardAdminP.js"></script>
+<script src="src/presenters/DashboardCollabP.js"></script>
+<script src="src/presenters/FormationAdminP.js"></script>
+<script src="src/presenters/FormationCollabP.js"></script>
+<script src="src/presenters/QuizCollabP.js"></script>
+<script src="src/presenters/QuizAdminP.js"></script>
+<script src="src/presenters/DollAdminP.js"></script>
+<script src="src/presenters/DollCollabP.js"></script>
+<script src="src/presenters/PresenterFactory.js"></script>
+
+<script src="src/APIRequester.js"></script>
+<script src="src/Tool.js"></script>
 <script src="src/Util.js"></script>
-<script src="src/Domain.js"></script>
-<script src="src/GUI.js"></script>
+<script src="lib/enhancer.js"></script>
 <script src="src/main.js"></script>
 <script>
-    const
-        targetRuntime = exports.targetRuntime(),
-        SVG = exports.SVG,
-        dbListener = new DbListener(true, false);
-    main(SVG(targetRuntime), targetRuntime, dbListener);
+    main();
 </script>
 </body>
 

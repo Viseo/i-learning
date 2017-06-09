@@ -3,10 +3,8 @@
  */
 
 const
-    jwt = require('json-web-token');
-
-const
-    db = require('./db');
+    jwt = require('json-web-token'),
+    users = require('./models/users');
 
 const generate = function (user) {
     return new Promise((resolve, reject) => {
@@ -30,15 +28,7 @@ const verify = function (token) {
                 reject(err);
                 return
             }
-            const collection = db.get().collection('users');
-            collection.find().toArray((err, docs) => {
-                const user = docs.find(user => user.mailAddress === decode.user.mailAddress);
-                if (user) {
-                    resolve(user)
-                } else {
-                    reject(new Error("Bad token"))
-                }
-            })
+            users.getUserByEmailAddress(decode.user.mailAddress).then(resolve).catch(reject);
         })
     })
 };
