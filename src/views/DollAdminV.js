@@ -908,8 +908,8 @@ exports.DollAdminV = function(globalVariables){
                     }, 3000);
                 }
                 else {
-                    this.objectivesList.add(mini.manip);
-                    this.objectivesList.refreshListView();
+                    this.responsesList.add(mini.manip);
+                    this.responsesList.refreshListView();
                 }
 
             }
