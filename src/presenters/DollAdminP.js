@@ -19,6 +19,9 @@ exports.DollAdminP = function(globalVariables) {
         getImages() {
             return this.mediaLibrary.getImages();
         }
+        getVideos(){
+            return this.mediaLibrary.getVideos();
+        }
 
         uploadImageByFile(file, progressDisplay){
             return this.state.uploadImage(file, progressDisplay);

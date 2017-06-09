@@ -35,6 +35,9 @@ exports.Models = function (globalVariables, mockResponses) {
         uploadImage(file, progressDisplay) {
             return MediasLibrary.upload(file, progressDisplay);
         }
+        uploadVideo(file, progressDisplay) {
+            return MediasLibrary.upload(file, progressDisplay);
+        }
 
         returnToOldPage() {
             this._putStackPageToFrozen();

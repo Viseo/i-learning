@@ -7,7 +7,8 @@ const testutils = require('../lib/testutils'),
 
 let mockResponses = {
     "/medias/images": {code: 200, content: {images: []}},
-    "/formations/quiz": {code: 200, content: {saved: true}}
+    "/formations/quiz": {code: 200, content: {saved: true}},
+    "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
 };
 
 describe('quiz admin', function () {
@@ -260,6 +261,32 @@ describe('quiz admin', function () {
             clickElement(root, 'previewButton');
         }).then(()=>{
             assertPresent(root, "questionTitle1");
+        })
+    })
+    it('should toggle video panel', function(){
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {
+                            label: "question 1",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        }
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(()=>{
+            clickElement(root, 'videoTab');
+        }).then(()=>{
+            assertPresent(root, 'videoPanel')
         })
     })
 })

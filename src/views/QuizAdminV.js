@@ -122,131 +122,8 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2,
                     this.header.height + this.returnButton.height + this.quizTitleField.height + questionListDim.h / 2 + 3 * MARGIN);
-                // this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2, currentY + questionListDim.h / 2);
-                // currentY += dimensions.height + MARGIN;
             }
-            var _displayMediaLibrary = () => {
-                let mediaLibDim = {
-                    w: this.width * 1 / 5 - MARGIN,
-                    h: this.height * 2 / 3 - BUTTON_HEIGHT
-                    // h: this.height  - (this.header.height + this.returnButton.height + this.quizTitleField.height)
-                };
 
-                let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
-                // let mediasPanel = new gui.Panel(mediaLibDim.w - 2* MARGIN , mediaLibDim.h - 4* MARGIN );
-                mediasPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
-                this.mediaLibrary = mediasPanel;
-                let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(mediasPanel.width/2, mediasPanel.height/2);
-                let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
-                titleLibrary.position(-0.85 * mediasPanel.width / 2, -mediasPanel.height / 2 + 8.33);
-                this.mediasLibraryManipulator.set(2, titleLibrary);
-                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-                titleLibraryBack.position(-0.85 * mediasPanel.width / 2 + titleLibrary.boundingRect().width / 2,
-                    -mediasPanel.height / 2);
-                let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
-                    // .position( mediaLibDim.w /2 - BUTTON_WIDTH -2*MARGIN ,mediaLibDim.h/2-BUTTON_HEIGHT +2*MARGIN);
-                    .position(0,mediasPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
-                addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
-                Tool.resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
-                addPictureButton.component.add(addPictureButton.text);
-                mediasPanel.add(rectWhite);
-                this.mediasLibraryManipulator.set(0, mediasPanel.component);
-                this.mediasLibraryManipulator.set(1, titleLibraryBack);
-
-                this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN, mediasPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
-
-                const onChangeFileExplorerHandler = () => {
-                    uploadFiles(fileExplorer.component.files)
-                };
-
-                var uploadFiles = (files) => {
-                    var _progressDisplayer = () => {
-                        var _displayUploadIcon = manipulator => {
-                            let icon = drawUploadIcon({x: -w / 2, y: 5, size: 20});
-                            manipulator.set(0, icon);
-                        }
-                        var _displayRect = manipulator => {
-                            let rect = new svg.Rect(w * 0.7, 16).color(myColors.none, 1, myColors.darkerGreen);
-                            manipulator.set(1, rect);
-                        }
-
-                        let manipulator = new Manipulator().addOrdonator(4);
-                        _displayUploadIcon(manipulator);
-                        _displayRect(manipulator);
-                        this.videosUploadManipulators.push(manipulator);
-
-                        return (e) => {
-                            var _displayProgressBar = manipulator => {
-                                const progwidth = w * e.loaded / e.total;
-                                const bar = new svg.Rect(progwidth - 15, 14)
-                                    .color(myColors.green)
-                                    .position(-(w - progwidth) / 2, 0);
-                                manipulator.set(2, bar);
-                            }
-                            var _displayPercentage = manipulator => {
-                                const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
-                                percentage.position(0, percentage.boundingRect().height / 4);
-                                manipulator.set(3, percentage);
-                            }
-
-                            _displayProgressBar(manipulator);
-                            _displayPercentage(manipulator);
-                            if (e.loaded === e.total) {
-                                this.videosUploadManipulators.remove(manipulator);
-                            }
-                        };
-                    };
-
-                    for (let file of files) {
-                        let progressDisplay;
-                        this.selectedTab = 0;
-                        if (file.type === 'video/mp4') {
-                            this.selectedTab = 1;
-                            progressDisplay = _progressDisplayer();
-                        }
-                        this.presenter.uploadImage(file, progressDisplay).then(() => {
-                            this.displayMediaLibrary(mediasPanel, imageWidth);
-                        });
-                    }
-                };
-                let fileExplorer;
-                const fileExplorerHandler = () => {
-                    if (!fileExplorer) {
-                        let globalPointCenter ={x:drawing.w/2, y:drawing.h/2};
-                        var fileExplorerStyle = {
-                            leftpx: globalPointCenter.x,
-                            toppx: globalPointCenter.y,
-                            width: this.w / 5,
-                            height: this.w / 5
-                        };
-                        fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                        fileExplorer.type("file");
-                        svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
-                        svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
-                        svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
-                        svg.runtime.attr(fileExplorer.component, "hidden", "true");
-                        svg.runtime.attr(fileExplorer.component, "multiple", "true");
-                        drawings.component.add(fileExplorer);
-                        fileExplorer.fileClick = function () {
-                            svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
-                        }
-                    }
-                    fileExplorer.fileClick();
-                };
-
-                addPictureButton.onClick(fileExplorerHandler);
-                svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
-
-
-                let imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
-                // let imageWidth = (mediaLibDim.w - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN;
-                let imagesManipulator = new Manipulator(this);
-                mediasPanel.content.add(imagesManipulator.first);
-                this.mediasLibraryManipulator.add(imagesManipulator);
-                this.mediasLibraryManipulator.add(addPictureButton.component);
-                imagesManipulator.move(-mediaLibDim.w / 2 + imageWidth / 2 + MARGIN, -mediaLibDim.h / 2 + imageWidth / 2 + MARGIN)
-                this.displayMediaLibrary(mediasPanel, imageWidth)
-            };
             var _displayQuestionDetails = () => {
                 let questionAndAnswers = {
                     w: Math.max(this.width * 4 / 5, 540),
@@ -289,8 +166,29 @@ exports.QuizAdminV = function (globalVariables) {
                     + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + saveButtonDim.height / 2
                     + 5 * MARGIN);
             }
-            // var currentY;
-
+            var _displayTabsPanel = ()=>{
+                let tabsDim = {
+                    w: (this.width * 1 / 5 - MARGIN)/2,
+                    h: BUTTON_HEIGHT
+                };
+                let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2,2).color(myColors.white, 1, myColors.grey);
+                let videoTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2,2).color(myColors.white, 1, myColors.grey)
+                    .position(tabsDim.w, 0).mark('videoTab');
+                let imageText = new svg.Text('Image').font('Arial', 18)
+                    .position(0,6);
+                let videoText = new svg.Text('Video').font('Arial', 18)
+                    .position(tabsDim.w, 6);
+                let tabsManipulator = new Manipulator(this);
+                tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
+                tabsManipulator.move(tabsDim.w/2 + MARGIN,
+                    this.questionsBlockManipulator.y + this.questionsBlockListView.height/2 + tabsDim.h/2 + MARGIN);
+                svg.addEvent(imageTabs,'click', ()=>{this.toggleMediaPanel(true)});
+                svg.addEvent(videoTabs,'click', ()=>{this.toggleMediaPanel(false)});
+                svg.addEvent(imageText,'click', ()=>{this.toggleMediaPanel(true)});
+                svg.addEvent(videoText,'click', ()=>{this.toggleMediaPanel(false)});
+                this.manipulator.add(tabsManipulator);
+            }
+            this.mediaPanel = true;
             super.display();
             _declareManipulator();
             _resetDrawings();
@@ -298,7 +196,9 @@ exports.QuizAdminV = function (globalVariables) {
             _displayReturnButton();
             _displayTitleArea();
             _displayQuestionsHeader();
-            _displayMediaLibrary();
+            _displayTabsPanel();
+            this.displayImageLibrary();
+            this.displayUploadButton();
             _displayQuestionDetails();
             _displayPreviewButton();
             _displaySaveButton();
@@ -311,7 +211,239 @@ exports.QuizAdminV = function (globalVariables) {
             }
         }
 
-        displayMediaLibrary(panel, imageWidth){
+        displayVideoLibrary(){
+            this.manipulator.remove(this.mediasLibraryManipulator);
+            this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
+            let mediaLibDim = {
+                w: this.width * 1 / 5 - MARGIN,
+                h: this.height * 2 / 3 - BUTTON_HEIGHT
+            };
+            var _createPanel = () => {
+                let videosPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
+                videosPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
+                this.mediaLibrary = videosPanel;
+                let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(videosPanel.width/2, videosPanel.height/2);
+                let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
+                titleLibrary.position(-0.85 * videosPanel.width / 2, -videosPanel.height / 2 + 8.33);
+                this.mediasLibraryManipulator.set(2, titleLibrary);
+                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
+                titleLibraryBack.position(-0.85 * videosPanel.width / 2 + titleLibrary.boundingRect().width / 2,
+                    -videosPanel.height / 2);
+                let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
+                    .position(0,videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
+                addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
+                Tool.resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+                addPictureButton.component.add(addPictureButton.text);
+                videosPanel.add(rectWhite);
+                this.mediasLibraryManipulator.set(0, videosPanel.component);
+                this.mediasLibraryManipulator.set(1, titleLibraryBack);
+
+                this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN, videosPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
+                this.manipulator.add(this.mediasLibraryManipulator);
+                videosPanel.back.mark('videoPanel');
+
+            }
+            var _sortAlphabetical = function (array) {
+                return sort(array, (a, b) => (a.name.toUpperCase() < b.name.toUpperCase()));
+            };
+            var _displayVideo = (video, i) => {
+                let manipulator = new Manipulator(this);
+                let iconVideo = new svg.Image('../../images/play-button.png').dimension(20,20);
+
+                iconVideo.mark(video.name.split('.')[0]);
+                manipulator.set(0, iconVideo);
+                //const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
+                title.text.fullTitle = video.name;
+                title.text.position(title.finalWidth / 2 + 15, -title.finalHeight / 4);
+                manipulator.video = video;
+                _assignVideoEvents(iconVideo, title, manipulator, i);
+
+                iconVideo.setHandler('mouseenter', overVideoIconHandler);
+                iconVideo.setHandler('mouseleave', mouseleaveHandler);
+                svg.addEvent(title.text, 'mouseenter', overVideoIconHandler);
+                svg.addEvent(title.text, 'mouseleave', mouseleaveHandler);
+            };
+
+            _createPanel();
+            this.loadVideos();
+        }
+
+        loadVideos(){
+            this.getVideos().then(videos=>{
+                let conf = {
+                    drop: (what, whatParent, x, y) => {
+                        this._dropMediaAction(what.components[0], whatParent, x, y);
+                        return {x: what.x, y: what.y, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        what.flush();
+                        return true;
+                    }
+                };
+                videos.forEach((videoElem, index)=>{
+                    var createDraggableCopy = (vid) => {
+                        let vidManip = new Manipulator(this).addOrdonator(1);
+                        let point = vid.globalPoint(0, 0);
+                        vidManip.move(point.x, point.y);
+
+
+                        let vidCopy = vid.duplicate(vid);
+                        vidManip.set(0, vidCopy);
+                        drawings.piste.add(vidManip);
+
+                        installDnD(vidManip, drawings.component.glass.parent.manipulator.last, conf);
+                        svg.event(drawings.component.glass, "mousedown", event);
+                    };
+
+                    let indexX = Math.floor(index % 1);
+                    let indexY = Math.floor(index / 1);
+                    let video = new svg.Image('../../images/play-button.png');
+                    let videoTitle = new svg.Text(videoElem.name).font('Arial', 12).anchor('left').position(30, 4);
+                    video.dimension(30, 30);
+                    let vidManip = new Manipulator(this);
+                    vidManip.move(indexX * (30 + MARGIN / 2) + 30 / 2 + MARGIN, 30 + indexY * (30 + 2 * MARGIN))
+                    vidManip.add(video);
+                    vidManip.add(videoTitle)
+
+
+                    this.mediaLibrary.content.add(vidManip.component);
+
+
+                    video.onMouseDown(() => createDraggableCopy(video));
+                });
+            })
+        }
+
+        getVideos(){
+            return this.presenter.getVideos();
+        }
+
+        displayImageLibrary(){
+            this.manipulator.remove(this.mediasLibraryManipulator);
+            this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
+            let mediaLibDim = {
+                w: this.width * 1 / 5 - MARGIN,
+                h: this.height * 2 / 3 - BUTTON_HEIGHT
+            };
+
+            let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
+            mediasPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
+            this.mediaLibrary = mediasPanel;
+            let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(mediasPanel.width/2, mediasPanel.height/2);
+            let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
+            titleLibrary.position(-0.85 * mediasPanel.width / 2, -mediasPanel.height / 2 + 8.33);
+            this.mediasLibraryManipulator.set(2, titleLibrary);
+            let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
+            titleLibraryBack.position(-0.85 * mediasPanel.width / 2 + titleLibrary.boundingRect().width / 2,
+                -mediasPanel.height / 2);
+            mediasPanel.add(rectWhite);
+            this.mediasLibraryManipulator.set(0, mediasPanel.component);
+            this.mediasLibraryManipulator.set(1, titleLibraryBack);
+
+            this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN, mediasPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
+
+
+            this.imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
+            let imagesManipulator = new Manipulator(this);
+            mediasPanel.content.add(imagesManipulator.first);
+            this.mediasLibraryManipulator.add(imagesManipulator);
+            imagesManipulator.move(-mediaLibDim.w / 2 + this.imageWidth / 2 + MARGIN, -mediaLibDim.h / 2 + this.imageWidth / 2 + MARGIN)
+            this.manipulator.add(this.mediasLibraryManipulator);
+            this.mediaPanel && this.loadImage(mediasPanel);
+        }
+
+        displayUploadButton(){
+            const onChangeFileExplorerHandler = () => {
+                uploadFiles(fileExplorer.component.files)
+            };
+
+            var uploadFiles = (files) => {
+                var _progressDisplayer = () => {
+                    return (e) => {
+                        var _displayProgressBar = manipulator => {
+                            const progwidth = w * e.loaded / e.total;
+                            const bar = new svg.Rect(progwidth - 15, 14)
+                                .color(myColors.green)
+                                .position(-(w - progwidth) / 2, 0);
+                            manipulator.set(2, bar);
+                        }
+                        var _displayPercentage = manipulator => {
+                            const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
+                            percentage.position(0, percentage.boundingRect().height / 4);
+                            manipulator.set(3, percentage);
+                        }
+
+                        _displayProgressBar(manipulator);
+                        _displayPercentage(manipulator);
+                        if (e.loaded === e.total) {
+
+                        }
+                    };
+                };
+
+                for (let file of files) {
+                    let progressDisplay;
+                    this.selectedTab = 0;
+                    if (file.type === 'video/mp4') {
+                        this.selectedTab = 1;
+                        progressDisplay = _progressDisplayer();
+                        this.presenter.uploadVideo(file, progressDisplay).then(()=>{
+                            this.loadVideos();
+                        })
+                    }else {
+                        this.presenter.uploadImage(file, progressDisplay).then(() => {
+                            this.loadImage(this.mediaLibrary);
+                        });
+                    }
+                }
+            };
+            let fileExplorer;
+            const fileExplorerHandler = () => {
+                if (!fileExplorer) {
+                    let globalPointCenter ={x:drawing.w/2, y:drawing.h/2};
+                    var fileExplorerStyle = {
+                        leftpx: globalPointCenter.x,
+                        toppx: globalPointCenter.y,
+                        width: this.w / 5,
+                        height: this.w / 5
+                    };
+                    fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                    fileExplorer.type("file");
+                    svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
+                    svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
+                    svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
+                    svg.runtime.attr(fileExplorer.component, "hidden", "true");
+                    svg.runtime.attr(fileExplorer.component, "multiple", "true");
+                    drawings.component.add(fileExplorer);
+                    fileExplorer.fileClick = function () {
+                        svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+                    }
+                }
+                fileExplorer.fileClick();
+            };
+            let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter un Media');
+            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
+            Tool.resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+            addPictureButton.component.add(addPictureButton.text);
+            addPictureButton.onClick(fileExplorerHandler);
+            svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
+            let addButtonManip = new Manipulator(this);
+            addButtonManip.add(addPictureButton.component);
+            addButtonManip.move(BUTTON2_WIDTH/2 + MARGIN,this.mediasLibraryManipulator.y + this.mediaLibrary.height/2+ BUTTON_HEIGHT - MARGIN)
+            this.manipulator.add(addButtonManip);
+        }
+
+        toggleMediaPanel(bool){
+            this.mediaPanel = bool;
+            if(this.mediaPanel){
+                this.displayImageLibrary();
+            }
+            else{
+                this.displayVideoLibrary();
+            }
+        }
+
+        loadImage(panel){
             this.getImages().then((images) => {
                 let conf = {
                     drop: (what, whatParent, x, y) => {
@@ -342,9 +474,9 @@ exports.QuizAdminV = function (globalVariables) {
                     let indexX = Math.floor(index % IMAGES_PER_LINE);
                     let indexY = Math.floor(index / IMAGES_PER_LINE);
                     let picture = new svg.Image(image.imgSrc);
-                    picture.dimension(imageWidth, imageWidth);
+                    picture.dimension(this.imageWidth, this.imageWidth);
                     let picManip = new Manipulator(this);
-                    picManip.move(indexX * (imageWidth + MARGIN/2) + imageWidth/2 + MARGIN, imageWidth/2 + indexY * (imageWidth + 2*MARGIN))
+                    picManip.move(indexX * (this.imageWidth + MARGIN/2) + this.imageWidth/2 + MARGIN, this.imageWidth/2 + indexY * (this.imageWidth + 2*MARGIN))
                     picManip.add(picture);
 
                     panel.content.add(picManip.component);

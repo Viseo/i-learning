@@ -49,6 +49,9 @@ exports.QuizAdminP = function (globalVariables) {
                 emojiSrc: ""
             }
         }
+        getVideos(){
+            return this.mediaLibrary.getVideos();
+        }
         getCurrentAnswered(){
             return [];
         }
@@ -58,6 +61,9 @@ exports.QuizAdminP = function (globalVariables) {
 
         uploadImage(file, progressDisplay){
             return this.state.uploadImage(file, progressDisplay);
+        }
+        uploadVideo(file, progressDisplay){
+            return this.state.uploadVideo(file, progressDisplay);
         }
 
         returnHandler(){
