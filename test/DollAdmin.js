@@ -6,7 +6,7 @@ const
     testutils = require('../lib/testutils'),
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
-    {given, when, loadPage, retrieve, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement, mouseMoveElement,
+    {given, when, loadPage, retrieve, clickElement, assertMessage, assertPresent, mouseMoveElement,
     mouseUpElement, mouseDownElement, customClick, enterTextField, rightClick} = testutils;
 
 const ImageRuntime = {
@@ -45,7 +45,7 @@ describe('Doll admin Page', function(){
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
-            let txtElem = retrieve(root, '[textElement1]');
+            // let txtElem = retrieve(root, '[textElement1]');
             when(()=>{
                 enterTextField(root, "textElement1", "jetest");
             }).then(()=>{

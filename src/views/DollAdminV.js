@@ -651,9 +651,9 @@ exports.DollAdminV = function(globalVariables){
             this.selectElement(null);
             this.removeContextMenu();
         }
-        rightClickPanelHandler(event){
-            event.preventDefault();
-        }
+        // rightClickPanelHandler(event){
+        //     event.preventDefault();
+        // }
 
         displaySandBoxZone(){
             this.sandboxManip = new Manipulator(this);
