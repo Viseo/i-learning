@@ -165,7 +165,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     miniature.manipulator.add(displayNotationManip);
                 }
                 let _createStars = () => {
-                    let factor = 5.5;
+                    let factor = 8;
                     let onStarClick = starObject => {
                         starMiniatures.showStarDefaultColor();
                         //todo doit afficher une couleur Quand on a voter
@@ -197,10 +197,10 @@ exports.DashboardCollabV = function (globalVariables) {
                         }
                     );
                     starMiniatures.scaleStar(factor);
-                    starMiniatures.starPosition(-(STAR_SPACE - 1) * factor * 3 - TILE_SIZE.rect.w/2 + 3*CLIP_SIZE, TILE_SIZE.h/3);
+                    starMiniatures.starPosition(  - TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN, TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN);
 
                     let notationText = new svg.Text('Notez cette formation :')
-                        .position(-TILE_SIZE.rect.w/2 + 2* CLIP_SIZE , TILE_SIZE.h/8 + 2*MARGIN).font(FONT, 14, 15)
+                        .position(- TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN,  TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN).font(FONT, 14, 15)
                         .anchor('left');
                     miniature.manipulator.add(notationText);
                 };

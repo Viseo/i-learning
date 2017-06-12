@@ -522,7 +522,7 @@ exports.Tool = function (globalVariables) {
     }
 
     function createRating(manipulator, layer) {
-        const STAR_SPACE = 4;
+        const STAR_SPACE = 3.5;
         const defaultColor = {
             fillColor: myColors.yellow,
             strokeWidth: 0.2,
@@ -556,9 +556,24 @@ exports.Tool = function (globalVariables) {
             star.pop = new PopOut(80, 30, null, manipulator, true);
             star.pop.setPanel();
         };
+        var _impGetSize = () => {
+
+            star.width = starPoints[2][0];
+            star.height = starPoints[4][1];
+            star.factor = 1;
+
+            star.getWidth = function(){
+                return star.factor * star.width;
+            };
+
+            star.getHeight = function(){
+                return star.factor * star.height;
+            }
+        };
 
         _createDrawStars(star);
         _createPopOut();
+        _impGetSize();
         if (layer) {
             manipulator.set(layer, star.starsManipulator);
         }
@@ -566,6 +581,7 @@ exports.Tool = function (globalVariables) {
             manipulator.add(star.starsManipulator);
         }
         star.scaleStar = function (factor) {
+            star.factor = factor;
             this.starsManipulator.scalor.scale(factor);
             return this;
         };
