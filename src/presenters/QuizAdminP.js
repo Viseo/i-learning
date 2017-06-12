@@ -30,6 +30,10 @@ exports.QuizAdminP = function (globalVariables) {
             return this.quiz.getQuestionLabel(this.previewIndex);
         }
 
+        getCurrentQuestionImageSrc(){
+            return this.quiz.getQuestionImageSrc(this.currentQuestionIndex);
+        }
+
         isLastAnsweredQuestion(){
             return true;
         }
