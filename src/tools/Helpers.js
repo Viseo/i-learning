@@ -20,6 +20,7 @@ exports.Helpers = function(globalVariables){
                     count--;
                 }
                 glass.remove(text);
+                text.position(pointToSave.x, pointToSave.y);
                 return text;
             }
             let result = '';

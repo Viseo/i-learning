@@ -123,7 +123,7 @@ exports.DashboardAdmin = function (globalVariables) {
             this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             this.panel.content.add(this.miniaturesManipulator.first);
             let _displayMiniature = (formation, i) => {
-                let _displayMiniature = () => {
+                let _createMiniature = () => {
                     border = new svg.Rect(TILE_SIZE.rect.w, TILE_SIZE.rect.h)
                         .corners(2, 2)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
@@ -131,13 +131,13 @@ exports.DashboardAdmin = function (globalVariables) {
                         .mark("miniatureBorder" + formation.label);
                     let statusIcon = new IconCreator().createIconByName(formation.status, manipulator, 3);
                     statusIcon && statusIcon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - statusIcon.getSize() / 2)
-                    let clip = new ClipPath('image' + formation.label)
+                    let clip = new ClipPath('image' + formation._id)
                         .add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w / 2 + CLIP_SIZE * 2, 0))
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0)
                         .dimension(IMAGE_SIZE, 2 * CLIP_SIZE)
-                        .attr('clip-path', 'url(#image' + formation.label + ')');
+                        .attr('clip-path', 'url(#image' + formation._id + ')');
                     backCircle = new svg.Circle(CLIP_SIZE + 5)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
@@ -191,7 +191,7 @@ exports.DashboardAdmin = function (globalVariables) {
 
                 let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip" + formation.label);
                 let border, backCircle;
-                _displayMiniature();
+                _createMiniature();
                 _placeMiniature();
                 _colorWhenHover();
                 manipulator.addEvent('click', () => { this.enterFormation(formation)});
