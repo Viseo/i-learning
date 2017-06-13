@@ -28,7 +28,16 @@ exports.FormationAdminV = function (globalVariables) {
             this.mapGameAndGui = {};
         }
 
+
         display() {
+            this.librarySize = {
+                width: INPUT_SIZE.w,
+                height: Math.max(drawing.height - this.header.height - 7 * MARGIN - 2 * BUTTON_SIZE.h, 500)
+            };
+            this.graphSize = {
+                width: Math.max(drawing.width - INPUT_SIZE.w - 3 * MARGIN, 2*this.librarySize.width),
+                height: Math.max(drawing.height - this.header.height - 4 * MARGIN - BUTTON_SIZE.h, this.librarySize.height)
+            };
             let _initManips = () => {
                 this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
                 this.manipulator.add(this.nameFieldManipulator)
@@ -56,8 +65,8 @@ exports.FormationAdminV = function (globalVariables) {
                 nameFieldFormation.mark('formationTitle');
                 this.headHeight += 30 + MARGIN;
                 this.nameFieldManipulator.set(0, nameFieldFormation.component);
-                this.nameFieldManipulator.move(MARGIN + nameFieldFormation.width / 2, this.header.height + MARGIN + INPUT_SIZE.h * 2);
 
+                this.nameFieldManipulator.move(MARGIN + nameFieldFormation.width / 2, this.header.height + MARGIN + INPUT_SIZE.h * 2);
                 let saveIcon = new svg.Image('../../images/save.png');
                 saveIcon
                     .position(nameFieldFormation.width / 2 + 12.5 + MARGIN, 0)
@@ -82,20 +91,28 @@ exports.FormationAdminV = function (globalVariables) {
                 this.returnButtonManipulator.add(chevron);
                 this.manipulator.add(this.returnButtonManipulator);
             }
+            let createGraphPanel = () => {
+                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
+                this.graphManipulator = new Manipulator(this).addOrdonator(3);
+                this.graphManipulator.set(0, this.graphPanel.component);
+                this.manipulator.add(this.graphManipulator);
+                this.graphManipulator.move(this.librarySize.width + this.graphSize.width / 2 + 2 * MARGIN,
+                    this.header.height + 2 * MARGIN + this.graphSize.height / 2);
+                this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
+                this.titleGraph = new svg.Text('Formation : ' + this.label).font(FONT, 25).color(myColors.grey).anchor('left');
+                this.titleGraph.position(-0.85 * this.graphSize.width / 2, -this.graphSize.height / 2 + 8.3);
+                this.graphManipulator.set(2, this.titleGraph);
+                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
+                this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
+                this.graphManipulator.set(1, this.titleGraphBack);
+            }
 
-            this.librarySize = {
-                width: INPUT_SIZE.w,
-                height: Math.max(drawing.height - this.header.height - 7 * MARGIN - 2 * BUTTON_SIZE.h, 500)
-            };
-            this.graphSize = {
-                width: Math.max(drawing.width - INPUT_SIZE.w - 3 * MARGIN, 2*this.librarySize.width),
-                height: Math.max(drawing.height - this.header.height - 4 * MARGIN - BUTTON_SIZE.h, this.librarySize.height)
-            };
             super.display();
             this.displayHeader(this.label);
             _initManips();
             _createNameFieldFormation();
             _createReturnButton();
+            createGraphPanel();
             this.displayLibrary();
             this.displayGraph();
         }
@@ -187,20 +204,7 @@ exports.FormationAdminV = function (globalVariables) {
         }
 
         displayGraph() {
-            let createGraphPanel = () => {
-                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
-                this.graphManipulator = new Manipulator(this).addOrdonator(3);
-                this.graphManipulator.set(0, this.graphPanel.component);
-                this.manipulator.add(this.graphManipulator);
-                this.graphManipulator.move(this.librarySize.width + this.graphSize.width / 2 + 2 * MARGIN,
-                    this.header.height + 2 * MARGIN + this.graphSize.height / 2);
-                this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
-                this.titleGraph = new svg.Text('Formation : ' + this.label).font(FONT, 25).color(myColors.grey).anchor('left');
-                this.titleGraph.position(-0.85 * this.graphSize.width / 2, -this.graphSize.height / 2 + 8.3);
-                this.graphManipulator.set(2, this.titleGraph);
-                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-                this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
-                this.graphManipulator.set(1, this.titleGraphBack);
+            let flushGraph = () => {
                 this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width / 2, this.graphSize.height / 2);
@@ -209,7 +213,7 @@ exports.FormationAdminV = function (globalVariables) {
                 backRect.notTarget = true;
                 svg.addEvent(backRect, 'click', () => {
                     this.unselectMiniature();
-                    if(this.selectedArrowRedCross){
+                    if (this.selectedArrowRedCross) {
                         this.arrowsManipulator.remove(this.selectedArrowRedCross);
                         this.selectedArrowRedCross = null;
                     }
@@ -235,7 +239,7 @@ exports.FormationAdminV = function (globalVariables) {
                 this.buttonsManipulator.add(this.publishButton.component);
                 this.manipulator.add(this.buttonsManipulator);
             }
-            createGraphPanel();
+            flushGraph();
             createButtons();
             let formation = this.getFormation();
             formation.levelsTab.forEach(level => {
@@ -428,6 +432,7 @@ exports.FormationAdminV = function (globalVariables) {
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x, what.y);
                         this.dropAction(point.x, point.y, game);
+                        this.displayGraph();
                         return true;
                     }
                 };
