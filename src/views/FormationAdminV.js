@@ -513,9 +513,9 @@ exports.FormationAdminV = function (globalVariables) {
             }
 
             let parentGlobalPoint = this.mapGameAndGui[parent.id].manipulator.last.globalPoint(0, MINIATURE_SIZE.h / 2),
-                parentLocalPoint = this.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
+                parentLocalPoint = this.graphMiniatureManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
                 childGlobalPoint = this.mapGameAndGui[child.id].manipulator.last.globalPoint(0, -MINIATURE_SIZE.h / 2),
-                childLocalPoint = this.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+                childLocalPoint = this.graphMiniatureManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
             let redCrossManipulator = new Manipulator(this);
             let redCross = IconCreator.createRedCrossIcon(redCrossManipulator);
             redCross
