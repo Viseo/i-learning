@@ -119,12 +119,12 @@ exports.DashboardCollabV = function (globalVariables) {
                         .corners(2, 2)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
                         .position(2 * CLIP_SIZE / 2, 0);
-                    let clip = new ClipPath('image' + formation.label);
+                    let clip = new ClipPath('image' + formation._id);
                     clip.add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0))
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0).dimension(IMAGE_SIZE, 2 * CLIP_SIZE)
-                        .attr('clip-path', 'url(#image' + formation.label + ')');
+                        .attr('clip-path', 'url(#image' + formation._id + ')');
                     let backCircle = new svg.Circle(CLIP_SIZE + 5)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
                         .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
