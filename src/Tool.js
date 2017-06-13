@@ -522,11 +522,17 @@ exports.Tool = function (globalVariables) {
     }
 
     function createRating(manipulator, layer) {
-        const STAR_SPACE = 3.5;
+        const STAR_SPACE = 1;
         const defaultColor = {
             fillColor: myColors.yellow,
             strokeWidth: 0.2,
             strokeColor: myColors.yellow
+        };
+
+        const ratingColor = {
+            fillColor: myColors.ultraLightGrey,
+            strokeWidth: 0.1,
+            strokeColor: myColors.brown
         };
 
         const starsNoteEnum = {
@@ -543,10 +549,25 @@ exports.Tool = function (globalVariables) {
             [1.3090, 1.9021], [0.5, 2.4899], [0.8090, 1.5388], [0, 0.9511], [1, 0.9511]
         ];
 
+        var _impGetSize = () => {
+
+            star.width = starPoints[2][0];
+            star.height = starPoints[4][1];
+            star.factor = 1;
+
+            star.getWidth = function(){
+                return star.factor * (star.width + STAR_SPACE) * 5;
+            };
+
+            star.getHeight = function(){
+                return star.factor * star.height;
+            }
+        };
+
         var _createDrawStars = () => {
             star.starsManipulator = new Manipulator(this).addOrdonator(5);
             for (var i = 0; i < 5; i++) {
-                star[i] = new svg.Polygon().add(starPoints).position(STAR_SPACE * i, 0)
+                star[i] = new svg.Polygon().add(starPoints).position((star.width + STAR_SPACE) * i, 0)
                     .color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
                     .mark("star" + (i + 1));
                 star.starsManipulator.add(star[i]);
@@ -556,24 +577,12 @@ exports.Tool = function (globalVariables) {
             star.pop = new PopOut(80, 30, null, manipulator, true);
             star.pop.setPanel();
         };
-        var _impGetSize = () => {
 
-            star.width = starPoints[2][0];
-            star.height = starPoints[4][1];
-            star.factor = 1;
 
-            star.getWidth = function(){
-                return star.factor * star.width;
-            };
-
-            star.getHeight = function(){
-                return star.factor * star.height;
-            }
-        };
-
+        _impGetSize();
         _createDrawStars(star);
         _createPopOut();
-        _impGetSize();
+
         if (layer) {
             manipulator.set(layer, star.starsManipulator);
         }
@@ -583,6 +592,8 @@ exports.Tool = function (globalVariables) {
         star.scaleStar = function (factor) {
             star.factor = factor;
             this.starsManipulator.scalor.scale(factor);
+            this.popPosition(this.getWidth()/2, 0);
+
             return this;
         };
 
@@ -592,12 +603,25 @@ exports.Tool = function (globalVariables) {
             return this;
         };
 
-        star.showStarDefaultColor = function () {
-            this.forEach(elem => elem.color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor));
+
+        star.showActualStarColor = function () {
+            this.forEach((elem, index) => {
+                if(this.note && this.note > 0 && index < this.note){
+                    elem.color(ratingColor.fillColor, ratingColor.strokeWidth, ratingColor.strokeColor);
+                }else{
+                    elem.color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
+                }
+            });
+        };
+        
+        star.defineNote = function (nbElements) {
+            this.note = nbElements;
+            this.showActualStarColor();
         };
 
         star.starPosition = function (x, y) {
             this.starsManipulator.move(x, y);
+            star.popPosition(x + this.getWidth()/2, y);
             return this;
         };
 

@@ -297,7 +297,8 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         updateSingleFormationStars(formationId, starId, versionID) {
-            this.getFormationById(formationId).updateStars(starId);
+            return this.getFormationById(formationId).updateStars(starId)
+                .then(data => JSON.parse(data));
         }
 
         createFormation(label) {
@@ -370,7 +371,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         updateStars(starId) {
-            apiRequester.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
+            return apiRequester.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
         }
 
 

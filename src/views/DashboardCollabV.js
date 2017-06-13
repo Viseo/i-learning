@@ -153,23 +153,29 @@ exports.DashboardCollabV = function (globalVariables) {
                     miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
                     miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
                 }
-                let _displayNotation = () => {
-                    let displayNotationManip = new Manipulator(this);
-                    let textNotation = new svg.Text(formation.note.toString().split('').slice(0,4).join('')
-                        + '/5 (' + formation.noteCounter
-                        + ' votes)')
-                        .font(FONT, 14, 15).anchor('end');
-                    resizeStringForText(textNotation, 120, 10);
-                    displayNotationManip.add(textNotation);
-                    displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
-                    miniature.manipulator.add(displayNotationManip);
-                }
+
                 let _createStars = () => {
+                    let _displayNotation = () => {
+                        let displayNotationManip = new Manipulator(this);
+                        let textNotation = new svg.Text(formation.note.toString().split('').slice(0,4).join('')
+                            + '/5 (' + formation.noteCounter
+                            + ' votes)')
+                            .font(FONT, 14, 15).anchor('end');
+                        resizeStringForText(textNotation, 120, 10);
+                        displayNotationManip.add(textNotation);
+                        displayNotationManip.move(TILE_SIZE.w/2 - MARGIN, TILE_SIZE.h/2 - MARGIN);
+                        miniature.manipulator.add(displayNotationManip);
+                        return textNotation;
+                    };
+
                     let factor = 8;
-                    let onStarClick = starObject => {
-                        starMiniatures.showStarDefaultColor();
-                        //todo doit afficher une couleur Quand on a voter
-                        this.updateSingleFormationStars(formation.formationId, starObject.id, formation._id);
+                    let onStarClick = (starObject, textNotation) => {
+                        starMiniatures.showActualStarColor();
+                        this.updateSingleFormationStars(formation.formationId, starObject.id, formation._id).then( (data) => {
+                            let note = starObject.id.split('')[starObject.id.length - 1];
+                            starMiniatures.defineNote(note);
+                            textNotation.message(data.noteAverage + '/5 (' + data.noteCounter + ' votes)');
+                        });
                     };
 
                     let onStarHover = starObject => {
@@ -184,14 +190,14 @@ exports.DashboardCollabV = function (globalVariables) {
 
                     let onStarLeave = () => {
                         starMiniatures.pop.hide();
-                        starMiniatures.showStarDefaultColor();
+                        starMiniatures.showActualStarColor();
                     };
 
-                    let starMiniatures = createRating(miniature.manipulator);
-                    starMiniatures.popMark(formation.label).popPosition(CLIP_SIZE, TILE_SIZE.h/2 + 0.5*MARGIN);
+                    let textNotation = _displayNotation();
+                    let starMiniatures = createRating(miniature.manipulator)
                     starMiniatures.forEach(
                         star => {
-                            svg.addEvent(star, "click", () => onStarClick(star));
+                            svg.addEvent(star, "click", () => onStarClick(star, textNotation));
                             svg.addEvent(star, 'mouseenter', () => onStarHover(star));
                             svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
                         }
@@ -200,9 +206,11 @@ exports.DashboardCollabV = function (globalVariables) {
                     starMiniatures.starPosition(  - TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN, TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN);
 
                     let notationText = new svg.Text('Notez cette formation :')
-                        .position(- TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN,  TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN).font(FONT, 14, 15)
+                        .position(- TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN,  TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN - 14/3).font(FONT, 14, 15)
                         .anchor('left');
                     miniature.manipulator.add(notationText);
+
+                    formation.note && starMiniatures.defineNote(formation.note);
                 };
 
                 let miniature = _createMiniature();
@@ -210,7 +218,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 _placeMiniature(miniature, i);
                 _colorWhenHover();
                 if(formation.progress === 'done') _createStars();
-                _displayNotation();
             };
 
             this.getFormations().forEach((formation, i) => {
@@ -231,7 +238,7 @@ exports.DashboardCollabV = function (globalVariables) {
         }
 
         updateSingleFormationStars(formationId, starId, versionId){
-            this.presenter.updateSingleFormationStars(formationId, starId, versionId);
+            return this.presenter.updateSingleFormationStars(formationId, starId, versionId);
         }
 
     }

@@ -206,7 +206,9 @@ const updateNote = (req, versionId, note) => {
                         'versions._id': new ObjectID(versionId)
                     }, {
                         $set: {'versions.$.note': newAverage, 'versions.$.noteCounter': newCounter}
-                    })
+                    }).then((data) => {
+                        return {matchedCount: data.matchedCount, noteAverage: newAverage, noteCounter : newCounter}
+                    });
                 } else {
                     let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note) - Number(userNotation.lastNote)) / Number(version.noteCounter)) : Number(note);
                     let formations = db.get().collection('formations');
@@ -215,14 +217,16 @@ const updateNote = (req, versionId, note) => {
                         'versions._id': new ObjectID(versionId)
                     }, {
                         $set: {'versions.$.note': newAverage}
-                    })
+                    }).then((data) => {
+                        return {matchedCount: data.matchedCount, noteAverage: newAverage, noteCounter : (version.noteCounter) ? version.noteCounter : 1}
+                    });
                 }
             }else {
                 throw "version not found";
             }
         })
     })
-}
+};
 
 const replaceQuiz = (indexes, game, formation) => {
     return new Promise((resolve, reject) => {
