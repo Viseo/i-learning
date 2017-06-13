@@ -105,6 +105,22 @@ exports.FormationAdminV = function (globalVariables) {
                 this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
                 this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
                 this.graphManipulator.set(1, this.titleGraphBack);
+
+
+                this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
+                this.graphPanel.content.add(this.graphMiniatureManipulator.first);
+                this.graphMiniatureManipulator.move(this.graphSize.width / 2, this.graphSize.height / 2);
+                let backRect = new svg.Rect(5000, 5000).color(myColors.white, 0, myColors.none);
+                backRect.mark('whitePanel');
+                backRect.notTarget = true;
+                svg.addEvent(backRect, 'click', () => {
+                    this.unselectMiniature();
+                    if (this.selectedArrowRedCross) {
+                        this.arrowsManipulator.remove(this.selectedArrowRedCross);
+                        this.selectedArrowRedCross = null;
+                    }
+                });
+                this.graphMiniatureManipulator.set(0, backRect);
             }
 
             super.display();
@@ -204,22 +220,8 @@ exports.FormationAdminV = function (globalVariables) {
         }
 
         displayGraph() {
-            let flushGraph = () => {
-                this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
-                this.graphPanel.content.add(this.graphMiniatureManipulator.first);
-                this.graphMiniatureManipulator.move(this.graphSize.width / 2, this.graphSize.height / 2);
-                let backRect = new svg.Rect(5000, 5000).color(myColors.white, 0, myColors.none);
-                backRect.mark('whitePanel');
-                backRect.notTarget = true;
-                svg.addEvent(backRect, 'click', () => {
-                    this.unselectMiniature();
-                    if (this.selectedArrowRedCross) {
-                        this.arrowsManipulator.remove(this.selectedArrowRedCross);
-                        this.selectedArrowRedCross = null;
-                    }
-                });
-                this.graphMiniatureManipulator.set(0, backRect);
-            }
+
+            this.graphMiniatureManipulator.flush();
             let createButtons = () => {
                 this.buttonsManipulator = new Manipulator(this);
                 this.saveButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.white, 1, myColors.grey], 'Enregistrer');
@@ -239,7 +241,7 @@ exports.FormationAdminV = function (globalVariables) {
                 this.buttonsManipulator.add(this.publishButton.component);
                 this.manipulator.add(this.buttonsManipulator);
             }
-            flushGraph();
+            //flushGraph();
             createButtons();
             let formation = this.getFormation();
             formation.levelsTab.forEach(level => {
@@ -579,6 +581,7 @@ exports.FormationAdminV = function (globalVariables) {
             };
 
             let dropLocation = getDropLocation(x, y);
+
             if (dropLocation.x >= 0) {
                 let level = getLevel(dropLocation);
                 let column = getColumn(dropLocation, level);
