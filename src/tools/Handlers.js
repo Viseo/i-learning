@@ -29,7 +29,7 @@ myColors = {
     none: []
 };
 
-exports.Util = function (globalVariables) {
+exports.Handlers = function (globalVariables) {
     let runtime = globalVariables.runtime,
         svg = globalVariables.svg,
         gui = globalVariables.gui;
@@ -258,46 +258,8 @@ exports.Util = function (globalVariables) {
         }
     }
 
-    var drawCheck = function (x, y, size) {
-        return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
-            .line(x - .1 * size, y + .2 * size).line(x + .3 * size, y - .3 * size)
-            .color(myColors.none, 3, myColors.black);
-    };
-
-    let drawHexagon = (w, h, orientation, ratio) => {
-        let factor = ratio || 1;
-        if (orientation == 'V') {
-            var points = [
-                [w / 2, -h / 2],
-                [0, -factor * h],
-                [-w / 2, -h / 2],
-                [-w / 2, h / 2],
-                [0, factor * h],
-                [w / 2, h / 2]
-            ];
-        }
-        else {
-            var points = [
-                [w / 2, -h / 2],
-                [factor * w, 0],
-                [w / 2, h / 2],
-                [-w / 2, h / 2],
-                [-factor * w, 0],
-                [-w / 2, -h / 2]
-            ];
-        }
-
-        let shape = new svg.Polygon(0, 0).add(points).color(myColors.lightwhite, 1, myColors.grey);
-        shape.width = orientation == 'V' ? w : w*factor;
-        shape.height = orientation == 'V' ? h*factor : h;
-
-        return shape;
-    };
-
     return {
         Drawings,
-        Manipulator,
-        drawCheck,
-        drawHexagon,
+        Manipulator
     }
 };

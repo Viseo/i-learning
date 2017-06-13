@@ -2,17 +2,20 @@
  * Created by DMA3622 on 05/05/2017.
  */
 exports.QuizAdminV = function (globalVariables) {
-    const util = globalVariables.util,
+    const
         View = globalVariables.View,
-        Manipulator = util.Manipulator,
+        Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        Tool = globalVariables.Tool,
-        IconCreator = Tool.IconCreator,
-        ListManipulatorView = Tool.ListManipulatorView,
-        installDnD = gui.installDnD,
+        IconCreator = globalVariables.Icons.IconCreator,
+        ListManipulatorView = globalVariables.Lists.ListManipulatorView,
+        resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        drawCheck = globalVariables.Helpers.drawCheck,
+        installDnD = gui.installDnD;
+
+    const
         BUTTON_WIDTH = 250,
         BUTTON2_WIDTH = 115,
         BUTTON_HEIGHT = 30,
@@ -232,7 +235,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
                     .position(0,videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
                 addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
-                Tool.resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+                resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
                 addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, videosPanel.component);
@@ -423,7 +426,7 @@ exports.QuizAdminV = function (globalVariables) {
             };
             let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter un Media');
             addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
-            Tool.resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+            resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.onClick(fileExplorerHandler);
             svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
@@ -882,7 +885,7 @@ exports.QuizAdminV = function (globalVariables) {
                                 }
                             }
                             let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                            let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                            let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                             answerGui.checkBoxManipulator.addEvent('click', _toggleChecked);
                             answerGui.checkBoxManipulator.add(checkbox).move(-answerTextDim.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
                             if (answerGui.checked) {

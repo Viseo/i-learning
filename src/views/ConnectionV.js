@@ -2,13 +2,14 @@
  * Created by DMA3622 on 03/05/2017.
  */
 exports.ConnectionV = function (globalVariables) {
-    const util = globalVariables.util,
+    const
         View = globalVariables.View,
-        Manipulator = util.Manipulator,
+        Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
-        IconCreator = globalVariables.Tool.IconCreator,
+        IconCreator = globalVariables.Icons.IconCreator,
+        drawCheck = globalVariables.Helpers.drawCheck,
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         BUTTON_MARGIN = 80,
@@ -131,7 +132,7 @@ exports.ConnectionV = function (globalVariables) {
                     }
 
                     let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
-                    let checked = util.drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
+                    let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                     this.cookieManipulator.add(checkbox);
                     _displayChecked(true);
                 }

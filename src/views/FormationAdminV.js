@@ -1,12 +1,11 @@
 exports.FormationAdminV = function (globalVariables) {
-    const util = globalVariables.util,
-        Manipulator = util.Manipulator,
+    const
+        Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
-        Tool = globalVariables.Tool,
-        IconCreator = Tool.IconCreator,
+        IconCreator = globalVariables.Icons.IconCreator,
         installDnD = globalVariables.gui.installDnD,
         View = globalVariables.View;
     

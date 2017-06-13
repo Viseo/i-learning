@@ -6,10 +6,9 @@ exports.HeaderV = function(globalVariables){
     const
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
-        Manipulator = util.Manipulator;
+        Manipulator = globalVariables.Handlers.Manipulator;
 
     const
         HEADER_SIZE = 50,

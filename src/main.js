@@ -7,13 +7,15 @@ const
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
     FHeaderV = require('./views/HeaderV').HeaderV,
-    Util = require('./Util').Util,
+    FHandlers = require('./tools/Handlers').Handlers,
+    FIcons = require('./tools/Icons').Icons,
+    FHelpers = require('./tools/Helpers').Helpers,
+    FLists = require('./tools/Lists').Lists,
     FModels = require('./Models').Models,
-    FTool = require('./Tool').Tool,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
 function main(mockResponses) {
-    let util, gui, drawings, root;
+    let Handlers, gui, drawings, root;
     let runtime = mockResponses ? mockRuntime() : targetRuntime();
     let svg = SVG(runtime);
     let globalVariables = {svg, runtime};
@@ -29,16 +31,19 @@ function main(mockResponses) {
         root = runtime.anchor("content");
     }
 
-    util = Util(globalVariables);
-    globalVariables.clipPath = guiPolyfill(svg, gui, util, runtime);
-    globalVariables.util = util;
+    Handlers = FHandlers(globalVariables);
+    globalVariables.Handlers = Handlers;
 
-    drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
+    globalVariables.clipPath = guiPolyfill(svg, gui, Handlers, runtime);
+
+    drawings = new Handlers.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
     globalVariables.drawing = drawings.drawing;
 
     globalVariables.HeaderVue = FHeaderV(globalVariables);
-    globalVariables.Tool = FTool(globalVariables);
+    globalVariables.Icons = FIcons(globalVariables);
+    globalVariables.Lists = FLists(globalVariables);
+    globalVariables.Helpers = FHelpers(globalVariables);
 
     presenterFactory(globalVariables);
     let models = FModels(globalVariables, mockResponses);
@@ -50,7 +55,6 @@ function main(mockResponses) {
 
         state.tryLoadCookieForPresenter(ID);
     }
-
 
     svg.addGlobalEvent("resize", state.resize.bind(state));
 

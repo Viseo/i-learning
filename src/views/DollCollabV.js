@@ -3,8 +3,7 @@
  */
 exports.DollCollabV = function(globalVariables) {
     const View = globalVariables.View,
-        util = globalVariables.util,
-        Manipulator = util.Manipulator,
+        Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing;

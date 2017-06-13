@@ -1,13 +1,13 @@
 exports.DashboardAdmin = function (globalVariables) {
-    const util = globalVariables.util,
-        Manipulator = util.Manipulator,
+    const
+        Manipulator = globalVariables.Handlers.Manipulator,
         View = globalVariables.View,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawings = globalVariables.drawings,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.Tool.IconCreator,
-        resizeStringForText = globalVariables.Tool.resizeStringForText,
+        IconCreator = globalVariables.Icons.IconCreator,
+        resizeStringForText = globalVariables.Helpers.resizeStringForText,
         ClipPath = globalVariables.clipPath;
 
     const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},

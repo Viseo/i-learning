@@ -1,13 +1,13 @@
 exports.FormationCollabV = function (globalVariables) {
-
-    const util = globalVariables.util,
-        Manipulator = util.Manipulator,
-        View = globalVariables.View;
-
-    const svg = globalVariables.svg,
+    const
+        Manipulator = globalVariables.Handlers.Manipulator,
+        View = globalVariables.View,
+        svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        IconCreator = globalVariables.Tool.IconCreator,
+        IconCreator = globalVariables.Icons.IconCreator;
+
+    const
         MINIATURE_FONT_SIZE = 20,
         MINIATURE_SIZE = {w: 200, h: 75},
         IMAGE_MINIATURE = 50,

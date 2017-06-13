@@ -5,7 +5,7 @@ exports.View = function(globalVariables){
     const
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
-        Manipulator = globalVariables.util.Manipulator,
+        Manipulator = globalVariables.Handlers.Manipulator,
         HeaderVue = globalVariables.HeaderVue;
 
     class View {

@@ -6,11 +6,11 @@ exports.QuizQuestionV = function (globalVariables) {
     const
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
         runtime = globalVariables.runtime,
-        Manipulator = util.Manipulator,
-        Tool = globalVariables.Tool,
-        IconCreator = Tool.IconCreator,
+        Manipulator = globalVariables.Handlers.Manipulator,
+        IconCreator = globalVariables.Icons.IconCreator,
+        resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        drawHexagon = globalVariables.Helpers.drawHexagon,
         drawing = globalVariables.drawing,
         View = globalVariables.View;
 
@@ -63,7 +63,7 @@ exports.QuizQuestionV = function (globalVariables) {
                 let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
                     .color(myColors.grey, 1, myColors.grey);
                 this.questionManipulator.set(0, line);
-                let border = util.drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
+                let border = drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
                 this.questionManipulator.set(1, border);
                 let imageSrc = this.getCurrentQuestionImageSrc();
                 if(imageSrc){
@@ -255,7 +255,7 @@ exports.QuizQuestionV = function (globalVariables) {
                             let text = new svg.Text(explanation.label)
                                 .font(FONT, FONT_SIZE)
                                 .anchor('left');
-                            Tool.resizeStringForText(text, contentDim.w*2/3, contentDim.h);
+                            resizeStringForText(text, contentDim.w*2/3, contentDim.h);
                             this.explanationManipulator.set(1, text);
                             text.position(-contentDim.w/2 + contentDim.w/3 + MARGIN, -text.boundingRect().height/2);
                         }

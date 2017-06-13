@@ -3,13 +3,15 @@
  */
 
 exports.RegisterV = function (globalVariables) {
-    const util = globalVariables.util,
+    const
         View = globalVariables.View,
-        Manipulator = util.Manipulator,
+        Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
-        IconCreator = globalVariables.Tool.IconCreator,
+        IconCreator = globalVariables.Icons.IconCreator;
+
+    const
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         BUTTON_MARGIN = 80,
