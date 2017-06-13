@@ -105,7 +105,7 @@ exports.DashboardCollabV = function (globalVariables) {
         }
 
         displayFormations(){
-            var _displayMiniature = (formation, i) => {
+            var _displayMiniature = (formation, i, note) => {
                 let _createMiniature = () => {
                     let manipulator = new Manipulator(this).addOrdonator(4);
                     let border = new svg.Rect(TILE_SIZE.w-2*CLIP_SIZE, TILE_SIZE.h)
@@ -210,7 +210,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         .anchor('left');
                     miniature.manipulator.add(notationText);
 
-                    formation.note && starMiniatures.defineNote(formation.note);
+                    note && starMiniatures.defineNote(note.note);
                 };
 
                 let miniature = _createMiniature();
@@ -220,13 +220,19 @@ exports.DashboardCollabV = function (globalVariables) {
                 if(formation.progress === 'done') _createStars();
             };
 
-            this.getFormations().forEach((formation, i) => {
-                if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
-                if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
-                if (this.undoneIcon.isInAction() && formation.progress !== 'undone') return;
-                _displayMiniature(formation, i);
+            this.getNotes().then((data) => {
+                let notes = data;
+
+                this.getFormations().forEach((formation, i) => {
+                    if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
+                    if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
+                    if (this.undoneIcon.isInAction() && formation.progress !== 'undone') return;
+                    let note = notes.filter(function (el) {return (el.formationId === formation.formationId)});
+                    _displayMiniature(formation, i, note.length > 0 ? note[0] : null);
+                });
+                this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
             });
-            this.miniaturesManipulator.move(2*MARGIN + TILE_SIZE.w/2, TILE_SIZE.h/2 + 3*MARGIN);
+
         }
 
         clickOnFormation(formation) {
@@ -239,6 +245,10 @@ exports.DashboardCollabV = function (globalVariables) {
 
         updateSingleFormationStars(formationId, starId, versionId){
             return this.presenter.updateSingleFormationStars(formationId, starId, versionId);
+        }
+
+        getNotes(){
+            return this.presenter.getNotes();
         }
 
     }

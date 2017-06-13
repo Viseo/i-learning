@@ -168,6 +168,9 @@ class APIRequester {
     updateSingleFormationStars(id, starId, versionId) {
         return this.httpRequests.post('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
     }
+    getNotesUser(){
+        return this.httpRequests.get('/users/notes');
+    }
 }
 
 exports.APIRequester = APIRequester;

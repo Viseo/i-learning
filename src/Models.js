@@ -267,7 +267,6 @@ exports.Models = function (globalVariables, mockResponses) {
         getMediasLibrary() {
             return new MediasLibrary();
         }
-
     }
 
     class Formations {
@@ -783,6 +782,10 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getLastActionInfosAndMarkLoaded() {
             return this.lastAction.getLastActionInfosAndMarkLoaded();
+        }
+
+        getNotes(){
+            return apiRequester.getNotesUser().then(data => JSON.parse(data));
         }
     }
 

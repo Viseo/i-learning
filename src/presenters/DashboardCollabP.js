@@ -24,8 +24,9 @@ exports.DashboardCollabP = function(globalVariables) {
         updateSingleFormationStars(formationId, starId, versionId){
             return this.formations.updateSingleFormationStars(formationId,starId,versionId);
         }
-
-
+        getNotes(){
+            return this.user.getNotes();
+        }
     }
     return DashboardCollabP;
 }

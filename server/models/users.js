@@ -120,7 +120,7 @@ const getFormationsWithProgress = (user) => {
             return {myCollection: versions};
         })
     })
-}
+};
 
 
 exports.getUserByEmailAddress = getUserByEmailAddress;
