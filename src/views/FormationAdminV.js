@@ -429,6 +429,7 @@ exports.FormationAdminV = function (globalVariables) {
                     moved: (what) => {
                         let point = what.component.parent.globalPoint(what.x, what.y);
                         this.dropAction(point.x, point.y, game);
+                        this.displayGraph();
                         return true;
                     }
                 };
@@ -575,9 +576,9 @@ exports.FormationAdminV = function (globalVariables) {
             };
 
             let dropLocation = getDropLocation(x, y);
-            let level = getLevel(dropLocation);
-            let column = getColumn(dropLocation, level);
             if (dropLocation.x >= 0) {
+                let level = getLevel(dropLocation);
+                let column = getColumn(dropLocation, level);
                 this.moveGame(item, level, column);
             }
         }
