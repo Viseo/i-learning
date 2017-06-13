@@ -2,8 +2,6 @@
 .vscode/
 
 coverage/
-log/data.json
-log/db.json
 resource/
 node_modules/
 html-report/
