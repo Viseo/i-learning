@@ -42,16 +42,14 @@ exports.DashboardAdmin = function (globalVariables) {
                     .color(myColors.white, 0, myColors.none)
                     .position(titlePos.x, titlePos.y);
 
-                let panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none)
-                panel.position(panel.width / 2 + MARGIN, panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
-                panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
-                let backRect = new svg.Rect(5000, 5000) //TODO
-                    .position(panel.width / 2, panel.height / 2)
-                    .color(myColors.white, 0, myColors.none);
-                panel.add(this.miniaturesManipulator.first)
-                this.manipulator.add(panel.component).add(titleBack).add(title);
-                this.miniaturesManipulator.add(backRect);
-                this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
+                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none)
+                this.panel.position(this.panel.width / 2 + MARGIN, this.panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
+                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
+
+                // this.panel.add(this.miniaturesManipulator.first)
+                this.manipulator.add(this.panel.component).add(titleBack).add(title);
+
+
             }
             let _addIconCaption = () => {
                 let captionManipulator = new Manipulator(this);
@@ -117,6 +115,13 @@ exports.DashboardAdmin = function (globalVariables) {
         }
 
         displayMiniatures() {
+            this.miniaturesManipulator = new Manipulator(this);
+            let backRect = new svg.Rect(5000, 5000) //TODO
+                .position(this.panel.width / 2, this.panel.height / 2)
+                .color(myColors.white, 0, myColors.none);
+            this.miniaturesManipulator.add(backRect);
+            this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
+            this.panel.content.add(this.miniaturesManipulator.first);
             let _displayMiniature = (formation, i) => {
                 let _displayMiniature = () => {
                     border = new svg.Rect(TILE_SIZE.rect.w, TILE_SIZE.rect.h)

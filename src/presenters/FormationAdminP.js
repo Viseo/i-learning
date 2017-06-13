@@ -2,7 +2,7 @@ const FormationAdmin = require('../views/FormationAdminV').FormationAdminV;
 
 exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
-    TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g,
+    TITLE_FORMATION_REGEX = /^([\sA-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g,
         Presenter = globalVariables.Presenter;
     class FormationAdminP extends Presenter{
         constructor(state, formation){

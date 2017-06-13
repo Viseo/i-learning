@@ -3,7 +3,7 @@ const DashboardAdmin = require('../views/DashboardAdminV').DashboardAdmin;
 exports.DashboardAdminP = function(globalVariables) {
     const DashboardView = DashboardAdmin(globalVariables),
         Presenter = globalVariables.Presenter,
-        TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
+        TITLE_FORMATION_REGEX = /^([\sA-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
 
 
     class DashboardAdminP extends Presenter{
