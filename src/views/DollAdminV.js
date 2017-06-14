@@ -406,6 +406,8 @@ exports.DollAdminV = function(globalVariables){
             color.mark('colorOption');
             resize.mark('resizeOption');
             arr.push(color,resize)
+
+            this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
@@ -450,6 +452,8 @@ exports.DollAdminV = function(globalVariables){
             color.mark('colorOption');
             resize.mark('resizeOption');
             arr.push(color,resize);
+
+            this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
@@ -474,6 +478,8 @@ exports.DollAdminV = function(globalVariables){
                 this.removeContextMenu();
             });
             arr.push(resize);
+
+            this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
