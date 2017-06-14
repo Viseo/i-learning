@@ -54,7 +54,7 @@ module.exports = function (app) {
         let userNote = req.body.starId.split('')[req.body.starId.length - 1];
         formations.updateNote(req, req.body.versionId, userNote).then(data => {
             if (data.matchedCount === 1) {
-                res.status(200).send();
+                res.status(200).send(data);
             } else {
                 console.log('problem while updating note', req.body, data);
                 res.status(404).send();

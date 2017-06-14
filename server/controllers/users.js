@@ -7,7 +7,8 @@ module.exports = function (app) {
         cookies = require('../cookies'),
         db = require('../db'),
         users = require('../models/users'),
-        pwd = require('../models/forgotpwd');
+        pwd = require('../models/forgotpwd'),
+        notation = require('../models/notations');
 
     app.get('users/mail/:mailAddress', function (req, res) {
         users.getUserByEmailAddress(req.params.mailAddress).then((user) => {
@@ -84,6 +85,16 @@ module.exports = function (app) {
             })
             .catch((err) => {
                 res.status(err).send();
+            });
+    });
+
+    app.get('/users/notes', function (req, res) {
+
+        notation.getNotes(req)
+            .then((data) => res.send(data))
+            .catch((err) => {
+                console.error(err);
+                res.status(404).send();
             });
     });
 };

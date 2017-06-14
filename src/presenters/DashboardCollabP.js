@@ -22,10 +22,11 @@ exports.DashboardCollabP = function(globalVariables) {
             return this.formations.getFormations();
         }
         updateSingleFormationStars(formationId, starId, versionId){
-            this.formations.updateSingleFormationStars(formationId,starId,versionId);
+            return this.formations.updateSingleFormationStars(formationId,starId,versionId);
         }
-
-
+        getNotes(){
+            return this.user.getNotes();
+        }
     }
     return DashboardCollabP;
 }
