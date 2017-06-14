@@ -7,10 +7,10 @@ exports.Helpers = function(globalVariables){
         svg = globalVariables.svg;
 
     function resizeStringForText(text, width, height) {
-        let glass = drawings.piste.last;
+
         let pointToSave = {x:text.x, y:text.y};
-        text.position(10000, 10000);
-        glass.add(text);
+
+
         if (text.boundingRect().width > width) {
             let splitonspace = text.messageText.split(' ');
             if(splitonspace.length == 1){
@@ -19,8 +19,7 @@ exports.Helpers = function(globalVariables){
                     text.message(text.messageText.slice(0, count) + '...');
                     count--;
                 }
-                glass.remove(text);
-                text.position(pointToSave.x, pointToSave.y);
+
                 return text;
             }
             let result = '';
@@ -52,8 +51,7 @@ exports.Helpers = function(globalVariables){
             computeWidth(splitonspace);
             text.message(result);
         }
-        text.position(pointToSave.x, pointToSave.y - (nbLines ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
-        glass.remove(text);
+      
         return text;
     }
 

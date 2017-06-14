@@ -673,7 +673,11 @@ exports.QuizAdminV = function (globalVariables) {
                 var _setQuestionBlockTitle = (oldMessage, newMessage) => {
                     let questionManip = this.questionsBlockListView.get(this.selectedQuestionIndex);
                     questionManip.buttonText.message(newMessage);
+                    let tmpText = questionManip.buttonText;
+                    resizeStringForText(tmpText,QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h );
+                    //questionManip.add(tmpText)
                 }
+
 
                 let questionTextAreaDim = {
                     w: this.questionDetailsDim.w - 2 * MARGIN,
