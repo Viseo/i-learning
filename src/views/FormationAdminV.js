@@ -40,6 +40,9 @@ exports.FormationAdminV = function (globalVariables) {
             };
             let _initManips = () => {
                 this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
+                this.messageManipulator = new Manipulator(this).addOrdonator(1);
+                this.messageManipulator.move(drawing.width/2, this.header.height + 20);
+                this.manipulator.add(this.messageManipulator);
                 this.manipulator.add(this.nameFieldManipulator)
             }
             let _createNameFieldFormation = () => {
@@ -591,11 +594,10 @@ exports.FormationAdminV = function (globalVariables) {
 
         displayMessage(message) {
             let messageText = new svg.Text(message).font(FONT, 20);
-            messageText.position(drawing.width/2, this.header.height + 20);
             messageText.mark('infoMessage');
-            this.manipulator.add(messageText);
+            this.messageManipulator.set(0,messageText);
             svg.timeout(() => {
-                this.manipulator.remove(messageText);
+                this.messageManipulator.remove(messageText);
             }, 3000);
         }
 
