@@ -656,6 +656,7 @@ exports.FormationAdminV = function (globalVariables) {
 
         moveGame(game, level, column) {
             this.presenter.moveGame(game, level, column);
+            this.displayGraph();
         }
 
         removeGame(game) {
