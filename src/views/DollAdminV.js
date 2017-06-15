@@ -6,6 +6,7 @@ exports.DollAdminV = function(globalVariables){
         gui = globalVariables.gui,
         svg = globalVariables.svg,
         svgr = globalVariables.runtime,
+        Helpers = globalVariables.Helpers,
         IconCreator = globalVariables.Icons.IconCreator,
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w:drawing.width-2*MARGIN, h: drawing.height * 0.7},
@@ -418,7 +419,8 @@ exports.DollAdminV = function(globalVariables){
                 for (let i = 0; i< colors.length; i++){
                     let color = colors[i];
                     let man = new Manipulator(this);
-                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2).color(colors[i], 0.5, myColors.grey);
+                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2)
+                        .color(colors[i], 0.5, myColors.grey);
                     man.add(rec);
                     man.addEvent('click', ()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )});
                     colors[i]=man;
@@ -434,8 +436,11 @@ exports.DollAdminV = function(globalVariables){
                     this.manipulator.remove(this.rightMenuManipulator);
                 }
 
+                let textSize = 18;
+
                 this.rightMenuManipulator = new Manipulator(this);
-                let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height).color(myColors.white, 1, myColors.black);
+                let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height)
+                    .color(myColors.white, 1, myColors.black);
                 this.rightMenuManipulator.add(rMenu);
 
                 let pos = { x : rMenu.width/15 , y : rMenu.height/8};
@@ -447,15 +452,40 @@ exports.DollAdminV = function(globalVariables){
                 arrayText.forEach( (ele, index) => {
                     let text = new svg.Text(ele);
                     text.position(-rMenu.width/2  + pos.x, -rMenu.height/2 + pos.y*(index+2))
-                        .anchor('left').font('Arial', 18);
+                        .anchor('left').font('Arial', textSize);
                     this.rightMenuManipulator.add(text);
                 });
 
                 //For position
+                let dimInput = {w: pos.x*3, h: 40};
+
                 let posX = new svg.Text("X");
-                posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', 18);
+                posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
+                let inputPosX = new gui.TextField(-rMenu.width/2  + pos.x*5 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+
                 let posY = new svg.Text("Y");
-                posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', 18);
+                posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
+                let inputPosY = new gui.TextField(-rMenu.width/2  + pos.x*10 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+
+                //For Taille
+                let inputSizeW = new gui.TextField(-rMenu.width/2  + pos.x*5 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                let inputSizeH = new gui.TextField(-rMenu.width/2  + pos.x*10 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+
+                let borderRect = new svg.Rect(40, 40);
+                borderRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
+
+                let backgroundRect = new svg.Rect(40, 40);
+                backgroundRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
+
+
+                let gauge = new Helpers.Gauge(pos.x*8, 35);
+                gauge.position(-rMenu.width/2+ pos.x*5 + gauge.width/2, -rMenu.height/2 + pos.y*(6)-textSize/3);
+
+
 
 
                 let redCross = IconCreator.createRedCrossIcon(this.rightMenuManipulator);
@@ -465,7 +495,11 @@ exports.DollAdminV = function(globalVariables){
                 });
 
                 this.rightMenuManipulator.add(title)
-                    .add(posX).add(posY);
+                    .add(posX).add(inputPosX.component)
+                    .add(posY).add(inputPosY.component)
+                    .add(inputSizeW.component).add(inputSizeH.component)
+                    .add(borderRect).add(backgroundRect)
+                    .add(gauge.manipulator)
 
 
                 this.rightMenuManipulator.move(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);

@@ -4,7 +4,8 @@
 
 exports.Helpers = function(globalVariables){
     const drawings = globalVariables.drawings,
-        svg = globalVariables.svg;
+        svg = globalVariables.svg,
+        Manipulator = globalVariables.Handlers.Manipulator;
 
     function resizeStringForText(text, width, height) {
 
@@ -92,9 +93,25 @@ exports.Helpers = function(globalVariables){
     };
 
 
+    class Gauge {
+        constructor(w, h){
+            this.manipulator = new Manipulator(this);
+            this.width = w;
+            this.height = h;
+            this.border = new svg.Rect(w, h).color(myColors.white, 1, myColors.black);
+            this.indicator = new svg.Rect(w/30, h + 5).color(myColors.grey, 1, myColors.black);
+            this.manipulator.add(this.border).add(this.indicator);
+        }
+
+        position(x, y){
+            this.manipulator.move(x, y);
+        }
+    }
+
     return {
         resizeStringForText,
         drawCheck,
         drawHexagon,
+        Gauge
     }
 }
