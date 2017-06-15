@@ -6,6 +6,7 @@ exports.DollAdminV = function(globalVariables){
         gui = globalVariables.gui,
         svg = globalVariables.svg,
         svgr = globalVariables.runtime,
+        IconCreator = globalVariables.Icons.IconCreator,
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w:drawing.width-2*MARGIN, h: drawing.height * 0.7},
         SANDBOX_SIZE = {w: PANEL_SIZE.w*6/9, h: PANEL_SIZE.h - 4*MARGIN, header: {w: PANEL_SIZE.w*6/9, h: 100 }},
@@ -429,11 +430,46 @@ exports.DollAdminV = function(globalVariables){
                 this.removeContextMenu();
             });
             let edit = this._makeClickableItem('Modifier', ()=>{
-                let manip = new Manipulator(this);
+                if(this.rightMenuManipulator){
+                    this.manipulator.remove(this.rightMenuManipulator);
+                }
+
+                this.rightMenuManipulator = new Manipulator(this);
                 let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height).color(myColors.white, 1, myColors.black);
-                rMenu.position(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
-                manip.add(rMenu);
-                this.manipulator.add(manip);
+                this.rightMenuManipulator.add(rMenu);
+
+                let pos = { x : rMenu.width/15 , y : rMenu.height/8};
+
+                let title = new svg.Text("Modifier Rectangle");
+                title.position(0, -rMenu.height/2 + pos.y).font('Arial', 30);
+
+                let arrayText  = ['Position', 'Taille', 'Bordure', 'Fond', 'Opacité'];
+                arrayText.forEach( (ele, index) => {
+                    let text = new svg.Text(ele);
+                    text.position(-rMenu.width/2  + pos.x, -rMenu.height/2 + pos.y*(index+2))
+                        .anchor('left').font('Arial', 18);
+                    this.rightMenuManipulator.add(text);
+                });
+
+                //For position
+                let posX = new svg.Text("X");
+                posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', 18);
+                let posY = new svg.Text("Y");
+                posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', 18);
+
+
+                let redCross = IconCreator.createRedCrossIcon(this.rightMenuManipulator);
+                redCross.position( rMenu.width/2 - redCross.getSize() - MARGIN, -rMenu.height/2 + redCross.getSize() + MARGIN);
+                redCross.addEvent('click', ()=>{
+                    this.manipulator.remove(this.rightMenuManipulator);
+                });
+
+                this.rightMenuManipulator.add(title)
+                    .add(posX).add(posY);
+
+
+                this.rightMenuManipulator.move(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
+                this.manipulator.add(this.rightMenuManipulator);
                 this.removeContextMenu();
             });
             color.mark('colorOption');
