@@ -32,6 +32,54 @@ exports.DollAdminV = function(globalVariables){
                 let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue).mark('rectTab');
                 let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE).mark('pictureTab');
                 let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE).mark('helpTab');
+                let confHelp = {
+                    drop: (what, whatParent, x, y) => {
+                        let points = whatParent.globalPoint(x, y);
+                        let target = this.sandboxManip.last.getTarget(points.x, points.y);
+
+                        if(target && target == this.sandboxMain.back){
+
+                            let helpPanelManip = new Manipulator(this);
+                            let helpPanel = new svg.Image(what.components[0].src);
+                            helpPanel.dimension(HEADER_TILE, HEADER_TILE);
+                            helpPanelManip.add(helpPanel);
+
+                            let localPoints = this.sandboxMain.content.localPoint(x, y);
+                            helpPanelManip.move(localPoints.x, localPoints.y);
+
+                            svg.addEvent(helpPanel,'contextmenu',(event)=>{
+                                this.selectElement(helpPanel);
+                                this.imageRightClick(helpPanel, helpPanelManip, event);
+                            });
+
+                            this.sandboxMain.content.add(helpPanelManip.component);
+                        }
+                        return {x: what.x, y: what.y, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        what.flush();
+                        return true;
+                    }
+                };
+
+
+
+                var createDraggableCopy = (helpA) => {
+                    let helpManip = new Manipulator(this).addOrdonator(1);
+                    let point = helpA.globalPoint(0,0);
+                    helpManip.move(point.x,point.y);
+                    let helpCopy = helpA.duplicate(helpA);
+                    helpManip.set(0, helpCopy);
+                    drawings.piste.add(helpManip);
+
+                    installDnD(helpManip, drawings.component.glass.parent.manipulator.last,confHelp);
+                    svg.event(drawings.component.glass, "mousedown", event);
+                };
+                helpA.onMouseDown(() => createDraggableCopy(helpA));
+
+
+
+
                 this.width = drawing.width;
                 this.height = drawing.height;
                 this.actionModes = {
@@ -64,6 +112,7 @@ exports.DollAdminV = function(globalVariables){
                 svg.addEvent(rectA, 'click', ()=>{this.toggleMode('rect')});
                 svg.addEvent(pictureA, 'click', ()=>{this.toggleMode('picture')});
                 svg.addEvent(helpA, 'click', ()=>{this.toggleMode('help')});
+
                 for (let i =0; i< this.actions.length; i++){
                     let manip = new Manipulator(this);
                     let rect = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.white, 1, myColors.grey).corners(3,3);
