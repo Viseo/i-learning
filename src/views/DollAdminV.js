@@ -482,9 +482,11 @@ exports.DollAdminV = function(globalVariables){
                 backgroundRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
 
 
-                let gauge = new Helpers.Gauge(pos.x*8, 35);
+                let gauge = new Helpers.Gauge(pos.x*8, 35, 1, 2);
                 gauge.position(-rMenu.width/2+ pos.x*5 + gauge.width/2, -rMenu.height/2 + pos.y*(6)-textSize/3);
-
+                gauge.onChangeValue((data) => {
+                    alert(data)
+                });
 
 
 

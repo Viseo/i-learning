@@ -5,6 +5,7 @@
 exports.Helpers = function(globalVariables){
     const drawings = globalVariables.drawings,
         svg = globalVariables.svg,
+        installDnD = globalVariables.gui.installDnD,
         Manipulator = globalVariables.Handlers.Manipulator;
 
     function resizeStringForText(text, width, height) {
@@ -94,13 +95,55 @@ exports.Helpers = function(globalVariables){
 
 
     class Gauge {
-        constructor(w, h){
+        constructor(w, h, minVal, maxVal){
+            this.indicatorManipulator = new Manipulator(this);
             this.manipulator = new Manipulator(this);
             this.width = w;
             this.height = h;
+
+            this.minVal = minVal;
+            this.maxVal = maxVal;
+
             this.border = new svg.Rect(w, h).color(myColors.white, 1, myColors.black);
             this.indicator = new svg.Rect(w/30, h + 5).color(myColors.grey, 1, myColors.black);
-            this.manipulator.add(this.border).add(this.indicator);
+
+            this.indicatorManipulator.add(this.indicator);
+            this.manipulator.add(this.border).add(this.indicatorManipulator);
+
+
+            let conf = {
+                drop: (what, whatParent, x, y) => {
+                    let controlX = x;
+                    if(Math.abs(x) >= this.width/2){
+                        if(x < 0 ){
+                            controlX = -this.width/2
+                        }else{
+                            controlX = this.width/2
+                        }
+                    }
+                    return {x: controlX, y: 0, parent: whatParent};
+                },
+                drag: (what, x, y)=>{
+                    let controlX = x;
+                    if(Math.abs(x) >= this.width/2){
+                        if(x < 0 ){
+                            controlX = -this.width/2
+                        }else{
+                            controlX = this.width/2
+                        }
+                    }
+                    return{x:controlX, y:0};
+                },
+                moved: (what)=>{
+                    let newValue = (what.x + this.width/2)*(this.maxVal-this.minVal)/this.width + this.minVal;
+                    this.cbOnChangeValue && this.cbOnChangeValue(newValue);
+                },
+            };
+            installDnD(this.indicatorManipulator, drawings.component.glass.parent.manipulator.last, conf);
+        }
+
+        onChangeValue(cb){
+            this.cbOnChangeValue = cb;
         }
 
         position(x, y){
