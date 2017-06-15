@@ -95,7 +95,8 @@ exports.FormationAdminV = function (globalVariables) {
                 this.manipulator.add(this.returnButtonManipulator);
             }
             let createGraphPanel = () => {
-                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height);
+                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height, myColors.white);
+                this.graphPanel.setScroll();
                 this.graphManipulator = new Manipulator(this).addOrdonator(3);
                 this.graphManipulator.set(0, this.graphPanel.component);
                 this.manipulator.add(this.graphManipulator);
