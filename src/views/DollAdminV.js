@@ -432,6 +432,14 @@ exports.DollAdminV = function(globalVariables){
                 this.removeContextMenu();
             });
             let edit = this._makeClickableItem('Modifier', ()=>{
+                this.selectElement(null);
+                let propertiesToSave = {
+                    position: {x: rect.x, y: rect.y},
+                    size: rect.boundingRect(),
+                    borderColor: rect.strokeColor,
+                    backgroundColor: rect.fillColor,
+                    opacity: rect._opacity
+                }
                 if(this.rightMenuManipulator){
                     this.manipulator.remove(this.rightMenuManipulator);
                 }
@@ -463,17 +471,42 @@ exports.DollAdminV = function(globalVariables){
                 posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
                 let inputPosX = new gui.TextField(-rMenu.width/2  + pos.x*5 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputPosX.message(manipulator.x);
+                inputPosX.onInput((oldMessage, newMessage, valid)=>{
+                    console.log(rect);
+                    if (newMessage.match(/^\d+$/g)){
+                        manipulator.move(newMessage, manipulator.y);
+                    }
+                })
 
                 let posY = new svg.Text("Y");
                 posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
                 let inputPosY = new gui.TextField(-rMenu.width/2  + pos.x*10 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-
+                inputPosY.message(manipulator.y);
+                inputPosY.onInput((oldMessage, newMessage, valid)=>{
+                    console.log(rect);
+                    if (newMessage.match(/^\d+$/g)){
+                        manipulator.move(manipulator.x, newMessage);
+                    }
+                })
                 //For Taille
                 let inputSizeW = new gui.TextField(-rMenu.width/2  + pos.x*5 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputSizeW.message(rect.boundingRect().width);
+                inputSizeW.onInput((oldMessage, newMessage, valid)=>{
+                    if (newMessage.match(/^\d+$/g)){
+                        rect.dimension(newMessage, rect.boundingRect().height);
+                    }
+                })
                 let inputSizeH = new gui.TextField(-rMenu.width/2  + pos.x*10 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputSizeH.message(rect.boundingRect().height);
+                inputSizeH.onInput((oldMessage, newMessage, valid)=>{
+                    if (newMessage.match(/^\d+$/g)){
+                        rect.dimension(rect.boundingRect().width,newMessage);
+                    }
+                })
 
                 let borderRect = new svg.Rect(40, 40);
                 borderRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
