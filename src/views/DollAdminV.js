@@ -366,18 +366,8 @@ exports.DollAdminV = function(globalVariables){
         }
 
         textRightClick(text,manipulator,event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(150, 27).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let color = makeClickableItem('Couleur', ()=>{
+            let color = this._makeClickableItem('Couleur', ()=>{
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
                     [230, 122, 25],
@@ -398,7 +388,7 @@ exports.DollAdminV = function(globalVariables){
                 }
                 this.contextMenu.setList(colors);
             });
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
@@ -415,18 +405,8 @@ exports.DollAdminV = function(globalVariables){
         }
 
         rectRightClick(rect, manipulator, event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let color = makeClickableItem('Couleur', ()=>{
+            let color = this._makeClickableItem('Couleur', ()=>{
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
                     [230, 122, 25],
@@ -444,13 +424,21 @@ exports.DollAdminV = function(globalVariables){
                 }
                 this.contextMenu.setList(colors);
             });
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(rect, manipulator);
+                this.removeContextMenu();
+            });
+            let edit = this._makeClickableItem('Modifier', ()=>{
+                let manip = new Manipulator(this);
+                let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height).color(myColors.white, 1, myColors.black);
+                rMenu.position(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
+                manip.add(rMenu);
+                this.manipulator.add(manip);
                 this.removeContextMenu();
             });
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize);
+            arr.push(color,resize, edit);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -461,18 +449,8 @@ exports.DollAdminV = function(globalVariables){
         }
 
         imageRightClick(image, manipulator, event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(image, manipulator);
                 this.removeContextMenu();
             });
@@ -484,6 +462,17 @@ exports.DollAdminV = function(globalVariables){
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
             this.contextMenu.refreshListView();
+        }
+
+        _makeClickableItem(message, handler){
+            let txt = new svg.Text(message).font('Arial', 18).position(0,6);
+            let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
+            let manip = new Manipulator(this);
+            manip.add(rect).add(txt);
+            manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
+            manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
+            manip.addEvent('click', handler);
+            return manip;
         }
 
         selectElement(elem){
