@@ -32,6 +32,7 @@ exports.QuizCollabP = function (globalVariables) {
         }
 
         displayQuestionView(questionIndex) {
+            if(this.view) this.flushView();
             this.view = this.questionView;
             if (questionIndex !== undefined) {
                 this.currentQuestionIndex = questionIndex;
@@ -41,6 +42,7 @@ exports.QuizCollabP = function (globalVariables) {
         }
 
         displayScoreView() {
+            if(this.view) this.flushView();
             this.view = this.scoreView;
             this.scoreView.display();
         }
@@ -119,12 +121,8 @@ exports.QuizCollabP = function (globalVariables) {
             return this.quiz.getNbQuestionsCorrect();
         }
 
-        getCurrentQuestionLabel() {
-            return this.quiz.getQuestionLabel(this.currentQuestionIndex);
-        }
-
-        getCurrentQuestionImageSrc(){
-            return this.quiz.getQuestionImageSrc(this.currentQuestionIndex);
+        getCurrentQuestion(){
+            return this.quiz.getQuestion(this.currentQuestionIndex);
         }
 
         isMultipleChoice(){

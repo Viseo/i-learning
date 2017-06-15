@@ -84,12 +84,14 @@ exports.Models = function (globalVariables, mockResponses) {
 
         clearOldPageStackAndLoadPresenterConnection() {
             this.stackPage = [];
+            this.currentPresenter.flushView();
             this.currentPresenter = null;
             this.loadPresenterConnection();
         }
 
         clearOldPageStackAndLoadPresenterDashboard() {
             this.stackPage = [];
+            this.currentPresenter.flushView();
             this.currentPresenter = null;
             this.loadPresenterDashboard();
         }
@@ -888,12 +890,8 @@ exports.Models = function (globalVariables, mockResponses) {
             return this.answered;
         }
 
-        getQuestionLabel(index) {
-            return this.questions[index] ? this.questions[index].label : "";
-        }
-
-        getQuestionImageSrc(index){
-            return this.questions[index] ? this.questions[index].imageSrc : "";
+        getQuestion(index){
+            return this.questions[index] || {};
         }
 
         getAnswers(questionIndex) {
@@ -937,7 +935,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 if (!this.isCorrect(index, answered)) {
                     wrongQuestions.push({
                         index,
-                        label: this.getQuestionLabel(index)
+                        label: this.getQuestion(index).label
                     });
                 }
             });

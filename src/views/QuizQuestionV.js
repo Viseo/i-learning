@@ -26,7 +26,6 @@ exports.QuizQuestionV = function (globalVariables) {
     class QuizQuestionV  extends View{
         constructor(presenter) {
             super(presenter);
-            this.answers = [];
         }
 
         display() {
@@ -65,21 +64,28 @@ exports.QuizQuestionV = function (globalVariables) {
                 this.questionManipulator.set(0, line);
                 let border = drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
                 this.questionManipulator.set(1, border);
-                let imageSrc = this.getCurrentQuestionImageSrc();
-                if(imageSrc){
-                    let questionImage = new svg.Image(imageSrc)
+                let question = this.getCurrentQuestion();
+                if(question.imageSrc){
+                    let questionImage = new svg.Image(question.imageSrc)
                         .position(-border.width/2, 0)
                         .dimension(border.width/3, border.height - 2*MARGIN);
                     this.questionManipulator.set(2, questionImage);
+                }else if(question.videoSrc){
+                    let questionVideo = new gui.Video(question.videoSrc)
+                        .position(-border.width/2, 0)
+                        .dimension(border.width/3, border.height - 2*MARGIN);
+                    this.questionManipulator.set(2, questionVideo.component);
+                    questionVideo.show();
+                    this.videos.push(questionVideo);
                 }
-                let questionTitle = new svg.Text(this.getCurrentQuestionLabel())
+                let questionTitle = new svg.Text(this.getCurrentQuestion().label)
                     .font(FONT, FONT_SIZE)
                     .mark('questionTitle'+this.getId());
                 this.questionManipulator.set(3, questionTitle);
                 let voiceIcon = IconCreator.createVoiceIcon(this.questionManipulator);
                 voiceIcon.position(drawing.width / 4 + MARGIN, 0);
                 voiceIcon.addEvent( 'click', () => {
-                    runtime.speechSynthesisSpeak(this.getCurrentQuestionLabel());
+                    runtime.speechSynthesisSpeak(this.getCurrentQuestion().label);
                 });
                 this.questionManipulator.move(drawing.width / 2, currentY + border.height / 2);
                 currentY += border.height + 2 * MARGIN;
@@ -206,6 +212,7 @@ exports.QuizQuestionV = function (globalVariables) {
 
             super.display();
             this.answers = [];
+            this.videos = [];
             var currentY = this.header.height + MARGIN;
             _initManips();
             this.displayHeader(this.getLabel());
@@ -221,6 +228,13 @@ exports.QuizQuestionV = function (globalVariables) {
             }
         }
 
+        flush(){
+            this.videos.forEach((video)=>{
+                video.hide();
+            })
+            super.flush();
+        }
+
         displayResult() {
             var _hidebottomElements = () => {
                 this.helpManipulator && this.helpManipulator.flush();
@@ -231,17 +245,21 @@ exports.QuizQuestionV = function (globalVariables) {
             }
             var _displayText = () => {
                 this.scoreManipulator = new Manipulator(this);
+                this.manipulator.add(this.scoreManipulator);
                 let score = this.getScore();
                 let scoreText = new svg.Text(score.message).font(FONT, FONT_SIZE).mark('scoreText');
                 let icon = IconCreator.createImageIcon(score.emojiSrc, this.scoreManipulator);
                 this.scoreManipulator.add(scoreText);
                 icon.position(-scoreText.boundingRect().width/2 - MARGIN - icon.getContentSize()/2, -FONT_SIZE/2);
                 this.scoreManipulator.move(drawing.width / 2, this.header.height + MARGIN + FONT_SIZE / 2 + INPUT_SIZE.h + 2*MARGIN);
-                this.manipulator.add(this.scoreManipulator);
             }
             var _addExplanations = () => {
                 var _toggleExplanation = (explanation) => {
                     var _hideExplanation = () => {
+                        if(this.explanationManipulator.video){
+                            this.explanationManipulator.video.hide();
+                            this.videos.remove(this.explanationManipulator.video);
+                        }
                         this.manipulator.remove(this.explanationManipulator);
                         displayed = false;
                     }
@@ -264,13 +282,20 @@ exports.QuizQuestionV = function (globalVariables) {
                                 .dimension(contentDim.w/3, contentDim.h);
                             img.position(-contentDim.w/2 + img.width/2, 0);
                             this.explanationManipulator.set(2, img);
+                        }else if(explanation.videoSrc){
+                            let video = new gui.Video(explanation.videoSrc)
+                                .position(-contentDim.w/2 + contentDim.w/6, 0)
+                                .dimension(contentDim.w/3, contentDim.h);
+                            this.explanationManipulator.set(2, video.component);
+                            video.show();
+                            this.videos.push(video);
+                            this.explanationManipulator.video = video;
                         }
                         let voiceIcon = IconCreator.createVoiceIcon(this.explanationManipulator);
                         voiceIcon.position(contentDim.w/2 - voiceIcon.getContentSize()/2, -contentDim.h/2 + voiceIcon.getContentSize()/2);
                         voiceIcon.addEvent( 'click', () => {
                             runtime.speechSynthesisSpeak(explanation.label);
                         });
-
                     }
 
                     var explanationDim = {
@@ -284,16 +309,16 @@ exports.QuizQuestionV = function (globalVariables) {
                     }else {
                         if(displayed) _hideExplanation();
                         displayed = explanation;
-                        this.explanationManipulator = new Manipulator(this).addOrdonator();
-                        _displayExplanation();
+                        this.explanationManipulator = new Manipulator(this).addOrdonator(3);
                         this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + explanationDim.h/2);
                         this.manipulator.add(this.explanationManipulator);
+                        _displayExplanation();
                     }
                 }
 
                 let displayed = false;
                 this.getCurrentAnswers().forEach((answer, index) => {
-                    if(answer.explanation && (answer.explanation.label || answer.explanation.imageSrc)){
+                    if(answer.explanation && (answer.explanation.label || answer.explanation.imageSrc || answer.explanation.videoSrc)){
                         let manip = this.answers[index];
                         let icon = IconCreator.createExplanationIcon(manip);
                         icon.position(this.answerWidth/2 - MARGIN - 25, this.answerHeight/2 - 25 - MARGIN)
@@ -378,12 +403,8 @@ exports.QuizQuestionV = function (globalVariables) {
             return this.presenter.isLastAnsweredQuestion();
         }
 
-        getCurrentQuestionLabel() {
-            return this.presenter.getCurrentQuestionLabel();
-        }
-
-        getCurrentQuestionImageSrc(){
-            return this.presenter.getCurrentQuestionImageSrc();
+        getCurrentQuestion(){
+            return this.presenter.getCurrentQuestion();
         }
 
         getCurrentAnswers() {

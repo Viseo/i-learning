@@ -207,9 +207,6 @@ exports.RegisterV = function (globalVariables) {
         getFields() {
             return this.presenter.getFields();
         }
-        returnToOldPage(){
-            this.presenter.returnToOldPage();
-        }
         registerNewUser() {
             return this.presenter.registerNewUser();
         }

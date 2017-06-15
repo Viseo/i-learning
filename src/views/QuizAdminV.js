@@ -23,7 +23,8 @@ exports.QuizAdminV = function (globalVariables) {
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
         QUESTION_BUTTON_SIZE = {w: 200, h: 90},
-        EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte";
+        EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte",
+        EXPLANATION_DEFAULT_IMAGESRC = "../images/quiz/newImage.png";
 
     class QuizAdminV extends View {
         constructor(presenter) {
@@ -72,7 +73,7 @@ exports.QuizAdminV = function (globalVariables) {
             }
             var _displayTitleArea = () => {
                 var _renameWhenEnter = (event) => {
-                    if(event.keyCode === 13){
+                    if (event.keyCode === 13) {
                         this.renameQuiz();
                         titleTextArea.hideControl();
                     }
@@ -169,26 +170,34 @@ exports.QuizAdminV = function (globalVariables) {
                     + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + saveButtonDim.height / 2
                     + 5 * MARGIN);
             }
-            var _displayTabsPanel = ()=>{
+            var _displayTabsPanel = () => {
                 let tabsDim = {
-                    w: (this.width * 1 / 5 - MARGIN)/2,
+                    w: (this.width * 1 / 5 - MARGIN) / 2,
                     h: BUTTON_HEIGHT
                 };
-                let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2,2).color(myColors.white, 1, myColors.grey);
-                let videoTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2,2).color(myColors.white, 1, myColors.grey)
+                let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey);
+                let videoTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey)
                     .position(tabsDim.w, 0).mark('videoTab');
                 let imageText = new svg.Text('Image').font('Arial', 18)
-                    .position(0,6);
+                    .position(0, 6);
                 let videoText = new svg.Text('Video').font('Arial', 18)
                     .position(tabsDim.w, 6);
                 let tabsManipulator = new Manipulator(this);
                 tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
-                tabsManipulator.move(tabsDim.w/2 + MARGIN,
-                    this.questionsBlockManipulator.y + this.questionsBlockListView.height/2 + tabsDim.h/2 + MARGIN);
-                svg.addEvent(imageTabs,'click', ()=>{this.toggleMediaPanel(true)});
-                svg.addEvent(videoTabs,'click', ()=>{this.toggleMediaPanel(false)});
-                svg.addEvent(imageText,'click', ()=>{this.toggleMediaPanel(true)});
-                svg.addEvent(videoText,'click', ()=>{this.toggleMediaPanel(false)});
+                tabsManipulator.move(tabsDim.w / 2 + MARGIN,
+                    this.questionsBlockManipulator.y + this.questionsBlockListView.height / 2 + tabsDim.h / 2 + MARGIN);
+                svg.addEvent(imageTabs, 'click', () => {
+                    this.toggleMediaPanel(true)
+                });
+                svg.addEvent(videoTabs, 'click', () => {
+                    this.toggleMediaPanel(false)
+                });
+                svg.addEvent(imageText, 'click', () => {
+                    this.toggleMediaPanel(true)
+                });
+                svg.addEvent(videoText, 'click', () => {
+                    this.toggleMediaPanel(false)
+                });
                 this.manipulator.add(tabsManipulator);
             }
             this.mediaPanel = true;
@@ -207,14 +216,14 @@ exports.QuizAdminV = function (globalVariables) {
             _displaySaveButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
-            if(this.selectedQuestionIndex){
+            if (this.selectedQuestionIndex) {
                 this.questionsBlockListView.get(this.selectedQuestionIndex).select();
-            }else {
+            } else {
                 this.questionsBlockListView.length >= 2 && this.questionsBlockListView.get(0).select();
             }
         }
 
-        displayVideoLibrary(){
+        displayVideoLibrary() {
             this.manipulator.remove(this.mediasLibraryManipulator);
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
@@ -225,16 +234,16 @@ exports.QuizAdminV = function (globalVariables) {
                 let videosPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
                 videosPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
                 this.mediaLibrary = videosPanel;
-                let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(videosPanel.width/2, videosPanel.height/2);
+                let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(videosPanel.width / 2, videosPanel.height / 2);
                 let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
                 titleLibrary.position(-0.85 * videosPanel.width / 2, -videosPanel.height / 2 + 8.33);
                 this.mediasLibraryManipulator.set(2, titleLibrary);
                 let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
                 titleLibraryBack.position(-0.85 * videosPanel.width / 2 + titleLibrary.boundingRect().width / 2,
                     -videosPanel.height / 2);
-                let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter une image')
-                    .position(0,videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
-                addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
+                let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
+                    .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
+                addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
                 resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
                 addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
@@ -246,36 +255,19 @@ exports.QuizAdminV = function (globalVariables) {
                 videosPanel.back.mark('videoPanel');
 
             }
-            var _sortAlphabetical = function (array) {
-                return sort(array, (a, b) => (a.name.toUpperCase() < b.name.toUpperCase()));
-            };
-            var _displayVideo = (video, i) => {
-                let manipulator = new Manipulator(this);
-                let iconVideo = new svg.Image('../../images/play-button.png').dimension(20,20);
-
-                iconVideo.mark(video.name.split('.')[0]);
-                manipulator.set(0, iconVideo);
-                //const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
-                title.text.fullTitle = video.name;
-                title.text.position(title.finalWidth / 2 + 15, -title.finalHeight / 4);
-                manipulator.video = video;
-                _assignVideoEvents(iconVideo, title, manipulator, i);
-
-                iconVideo.setHandler('mouseenter', overVideoIconHandler);
-                iconVideo.setHandler('mouseleave', mouseleaveHandler);
-                svg.addEvent(title.text, 'mouseenter', overVideoIconHandler);
-                svg.addEvent(title.text, 'mouseleave', mouseleaveHandler);
-            };
 
             _createPanel();
             this.loadVideos();
         }
 
-        loadVideos(){
-            this.getVideos().then(videos=>{
+        loadVideos() {
+            this.getVideos().then(videos => {
                 let conf = {
                     drop: (what, whatParent, x, y) => {
-                        this._dropMediaAction(what.components[0], whatParent, x, y);
+                        this._dropMediaAction(whatParent, x, y, (target) => {
+                            target.url('../../images/play-button.png');
+                            target.videoSrc = what.videoSrc;
+                        });
                         return {x: what.x, y: what.y, parent: whatParent};
                     },
                     moved: (what) => {
@@ -283,7 +275,7 @@ exports.QuizAdminV = function (globalVariables) {
                         return true;
                     }
                 };
-                videos.forEach((videoElem, index)=>{
+                videos.forEach((videoElem, index) => {
                     var createDraggableCopy = (vid) => {
                         let vidManip = new Manipulator(this).addOrdonator(1);
                         let point = vid.globalPoint(0, 0);
@@ -292,6 +284,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                         let vidCopy = vid.duplicate(vid);
                         vidManip.set(0, vidCopy);
+                        vidManip.videoSrc = videoElem.src;
                         drawings.piste.add(vidManip);
 
                         installDnD(vidManip, drawings.component.glass.parent.manipulator.last, conf);
@@ -317,11 +310,11 @@ exports.QuizAdminV = function (globalVariables) {
             })
         }
 
-        getVideos(){
+        getVideos() {
             return this.presenter.getVideos();
         }
 
-        displayImageLibrary(){
+        displayImageLibrary() {
             this.manipulator.remove(this.mediasLibraryManipulator);
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
@@ -332,7 +325,7 @@ exports.QuizAdminV = function (globalVariables) {
             let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
             mediasPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
             this.mediaLibrary = mediasPanel;
-            let rectWhite = new svg.Rect(5000,5000).color(myColors.white,1,myColors.white).position(mediasPanel.width/2, mediasPanel.height/2);
+            let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(mediasPanel.width / 2, mediasPanel.height / 2);
             let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
             titleLibrary.position(-0.85 * mediasPanel.width / 2, -mediasPanel.height / 2 + 8.33);
             this.mediasLibraryManipulator.set(2, titleLibrary);
@@ -355,7 +348,7 @@ exports.QuizAdminV = function (globalVariables) {
             this.mediaPanel && this.loadImage(mediasPanel);
         }
 
-        displayUploadButton(){
+        displayUploadButton() {
             const onChangeFileExplorerHandler = () => {
                 uploadFiles(fileExplorer.component.files)
             };
@@ -390,10 +383,10 @@ exports.QuizAdminV = function (globalVariables) {
                     if (file.type === 'video/mp4') {
                         this.selectedTab = 1;
                         progressDisplay = _progressDisplayer();
-                        this.presenter.uploadVideo(file, progressDisplay).then(()=>{
+                        this.presenter.uploadVideo(file, progressDisplay).then(() => {
                             this.loadVideos();
                         })
-                    }else {
+                    } else {
                         this.presenter.uploadImage(file, progressDisplay).then(() => {
                             this.loadImage(this.mediaLibrary);
                         });
@@ -403,7 +396,7 @@ exports.QuizAdminV = function (globalVariables) {
             let fileExplorer;
             const fileExplorerHandler = () => {
                 if (!fileExplorer) {
-                    let globalPointCenter ={x:drawing.w/2, y:drawing.h/2};
+                    let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
                     var fileExplorerStyle = {
                         leftpx: globalPointCenter.x,
                         toppx: globalPointCenter.y,
@@ -424,33 +417,37 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 fileExplorer.fileClick();
             };
-            let addPictureButton = new gui.Button(BUTTON2_WIDTH,BUTTON_HEIGHT,[myColors.customBlue,0,myColors.none ],'Ajouter un Media');
-            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0,4.33);
+            let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter un Media');
+            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
             resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.onClick(fileExplorerHandler);
             svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
             let addButtonManip = new Manipulator(this);
             addButtonManip.add(addPictureButton.component);
-            addButtonManip.move(BUTTON2_WIDTH/2 + MARGIN,this.mediasLibraryManipulator.y + this.mediaLibrary.height/2+ BUTTON_HEIGHT - MARGIN)
+            addButtonManip.move(BUTTON2_WIDTH / 2 + MARGIN, this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_HEIGHT - MARGIN)
             this.manipulator.add(addButtonManip);
         }
 
-        toggleMediaPanel(bool){
+        toggleMediaPanel(bool) {
             this.mediaPanel = bool;
-            if(this.mediaPanel){
+            if (this.mediaPanel) {
                 this.displayImageLibrary();
             }
-            else{
+            else {
                 this.displayVideoLibrary();
             }
         }
 
-        loadImage(panel){
+        loadImage(panel) {
             this.getImages().then((images) => {
                 let conf = {
                     drop: (what, whatParent, x, y) => {
-                        this._dropMediaAction(what.components[0], whatParent, x, y);
+                        this._dropMediaAction(whatParent, x, y, (target) => {
+                            let imageSrc = what.components[0].src;
+                            target.url(imageSrc);
+                            target.imageSrc = imageSrc;
+                        })
                         return {x: what.x, y: what.y, parent: whatParent};
                     },
                     moved: (what) => {
@@ -479,7 +476,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let picture = new svg.Image(image.imgSrc);
                     picture.dimension(this.imageWidth, this.imageWidth);
                     let picManip = new Manipulator(this);
-                    picManip.move(indexX * (this.imageWidth + MARGIN/2) + this.imageWidth/2 + MARGIN, this.imageWidth/2 + indexY * (this.imageWidth + 2*MARGIN))
+                    picManip.move(indexX * (this.imageWidth + MARGIN / 2) + this.imageWidth / 2 + MARGIN, this.imageWidth / 2 + indexY * (this.imageWidth + 2 * MARGIN))
                     picManip.add(picture);
 
                     panel.content.add(picManip.component);
@@ -490,7 +487,7 @@ exports.QuizAdminV = function (globalVariables) {
             })
         }
 
-        _dropMediaAction(item, parent, x, y) {
+        _dropMediaAction(parent, x, y, cb) {
             if (this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < this.questionsBlockListView.length) {
                 let globalPoints = parent.globalPoint(x, y);
                 let target = this.questionsDetail[this.selectedQuestionIndex].guiManipulator
@@ -498,9 +495,8 @@ exports.QuizAdminV = function (globalVariables) {
 
                 if (target) {
                     if (target instanceof svg.Image && !target.id && target.id != "explanation") {
-                        target.url(item.src);
+                        cb(target);
                     }
-
                 }
             }
         }
@@ -514,7 +510,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator.remove(messageText);
             }, 3000);
         }
-
 
 
         _displayQuestionsBlock() {
@@ -570,7 +565,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                     IconCreator.createRedCrossIcon(questionManip)
                         .position(QUESTION_BUTTON_SIZE.w / 2, -QUESTION_BUTTON_SIZE.h / 2)
-                        .mark('questionRedCross'+lastQuestionIndex)
+                        .mark('questionRedCross' + lastQuestionIndex)
                         .addEvent('click', () => _deleteQuestion());
                 };
                 var _displayBlock = () => {
@@ -578,7 +573,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
 
                 let questionManip = new Manipulator(this).addOrdonator(2);
-                questionManip.mark('questionBlock'+lastQuestionIndex);
+                questionManip.mark('questionBlock' + lastQuestionIndex);
                 _initBlock(questionManip);
                 _displayBlock();
 
@@ -721,7 +716,7 @@ exports.QuizAdminV = function (globalVariables) {
                     var _initGui = (answerGui, index) => {
                         var _initManipulators = () => {
                             answerGui.manipulator = new Manipulator(this).addOrdonator(5);
-                            answerGui.manipulator.mark('answer'+index);
+                            answerGui.manipulator.mark('answer' + index);
                             questionGui.answersManipulator.add(answerGui.manipulator);
                         }
                         var _initInfos = () => {
@@ -737,7 +732,7 @@ exports.QuizAdminV = function (globalVariables) {
                         };
                         var _initRedCross = (answerGui) => {
                             answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
-                            answerGui.iconRedCross.mark('answerRedCross'+answerGui.index);
+                            answerGui.iconRedCross.mark('answerRedCross' + answerGui.index);
                             answerGui.iconRedCross.position(answerTextDim.w / 2, -answerTextDim.h / 2);
                             answerGui.iconRedCross.onClickRedCross = () => {
                                 let indexAnswer = answerGui.index;
@@ -762,10 +757,22 @@ exports.QuizAdminV = function (globalVariables) {
                             };
                         };
                         var _addExplanationPen = (answerGui) => {
+                            var _toggleIconColor = (icon) => {
+                                let msg = answerGui.popUpExplanation.textExplanation.textMessage;
+                                let mediaSrc = answerGui.popUpExplanation.media.src;
+                                if (msg && msg !== EXPLANATION_DEFAULT_TEXT || mediaSrc !== EXPLANATION_DEFAULT_IMAGESRC) {
+                                    icon.activeStatusActionIcon();
+                                    icon.showActualBorder();
+                                } else {
+                                    icon.cancelActionIcon();
+                                    icon.showActualBorder();
+                                }
+                            }
                             var _createExplanationPopUp = () => {
                                 var _createRedCross = () => {
                                     var _closeExplanation = () => {
                                         questionGui.explanationManipulator.remove(answerGui.popUpExplanation.manipulator);
+                                        _toggleIconColor(answerGui.iconExplanation);
                                     };
 
                                     let iconRedCross = IconCreator.createRedCrossIcon(popUpExplanation.manipulator, 2);
@@ -795,27 +802,26 @@ exports.QuizAdminV = function (globalVariables) {
                                         contentManip.add(contentRect);
                                     }
                                     var _drawTextExplanation = () => {
-                                        var _onModificationText = () => {
-                                            if (popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
-                                                answerGui.iconExplanation.activeStatusActionIcon();
-                                                answerGui.iconExplanation.showActualBorder();
-                                            }
-                                        };
-
                                         let explanationLabel = (answerGui.explanation && answerGui.explanation.label) ? answerGui.explanation.label : EXPLANATION_DEFAULT_TEXT;
                                         popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w * 2 / 3 - MARGIN,
                                             dimensionContent.h - MARGIN, explanationLabel);
                                         popUpExplanation.textExplanation.font('Arial', 20)
                                             .frame.color(myColors.white, 0, myColors.black);
                                         popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
-                                        popUpExplanation.textExplanation.onBlur(_onModificationText);
                                         popUpExplanation.textExplanation.mark('explanationText');
 
                                         contentManip.add(popUpExplanation.textExplanation.component);
                                     };
                                     var _drawMediaPic = () => {
-                                        let imgSrc = (answerGui.explanation && answerGui.explanation.imageSrc) ? answerGui.explanation.imageSrc : "../images/quiz/newImage.png";
-                                        popUpExplanation.media = new svg.Image(imgSrc);
+                                        if (answerGui.explanation && answerGui.explanation.imageSrc) {
+                                            popUpExplanation.media = new svg.Image(answerGui.explanation.imageSrc);
+                                            popUpExplanation.media.imageSrc = answerGui.explanation.imageSrc;
+                                        } else if (answerGui.explanation && answerGui.explanation.videoSrc) {
+                                            popUpExplanation.media = new svg.Image('../../images/play-button.png');
+                                            popUpExplanation.media.videoSrc = answerGui.explanation.videoSrc;
+                                        } else {
+                                            popUpExplanation.media = new svg.Image(EXPLANATION_DEFAULT_IMAGESRC);
+                                        }
                                         popUpExplanation.media.dimension(dimensionContent.w / 6, dimensionContent.w / 6);
                                         popUpExplanation.media.position(-dimensionContent.w / 2 + popUpExplanation.media.width, 0);
                                         contentManip.add(popUpExplanation.media);
@@ -855,13 +861,10 @@ exports.QuizAdminV = function (globalVariables) {
                                 };
 
                                 let icon = IconCreator.createExplanationIcon(answerGui.manipulator, 1)
-                                    .mark("explanationButton"+answerGui.index)
+                                    .mark("explanationButton" + answerGui.index)
                                     .addEvent('click', _toggleExplanation);
                                 icon.position(answerTextDim.w / 2 - icon.getContentSize() * 2 / 3, 0)
-                                if (answerGui.popUpExplanation.textExplanation.textMessage !== EXPLANATION_DEFAULT_TEXT) {
-                                    icon.activeStatusActionIcon();
-                                    icon.showActualBorder();
-                                }
+                                _toggleIconColor(icon);
                                 return icon;
                             }
 
@@ -874,7 +877,7 @@ exports.QuizAdminV = function (globalVariables) {
                         };
                         var _addValidCheckbox = (answerGui) => {
                             answerGui.checkBoxManipulator = new Manipulator(this);
-                            answerGui.checkBoxManipulator.mark("answerCheckbox"+answerGui.index);
+                            answerGui.checkBoxManipulator.mark("answerCheckbox" + answerGui.index);
                             var _toggleChecked = () => {
                                 if (answerGui.checked) {                           // modele or state
                                     answerGui.checkBoxManipulator.remove(checked);
@@ -1009,15 +1012,16 @@ exports.QuizAdminV = function (globalVariables) {
                 };
 
                 let labelExplanation = answerGui.popUpExplanation.textExplanation.textMessage
-                if(labelExplanation && labelExplanation !== EXPLANATION_DEFAULT_TEXT){
+                if (labelExplanation && labelExplanation !== EXPLANATION_DEFAULT_TEXT) {
                     answer.explanation.label = answerGui.popUpExplanation.textExplanation.textMessage;
                 }
 
-                let imgExplanationSrc = answerGui.popUpExplanation.media.src;
-                if (imgExplanationSrc && imgExplanationSrc !== "../images/quiz/newImage.png") {
-                    answer.explanation.imageSrc = answerGui.popUpExplanation.media.src;
+                let media = answerGui.popUpExplanation.media;
+                if (media.imageSrc) {
+                    answer.explanation.imageSrc = media.imageSrc;
+                }else if(media.videoSrc){
+                    answer.explanation.videoSrc = media.videoSrc;
                 }
-
                 answers.push(answer);
             });
 
@@ -1040,8 +1044,12 @@ exports.QuizAdminV = function (globalVariables) {
                     answers: questionElementVue.answers
                 };
 
-                if (questionElementVue.textAreaPicture.src != "../images/quiz/newImage.png") {
-                    question.imageSrc = questionElementVue.textAreaPicture.src;
+                console.log(questionElementVue.textAreaPicture)
+                let media = questionElementVue.textAreaPicture;
+                if (media.imageSrc) {
+                    question.imageSrc = media.imageSrc;
+                }else if(media.videoSrc){
+                    question.videoSrc = media.videoSrc;
                 }
 
                 questions.push(question);
@@ -1061,12 +1069,12 @@ exports.QuizAdminV = function (globalVariables) {
             return this.presenter.getLastQuestionIndex();
         }
 
-        previewQuiz(){
+        previewQuiz() {
             this.updateQuiz();
             this.presenter.previewQuiz(this.selectedQuestionIndex);
         }
 
-        setLastQuestionIndex(index){
+        setLastQuestionIndex(index) {
             this.presenter.setLastQuestionIndex(index);
         }
 
@@ -1102,9 +1110,9 @@ exports.QuizAdminV = function (globalVariables) {
                 label: this.getNewLabel(),
                 questions: this.getNewQuestions(),
             }
-            this.presenter.updateQuiz(quizData).then((data)=>{
+            this.presenter.updateQuiz(quizData).then((data) => {
                 data.message && this.displayMessage(data.message);
-            }).catch((error)=>{
+            }).catch((error) => {
                 console.log(error);
                 this.displayMessage(error);
             })
