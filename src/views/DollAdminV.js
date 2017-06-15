@@ -61,9 +61,6 @@ exports.DollAdminV = function(globalVariables){
                         return true;
                     }
                 };
-
-
-
                 var createDraggableCopy = (helpA) => {
                     let helpManip = new Manipulator(this).addOrdonator(1);
                     let point = helpA.globalPoint(0,0);
@@ -76,10 +73,6 @@ exports.DollAdminV = function(globalVariables){
                     svg.event(drawings.component.glass, "mousedown", event);
                 };
                 helpA.onMouseDown(() => createDraggableCopy(helpA));
-
-
-
-
                 this.width = drawing.width;
                 this.height = drawing.height;
                 this.actionModes = {
