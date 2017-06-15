@@ -42,9 +42,10 @@ exports.DashboardAdmin = function (globalVariables) {
                     .color(myColors.white, 0, myColors.none)
                     .position(titlePos.x, titlePos.y);
 
-                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none)
+                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.white)
                 this.panel.position(this.panel.width / 2 + MARGIN, this.panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
                 this.panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
+                this.panel.setScroll();
 
                 // this.panel.add(this.miniaturesManipulator.first)
                 this.manipulator.add(this.panel.component).add(titleBack).add(title);
@@ -115,11 +116,11 @@ exports.DashboardAdmin = function (globalVariables) {
         }
 
         displayMiniatures() {
-            this.miniaturesManipulator = new Manipulator(this);
-            let backRect = new svg.Rect(5000, 5000) //TODO
-                .position(this.panel.width / 2, this.panel.height / 2)
-                .color(myColors.white, 0, myColors.none);
-            this.miniaturesManipulator.add(backRect);
+            this.miniaturesManipulator.flush();
+            // let backRect = new svg.Rect(5000, 5000) //TODO
+            //     .position(this.panel.width / 2, this.panel.height / 2)
+            //     .color(myColors.white, 0, myColors.none);
+            // this.miniaturesManipulator.add(backRect);
             this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             this.panel.content.add(this.miniaturesManipulator.first);
             let _displayMiniature = (formation, i) => {
