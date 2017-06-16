@@ -46,9 +46,10 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
                     .add(this.mediasLibraryManipulator)
-                    .add(this.previewButtonManipulator)
+
                     .add(this.saveQuizButtonManipulator)
-                    .add(this.returnButtonManipulator);
+                    .add(this.returnButtonManipulator)
+                    .add(this.previewButtonManipulator);
             };
             var _resetDrawings = () => {
                 this.width = drawing.width - 2 * MARGIN;
@@ -80,9 +81,9 @@ exports.QuizAdminV = function (globalVariables) {
                 }
 
                 let quizTitleDim = {
-                    w: this.width * 1 / 4,
+                    w: Math.max(this.width * 1 / 4, 200),
                     h: BUTTON_HEIGHT
-                }
+                };
                 let titleTextArea = new gui.TextField(0, 0, quizTitleDim.w, quizTitleDim.h, this.label);
                 titleTextArea.font('Arial', 15);
                 titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
@@ -115,8 +116,8 @@ exports.QuizAdminV = function (globalVariables) {
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
-                    w: this.width,
-                    h: this.height * 1 / 6
+                    w: Math.max(this.width, 1000),
+                    h: Math.max(this.height * 1 / 6, 100)
                 };
 
                 this.questionsBlockListView = new ListManipulatorView([], 'H',
@@ -126,21 +127,21 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2,
                     this.header.height + this.returnButton.height + this.quizTitleField.height + questionListDim.h / 2 + 3 * MARGIN);
-            }
+                return questionListDim;
+            };
 
             var _displayQuestionDetails = () => {
-                let questionAndAnswers = {
-                    w: Math.max(this.width * 4 / 5, 540),
-                    h: this.height * 2 / 3 - BUTTON_HEIGHT
+                let questionDetailsDim = {
+                    w: Math.max(this.width * 4 / 5, 800),
+                    h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                        - this.returnButton.height - this.quizTitleField.height  - BUTTON_HEIGHT - MARGIN, 350)
                 }
-                this.questionDetailsDim = questionAndAnswers;
-                let border = new svg.Rect(questionAndAnswers.w, questionAndAnswers.h).color(myColors.white, 1, myColors.black).corners(5, 5);
+                this.questionDetailsDim = questionDetailsDim;
+                let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
                 this.questionDetailsManipulator.set(0, border);
-                // this.questionDetailsManipulator.move(this.width - questionAndAnswers.w / 2 + MARGIN,
-                //     this.questionAndAnswers.h);
-                this.questionDetailsManipulator.move(this.mediaLibrary.width + questionAndAnswers.w / 2 + 2 * MARGIN,
-                    questionAndAnswers.h + BUTTON_HEIGHT + 2 * MARGIN);
-                // currentY += questionAndAnswers.h + MARGIN;
+                this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w/2 + 2 * MARGIN,
+                    questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
+
             }
             var _displayPreviewButton = () => {
                 let previewButtonDim = {
@@ -152,10 +153,8 @@ exports.QuizAdminV = function (globalVariables) {
                 previewButton.onClick(this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
                 this.previewButtonManipulator.move(this.width / 2 - previewButtonDim.width / 2 - MARGIN,
-                    this.header.height + this.returnButton.height + this.quizTitleField.height
-                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + previewButtonDim.height / 2
-                    + 5 * MARGIN);
-            }
+                    this.questionDetailsManipulator.y + this.questionDetailsDim.h/2 + previewButton.height/2 + MARGIN );
+            };
             var _displaySaveButton = () => {
                 let saveButtonDim = {
                     width: BUTTON_WIDTH,
@@ -170,7 +169,7 @@ exports.QuizAdminV = function (globalVariables) {
                     + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + saveButtonDim.height / 2
                     + 5 * MARGIN);
             }
-            var _displayTabsPanel = () => {
+            var _displayToggleMedias = () => {
                 let tabsDim = {
                     w: (this.width * 1 / 5 - MARGIN) / 2,
                     h: BUTTON_HEIGHT
@@ -200,15 +199,19 @@ exports.QuizAdminV = function (globalVariables) {
                 });
                 this.manipulator.add(tabsManipulator);
             }
+
+
             this.mediaPanel = true;
             super.display();
             _declareManipulator();
             _resetDrawings();
+
+
             _updateHeader();
             _displayReturnButton();
             _displayTitleArea();
             _displayQuestionsHeader();
-            _displayTabsPanel();
+            _displayToggleMedias();
             this.displayImageLibrary();
             this.displayUploadButton();
             _displayQuestionDetails();
@@ -228,19 +231,15 @@ exports.QuizAdminV = function (globalVariables) {
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
                 w: this.width * 1 / 5 - MARGIN,
-                h: this.height * 2 / 3 - BUTTON_HEIGHT
+                h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                    - this.returnButton.height - this.quizTitleField.height  - 2*BUTTON_HEIGHT - MARGIN, 350 - BUTTON_HEIGHT)
             };
             var _createPanel = () => {
                 let videosPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
                 videosPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
                 this.mediaLibrary = videosPanel;
                 let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(videosPanel.width / 2, videosPanel.height / 2);
-                let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
-                titleLibrary.position(-0.85 * videosPanel.width / 2, -videosPanel.height / 2 + 8.33);
-                this.mediasLibraryManipulator.set(2, titleLibrary);
-                let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-                titleLibraryBack.position(-0.85 * videosPanel.width / 2 + titleLibrary.boundingRect().width / 2,
-                    -videosPanel.height / 2);
+
                 let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
                     .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
                 addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
@@ -248,13 +247,12 @@ exports.QuizAdminV = function (globalVariables) {
                 addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, videosPanel.component);
-                this.mediasLibraryManipulator.set(1, titleLibraryBack);
 
                 this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN, videosPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
                 this.manipulator.add(this.mediasLibraryManipulator);
                 videosPanel.back.mark('videoPanel');
 
-            }
+            };
 
             _createPanel();
             this.loadVideos();
@@ -318,25 +316,21 @@ exports.QuizAdminV = function (globalVariables) {
             this.manipulator.remove(this.mediasLibraryManipulator);
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
-                w: this.width * 1 / 5 - MARGIN,
-                h: this.height * 2 / 3 - BUTTON_HEIGHT
+                w: Math.max(this.width * 1 / 5 - MARGIN, 250),
+                h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                    - this.returnButton.height - this.quizTitleField.height  - 2*BUTTON_HEIGHT - MARGIN, 350 - BUTTON_HEIGHT)
             };
 
             let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
             mediasPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
             this.mediaLibrary = mediasPanel;
             let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(mediasPanel.width / 2, mediasPanel.height / 2);
-            let titleLibrary = new svg.Text('Médias').color(myColors.grey).font('Arial', 25).anchor('left');
-            titleLibrary.position(-0.85 * mediasPanel.width / 2, -mediasPanel.height / 2 + 8.33);
-            this.mediasLibraryManipulator.set(2, titleLibrary);
-            let titleLibraryBack = new svg.Rect(titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-            titleLibraryBack.position(-0.85 * mediasPanel.width / 2 + titleLibrary.boundingRect().width / 2,
-                -mediasPanel.height / 2);
+
+
             mediasPanel.add(rectWhite);
             this.mediasLibraryManipulator.set(0, mediasPanel.component);
-            this.mediasLibraryManipulator.set(1, titleLibraryBack);
-
-            this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN, mediasPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
+            this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN,
+                mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
 
 
             this.imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
