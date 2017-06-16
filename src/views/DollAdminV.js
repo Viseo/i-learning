@@ -435,7 +435,7 @@ exports.DollAdminV = function(globalVariables){
                 this.removeContextMenu();
             });
             let edit = this._makeClickableItem('Modifier', ()=>{
-                this.selectElement(null);
+                this.inModification = true;
                 let propertiesToSave = {
                     position: {x: rect.x, y: rect.y},
                     size: rect.boundingRect(),
@@ -449,10 +449,10 @@ exports.DollAdminV = function(globalVariables){
 
                 let textSize = 18;
 
-                this.rightMenuManipulator = new Manipulator(this);
+                this.rightMenuManipulator = new Manipulator(this).addOrdonator(2);
                 let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height)
                     .color(myColors.white, 1, myColors.black);
-                this.rightMenuManipulator.add(rMenu);
+                this.rightMenuManipulator.set(0,rMenu);
 
                 let pos = { x : rMenu.width/15 , y : rMenu.height/8};
 
@@ -469,7 +469,17 @@ exports.DollAdminV = function(globalVariables){
 
                 //For position
                 let dimInput = {w: pos.x*3, h: 40};
-
+                let displayErrorInput = ()=>{
+                    let text = new svg.Text('Veuillez entrer une valeur correcte (numérique)')
+                        .font('Arial',18)
+                        .color(myColors.red);
+                    text.position(title.x, title.y + 30);
+                    this.rightMenuManipulator.set(1,text);
+                    resizeStringForText(text, RIGHTBOX_SIZE.w, 100);
+                    svg.timeout(()=>{
+                        this.rightMenuManipulator.unset(1);
+                    }, 3000);
+                }
                 let posX = new svg.Text("X");
                 posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
                 let inputPosX = new gui.TextField(-rMenu.width/2  + pos.x*5 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
@@ -477,8 +487,11 @@ exports.DollAdminV = function(globalVariables){
                 inputPosX.message(manipulator.x);
                 inputPosX.onInput((oldMessage, newMessage, valid)=>{
                     console.log(rect);
-                    if (newMessage.match(/^\d+$/g)){
+                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         manipulator.move(newMessage, manipulator.y);
+                    }
+                    else{
+                        newMessage && displayErrorInput();
                     }
                 })
 
@@ -489,8 +502,10 @@ exports.DollAdminV = function(globalVariables){
                 inputPosY.message(manipulator.y);
                 inputPosY.onInput((oldMessage, newMessage, valid)=>{
                     console.log(rect);
-                    if (newMessage.match(/^\d+$/g)){
+                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         manipulator.move(manipulator.x, newMessage);
+                    }else{
+                        newMessage && displayErrorInput();
                     }
                 })
                 //For Taille
@@ -498,16 +513,20 @@ exports.DollAdminV = function(globalVariables){
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
                 inputSizeW.message(rect.boundingRect().width);
                 inputSizeW.onInput((oldMessage, newMessage, valid)=>{
-                    if (newMessage.match(/^\d+$/g)){
+                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         rect.dimension(newMessage, rect.boundingRect().height);
+                    }else{
+                        newMessage && displayErrorInput();
                     }
                 })
                 let inputSizeH = new gui.TextField(-rMenu.width/2  + pos.x*10 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
                 inputSizeH.message(rect.boundingRect().height);
                 inputSizeH.onInput((oldMessage, newMessage, valid)=>{
-                    if (newMessage.match(/^\d+$/g)){
+                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         rect.dimension(rect.boundingRect().width,newMessage);
+                    }else{
+                        newMessage && displayErrorInput();
                     }
                 })
 
@@ -631,7 +650,7 @@ exports.DollAdminV = function(globalVariables){
                 this.selectedElement.parentManip.corners && this.selectedElement.parentManip.corners.forEach(corner=>{
                     corner.flush();
                 });
-                this.selectedElement.color(this.selectedElement.fillColor, 2, myColors.grey);
+                this.selectedElement.color(this.selectedElement.fillColor, this.selectedElement.lastStrokeWidth, this.selectedElement.strokeColor);
             }
             else if (this.selectedElement && this.selectedElement.component.parentManip){//Text
                 this.selectedElement.component.parentManip.corners && this.selectedElement.component.parentManip.corners.forEach(corner=>{
@@ -646,8 +665,9 @@ exports.DollAdminV = function(globalVariables){
                 textColors.push(4,myColors.blue);
                 elem.color(textColors);
             }
-            else{
-                elem && elem.color(elem.fillColor, 4, myColors.blue)
+            else if (elem){
+                elem.lastStrokeWidth = elem.strokeWidth;
+                elem.color(elem.fillColor, 5, elem.strokeColor);
             }
             this.selectedElement = elem;
         }
@@ -747,7 +767,7 @@ exports.DollAdminV = function(globalVariables){
                 this.rectElements.push(rect);
                 rect.mark('rectElement' + this.rectElements.length);
                 svg.removeEvent(this.sandboxMain.component, 'mousemove');
-                rect.color(myColors.blue, 2, myColors.none);
+                rect.color(myColors.blue, 2, myColors.black);
                 svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
                 svg.addEvent(rect,'contextmenu',(event)=>{
                    this.selectElement(rect);
@@ -760,7 +780,7 @@ exports.DollAdminV = function(globalVariables){
         }
 
         keyDown(event){
-            if (event.keyCode == 8 || event.keyCode == 46){
+            if ((event.keyCode == 8 || event.keyCode == 46)&&!this.inModification){
                 if (this.selectedElement){
                     if (this.selectedElement.parentManip){
                         this.selectedElement.parentManip.flush();
