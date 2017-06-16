@@ -248,7 +248,8 @@ exports.QuizAdminV = function (globalVariables) {
                 videosPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, videosPanel.component);
 
-                this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN, videosPanel.height + BUTTON_HEIGHT + 2 * MARGIN);
+                this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN,
+                    mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
                 this.manipulator.add(this.mediasLibraryManipulator);
                 videosPanel.back.mark('videoPanel');
 
