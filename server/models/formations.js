@@ -251,10 +251,12 @@ const replaceQuiz = (indexes, game, formation) => {
         } else {
             // update last version + DMA3622 : saving new quiz
             version = formation.versions[formation.versions.length - 1];
-            if (version.levelsTab.length < indexes.level && version.levelsTab.length != 0) {
-                version.levelsTab.push({gamesTab: [game]});
-                if (version.levelsTab[indexes.level].gamesTab) {
-                    if (version.levelsTab[indexes.level].gamesTab.length < indexes.game
+            if (version.levelsTab.length != 0) {
+                // version.levelsTab.push({gamesTab: [game]});
+                if (indexes.level >= version.levelsTab.length) {
+                    version.levelsTab.push({gamesTab: [game]});
+                } else if (version.levelsTab[indexes.level].gamesTab) {
+                    if (version.levelsTab[indexes.level].gamesTab.length <= indexes.game
                         && version.levelsTab[indexes.level].gamesTab.length != 0) {
                         version.levelsTab[indexes.level].gamesTab.push(game);
                     } else {
