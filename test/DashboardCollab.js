@@ -7,14 +7,29 @@ const testutils = require('../lib/testutils'),
 
 describe('dashboard collab', function(){
     it('should display undone formation', function(){
-        let {root, state} = given(()=> {
+        let {root, state} = given(() => {
             let mockResponses = {
                 "/formations": {
                     code: 200,
-                    content: {myCollection: [
-                        {_id: "1", label: "formation undone", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}], answered: []}]}]},
-                        {_id: "2", label: "formation done"}
-                    ]}
+                    content: {
+                        myCollection: [
+                            {
+                                _id: "1",
+                                label: "formation undone",
+                                levelsTab: [{gamesTab: [{type: 'Quiz', questions: [{}], answered: []}]}]
+                            },
+                            {_id: "2", label: "formation done"}
+                        ]
+                    }
+                },
+                "/users/notes": {
+                    content: {
+                        note: "5",
+                        _id: "1",
+                        userId: "1",
+                        versionId: "1",
+                        formationId: "1"
+                    }
                 }
             };
             let user = {admin: false};
@@ -38,6 +53,15 @@ describe('dashboard collab', function(){
                         {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz',questions: [{}, {}], answered: [{}]}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
+                },
+                "/users/notes": {
+                    content: {
+                        note: "5",
+                        _id: "1",
+                        userId: "1",
+                        versionId: "1",
+                        formationId: "1"
+                    }
                 }
             };
             let user = {admin: false};
@@ -61,6 +85,15 @@ describe('dashboard collab', function(){
                         {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz', questions: [{}, {}], answered: [{}]}]}]},
                         {_id: "2", label: "formation done"}
                     ]}
+                },
+                "/users/notes": {
+                    content: {
+                        note: "5",
+                        _id: "1",
+                        userId: "1",
+                        versionId: "1",
+                        formationId: "1"
+                    }
                 }
             };
             let user = {admin: false};
@@ -83,6 +116,15 @@ describe('dashboard collab', function(){
                     content: {myCollection: [
                         {_id: "2", label: "f"}
                     ]}
+                },
+                "/users/notes": {
+                    content: {
+                        note: "5",
+                        _id: "2",
+                        userId: "1",
+                        versionId: "1",
+                        formationId: "1"
+                    }
                 }
             };
             let user = {admin: false};

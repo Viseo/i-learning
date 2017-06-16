@@ -117,10 +117,6 @@ exports.DashboardAdmin = function (globalVariables) {
 
         displayMiniatures() {
             this.miniaturesManipulator.flush();
-            // let backRect = new svg.Rect(5000, 5000) //TODO
-            //     .position(this.panel.width / 2, this.panel.height / 2)
-            //     .color(myColors.white, 0, myColors.none);
-            // this.miniaturesManipulator.add(backRect);
             this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             this.panel.content.add(this.miniaturesManipulator.first);
             let _displayMiniature = (formation, i) => {

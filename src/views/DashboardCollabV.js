@@ -214,6 +214,7 @@ exports.DashboardCollabV = function (globalVariables) {
                             svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
                         }
                     );
+                    starMiniatures.popMark(formation.label);
                     starMiniatures.scaleStar(factor);
                     starMiniatures.starPosition(  - TILE_SIZE.rect.w/2 + CLIP_SIZE*2 + MARGIN, TILE_SIZE.h/2 - starMiniatures.getHeight() - MARGIN);
 

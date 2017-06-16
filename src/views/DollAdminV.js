@@ -140,7 +140,9 @@ exports.DollAdminV = function(globalVariables){
                 this.listViewPicture.add(picAddImageManip);
 
                 picBackManip.addEvent('click', _onClickBack);
+                picBackManip.mark('picBackManip');
                 picAddImageManip.addEvent('click', _createPopUpPicture);
+                picAddImageManip.mark('picAddImageManip');
 
                 let conf = {
                     drop: (what, whatParent, x, y) => {
@@ -183,10 +185,12 @@ exports.DollAdminV = function(globalVariables){
 
                         let picCopy = pic.duplicate(pic);
                         picManip.set(0, picCopy);
+                        picManip.mark('picDraggableCopy');
                         drawings.piste.add(picManip);
 
                         installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
-                        svg.event(drawings.component.glass, "mousedown", event);
+                        svg.event(drawings.component.glass, "mousedown", {pageX: picManip.x, pageY: picManip.y,preventDefault: () => {
+                        }});
                     };
 
                     images.images.forEach(ele=> {
@@ -196,6 +200,7 @@ exports.DollAdminV = function(globalVariables){
                         this.listViewPicture.add(picManip);
 
                         pic.onMouseDown(() => createDraggableCopy(pic));
+                        pic.mark('img_'+ele._id);
                     });
                     this.listViewPicture.refreshListView();
                 });
