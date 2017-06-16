@@ -151,6 +151,9 @@ exports.Lists = function (globalVariables) {
             return this;
         }
 
+        getListDim(){
+            return this.listDim;
+        }
 
         moveContent(x, y) {
             let vx = x;
