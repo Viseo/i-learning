@@ -486,7 +486,6 @@ exports.DollAdminV = function(globalVariables){
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
                 inputPosX.message(manipulator.x);
                 inputPosX.onInput((oldMessage, newMessage, valid)=>{
-                    console.log(rect);
                     if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         manipulator.move(newMessage, manipulator.y);
                     }
@@ -501,10 +500,10 @@ exports.DollAdminV = function(globalVariables){
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
                 inputPosY.message(manipulator.y);
                 inputPosY.onInput((oldMessage, newMessage, valid)=>{
-                    console.log(rect);
                     if (newMessage.match(/^-?\d+(\.\d+)?$/)){
                         manipulator.move(manipulator.x, newMessage);
-                    }else{
+                    }
+                    else{
                         newMessage && displayErrorInput();
                     }
                 })
