@@ -394,9 +394,25 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize)
+            arr.push(color,resize, forward, backward, foreground, background)
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -543,9 +559,25 @@ exports.DollAdminV = function(globalVariables){
                 this.manipulator.add(this.rightMenuManipulator);
                 this.removeContextMenu();
             });
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize, edit);
+            arr.push(color,resize, edit, forward, backward, foreground, background);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -561,7 +593,23 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(image, manipulator);
                 this.removeContextMenu();
             });
-            arr.push(resize);
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
+            arr.push(resize, forward, backward, foreground, background);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -677,6 +725,56 @@ exports.DollAdminV = function(globalVariables){
                 manipulator.corners.push(manip);
                 manipulator.add(manip.component);
             }
+        }
+
+        toForeground(manipulator){
+            this.sandboxMain.content.remove(manipulator.component);
+            this.sandboxMain.content.add(manipulator.component);
+        }
+
+        toBackground(manipulator){
+            let temp = [];
+            this.sandboxMain.content.children.forEach((elem)=>{
+                if(elem !== manipulator.component){
+                    temp.push(elem);
+                }
+            })
+            this.sandboxMain.content.clear();
+            this.sandboxMain.content.add(manipulator.component);
+            temp.forEach((elem) => {
+                this.sandboxMain.content.add(elem);
+            })
+        }
+
+        _switchManipulators(manipulator, withBefore){
+            let temp = [];
+            let children = this.sandboxMain.content.children;
+            let manipIndex = children.indexOf(manipulator.component);
+            if(manipIndex !== -1){
+                if(withBefore){
+                    if(manipIndex === 0) return;
+                    manipIndex--;
+                }else {
+                    if(manipIndex === children.length - 1) return;
+                }
+                while(children.length > manipIndex){
+                    temp.push(children[manipIndex]);
+                    this.sandboxMain.content.remove(children[manipIndex]);
+                }
+                this.sandboxMain.content.add(temp[1]);
+                this.sandboxMain.content.add(temp[0]);
+                for(let i = 2; i < temp.length; i++){
+                    this.sandboxMain.content.add(temp[i]);
+                }
+            }
+        }
+
+        forward(manipulator){
+            this._switchManipulators(manipulator);
+        }
+
+        backward(manipulator){
+            this._switchManipulators(manipulator, true);
         }
 
         rectZoning(event){
