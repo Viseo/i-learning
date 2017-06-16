@@ -5,6 +5,7 @@ exports.FormationAdminV = function (globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
+        resizeStringForText = globalVariables.Helpers.resizeStringForText,
         IconCreator = globalVariables.Icons.IconCreator,
         installDnD = globalVariables.gui.installDnD,
         View = globalVariables.View;
@@ -480,9 +481,11 @@ exports.FormationAdminV = function (globalVariables) {
                 gameMiniature.manipulator.set(0, gameMiniature.border)
                     .set(1, gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator);
-                gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_SIZE.w + MARGIN) + MINIATURE_SIZE.w / 2
-                    , 5);
+                resizeStringForText(gameMiniature.content,MINIATURE_SIZE.w,MINIATURE_SIZE.h);
+                gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_SIZE.w + MARGIN) + MINIATURE_SIZE.w / 2, 5);
             });
+
+
         }
 
         updateAllLinks() {
@@ -659,6 +662,7 @@ exports.FormationAdminV = function (globalVariables) {
 
         removeGame(game) {
             this.presenter.removeGame(game);
+            this.displayGraph();
         }
 
         removeLevel(level) {

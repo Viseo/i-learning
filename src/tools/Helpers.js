@@ -4,13 +4,15 @@
 
 exports.Helpers = function(globalVariables){
     const drawings = globalVariables.drawings,
-        svg = globalVariables.svg;
+        svg = globalVariables.svg,
+        installDnD = globalVariables.gui.installDnD,
+        Manipulator = globalVariables.Handlers.Manipulator;
 
     function resizeStringForText(text, width, height) {
-        let glass = drawings.piste.last;
+
         let pointToSave = {x:text.x, y:text.y};
-        text.position(10000, 10000);
-        glass.add(text);
+
+
         if (text.boundingRect().width > width) {
             let splitonspace = text.messageText.split(' ');
             if(splitonspace.length == 1){
@@ -19,8 +21,7 @@ exports.Helpers = function(globalVariables){
                     text.message(text.messageText.slice(0, count) + '...');
                     count--;
                 }
-                glass.remove(text);
-                text.position(pointToSave.x, pointToSave.y);
+
                 return text;
             }
             let result = '';
@@ -52,8 +53,7 @@ exports.Helpers = function(globalVariables){
             computeWidth(splitonspace);
             text.message(result);
         }
-        text.position(pointToSave.x, pointToSave.y - (nbLines ? nbLines :0) * (text.lineSpacing - text.fontSize/3));
-        glass.remove(text);
+      
         return text;
     }
 
@@ -94,9 +94,78 @@ exports.Helpers = function(globalVariables){
     };
 
 
+    class Gauge {
+        constructor(w, h, minVal, maxVal){
+            this.indicatorManipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this);
+            this.width = w;
+            this.height = h;
+
+            this.minVal = minVal;
+            this.maxVal = maxVal;
+
+            this.border = new svg.Rect(w, h).color(myColors.white, 1, myColors.black);
+            this.indicator = new svg.Rect(w/30, h + 5).color(myColors.grey, 1, myColors.black);
+
+            this.indicatorManipulator.add(this.indicator);
+            this.manipulator.add(this.border).add(this.indicatorManipulator);
+
+
+            let conf = {
+                drop: (what, whatParent, x, y) => {
+                    let controlX = x;
+                    if(Math.abs(x) >= this.width/2){
+                        if(x < 0 ){
+                            controlX = -this.width/2
+                        }else{
+                            controlX = this.width/2
+                        }
+                    }
+                    return {x: controlX, y: 0, parent: whatParent};
+                },
+                drag: (what, x, y)=>{
+                    let controlX = x;
+                    if(Math.abs(x) >= this.width/2){
+                        if(x < 0 ){
+                            controlX = -this.width/2
+                        }else{
+                            controlX = this.width/2
+                        }
+                    }
+                    let newValue = (this.manipulator.first.localPoint(what.x,0).x + this.width/2)*(this.maxVal-this.minVal)/this.width + this.minVal;
+                    this.cbOnChangeValue && this.cbOnChangeValue(newValue);
+                    return{x:controlX, y:0};
+                },
+                moved: (what)=>{
+                    return true;
+                },
+            };
+            installDnD(this.indicatorManipulator, drawings.component.glass.parent.manipulator.last, conf);
+        }
+
+        onChangeValue(cb){
+            this.cbOnChangeValue = cb;
+        }
+
+        position(x, y){
+            this.manipulator.move(x, y);
+        }
+        setIndicateurToValue(value){
+            if (value<this.minVal){
+                value = this.minVal;
+            }
+            if(value > this.maxVal){
+                value = this.maxVal;
+            }
+            let ratioInWidth = ((value-this.minVal)/(this.maxVal-this.minVal)) - 0.5;
+            this.indicatorManipulator.move(ratioInWidth*this.width, 0);
+        }
+    }
+
     return {
         resizeStringForText,
         drawCheck,
         drawHexagon,
+        Gauge
     }
 }

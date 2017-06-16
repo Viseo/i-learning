@@ -6,6 +6,8 @@ exports.DollAdminV = function(globalVariables){
         gui = globalVariables.gui,
         svg = globalVariables.svg,
         svgr = globalVariables.runtime,
+        Helpers = globalVariables.Helpers,
+        IconCreator = globalVariables.Icons.IconCreator,
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w:drawing.width-2*MARGIN, h: drawing.height * 0.7},
         SANDBOX_SIZE = {w: PANEL_SIZE.w*6/9, h: PANEL_SIZE.h - 4*MARGIN, header: {w: PANEL_SIZE.w*6/9, h: 100 }},
@@ -371,18 +373,8 @@ exports.DollAdminV = function(globalVariables){
         }
 
         textRightClick(text,manipulator,event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(150, 27).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let color = makeClickableItem('Couleur', ()=>{
+            let color = this._makeClickableItem('Couleur', ()=>{
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
                     [230, 122, 25],
@@ -403,13 +395,29 @@ exports.DollAdminV = function(globalVariables){
                 }
                 this.contextMenu.setList(colors);
             });
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize)
+            arr.push(color,resize, forward, backward, foreground, background)
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -420,18 +428,8 @@ exports.DollAdminV = function(globalVariables){
         }
 
         rectRightClick(rect, manipulator, event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let color = makeClickableItem('Couleur', ()=>{
+            let color = this._makeClickableItem('Couleur', ()=>{
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
                     [230, 122, 25],
@@ -442,20 +440,149 @@ exports.DollAdminV = function(globalVariables){
                 for (let i = 0; i< colors.length; i++){
                     let color = colors[i];
                     let man = new Manipulator(this);
-                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2).color(colors[i], 0.5, myColors.grey);
+                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2)
+                        .color(colors[i], 0.5, myColors.grey);
                     man.add(rec);
                     man.addEvent('click', ()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )});
                     colors[i]=man;
                 }
                 this.contextMenu.setList(colors);
             });
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(rect, manipulator);
                 this.removeContextMenu();
             });
+            let edit = this._makeClickableItem('Modifier', ()=>{
+                this.selectElement(null);
+                let propertiesToSave = {
+                    position: {x: rect.x, y: rect.y},
+                    size: rect.boundingRect(),
+                    borderColor: rect.strokeColor,
+                    backgroundColor: rect.fillColor,
+                    opacity: rect._opacity
+                }
+                if(this.rightMenuManipulator){
+                    this.manipulator.remove(this.rightMenuManipulator);
+                }
+
+                let textSize = 18;
+
+                this.rightMenuManipulator = new Manipulator(this);
+                let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height)
+                    .color(myColors.white, 1, myColors.black);
+                this.rightMenuManipulator.add(rMenu);
+
+                let pos = { x : rMenu.width/15 , y : rMenu.height/8};
+
+                let title = new svg.Text("Modifier Rectangle");
+                title.position(0, -rMenu.height/2 + pos.y).font('Arial', 30);
+
+                let arrayText  = ['Position', 'Taille', 'Bordure', 'Fond', 'Opacité'];
+                arrayText.forEach( (ele, index) => {
+                    let text = new svg.Text(ele);
+                    text.position(-rMenu.width/2  + pos.x, -rMenu.height/2 + pos.y*(index+2))
+                        .anchor('left').font('Arial', textSize);
+                    this.rightMenuManipulator.add(text);
+                });
+
+                //For position
+                let dimInput = {w: pos.x*3, h: 40};
+
+                let posX = new svg.Text("X");
+                posX.position(-rMenu.width/2  + pos.x*5, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
+                let inputPosX = new gui.TextField(-rMenu.width/2  + pos.x*5 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputPosX.message(manipulator.x);
+                inputPosX.onInput((oldMessage, newMessage, valid)=>{
+                    console.log(rect);
+                    if (newMessage.match(/^\d+$/g)){
+                        manipulator.move(newMessage, manipulator.y);
+                    }
+                })
+
+                let posY = new svg.Text("Y");
+                posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
+                let inputPosY = new gui.TextField(-rMenu.width/2  + pos.x*10 + textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(2) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputPosY.message(manipulator.y);
+                inputPosY.onInput((oldMessage, newMessage, valid)=>{
+                    console.log(rect);
+                    if (newMessage.match(/^\d+$/g)){
+                        manipulator.move(manipulator.x, newMessage);
+                    }
+                })
+                //For Taille
+                let inputSizeW = new gui.TextField(-rMenu.width/2  + pos.x*5 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputSizeW.message(rect.boundingRect().width);
+                inputSizeW.onInput((oldMessage, newMessage, valid)=>{
+                    if (newMessage.match(/^\d+$/g)){
+                        rect.dimension(newMessage, rect.boundingRect().height);
+                    }
+                })
+                let inputSizeH = new gui.TextField(-rMenu.width/2  + pos.x*10 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
+                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+                inputSizeH.message(rect.boundingRect().height);
+                inputSizeH.onInput((oldMessage, newMessage, valid)=>{
+                    if (newMessage.match(/^\d+$/g)){
+                        rect.dimension(rect.boundingRect().width,newMessage);
+                    }
+                })
+
+                let borderRect = new svg.Rect(40, 40);
+                borderRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
+
+                let backgroundRect = new svg.Rect(40, 40);
+                backgroundRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
+
+
+                let gauge = new Helpers.Gauge(pos.x*8, 35, 0, 1);
+                gauge.position(-rMenu.width/2+ pos.x*5 + gauge.width/2, -rMenu.height/2 + pos.y*(6)-textSize/3);
+                gauge.onChangeValue((data) => {
+                    rect.opacity(data);
+                });
+                gauge.setIndicateurToValue(rect._opacity || 1);
+
+
+
+
+                let redCross = IconCreator.createRedCrossIcon(this.rightMenuManipulator);
+                redCross.position( rMenu.width/2 - redCross.getSize() - MARGIN, -rMenu.height/2 + redCross.getSize() + MARGIN);
+                redCross.addEvent('click', ()=>{
+                    this.manipulator.remove(this.rightMenuManipulator);
+                });
+
+                this.rightMenuManipulator.add(title)
+                    .add(posX).add(inputPosX.component)
+                    .add(posY).add(inputPosY.component)
+                    .add(inputSizeW.component).add(inputSizeH.component)
+                    .add(borderRect).add(backgroundRect)
+                    .add(gauge.manipulator)
+
+
+                this.rightMenuManipulator.move(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
+                this.manipulator.add(this.rightMenuManipulator);
+                this.removeContextMenu();
+            });
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize);
+            arr.push(color,resize, edit, forward, backward, foreground, background);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -466,22 +593,28 @@ exports.DollAdminV = function(globalVariables){
         }
 
         imageRightClick(image, manipulator, event){
-            let makeClickableItem = (message, handler)=>{
-                let txt = new svg.Text(message).font('Arial', 18).position(0,6);
-                let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
-                let manip = new Manipulator(this);
-                manip.add(rect).add(txt);
-                manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
-                manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
-                manip.addEvent('click', handler);
-                return manip;
-            }
             let arr = [];
-            let resize = makeClickableItem('Redimensionner', ()=>{
+            let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(image, manipulator);
                 this.removeContextMenu();
             });
-            arr.push(resize);
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
+            arr.push(resize, forward, backward, foreground, background);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -489,6 +622,17 @@ exports.DollAdminV = function(globalVariables){
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
             this.contextMenu.refreshListView();
+        }
+
+        _makeClickableItem(message, handler){
+            let txt = new svg.Text(message).font('Arial', 18).position(0,6);
+            let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
+            let manip = new Manipulator(this);
+            manip.add(rect).add(txt);
+            manip.addEvent('mouseenter', ()=>{rect.color(myColors.blue, 0.5, myColors.grey)});
+            manip.addEvent('mouseleave', ()=>{rect.color(myColors.white, 0.5, myColors.none)});
+            manip.addEvent('click', handler);
+            return manip;
         }
 
         selectElement(elem){
@@ -518,7 +662,7 @@ exports.DollAdminV = function(globalVariables){
         }
 
         resizeElement(elem, manipulator){
-            let initW = elem.width, initH = elem.height;
+            let initW = Number(elem.width), initH = Number(elem.height);
             let manipInitx = manipulator.x, manipInity = manipulator.y;
             manipulator.corners = [];
             let br = function(x, y, Xcoeff, Ycoeff){
@@ -586,6 +730,56 @@ exports.DollAdminV = function(globalVariables){
                 manipulator.corners.push(manip);
                 manipulator.add(manip.component);
             }
+        }
+
+        toForeground(manipulator){
+            this.sandboxMain.content.remove(manipulator.component);
+            this.sandboxMain.content.add(manipulator.component);
+        }
+
+        toBackground(manipulator){
+            let temp = [];
+            this.sandboxMain.content.children.forEach((elem)=>{
+                if(elem !== manipulator.component){
+                    temp.push(elem);
+                }
+            })
+            this.sandboxMain.content.clear();
+            this.sandboxMain.content.add(manipulator.component);
+            temp.forEach((elem) => {
+                this.sandboxMain.content.add(elem);
+            })
+        }
+
+        _switchManipulators(manipulator, withBefore){
+            let temp = [];
+            let children = this.sandboxMain.content.children;
+            let manipIndex = children.indexOf(manipulator.component);
+            if(manipIndex !== -1){
+                if(withBefore){
+                    if(manipIndex === 0) return;
+                    manipIndex--;
+                }else {
+                    if(manipIndex === children.length - 1) return;
+                }
+                while(children.length > manipIndex){
+                    temp.push(children[manipIndex]);
+                    this.sandboxMain.content.remove(children[manipIndex]);
+                }
+                this.sandboxMain.content.add(temp[1]);
+                this.sandboxMain.content.add(temp[0]);
+                for(let i = 2; i < temp.length; i++){
+                    this.sandboxMain.content.add(temp[i]);
+                }
+            }
+        }
+
+        forward(manipulator){
+            this._switchManipulators(manipulator);
+        }
+
+        backward(manipulator){
+            this._switchManipulators(manipulator, true);
         }
 
         rectZoning(event){
