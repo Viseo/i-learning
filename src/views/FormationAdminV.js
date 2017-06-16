@@ -114,17 +114,14 @@ exports.FormationAdminV = function (globalVariables) {
                 this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
                 this.graphPanel.content.add(this.graphMiniatureManipulator.first);
                 this.graphMiniatureManipulator.move(this.graphSize.width / 2, this.graphSize.height / 2);
-                let backRect = new svg.Rect(5000, 5000).color(myColors.white, 0, myColors.none);
-                backRect.mark('whitePanel');
-                backRect.notTarget = true;
-                svg.addEvent(backRect, 'click', () => {
+                let background = drawings.component.background;
+                svg.addEvent(background, 'mouseup', () => {
                     this.unselectMiniature();
                     if (this.selectedArrowRedCross) {
                         this.arrowsManipulator.remove(this.selectedArrowRedCross);
                         this.selectedArrowRedCross = null;
                     }
                 });
-                this.graphMiniatureManipulator.set(0, backRect);
             }
 
             super.display();

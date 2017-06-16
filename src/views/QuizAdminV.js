@@ -1079,9 +1079,13 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         renameQuiz() {
-            this.presenter.renameQuiz(this.quizTitleField.textMessage).then(status => {
-                status.message && this.displayMessage(status.message);
-                if (status.saved) {
+            let quizViewData = {
+                label: this.getNewLabel(),
+                questions: this.getNewQuestions(),
+            }
+            this.presenter.updateQuiz(quizViewData).then(data => {
+                data.message && this.displayMessage(data.message);
+                if (data.saved) {
                     let formationLabel = this.getFormationLabel();
                     this.label = this.getLabel();
                     this.displayHeader(formationLabel + " - " + this.label);
@@ -1106,11 +1110,11 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         updateQuiz() {
-            let quizData = {
+            let quizViewData = {
                 label: this.getNewLabel(),
                 questions: this.getNewQuestions(),
             }
-            this.presenter.updateQuiz(quizData).then((data) => {
+            this.presenter.updateQuiz(quizViewData).then((data)=>{
                 data.message && this.displayMessage(data.message);
             }).catch((error) => {
                 console.log(error);

@@ -6,8 +6,8 @@ const
     testutils = require('../lib/testutils'),
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
-    {given, when, loadPage, retrieve, mouseDown, mouseUp, mouseMove, clickElement, assertMessage, onChangeElement, mouseMoveElement,
-    mouseUpElement, mouseDownElement, customClick, enterTextField, rightClick} = testutils;
+    {given, when, loadPage, retrieve, clickElement, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
+    mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -30,10 +30,20 @@ const ImageRuntime = {
         this.images[id].onload();
     }
 };
+let mockResponses = {
+    '/medias/images': {
+        content: {
+            images: [{
+                imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
+                name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
+            }]
+        }
+    },
+    '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'} }
+}
 
 describe('Doll admin Page', function(){
     beforeEach(function(){
-
     })
     it('should add a text zone', function(){
         let {root, state, runtime} = given(()=>{
@@ -45,7 +55,7 @@ describe('Doll admin Page', function(){
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
-            let txtElem = retrieve(root, '[textElement1]');
+            // let txtElem = retrieve(root, '[textElement1]');
             when(()=>{
                 enterTextField(root, "textElement1", "jetest");
             }).then(()=>{
@@ -179,6 +189,64 @@ describe('Doll admin Page', function(){
                 assert.equal(size.h + 150, rect.handler.height);
 
             })
+        })
+    })
+
+    it('should add an image to the media library', function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(() => {
+            clickElement(root, 'pictureTab');
+            clickElement(root, 'picAddImageManip');
+            onChangeElement(root, 'fileExplorer');
+        }).then(() => {
+
+        })
+    })
+
+    it('should display images list then show back original sandbox list', function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(() => {
+            clickElement(root, 'pictureTab');
+        }).then(() => {
+            clickElement(root, 'picBackManip');
+            assertPresent(root, 'rectTab');
+            assertPresent(root, 'pictureTab');
+            assertPresent(root, 'textTab');
+            assertPresent(root, 'helpTab');
+        })
+    })
+    it.skip('should drag an image and drop it to the sandbox', function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(() => {
+            clickElement(root, 'pictureTab');
+        }).then(() => {
+            mouseDownElement(root, 'img_592c24c36a4f592c987fa84e', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseDownElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseMoveElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            // mouseUpElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            // }});
+            mouseUpElementOnAnother(root, 'picDraggableCopy', 'mainPanel');
         })
     })
 })

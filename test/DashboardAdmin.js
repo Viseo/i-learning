@@ -208,7 +208,7 @@ describe('dashboard admin page', function () {
                     }
                 },
                 '/formations/591ec683aabd34544c5bceda': {content: {saved: true}},
-                '/medias/upload': {}
+                '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'} }
             },
             {root, state} = given(() => {
                 return loadPage("Dashboard", {mockResponses, data: user});
