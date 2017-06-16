@@ -515,11 +515,13 @@ exports.DollAdminV = function(globalVariables){
                 backgroundRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
 
 
-                let gauge = new Helpers.Gauge(pos.x*8, 35, 1, 2);
+                let gauge = new Helpers.Gauge(pos.x*8, 35, 0, 1);
                 gauge.position(-rMenu.width/2+ pos.x*5 + gauge.width/2, -rMenu.height/2 + pos.y*(6)-textSize/3);
                 gauge.onChangeValue((data) => {
-                    alert(data)
+                    rect.opacity(data);
                 });
+                gauge.setIndicateurToValue(rect._opacity || 1);
+
 
 
 
@@ -607,7 +609,7 @@ exports.DollAdminV = function(globalVariables){
         }
 
         resizeElement(elem, manipulator){
-            let initW = elem.width, initH = elem.height;
+            let initW = Number(elem.width), initH = Number(elem.height);
             let manipInitx = manipulator.x, manipInity = manipulator.y;
             manipulator.corners = [];
             let br = function(x, y, Xcoeff, Ycoeff){

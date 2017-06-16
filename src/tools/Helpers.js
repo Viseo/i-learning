@@ -132,11 +132,12 @@ exports.Helpers = function(globalVariables){
                             controlX = this.width/2
                         }
                     }
+                    let newValue = (this.manipulator.first.localPoint(what.x,0).x + this.width/2)*(this.maxVal-this.minVal)/this.width + this.minVal;
+                    this.cbOnChangeValue && this.cbOnChangeValue(newValue);
                     return{x:controlX, y:0};
                 },
                 moved: (what)=>{
-                    let newValue = (what.x + this.width/2)*(this.maxVal-this.minVal)/this.width + this.minVal;
-                    this.cbOnChangeValue && this.cbOnChangeValue(newValue);
+                    return true;
                 },
             };
             installDnD(this.indicatorManipulator, drawings.component.glass.parent.manipulator.last, conf);
@@ -148,6 +149,16 @@ exports.Helpers = function(globalVariables){
 
         position(x, y){
             this.manipulator.move(x, y);
+        }
+        setIndicateurToValue(value){
+            if (value<this.minVal){
+                value = this.minVal;
+            }
+            if(value > this.maxVal){
+                value = this.maxVal;
+            }
+            let ratioInWidth = ((value-this.minVal)/(this.maxVal-this.minVal)) - 0.5;
+            this.indicatorManipulator.move(ratioInWidth*this.width, 0);
         }
     }
 
