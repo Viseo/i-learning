@@ -74,7 +74,7 @@ exports.QuizAdminP = function (globalVariables) {
             this.view.display();
         }
 
-        updateQuiz(quizData) {
+        updateQuiz(quizViewData) {
             const getObjectToSave = () => {
                 return {
                     id: this.getId(),
@@ -88,12 +88,15 @@ exports.QuizAdminP = function (globalVariables) {
                 };
             };
 
-            if (quizData.label && quizData.label !== this.quiz.labelDefault && quizData.label.match(this.regex)) {
-                this.setLabel(quizData.label);
-                this.setQuestions(quizData.questions);
+            if (quizViewData.label && quizViewData.label !== this.quiz.labelDefault && quizViewData.label.match(this.regex)) {
+                this.setLabel(quizViewData.label);
+                this.setQuestions(quizViewData.questions);
                 let quizToSave = getObjectToSave();
                 if (this.isQuizValid()) {
                     return this.quiz.updateQuiz(quizToSave);
+                    // if (this.replaceFormation()) {
+                    //     return this.quiz.updateQuiz(quizToSave)
+                    // }
                 } else {
                     return Promise.reject("Quiz non valide");
                 }
@@ -102,26 +105,27 @@ exports.QuizAdminP = function (globalVariables) {
             }
         }
 
-        renameQuiz(label) {
-            this.setLabel(label);
-            if (label && label !== this.quiz.labelDefault && label.match(this.regex)) {
-                const getObjectToSave = () => {
-                    return {
-                        id: this.getId(),
-                        gameIndex: this.getIndex(),
-                        levelIndex: this.getLevelIndex(),
-                        formationId: this.getFormationId(),
-                        label: this.getLabel(),
-                        lastQuestionIndex: this.getLastIndex(),
-                        questions: this.getQuestions(),
-                        type: 'Quiz'
-                    };
-                };
-                return this.quiz.renameQuiz(getObjectToSave());
-            } else {
-                return Promise.reject("Vous devez remplir correctement le nom du quiz.");
-            }
-        }
+        // renameQuiz(label) {
+        //     this.setLabel(label);
+        //     if (label && label !== this.quiz.labelDefault && label.match(this.regex)) {
+        //         const getObjectToSave = () => {
+        //             return {
+        //                 id: this.getId(),
+        //                 gameIndex: this.getIndex(),
+        //                 levelIndex: this.getLevelIndex(),
+        //                 formationId: this.getFormationId(),
+        //                 label: this.getLabel(),
+        //                 lastQuestionIndex: this.getLastIndex(),
+        //                 questions: this.getQuestions(),
+        //                 type: 'Quiz'
+        //             };
+        //         };
+        //         this.replaceFormation();
+        //         return this.quiz.renameQuiz(getObjectToSave());
+        //     } else {
+        //         return Promise.reject("Vous devez remplir correctement le nom du quiz.");
+        //     }
+        // }
 
         isQuizValid() {
             return this.quiz.isValid();
@@ -165,6 +169,10 @@ exports.QuizAdminP = function (globalVariables) {
 
         getLastQuestionIndex() {
             return this.quiz.getLastQuestionIndex();
+        }
+
+        replaceFormation() {
+            this.state.replaceFormation();
         }
 
         setLabel(quizLabel) {

@@ -249,9 +249,34 @@ const replaceQuiz = (indexes, game, formation) => {
                 resolve(null);
             }
         } else {
-            // update last version
+            // update last version + DMA3622 : saving new quiz
             version = formation.versions[formation.versions.length - 1];
-            version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
+            if (version.levelsTab.length < indexes.level && version.levelsTab.length != 0) {
+                version.levelsTab.push({gamesTab: [game]});
+                if (version.levelsTab[indexes.level].gamesTab) {
+                    if (version.levelsTab[indexes.level].gamesTab.length < indexes.game
+                        && version.levelsTab[indexes.level].gamesTab.length != 0) {
+                        version.levelsTab[indexes.level].gamesTab.push(game);
+                    } else {
+                        version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
+                    }
+                }
+            } else {
+                version.levelsTab = [{
+                    gamesTab: [game]
+                }]
+            }
+            switch (game.type) {
+                case "Quiz":
+                    version.gamesCounter.quizz++;
+                    break;
+                case "Doll":
+                    version.gamesCounter.doll++;
+                    break;
+                default:
+                    console.error('wrong type of game', game.game.type);
+                    break;
+            }
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
                 {$set: {versions: formation.versions}}, (err) => {
                     if (err) {
