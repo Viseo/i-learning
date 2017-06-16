@@ -428,7 +428,7 @@ exports.DollAdminV = function(globalVariables){
                 return colors;
             }
             let color = this._makeClickableItem('Couleur', ()=>{
-                this.contextMenu.setList(makeColors(()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )}));
+                this.contextMenu.setList(makeColors((color)=>{rect.color(color, rect.strokeWidth, rect.strokeColor )}));
             });
             let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(rect, manipulator);
@@ -596,7 +596,6 @@ exports.DollAdminV = function(globalVariables){
                     let colors = makeColors((color)=>{
                         if(border){
                             rect.color(rect.fillColor, rect.strokeWidth, color);
-
                         }
                         else{
                             rect.color(color, rect.strokeWidth, rect.strokeColor);
