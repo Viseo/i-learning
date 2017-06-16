@@ -12,7 +12,8 @@ describe('connection page', function () {
             return loadPage("Connection", {
                 mockResponses: {
                     "/auth/connect": {code: 200, content: {ack: "OK", user: {}}},
-                    "/formations": {code: 200, content: {myCollection: []}}
+                    "/formations": {code: 200, content: {myCollection: []}},
+                    "/users/notes": {content: {}}
                 }
             });
         })

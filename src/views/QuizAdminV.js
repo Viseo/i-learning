@@ -1044,7 +1044,6 @@ exports.QuizAdminV = function (globalVariables) {
                     answers: questionElementVue.answers
                 };
 
-                console.log(questionElementVue.textAreaPicture)
                 let media = questionElementVue.textAreaPicture;
                 if (media.imageSrc) {
                     question.imageSrc = media.imageSrc;
