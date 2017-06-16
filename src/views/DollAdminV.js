@@ -408,7 +408,7 @@ exports.DollAdminV = function(globalVariables){
 
         rectRightClick(rect, manipulator, event){
             let arr = [];
-            let color = this._makeClickableItem('Couleur', ()=>{
+            let makeColors = (handler)=>{
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
                     [230, 122, 25],
@@ -422,10 +422,13 @@ exports.DollAdminV = function(globalVariables){
                     let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2)
                         .color(colors[i], 0.5, myColors.grey);
                     man.add(rec);
-                    man.addEvent('click', ()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )});
+                    man.addEvent('click', ()=>{handler(color)});
                     colors[i]=man;
                 }
-                this.contextMenu.setList(colors);
+                return colors;
+            }
+            let color = this._makeClickableItem('Couleur', ()=>{
+                this.contextMenu.setList(makeColors(()=>{rect.color(color, rect.strokeWidth, rect.strokeColor )}));
             });
             let resize = this._makeClickableItem('Redimensionner', ()=>{
                 this.resizeElement(rect, manipulator);
@@ -509,10 +512,10 @@ exports.DollAdminV = function(globalVariables){
                 })
 
                 let borderRect = new svg.Rect(40, 40);
-                borderRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
+                borderRect.color(rect.strokeColor, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
 
                 let backgroundRect = new svg.Rect(40, 40);
-                backgroundRect.color(myColors.white, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
+                backgroundRect.color(rect.fillColor, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
 
 
                 let gauge = new Helpers.Gauge(pos.x*8, 35, 0, 1);
@@ -522,6 +525,46 @@ exports.DollAdminV = function(globalVariables){
                 });
                 gauge.setIndicateurToValue(rect._opacity || 1);
 
+                let changeColorHandler = (elementToRemove, border)=>{
+                    let updateRects = ()=>{
+                        backgroundRect.color(rect.fillColor, 1, myColors.black);
+                        borderRect.color(rect.strokeColor, 1, myColors.black);
+                    }
+                    let colors = makeColors((color)=>{
+                        if(border){
+                            rect.color(rect.fillColor, rect.strokeWidth, color);
+
+                        }
+                        else{
+                            rect.color(color, rect.strokeWidth, rect.strokeColor);
+                        }
+                        this.rightMenuManipulator.remove(elementToRemove.first);
+                        // elementToRemove.flush();
+                        updateRects();
+                    });
+                    return colors;
+                }
+                let colorManip = new Manipulator(this);
+                let colorBackgroundSelection = new ListManipulatorView(changeColorHandler(colorManip, false),
+                    'V', 150,3*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+                let colorBorderSelection = new ListManipulatorView(changeColorHandler(colorManip, true),
+                    'V', 150,3*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+                colorBackgroundSelection.refreshListView();
+                colorBorderSelection.refreshListView();
+                colorBackgroundSelection.manipulator.move(backgroundRect.x + CONTEXT_TILE_SIZE.w/2, backgroundRect.y);
+                colorBorderSelection.manipulator.move(borderRect.x + CONTEXT_TILE_SIZE.w/2, borderRect.y);
+
+
+                svg.addEvent(borderRect, 'click',()=>{
+                    this.rightMenuManipulator.add(colorManip);
+                    colorManip.add(colorBorderSelection.manipulator);
+                    colorManip.remove(colorBackgroundSelection.manipulator);
+                });
+                svg.addEvent(backgroundRect, 'click',()=>{
+                    this.rightMenuManipulator.add(colorManip);
+                    colorManip.add(colorBackgroundSelection.manipulator);
+                    colorManip.remove(colorBorderSelection.manipulator);
+                });
 
 
 
@@ -537,6 +580,7 @@ exports.DollAdminV = function(globalVariables){
                     .add(inputSizeW.component).add(inputSizeH.component)
                     .add(borderRect).add(backgroundRect)
                     .add(gauge.manipulator)
+                    .add(colorManip);
 
 
                 this.rightMenuManipulator.move(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
@@ -587,7 +631,7 @@ exports.DollAdminV = function(globalVariables){
                 this.selectedElement.parentManip.corners && this.selectedElement.parentManip.corners.forEach(corner=>{
                     corner.flush();
                 });
-                this.selectedElement.color(this.selectedElement.fillColor, 0.5, myColors.grey);
+                this.selectedElement.color(this.selectedElement.fillColor, 2, myColors.grey);
             }
             else if (this.selectedElement && this.selectedElement.component.parentManip){//Text
                 this.selectedElement.component.parentManip.corners && this.selectedElement.component.parentManip.corners.forEach(corner=>{
@@ -681,7 +725,7 @@ exports.DollAdminV = function(globalVariables){
 
         rectZoning(event){
             let point = this.sandboxMain.content.localPoint(event.x,event.y);
-            let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 1, myColors.black);
+            let rect = new svg.Rect(0,0).position(point.x, point.y).color(myColors.white, 2, myColors.black);
 
             this.sandboxMain.content.add(rect);
             let moveHandler = (eventMove)=>{
@@ -703,7 +747,7 @@ exports.DollAdminV = function(globalVariables){
                 this.rectElements.push(rect);
                 rect.mark('rectElement' + this.rectElements.length);
                 svg.removeEvent(this.sandboxMain.component, 'mousemove');
-                rect.color(myColors.blue);
+                rect.color(myColors.blue, 2, myColors.none);
                 svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
                 svg.addEvent(rect,'contextmenu',(event)=>{
                    this.selectElement(rect);
