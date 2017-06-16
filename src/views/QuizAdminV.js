@@ -46,9 +46,10 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
                     .add(this.mediasLibraryManipulator)
-                    .add(this.previewButtonManipulator)
+
                     .add(this.saveQuizButtonManipulator)
-                    .add(this.returnButtonManipulator);
+                    .add(this.returnButtonManipulator)
+                    .add(this.previewButtonManipulator);
             };
             var _resetDrawings = () => {
                 this.width = drawing.width - 2 * MARGIN;
@@ -132,14 +133,12 @@ exports.QuizAdminV = function (globalVariables) {
             var _displayQuestionDetails = () => {
                 let questionDetailsDim = {
                     w: Math.max(this.width * 4 / 5, 800),
-                    h: Math.max(this.height * 2 / 3 - BUTTON_HEIGHT, 350)
+                    h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                        - this.returnButton.height - this.quizTitleField.height  - BUTTON_HEIGHT - MARGIN, 350)
                 }
                 this.questionDetailsDim = questionDetailsDim;
                 let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
                 this.questionDetailsManipulator.set(0, border);
-                //this.questionDetailsManipulator.move(this.mediaLibrary.width + questionAndAnswers.w / 2 + 2 * MARGIN,
-                //    questionAndAnswers.h + BUTTON_HEIGHT + 2 * MARGIN);
-
                 this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w/2 + 2 * MARGIN,
                     questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
 
@@ -154,10 +153,8 @@ exports.QuizAdminV = function (globalVariables) {
                 previewButton.onClick(this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
                 this.previewButtonManipulator.move(this.width / 2 - previewButtonDim.width / 2 - MARGIN,
-                    this.header.height + this.returnButton.height + this.quizTitleField.height
-                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + previewButtonDim.height / 2
-                    + 5 * MARGIN);
-            }
+                    this.questionDetailsManipulator.y + this.questionDetailsDim.h/2 + previewButton.height/2 + MARGIN );
+            };
             var _displaySaveButton = () => {
                 let saveButtonDim = {
                     width: BUTTON_WIDTH,
@@ -234,14 +231,14 @@ exports.QuizAdminV = function (globalVariables) {
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
                 w: this.width * 1 / 5 - MARGIN,
-                h: Math.max(this.height * 2 / 3 - BUTTON_HEIGHT, 350)
+                h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                    - this.returnButton.height - this.quizTitleField.height  - 2*BUTTON_HEIGHT - MARGIN, 350 - BUTTON_HEIGHT)
             };
             var _createPanel = () => {
                 let videosPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
                 videosPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
                 this.mediaLibrary = videosPanel;
                 let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(videosPanel.width / 2, videosPanel.height / 2);
-
 
                 let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
                     .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
@@ -255,7 +252,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator.add(this.mediasLibraryManipulator);
                 videosPanel.back.mark('videoPanel');
 
-            }
+            };
 
             _createPanel();
             this.loadVideos();
@@ -320,7 +317,8 @@ exports.QuizAdminV = function (globalVariables) {
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = {
                 w: Math.max(this.width * 1 / 5 - MARGIN, 250),
-                h: Math.max(this.height * 2 / 3 - BUTTON_HEIGHT*2, 350 - BUTTON_HEIGHT)
+                h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
+                    - this.returnButton.height - this.quizTitleField.height  - 2*BUTTON_HEIGHT - MARGIN, 350 - BUTTON_HEIGHT)
             };
 
             let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
