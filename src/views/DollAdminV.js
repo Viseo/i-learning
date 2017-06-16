@@ -510,24 +510,69 @@ exports.DollAdminV = function(globalVariables){
                 //For Taille
                 let inputSizeW = new gui.TextField(-rMenu.width/2  + pos.x*5 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                inputSizeW.message(rect.boundingRect().width);
-                inputSizeW.onInput((oldMessage, newMessage, valid)=>{
-                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
-                        rect.dimension(newMessage, rect.boundingRect().height);
-                    }else{
-                        newMessage && displayErrorInput();
-                    }
-                })
                 let inputSizeH = new gui.TextField(-rMenu.width/2  + pos.x*10 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                inputSizeH.message(rect.boundingRect().height);
-                inputSizeH.onInput((oldMessage, newMessage, valid)=>{
+                let resizeRect = (x = rect.width, y = rect.height, Xbool)=>{
+                    if (rect.keepProportion){
+                        if (Xbool){
+                            let ratio = x/rect.width;
+                            rect.dimension(x, ratio*y);
+                            inputSizeH.message(Math.round(rect.height));
+                        }
+                        else{
+                            let ratio = y/rect.height;
+                            rect.dimension(x*ratio, y);
+                            inputSizeW.message(Math.round(rect.width));
+                        }
+                    }
+                    else{
+                        rect.dimension(x,y);
+                    }
+                }
+                inputSizeW.message(Math.round(rect.boundingRect().width));
+                inputSizeW.onInput((oldMessage, newMessage, valid)=>{
                     if (newMessage.match(/^-?\d+(\.\d+)?$/)){
-                        rect.dimension(rect.boundingRect().width,newMessage);
+                        resizeRect(Number(newMessage), rect.boundingRect().height, true);
                     }else{
                         newMessage && displayErrorInput();
                     }
                 })
+                inputSizeH.message(Math.round(rect.boundingRect().height));
+                inputSizeH.onInput((oldMessage, newMessage, valid)=>{
+                    if (newMessage.match(/^-?\d+(\.\d+)?$/)){
+                        resizeRect(rect.boundingRect().width, Number(newMessage), false);
+                    }else{
+                        newMessage && displayErrorInput();
+                    }
+                })
+
+                let keepProportionButton = new svg.Rect(20,20).color(myColors.white, 1, myColors.black);
+                keepProportionButton.position(posX.x + keepProportionButton.width/2, posX.y + 50);
+                keepProportionButton.enableProportion = !rect.keepProportion;
+                svg.addEvent(keepProportionButton, 'click', ()=>{
+                    if(!keepProportionButton.enableButton) {
+                        let enableButton = new svg.Rect(keepProportionButton.width - 5, keepProportionButton.height - 5)
+                            .color(myColors.black, 0, myColors.black)
+                            .position(keepProportionButton.x, keepProportionButton.y);
+                        keepProportionButton.enableButton = enableButton;
+                        svg.addEvent(keepProportionButton.enableButton, 'click', keepProportionButton.component.listeners['click']);
+                    }
+                    if (keepProportionButton.enableProportion){
+                        keepProportionButton.enableProportion = false;
+                        this.rightMenuManipulator.remove(keepProportionButton.enableButton);
+                        rect.keepProportion = false;
+                    }
+                    else {
+                        keepProportionButton.enableProportion = true;
+                        this.rightMenuManipulator.add(keepProportionButton.enableButton);
+                        rect.keepProportion = true;
+                    }
+                })
+
+                let keepProportionText = new svg.Text('Garder les proportions')
+                    .font('Arial',18)
+                    .position(keepProportionButton.x + 20, keepProportionButton.y + 6)
+                    .anchor('left');
 
                 let borderRect = new svg.Rect(40, 40);
                 borderRect.color(rect.strokeColor, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
@@ -598,8 +643,10 @@ exports.DollAdminV = function(globalVariables){
                     .add(inputSizeW.component).add(inputSizeH.component)
                     .add(borderRect).add(backgroundRect)
                     .add(gauge.manipulator)
-                    .add(colorManip);
-
+                    .add(colorManip)
+                    .add(keepProportionButton)
+                    .add(keepProportionText);
+                svg.event(keepProportionButton, 'click')
 
                 this.rightMenuManipulator.move(this.width - rMenu.width/2, rMenu.height/2 + this.header.height);
                 this.manipulator.add(this.rightMenuManipulator);
