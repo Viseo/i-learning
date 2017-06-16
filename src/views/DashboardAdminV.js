@@ -46,7 +46,6 @@ exports.DashboardAdmin = function (globalVariables) {
                 this.panel.position(this.panel.width / 2 + MARGIN, this.panel.height / 2 + headHeight + INPUT_SIZE.h + 2 * MARGIN);
                 this.panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
                 this.panel.setScroll();
-
                 // this.panel.add(this.miniaturesManipulator.first)
                 this.manipulator.add(this.panel.component).add(titleBack).add(title);
 
