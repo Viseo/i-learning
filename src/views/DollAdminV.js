@@ -34,6 +34,60 @@ exports.DollAdminV = function(globalVariables){
                 let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue).mark('rectTab');
                 let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE).mark('pictureTab');
                 let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE).mark('helpTab');
+
+
+                let confHelp = {
+                    drop: (what, whatParent, x, y) => {
+                        let points = whatParent.globalPoint(x, y);
+                        let target = this.sandboxManip.last.getTarget(points.x, points.y);
+
+                        if(target && target == this.sandboxMain.back){
+                            let helpPanelManip = new Manipulator(this);
+                            let helpPanel = new svg.Image(what.components[0].src);
+                            helpPanel.dimension(HEADER_TILE, HEADER_TILE);
+                            helpPanelManip.add(helpPanel);
+
+                            let localPoints = this.sandboxMain.content.localPoint(x, y);
+                             helpPanelManip.move(localPoints.x, localPoints.y);
+
+                            svg.addEvent(helpPanel,'click',(event)=>{
+                                this.selectElement(helpPanel);
+                                if(event.which == 3) {
+                                    this.imageRightClick(helpPanel, helpPanelManip, event);
+                                }
+                            });
+
+                            this.sandboxMain.content.add(helpPanelManip.first);
+                            let conf = {
+                                drop:(what,whatParent, x, y)=>{
+                                    let localPoints = this.sandboxMain.content.globalPoint(x, y);
+                                    return {x:x, y:y, parent:this.sandboxMain.content};
+                            },
+                                moved:()=>{
+                                    return true;
+                                }
+                            };
+                            installDnD(helpPanelManip, drawings.component.glass.parent.manipulator.last,conf);
+                        }
+                        return {x: what.x, y: what.y, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        what.flush();
+                        return true;
+                    }
+                };
+                var createDraggableCopy = (helpA) => {
+                    let helpManip = new Manipulator(this).addOrdonator(1);
+                    let point = helpA.globalPoint(0,0);
+                    helpManip.move(point.x,point.y);
+                    let helpCopy = helpA.duplicate(helpA);
+                    helpManip.set(0, helpCopy);
+                    drawings.piste.add(helpManip);
+
+                    installDnD(helpManip, drawings.component.glass.parent.manipulator.last,confHelp);
+                    svg.event(drawings.component.glass, "mousedown", event);
+                };
+                helpA.onMouseDown(() => createDraggableCopy(helpA));
                 this.width = drawing.width;
                 this.height = drawing.height;
                 this.actionModes = {
@@ -744,7 +798,13 @@ exports.DollAdminV = function(globalVariables){
         }
 
         selectElement(elem){
-            if(this.selectedElement && this.selectedElement.parentManip){//Rect
+             if (this.selectedElement && this.selectedElement.rectSelection){
+                 this.selectedElement.parentManip.corners && this.selectedElement.parentManip.corners.forEach(corner=>{
+                     corner.flush();
+                 });
+                this.selectedElement.parentManip.remove(this.selectedElement.rectSelection);
+            }
+            else if(this.selectedElement && this.selectedElement.parentManip){//Rect
                 this.selectedElement.parentManip.corners && this.selectedElement.parentManip.corners.forEach(corner=>{
                     corner.flush();
                 });
@@ -758,20 +818,26 @@ exports.DollAdminV = function(globalVariables){
                 textColors.push(0.5,myColors.grey);
                 this.selectedElement.color(textColors)
             }
+
             if (elem && elem instanceof gui.TextField){
                 let textColors = new Array(elem._colors[0]);
                 textColors.push(4,myColors.blue);
                 elem.color(textColors);
-            }
-            else if (elem){
-                elem.lastStrokeWidth = elem.strokeWidth;
-                elem.color(elem.fillColor, 5, elem.strokeColor);
+            }else if (elem && elem instanceof svg.Image){
+                let rect = new svg.Rect(elem.width, elem.height).color(myColors.none, 1, myColors.black);
+                elem.parentManip.add(rect);
+                elem.rectSelection = rect;
+            }else{
+                elem && elem.color(elem.fillColor, 4, myColors.blue)
             }
             this.selectedElement = elem;
         }
 
         resizeElement(elem, manipulator){
-            let initW = Number(elem.width), initH = Number(elem.height);
+            if(elem.rectSelection){
+                manipulator.remove(elem.rectSelection);
+            }
+            let initW = elem.width, initH = elem.height;
             let manipInitx = manipulator.x, manipInity = manipulator.y;
             manipulator.corners = [];
             let br = function(x, y, Xcoeff, Ycoeff){
