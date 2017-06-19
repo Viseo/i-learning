@@ -16,9 +16,11 @@ exports.ConnectionV = function (globalVariables) {
         CHECKBOX_SIZE = 15,
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
-        INPUT_SIZE = {w:550, h: 30},
-        BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white];
+
+    var
+        INPUT_SIZE = {w:Math.max(350, drawing.width*2/3), h: 30},
+        BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
 
     class ConnectionV extends View {
         constructor(presenter) {
@@ -27,6 +29,10 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         display() {
+            var _calcSizes = () => {
+                INPUT_SIZE = {w:Math.max(350, drawing.width/3), h: 30};
+                BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
+            }
             var _initManips = () => {
                 this.fieldsManip = new Manipulator(this);
                 this.cookieManipulator = new Manipulator(this);
@@ -190,6 +196,7 @@ exports.ConnectionV = function (globalVariables) {
             };
 
             super.display();
+            _calcSizes();
             _initManips();
             this.displayHeader("Connexion");
             _displayFields();
