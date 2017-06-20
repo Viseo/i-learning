@@ -16,6 +16,8 @@ exports.DollAdminV = function(globalVariables){
         TAB_SIZE={w:0.1*PANEL_SIZE.w, h: 0.1*PANEL_SIZE.h},
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        SelectItemList = globalVariables.Lists.SelectItemList,
+        SelectItem = globalVariables.Lists.SelectItem,
         HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
         CONTEXT_TILE_SIZE = {w:150 - 2*MARGIN,h:27},
@@ -132,7 +134,13 @@ exports.DollAdminV = function(globalVariables){
                     this.actionTabs.push(manip);
                 }
             };
+            var declareRules = () => {
+                this.rulesList = [];
+                this.rulesList = [{label: "Objectif 1"},{label: "Objectif 2"},{label: "Objectif 3"},{label: "Objectif 4"}];
+                this.displayedList = false;
+            }
             declareActions();
+            declareRules();
             svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
 
@@ -1051,7 +1059,26 @@ exports.DollAdminV = function(globalVariables){
         }
 
         displaySolutions(){
-            let solutionsHeaderManipulator = new Manipulator(this);
+            var _clickListHandler = (clickedItem, flag) => {
+                if (!flag && !this.displayedList) {
+                    solutionsHeaderManipulator.add(headerRollListe.manipulator);
+                    this.displayedList = true;
+                    headerRollListe.setClickAction(_clickListHandler);
+                } else {
+                    solutionsHeaderManipulator.remove(headerRollListe.manipulator);
+                    this.displayedList = false;
+                    // solutionsHeaderManipulator.remove(this.displayedItem.manipulator);
+                    // headerRollListe._updateCurrentList();
+                    this.displayedItem.setText(clickedItem.getText());
+                    // solutionsHeaderManipulator.add(this.displayedItem.manipulator);
+                    this.displayedItem.setClickAction(_clickListHandler, false);
+                }
+            };
+            // let createSelectItem = () => {
+            //     let selectItem = new SelectItem(0.8 * PANEL_SIZE.w);
+            //     return selectItem;
+            // };
+            let solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
             let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2*PANEL_SIZE.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2,2);
@@ -1059,37 +1086,53 @@ exports.DollAdminV = function(globalVariables){
                 .font('Arial', 18)
                 .anchor('left')
                 .position(-PANEL_SIZE.w/2 + MARGIN, -solutionsHeader.height/5);
-            let headerRollPanel = new svg.Rect(0.8*PANEL_SIZE.w, INPUT_SIZE.h)
-                .color(myColors.white, 1, myColors.grey);
-
-            solutionsHeaderManipulator.add(solutionsHeader)
+            // let headerRollPanel = new svg.Rect(0.8*PANEL_SIZE.w, INPUT_SIZE.h)
+            //     .color(myColors.blue, 1, myColors.grey);
+            // let headerRollList = new svg.Rect(0.8 * PANEL_SIZE.w, INPUT_SIZE.h * this.rulesList.length)
+            //     .color(myColors.white, 1, myColors.grey)
+            //     .position(0,headerRollPanel.height*3 - 1.5*MARGIN);
+            this.displayedItem = new SelectItem(0.8*PANEL_SIZE.w, INPUT_SIZE.h, "Option 1", 0);
+            // this.displayedItem = headerRollItem;
+            let headerRollListe = new SelectItemList(0.8 * PANEL_SIZE.w, INPUT_SIZE.h, 2, this.displayedItem.duplicate());
+            headerRollListe.manipulator.move(0, INPUT_SIZE.h);
+            headerRollListe.addItem("Option 2", 1);
+            headerRollListe.addItem("Option 3", 2);
+            this.displayedItem.setClickAction(_clickListHandler, false);
+            // headerRollListe.move(0,headerRollItem.height);
+            solutionsHeaderManipulator
+                .add(solutionsHeader)
                 .add(headerTitle)
-                .add(headerRollPanel);
+                // .add(headerRollPanel)
+                .add(this.displayedItem.manipulator);
+            // svg.addEvent(headerRollPanel, 'click',_clickListHandler);
             solutionsHeaderManipulator.move(0,solutionsHeader.height/2 - PANEL_SIZE.h/2);
-            this.mainPanelManipulator.add(solutionsHeaderManipulator);
             this.displaySolutionsBody();
+            this.mainPanelManipulator.add(solutionsHeaderManipulator);
         }
 
         displaySolutionsBody(){
             let solutionsBodyManip = new Manipulator(this);
-            let createLeftTemplate = () =>{
+            let createLeftTemplate = () => {
                 let leftTemplateManip = new Manipulator(this).addOrdonator(2);
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.green],
                 'Ajouter une solution');
                 addSolutionButton.glass.mark('addSolutionButton');
-                let selectSolution = new svg.Rect(0.8*addSolutionButton.width, INPUT_SIZE.h)
-                    .color(myColors.white, 1, myColors.grey)
-                    .corners(5,5);
-                let deleteSolutionButton = new gui.Button(0.15 * selectSolution.width, INPUT_SIZE.h,
+                let selectSolution = new SelectItem(0.8*addSolutionButton.width, INPUT_SIZE.h, "Solution 1", 0);
+                selectSolution.color(myColors.white, 1, myColors.grey);
+                selectSolution.corners(5,5);
+                selectSolution.move(-0.1*addSolutionButton.width, addSolutionButton.height + 2*MARGIN);
+                // let selectSolution = new svg.Rect(0.8*addSolutionButton.width, INPUT_SIZE.h)
+                //     .color(myColors.white, 1, myColors.grey)
+                //     .corners(5,5);
+                let deleteSolutionButton = new gui.Button(0.15 * selectSolution.getWidth(), INPUT_SIZE.h,
                     [myColors.lightgrey, 0, myColors.none], 'X');
                 let framedRollPanel = new svg.Rect(0.3*addSolutionButton.width, INPUT_SIZE.h)
-                    .color(myColors.white, 1, myColors.grey);
+                    .color(myColors.green, 1, myColors.grey);
                 let linkImage = new svg.Image('../../images/unlink.png');
-                let pictureImage = new svg.Image('../../images/picture.png');
+                // let pictureImage = new svg.Image('../../images/picture.png');
                 let rollPanel = new svg.Rect(0.4*addSolutionButton.width, INPUT_SIZE.h)
-                    .color(myColors.white, 1, myColors.grey);
+                    .color(myColors.blue, 1, myColors.grey);
 
-                selectSolution.position(-0.1*addSolutionButton.width, addSolutionButton.height + 2*MARGIN);
                 deleteSolutionButton.position(addSolutionButton.width*0.4 + MARGIN,  addSolutionButton.height + 2*MARGIN);
                 framedRollPanel.position(-0.35*addSolutionButton.width, 2*(addSolutionButton.height + 2*MARGIN));
                 rollPanel.position(-addSolutionButton.width/2 + framedRollPanel.width + IMAGE_SIZE.w + rollPanel.width/2 + 1.5*MARGIN,
@@ -1097,21 +1140,50 @@ exports.DollAdminV = function(globalVariables){
                 linkImage
                     .position(-addSolutionButton.width/2 + rollPanel.width - IMAGE_SIZE.w/2 + 0.5*MARGIN, 2*(addSolutionButton.height + 2*MARGIN))
                     .dimension(IMAGE_SIZE.w,IMAGE_SIZE.h)
-                pictureImage
-                    .position(addSolutionButton.width/2 - IMAGE_SIZE.w/2, 2*(addSolutionButton.height + 2*MARGIN))
-                    .dimension(IMAGE_SIZE.w,IMAGE_SIZE.h)
+                // pictureImage
+                //     .position(addSolutionButton.width/2 - IMAGE_SIZE.w/2, 2*(addSolutionButton.height + 2*MARGIN))
+                //     .dimension(IMAGE_SIZE.w,IMAGE_SIZE.h)
 
-                leftTemplateManip.set(0, linkImage);
-                leftTemplateManip.set(1, pictureImage);
-                leftTemplateManip.add(selectSolution)
+                leftTemplateManip
+                // leftTemplateManip.set(1, pictureImage);
+                leftTemplateManip
+                    .set(0, linkImage)
+                    .add(selectSolution.manipulator)
                     .add(addSolutionButton.component)
                     .add(deleteSolutionButton.component)
                     .add(framedRollPanel)
                     .add(rollPanel)
                 leftTemplateManip.move(-PANEL_SIZE.w/2 + INPUT_SIZE.w/2 + MARGIN, 0)
                 solutionsBodyManip.add(leftTemplateManip);
-            }
+            },
+                createRightTemplate = () => {
+                    let rightTemplateManip = new Manipulator(this).addOrdonator(2);
+                    let addSolutionButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.orange],
+                        'Ajouter une solution');
+                    addSolutionButton.glass.mark('addSolutionButton');
+                    let linkImage = new svg.Image('../../images/unlink.png');
+                    let selectSolution = new SelectItem(0.8*addSolutionButton.width, INPUT_SIZE.h, "Solution 1", 0);
+                    selectSolution.color(myColors.white, 1, myColors.grey);
+                    selectSolution.corners(5,5);
+                    selectSolution.move(-0.1*addSolutionButton.width, addSolutionButton.height + 2*MARGIN);
+                    let deleteSolutionButton = new gui.Button(0.15 * selectSolution.getWidth(), INPUT_SIZE.h,
+                        [myColors.lightgrey, 0, myColors.none], 'X');
+                    let framedRollPanel = new svg.Rect(0.3*addSolutionButton.width, INPUT_SIZE.h)
+                        .color(myColors.orange, 1, myColors.grey);
+                    let rollPanel = new svg.Rect(0.4*addSolutionButton.width, INPUT_SIZE.h)
+                        .color(myColors.blue, 1, myColors.grey);
+                    rightTemplateManip
+                        .set(0, linkImage)
+                        .add(selectSolution.manipulator)
+                        .add(addSolutionButton.component)
+                        .add(deleteSolutionButton.component)
+                        .add(framedRollPanel)
+                        .add(rollPanel);
+                    rightTemplateManip.move(PANEL_SIZE.w/2 + INPUT_SIZE.w/2 + MARGIN, 0)
+                    solutionsBodyManip.add(rightTemplateManip);
+                }
             createLeftTemplate();
+            createRightTemplate();
             solutionsBodyManip.move(4*MARGIN,-PANEL_SIZE.h/4)
             this.mainPanelManipulator.add(solutionsBodyManip);
 

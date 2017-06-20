@@ -292,7 +292,173 @@ exports.Lists = function (globalVariables) {
         }
     }
 
+    class SelectItemList {
+        constructor(width, height, numberItems = 1, selectItemViewElement, rootItemLabel = "") {
+            this.list = [];
+            this.itemWidth = width;
+            this.itemHeight = height;
+            if (!selectItemViewElement) {
+                this.rootItemElement = new SelectItem(this.itemWidth, this.itemHeight, rootItemLabel, 0);
+                this.list.push(this.rootItemElement);
+            } else {
+                this.rootItemElement = selectItemViewElement.duplicate();
+                this.list.push(this.rootItemElement);
+            }
+            this.scrollable = true;
+            this.highlight = true;
+            this.highlightColor = myColors.blue;
+            this.manipulator = new Manipulator(this);
+            this._updateCurrentList();
+        }
+
+        addItem(label, index) {
+            this.list.push(new SelectItem(this.itemWidth, this.itemHeight, label, index));
+            this._updateCurrentList();
+        }
+
+        copySelectItem(index) {
+            let copyElement = new SelectItem(this.itemWidth, this.itemHeight, this.list[index].getText(),0);
+            return copyElement;
+        }
+
+        getSelectedItem(index) {
+            return this.list[index];
+        }
+
+        highlightHandler(selectItem) {
+            selectItem.setHighlightColor(this.highlightColor);
+            selectItem.addEvent('mouseleave', () => selectItem.setHighlightColor(myColors.white));
+        }
+
+        move(x, y) {
+            this.manipulator.move(x, y);
+        }
+
+        removeItem(index) {
+
+        }
+
+        setClickAction(clickHandler) {
+            // this.manipulator.addEvent('click', clickHandler);
+            this.list.forEach(selectItem => {
+                selectItem.setClickAction(clickHandler, true);
+            })
+        }
+
+        setHighlightItems(flag) {
+            this.highlight = flag;
+        }
+
+        setHighlightOptions(backgroundColor) {
+            this.highlightColor = backgroundColor;
+        }
+
+        setScrollable(flag) {
+            this.scrollable = flag;
+        }
+
+        toggleEvents(selectItem) {
+            if (this.highlight && this.highlightColor) {
+                selectItem.addEvent('mouseenter', () => this.highlightHandler(selectItem));
+            }
+            if (this.scrollable) {
+                selectItem.addEvent('wheel', () => {console.log('HotWheels')});
+            }
+        }
+
+        _updateCurrentList() {
+            this.list.forEach(selectItem => {
+                this.toggleEvents(selectItem);
+                this.manipulator.remove(selectItem.manipulator);
+                this.manipulator.add(selectItem.manipulator);
+                selectItem.move(0,selectItem.index * this.itemHeight);
+            });
+        }
+
+    }
+
+    class SelectItem {
+        constructor(itemWidth, itemHeight, textContent = "", index) {
+            this.width = itemWidth;
+            this.height = itemHeight;
+            this.textContent = new svg.Text(textContent)
+                .font('Arial', 18)
+                .position(0,5);
+            this.textRect = new svg.Rect(this.width, this.height)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(2,2);
+            this.index = index;
+            this.manipulator = new Manipulator(this);
+            this.manipulator
+                .add(this.textRect)
+                .add(this.textContent);
+        }
+
+        addEvent(eventName, handler) {
+            this.manipulator.addEvent(eventName, handler);
+        }
+
+        color(newColor) {
+            this.textRect.color(newColor, 1, myColors.grey);
+        }
+
+        corners(radiusX, radiusY) {
+            this.textRect.corners(radiusX,radiusY);
+        }
+
+        duplicate() {
+            return new SelectItem(this.getWidth(), this.getHeight(), this.getText(), this.getIndex());
+        }
+
+        getWidth() {
+            return this.width;
+        }
+
+        getHeight() {
+            return this.height;
+        }
+
+        getIndex() {
+            return this.index;
+        }
+
+        getText() {
+            return this.textContent.messageText;
+        }
+
+        move(x, y) {
+            this.manipulator.move(x,y);
+        }
+
+
+        mark(id) {
+            this.manipulator.mark(id);
+        }
+
+        position(x,y) {
+
+        }
+
+        setClickAction(clickHandler, flag) {
+            this.manipulator.addEvent('click', ()=>clickHandler(this, flag));
+        }
+
+        _setRectBgdColor(color) {
+            this.textRect.color(color, 1, myColors.grey);
+        }
+
+        setHighlightColor(color) {
+            this._setRectBgdColor(color);
+        }
+
+        setText(messageText) {
+            this.textContent.message(messageText);
+        }
+    }
+
     return {
-        ListManipulatorView
+        ListManipulatorView,
+        SelectItemList,
+        SelectItem
     };
 };
