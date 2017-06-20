@@ -143,31 +143,31 @@ exports.QuizAdminV = function (globalVariables) {
                     questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
 
             }
-            var _displayPreviewButton = () => {
-                let previewButtonDim = {
-                    width: BUTTON_WIDTH,
-                    height: BUTTON_HEIGHT
+            let calculateButtonBottomDim = () =>{
+                let dim = {
+                    w: BUTTON_WIDTH,
+                    h: BUTTON_HEIGHT
                 }
-                let previewButton = new gui.Button(previewButtonDim.width, previewButtonDim.height, [[43, 120, 228], 1, myColors.black], "Aperçu");
+                dim.x = Math.max(this.width / 2 + dim.w / 2 + MARGIN,this.questionDetailsDim.w/2+ this._calculateLibraryDimension().w);
+                dim.y = this.header.height + this.returnButton.height + this.quizTitleField.height
+                        + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + dim.h / 2 + 5 * MARGIN;
+                 return dim;
+            }
+            var _displayPreviewButton = () => {
+                let dim = calculateButtonBottomDim();
+                let previewButton = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], "Aperçu");
                 previewButton.glass.mark('previewButton');
                 previewButton.onClick(this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
-                this.previewButtonManipulator.move(this.width / 2 - previewButtonDim.width / 2 - MARGIN,
-                    this.questionDetailsManipulator.y + this.questionDetailsDim.h/2 + previewButton.height/2 + MARGIN );
+                this.previewButtonManipulator.move(dim.x, dim.y);
             };
             var _displaySaveButton = () => {
-                let saveButtonDim = {
-                    width: BUTTON_WIDTH,
-                    height: BUTTON_HEIGHT
-                }
-                let saveButton = new gui.Button(saveButtonDim.width, saveButtonDim.height, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
+                let dim = calculateButtonBottomDim();
+                let saveButton = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
                 saveButton.glass.mark('saveButtonQuiz');
                 saveButton.onClick(this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
-                this.saveQuizButtonManipulator.move(this.width / 2 + saveButtonDim.width / 2 + MARGIN,
-                    this.header.height + this.returnButton.height + this.quizTitleField.height
-                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + saveButtonDim.height / 2
-                    + 5 * MARGIN);
+                this.saveQuizButtonManipulator.move(dim.x+dim.w+ MARGIN ,  dim.y);
             }
             var _displayToggleMedias = () => {
                 let tabsDim = {
