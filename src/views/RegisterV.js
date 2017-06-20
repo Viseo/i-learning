@@ -17,9 +17,8 @@ exports.RegisterV = function (globalVariables) {
         BUTTON_MARGIN = 80,
         TITLE_COLOR = [myColors.white, 0, myColors.white],
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
-        COLORS = [myColors.white, 1, myColors.black],
-        INPUT_SIZE = {w:550, h: 30},
-        BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
+        COLORS = [myColors.white, 1, myColors.black];
+
 
     class RegisterV extends View {
         constructor(presenter) {
@@ -28,6 +27,11 @@ exports.RegisterV = function (globalVariables) {
         }
 
         display() {
+            var INPUT_SIZE, BUTTON_HEIGHT;
+            var _calcSizes = () => {
+                INPUT_SIZE = {w:Math.max(400, drawing.width/3), h: 30};
+                BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
+            }
             var _declareManipulator = () => {
                 this.fieldsManip = new Manipulator(this);
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
@@ -126,6 +130,7 @@ exports.RegisterV = function (globalVariables) {
             };
 
             super.display();
+            _calcSizes();
             _declareManipulator();
             this.displayHeader('Inscription');
             _displayFields();
