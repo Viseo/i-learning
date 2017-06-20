@@ -1002,10 +1002,10 @@ exports.Models = function (globalVariables, mockResponses) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex)
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz.isValid)
                 .then((data) => {
                     let answer = JSON.parse(data);
-                    if (answer.saved) {
+                    if (answer.valid) {
                         return {message: completeQuizMessage, status: true};
                     } else {
                         return {message: incompleteQuizMessage, status: false};

@@ -84,7 +84,8 @@ exports.QuizAdminP = function (globalVariables) {
                     label: this.getLabel(),
                     lastQuestionIndex: this.getLastIndex(),
                     questions: this.getQuestions(),
-                    type: 'Quiz'
+                    type: 'Quiz',
+                    isValid: this.validQuiz()
                 };
             };
 
@@ -92,19 +93,34 @@ exports.QuizAdminP = function (globalVariables) {
                 this.setLabel(quizViewData.label);
                 this.setQuestions(quizViewData.questions);
                 let quizToSave = getObjectToSave();
-                if (this.isQuizValid()) {
-                    return this.quiz.updateQuiz(quizToSave);
-                } else {
-                    return Promise.reject("Quiz non valide");
-                }
+                return this.quiz.updateQuiz(quizToSave);
+                // if (this.isQuizValid()) {
+                //     return this.quiz.updateQuiz(quizToSave);
+                // } else {
+                //     return Promise.reject("Quiz non valide");
+                // }
             } else {
                 return Promise.reject("Le nom du quiz est incorrect");
             }
         }
 
 
-        isQuizValid() {
-            return this.quiz.isValid();
+        // isQuizValid() {
+        //     return this.quiz.isValid();
+        // }
+        validQuiz() {
+            return this.getQuestions().length && this.getQuestions().every(question => {
+                    let nbCorrect = 0;
+                    question.answers.forEach(answer => {
+                        if (answer.correct) nbCorrect++;
+                    });
+                    if (question.multipleChoice) {
+                        if (nbCorrect < 1) return false;
+                    } else {
+                        if (nbCorrect !== 1) return false;
+                    }
+                    return true;
+                });
         }
 
         getFormationId() {
