@@ -219,6 +219,7 @@ exports.QuizAdminV = function (globalVariables) {
             _displaySaveButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
+
             if (this.selectedQuestionIndex) {
                 this.questionsBlockListView.get(this.selectedQuestionIndex).select();
             } else {
@@ -246,14 +247,13 @@ exports.QuizAdminV = function (globalVariables) {
                 this.mediaLibrary = videosPanel;
                 let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(videosPanel.width / 2, videosPanel.height / 2);
 
-                let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
-                    .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
-                addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
-                resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
-                addPictureButton.component.add(addPictureButton.text);
+               //  let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Ajouter une image')
+               //      .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
+               // addPictureButton.text.font('Arial',15).color(myColors.black).position(0, 4.33);
+               //  resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+               //  addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, videosPanel.component);
-
                 this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN,
                     mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
                 this.manipulator.add(this.mediasLibraryManipulator);
@@ -261,7 +261,7 @@ exports.QuizAdminV = function (globalVariables) {
 
             };
 
-            _createPanel();
+           _createPanel();
             this.loadVideos();
         }
 
@@ -414,15 +414,14 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 fileExplorer.fileClick();
             };
-            let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [myColors.customBlue, 0, myColors.none], 'Ajouter un Media');
-            addPictureButton.text.font('Arial', 13, 12).color(myColors.white).position(0, 4.33);
+            let addPictureButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT,  [[43, 120, 228], 1, myColors.black], 'Ajouter un Media');
             resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.onClick(fileExplorerHandler);
             svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
             let addButtonManip = new Manipulator(this);
             addButtonManip.add(addPictureButton.component);
-            addButtonManip.move(BUTTON2_WIDTH / 2 + MARGIN, this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_HEIGHT - MARGIN)
+            addButtonManip.move(BUTTON_WIDTH/2 + MARGIN , this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_HEIGHT - MARGIN)
             this.manipulator.add(addButtonManip);
         }
 
