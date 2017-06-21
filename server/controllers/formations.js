@@ -41,7 +41,7 @@ module.exports = function (app) {
             return formations.replaceQuiz({
                 level: req.body.levelIndex,
                 game: req.body.gameIndex,
-                isValid: req.body.isValid
+                valid: req.body.valid
             }, req.body.newQuiz, formation)
                 .then(data => {
                     req.body.isValid && res.send({valid: true});

@@ -146,9 +146,9 @@ class APIRequester {
     deactivateFormation(id) {
         return this.httpRequests.post("/formations/deactivate", {id: id});
     }
-    updateQuiz(newQuiz, formationId, levelIndex, gameIndex, isValid) {
+    updateQuiz(newQuiz, formationId, levelIndex, gameIndex, valid) {
         return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId,
-            levelIndex:levelIndex, gameIndex:gameIndex, isValid:isValid} );
+            levelIndex:levelIndex, gameIndex:gameIndex, valid:valid} );
     }
 
     upload(file, onProgress) {

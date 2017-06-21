@@ -707,16 +707,15 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         checkAllGameValidity() {
-            let isValid = true;
+            let valid = true;
             this.levelsTab.forEach(level=>{
-                console.log("holala");
                 level.gamesTab.forEach(game => {
-                    if (!game.isValid) {
-                        isValid = false;
+                    if (!game.valid) {
+                        valid = false;
                     }
                 });
             })
-            return isValid;
+            return valid;
         }
 
         getGameById(id) {
@@ -834,7 +833,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.answered = quiz.answered || [];
             this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
             this.imageSrc = quiz.imageSrc || null;
-            this.isValid = quiz.isValid;
+            this.valid = quiz.valid;
         }
 
         setImage(src) {
@@ -846,17 +845,27 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         isValid() {
-            return this.questions.length && this.questions.every(question => {
+            this.questions.length && this.questions.every(question => {
                 let nbCorrect = 0;
                 question.answers.forEach(answer => {
                     if (answer.correct) nbCorrect++;
                 });
                 if (question.multipleChoice) {
-                    if (nbCorrect < 1) return false;
+                    if (nbCorrect < 1) {
+                        this.valid = false;
+                    }
+                    else if (nbCorrect !== 1) {
+                        this.valid = false;
+                    } else {
+                        this.valid = true;
+                    }
                 } else {
-                    if (nbCorrect !== 1) return false;
+                    if (nbCorrect == 1) {
+                        this.valid = true;
+                    } else {
+                        this.valid = false;
+                    }
                 }
-                return true;
             });
         }
 
@@ -1009,7 +1018,7 @@ exports.Models = function (globalVariables, mockResponses) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
                 incompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorQuizMessage = "Erreur";
-            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz.isValid)
+            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex, quiz.valid)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.valid) {

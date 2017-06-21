@@ -85,13 +85,14 @@ exports.QuizAdminP = function (globalVariables) {
                     lastQuestionIndex: this.getLastIndex(),
                     questions: this.getQuestions(),
                     type: 'Quiz',
-                    isValid: this.validQuiz()
+                    valid: this.validQuiz()
                 };
             };
 
             if (quizViewData.label && quizViewData.label !== this.quiz.labelDefault && quizViewData.label.match(this.regex)) {
                 this.setLabel(quizViewData.label);
                 this.setQuestions(quizViewData.questions);
+                this.isQuizValid();
                 let quizToSave = getObjectToSave();
                 return this.quiz.updateQuiz(quizToSave);
                 // if (this.isQuizValid()) {
@@ -105,9 +106,9 @@ exports.QuizAdminP = function (globalVariables) {
         }
 
 
-        // isQuizValid() {
-        //     return this.quiz.isValid();
-        // }
+        isQuizValid() {
+            this.quiz.isValid();
+        }
         validQuiz() {
             return this.getQuestions().length && this.getQuestions().every(question => {
                     let nbCorrect = 0;
