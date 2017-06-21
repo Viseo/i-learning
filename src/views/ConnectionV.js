@@ -17,7 +17,7 @@ exports.ConnectionV = function (globalVariables) {
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
         TITLE_COLOR = [myColors.white, 0, myColors.white];
-
+        var INPUT_SIZE, BUTTON_HEIGHT;
 
     class ConnectionV extends View {
         constructor(presenter) {
@@ -26,7 +26,6 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         display() {
-            let INPUT_SIZE, BUTTON_HEIGHT;
             var _calcSizes = () => {
                 INPUT_SIZE = {w:Math.max(400, drawing.width/3), h: 30};
                 BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;

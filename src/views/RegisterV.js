@@ -19,6 +19,8 @@ exports.RegisterV = function (globalVariables) {
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black];
 
+    var INPUT_SIZE, BUTTON_HEIGHT;
+
 
     class RegisterV extends View {
         constructor(presenter) {
@@ -27,7 +29,6 @@ exports.RegisterV = function (globalVariables) {
         }
 
         display() {
-            var INPUT_SIZE, BUTTON_HEIGHT;
             var _calcSizes = () => {
                 INPUT_SIZE = {w:Math.max(400, drawing.width/3), h: 30};
                 BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
