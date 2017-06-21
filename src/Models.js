@@ -707,10 +707,16 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         checkAllGameValidity() {
+            let isValid = true;
             this.levelsTab.forEach(level=>{
-
+                console.log("holala");
+                level.gamesTab.forEach(game => {
+                    if (!game.isValid) {
+                        isValid = false;
+                    }
+                });
             })
-            return true;
+            return isValid;
         }
 
         getGameById(id) {
@@ -828,6 +834,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.answered = quiz.answered || [];
             this.lastQuestionIndex = quiz.lastQuestionIndex || this.questions.length;
             this.imageSrc = quiz.imageSrc || null;
+            this.isValid = quiz.isValid;
         }
 
         setImage(src) {
@@ -981,22 +988,22 @@ exports.Models = function (globalVariables, mockResponses) {
             return correctAnswers;
         }
 
-        renameQuiz(quiz) {
-            return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex)
-                .then((data) => {
-                    let answer = JSON.parse(data);
-                    if (answer.saved === false) {
-                        answer.message = "Il faut enregistrer le quiz avant !";
-                        throw answer;
-                    } else if (answer.saved === true) {
-                        answer.message = "Le nom du quiz a été bien modifié";
-                    }
-                    return answer;
-                })
-                .catch(error => {
-                    return error;
-                })
-        }
+        // renameQuiz(quiz) {
+        //     return apiRequester.updateQuiz(quiz, quiz.formationId, quiz.levelIndex, quiz.gameIndex)
+        //         .then((data) => {
+        //             let answer = JSON.parse(data);
+        //             if (answer.saved === false) {
+        //                 answer.message = "Il faut enregistrer le quiz avant !";
+        //                 throw answer;
+        //             } else if (answer.saved === true) {
+        //                 answer.message = "Le nom du quiz a été bien modifié";
+        //             }
+        //             return answer;
+        //         })
+        //         .catch(error => {
+        //             return error;
+        //         })
+        // }
 
         updateQuiz(quiz) {
             const completeQuizMessage = "Les modifications ont bien été enregistrées",
@@ -1059,7 +1066,8 @@ exports.Models = function (globalVariables, mockResponses) {
                             label: 'Quiz ' + (counter ? counter.quizz : 0),
                             gameIndex: column - 1,
                             id: 'quizz' + (counter ? counter.quizz : 0),
-                            levelIndex: level
+                            levelIndex: level,
+                            isValid : false
                         });
                         return newQuiz;
                     }
