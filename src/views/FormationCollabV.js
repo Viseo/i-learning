@@ -36,6 +36,7 @@ exports.FormationCollabV = function (globalVariables) {
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
                 chevron.position(-130, 0);
                 this.returnButtonManipulator.add(chevron).mark('return');
+                this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
                 this.manipulator.add(this.returnButtonManipulator);
             }
 

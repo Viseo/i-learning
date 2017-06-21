@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, assertMessage, assertPresent, assertMissing, mouseEnterElement} = testutils;
+    {given, when, loadPage, click, clickElement, assertMessage, assertPresent, assertMissing, mouseEnterElement} = testutils;
 
 describe('dashboard collab', function(){
     it('should display undone formation', function(){
@@ -136,6 +136,44 @@ describe('dashboard collab', function(){
             assertPresent(root, "fStarMiniatures");
         })
     })
-    it('should enter a formation');
+    it('should enter a formation and return to Dashboard', function(){
+        let {root, state, runtime} = given(()=> {
+            let mockResponses = {
+                "/formations": {
+                    code: 200,
+                    content: {myCollection: [
+                        {_id: "1", label: "formation inProgress", levelsTab: [{gamesTab: [{type: 'Quiz', questions: [{}, {}], answered: [{}]}]}]},
+                        {_id: "2", label: "formation done"}
+                    ]}
+                },
+                "/users/notes": {
+                    content: {
+                        note: "5",
+                        _id: "1",
+                        userId: "1",
+                        versionId: "1",
+                        formationId: "1"
+                    }
+                }
+            };
+            let user = {admin: false};
+            return loadPage('Dashboard', {mockResponses, data:user});
+        });
+
+        when(() => {
+            click(root, "textMiniature1");
+        }).then(() => {
+            assertMessage(root, "headerMessage", "formation inProgress");
+        });
+
+        runtime.advance();
+        when(() => {
+            click(root, "return");
+        }).then(() => {
+            assertMessage(root, "headerMessage", "Dashboard");
+        })
+    });
+
+
     it('should load lastAction');
 })
