@@ -320,4 +320,5 @@ describe('quiz admin', function () {
             assertPresent(root, 'videoPanel')
         })
     })
+    it('should rename a quizz');
 })

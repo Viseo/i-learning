@@ -106,6 +106,7 @@ exports.Helpers = function(globalVariables){
 
             this.border = new svg.Rect(w, h).color(myColors.white, 1, myColors.black);
             this.indicator = new svg.Rect(w/30, h + 5).color(myColors.grey, 1, myColors.black);
+            this.indicator.mark('gaugeIndicator');
 
             this.indicatorManipulator.add(this.indicator);
             this.manipulator.add(this.border).add(this.indicatorManipulator);

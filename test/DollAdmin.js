@@ -7,7 +7,8 @@ const
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
     {given, when, loadPage, retrieve, clickElement, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
-    mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick} = testutils;
+        mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick, mouseDown,
+        mouseMove, mouseUpOnAnother, mouseUp} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -247,6 +248,56 @@ describe('Doll admin Page', function(){
 
             mouseUpElementOnAnother(root, 'picDraggableCopy', 'mainPanel');
             assertPresent(root,'picElement');
+        })
+    });
+    it('should open modification menu on rect and change rect opacity', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+            let rectElem = retrieve(root, '[rectElement1]');
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            mouseDown(root, 'gaugeIndicator', {pageX: 10000, pageY:0, preventDefault: () => {
+            }});
+            mouseMove(root, 'gaugeIndicator', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseUp(root, 'gaugeIndicator', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            assertPresent(root,'rightMenu');
+        })
+    });
+    it('should dnd statement in sandbox', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            // mouseDownElement(root, 'helpTab', {pageX: 0, pageY:0, preventDefault: () => {
+            // }});
+            // mouseUpElementOnAnother(root, 'helpTabCopy', 'mainPanel')
+            mouseDown(root, 'helpTab', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseDown(root, 'helpTabCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseMove(root, 'helpTabCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+
+            mouseUpOnAnother(root, 'helpTabCopy', 'mainPanel');
+        }).then(()=>{
+            assertPresent(root, 'helpElement');
         })
     })
 })

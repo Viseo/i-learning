@@ -58,6 +58,7 @@ exports.DollAdminV = function(globalVariables){
                             });
 
                             this.sandboxMain.content.add(helpPanelManip.first);
+                            helpPanel.mark('helpElement');
                             let conf = {
                                 drop:(what,whatParent, x, y)=>{
                                     let localPoints = this.sandboxMain.content.globalPoint(x, y);
@@ -76,18 +77,19 @@ exports.DollAdminV = function(globalVariables){
                         return true;
                     }
                 };
-                var createDraggableCopy = (helpA) => {
+                var createDraggableCopy = (helpA, event) => {
                     let helpManip = new Manipulator(this).addOrdonator(1);
                     let point = helpA.globalPoint(0,0);
                     helpManip.move(point.x,point.y);
                     let helpCopy = helpA.duplicate(helpA);
+                    helpCopy.mark('helpTabCopy')
                     helpManip.set(0, helpCopy);
                     drawings.piste.add(helpManip);
 
                     installDnD(helpManip, drawings.component.glass.parent.manipulator.last,confHelp);
                     svg.event(drawings.component.glass, "mousedown", event);
                 };
-                helpA.onMouseDown(() => createDraggableCopy(helpA));
+                helpA.onMouseDown((event) => createDraggableCopy(helpA,event));
                 this.width = drawing.width;
                 this.height = drawing.height;
                 this.actionModes = {
@@ -527,6 +529,7 @@ exports.DollAdminV = function(globalVariables){
                 this.rightMenuManipulator = new Manipulator(this).addOrdonator(2);
                 let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN*2, this.height - this.header.height)
                     .color(myColors.white, 1, myColors.black);
+                rMenu.mark('rightMenu');
                 this.rightMenuManipulator.set(0,rMenu);
 
                 let pos = { x : rMenu.width/15 , y : rMenu.height/8};
@@ -744,6 +747,7 @@ exports.DollAdminV = function(globalVariables){
             })
             color.mark('colorOption');
             resize.mark('resizeOption');
+            edit.mark('editOption');
             arr.push(color,resize, edit, forward, backward, foreground, background);
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
