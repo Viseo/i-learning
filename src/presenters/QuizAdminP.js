@@ -84,19 +84,22 @@ exports.QuizAdminP = function (globalVariables) {
                     label: this.getLabel(),
                     lastQuestionIndex: this.getLastIndex(),
                     questions: this.getQuestions(),
-                    type: 'Quiz'
+                    type: 'Quiz',
+                    valid: this.validQuiz()
                 };
             };
 
             if (quizViewData.label && quizViewData.label !== this.quiz.labelDefault && quizViewData.label.match(this.regex)) {
                 this.setLabel(quizViewData.label);
                 this.setQuestions(quizViewData.questions);
+                this.isQuizValid();
                 let quizToSave = getObjectToSave();
-                if (this.isQuizValid()) {
-                    return this.quiz.updateQuiz(quizToSave);
-                } else {
-                    return Promise.reject("Quiz non valide");
-                }
+                return this.quiz.updateQuiz(quizToSave);
+                // if (this.isQuizValid()) {
+                //     return this.quiz.updateQuiz(quizToSave);
+                // } else {
+                //     return Promise.reject("Quiz non valide");
+                // }
             } else {
                 return Promise.reject("Le nom du quiz est incorrect");
             }
@@ -104,7 +107,21 @@ exports.QuizAdminP = function (globalVariables) {
 
 
         isQuizValid() {
-            return this.quiz.isValid();
+            this.quiz.isValid();
+        }
+        validQuiz() {
+            return this.getQuestions().length && this.getQuestions().every(question => {
+                    let nbCorrect = 0;
+                    question.answers.forEach(answer => {
+                        if (answer.correct) nbCorrect++;
+                    });
+                    if (question.multipleChoice) {
+                        if (nbCorrect < 1) return false;
+                    } else {
+                        if (nbCorrect !== 1) return false;
+                    }
+                    return true;
+                });
         }
 
         getFormationId() {

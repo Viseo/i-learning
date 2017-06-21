@@ -30,7 +30,7 @@ exports.HeaderV = function(globalVariables){
                 this.userIconManipulator = new Manipulator(this).addOrdonator(2)
                 this.manipulator.add(this.userManipulator);
                 this.userManipulator.add(this.userIconManipulator);
-                this.userManipulator.move(this.width - MARGIN, this.height/2);
+                this.userManipulator.move(Math.max(this.width - MARGIN, 900), this.height/2);
                 parentManipulator.add(this.manipulator);
             }
             var _displayHeaderRect = () => {
@@ -54,7 +54,7 @@ exports.HeaderV = function(globalVariables){
                     let messageText = new svg.Text(message)
                         .dimension(this.width * 0.3, this.height)
                         .font('Arial', 32)
-                        .position(this.width / 2, this.height / 2 + MARGIN)
+                        .position(Math.max(this.width / 2, 400), this.height / 2 + MARGIN)
                         .color(myColors.white)
                         .mark("headerMessage");
                     this.manipulator.set(2, messageText);

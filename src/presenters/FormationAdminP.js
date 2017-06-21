@@ -119,7 +119,8 @@ exports.FormationAdminP = function(globalVariables){
 
         publishFormation(){
             const messageErrorNoNameFormation = "Vous devez remplir correctement le nom de la formation.",
-                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
+                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
+                messageErrorNotValidFormation = "Il y a des jeux non valides."
 
             if (this.formation.levelsTab.length === 0) {
                 this.view.displayMessage(messageErrorNoGame);
@@ -134,7 +135,7 @@ exports.FormationAdminP = function(globalVariables){
                 this.formation.status = 'Published'
                 this.saveFormation();
             } else {
-                //this.displayPublicationMessage(message[0]);
+                this.view.displayMessage(messageErrorNotValidFormation);
             }
         }
 
