@@ -853,9 +853,6 @@ exports.Models = function (globalVariables, mockResponses) {
                 if (question.multipleChoice) {
                     if (nbCorrect < 1) {
                         this.valid = false;
-                    }
-                    else if (nbCorrect !== 1) {
-                        this.valid = false;
                     } else {
                         this.valid = true;
                     }

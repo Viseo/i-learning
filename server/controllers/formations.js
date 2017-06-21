@@ -44,8 +44,8 @@ module.exports = function (app) {
                 valid: req.body.valid
             }, req.body.newQuiz, formation)
                 .then(data => {
-                    req.body.isValid && res.send({valid: true});
-                    !req.body.isValid && res.send({valid: false});
+                    req.body.valid && res.send({valid: true});
+                    !req.body.valid && res.send({valid: false});
                 })
         }).catch(err => {
             console.log(err);
