@@ -173,13 +173,14 @@ exports.QuizAdminV = function (globalVariables) {
                     w: Math.max((this.width * 1 / 5 - MARGIN) / 2, 250/2),
                     h: BUTTON_HEIGHT
                 };
-                let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey);
+                let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey)
+                    .mark('imageTab');
                 let videoTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey)
                     .position(tabsDim.w, 0).mark('videoTab');
                 let imageText = new svg.Text('Image').font('Arial', 18)
-                    .position(0, 6);
+                    .position(0, 6).mark('imageTabText');
                 let videoText = new svg.Text('Video').font('Arial', 18)
-                    .position(tabsDim.w, 6);
+                    .position(tabsDim.w, 6).mark('videoTabText');
                 let tabsManipulator = new Manipulator(this);
                 tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
                 tabsManipulator.move(tabsDim.w / 2 + MARGIN,
@@ -338,6 +339,7 @@ exports.QuizAdminV = function (globalVariables) {
             this.imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
             let imagesManipulator = new Manipulator(this);
             mediasPanel.content.add(imagesManipulator.first);
+            mediasPanel.back.mark('imagePanel')
             this.mediasLibraryManipulator.add(imagesManipulator);
             imagesManipulator.move(-mediaLibDim.w / 2 + this.imageWidth / 2 + MARGIN, -mediaLibDim.h / 2 + this.imageWidth / 2 + MARGIN)
             this.manipulator.add(this.mediasLibraryManipulator);

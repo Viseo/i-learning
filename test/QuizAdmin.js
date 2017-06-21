@@ -345,5 +345,48 @@ describe('quiz admin', function () {
             assertPresent(root, 'videoPanel')
         })
     })
+
+    it('should toggle video panel then image panel', function(){
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {
+                            label: "question 1",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        }
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(()=>{
+            clickElement(root, 'videoTab');
+        }).then(()=>{
+            assertPresent(root, 'videoPanel')
+        })
+        when(()=>{
+            clickElement(root, 'imageTab');
+        }).then(()=>{
+            assertPresent(root, 'imagePanel')
+        })
+        when(()=>{
+            clickElement(root, 'videoTabText');
+        }).then(()=>{
+            assertPresent(root, 'videoPanel')
+        })
+        when(()=>{
+            clickElement(root, 'imageTabText');
+        }).then(()=>{
+            assertPresent(root, 'imagePanel')
+        })
+    })
+
     it('should rename a quizz');
 })

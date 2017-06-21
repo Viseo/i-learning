@@ -221,5 +221,4 @@ describe('dashboard admin page', function () {
 
         });
     });
-    it('should add a new formation')
 });
