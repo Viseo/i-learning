@@ -116,11 +116,10 @@ exports.QuizAdminV = function (globalVariables) {
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
-                    w: Math.max(this.width, 1000),
+                    w: Math.max(this.width, 1260 ),
                     h: Math.max(this.height * 1 / 6, 100)
                 };
-
-                this.questionsBlockListView = new ListManipulatorView([], 'H',
+                this.questionsBlockListView = new ListManipulatorView([],'H',
                     questionListDim.w - 100, questionListDim.h, 50, 80,
                     QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
 
@@ -132,9 +131,9 @@ exports.QuizAdminV = function (globalVariables) {
 
             var _displayQuestionDetails = () => {
                 let questionDetailsDim = {
-                    w: Math.max(this.width * 4 / 5, 800),
+                    w: Math.max(this.width * 4 / 5, 850),
                     h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
-                        - this.returnButton.height - this.quizTitleField.height  - BUTTON_HEIGHT - MARGIN, 280)
+                        - this.returnButton.height - this.quizTitleField.height  - BUTTON_HEIGHT - MARGIN,280)
                 }
                 this.questionDetailsDim = questionDetailsDim;
                 let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
