@@ -135,6 +135,32 @@ exports.DollAdminV = function(globalVariables){
             svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
 
+        _createDeepnessElement(manipulator){
+            let forward = this._makeClickableItem('Avancer', () => {
+                this.forward(manipulator);
+                this.removeContextMenu();
+            })
+            let backward = this._makeClickableItem('Reculer', () => {
+                this.backward(manipulator);
+                this.removeContextMenu();
+            })
+            let foreground = this._makeClickableItem('Premier plan', () => {
+                this.toForeground(manipulator);
+                this.removeContextMenu();
+            })
+            let background = this._makeClickableItem('Arrière plan', () => {
+                this.toBackground(manipulator);
+                this.removeContextMenu();
+            })
+            forward.mark('forwardOption');
+            backward.mark('backwardOption');
+            foreground.mark('foregroundOption');
+            background.mark('backgroundOption');
+
+            let arr = new Array(foreground, background, forward, backward);
+            return arr;
+        }
+
         displayPictureNavigation(){
             let _createPopUpPicture = () => {
                 const onChangeFileExplorerHandler = () => {
@@ -455,25 +481,11 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
-            let forward = this._makeClickableItem('Avancer', () => {
-                this.forward(manipulator);
-                this.removeContextMenu();
-            })
-            let backward = this._makeClickableItem('Reculer', () => {
-                this.backward(manipulator);
-                this.removeContextMenu();
-            })
-            let foreground = this._makeClickableItem('Premier plan', () => {
-                this.toForeground(manipulator);
-                this.removeContextMenu();
-            })
-            let background = this._makeClickableItem('Arrière plan', () => {
-                this.toBackground(manipulator);
-                this.removeContextMenu();
-            })
+
             color.mark('colorOption');
             resize.mark('resizeOption');
-            arr.push(color,resize, forward, backward, foreground, background)
+            arr.push(color,resize);
+            arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -499,6 +511,8 @@ exports.DollAdminV = function(globalVariables){
                     let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2,2)
                         .color(colors[i], 0.5, myColors.grey);
                     man.add(rec);
+                    man.mark('color'+i);
+                    man.first.color = ''+color;
                     man.addEvent('click', ()=>{handler(color)});
                     colors[i]=man;
                 }
@@ -550,7 +564,8 @@ exports.DollAdminV = function(globalVariables){
                 let displayErrorInput = ()=>{
                     let text = new svg.Text('Veuillez entrer une valeur correcte (numérique)')
                         .font('Arial',18)
-                        .color(myColors.red);
+                        .color(myColors.red)
+                        .mark('errorInputMessage');
                     text.position(title.x, title.y + 30);
                     this.rightMenuManipulator.set(1,text);
                     resizeStringForText(text, RIGHTBOX_SIZE.w, 100);
@@ -571,6 +586,7 @@ exports.DollAdminV = function(globalVariables){
                         newMessage && displayErrorInput();
                     }
                 })
+                inputPosX.mark('inputPosX')
 
                 let posY = new svg.Text("Y");
                 posY.position(-rMenu.width/2  + pos.x*10, -rMenu.height/2 + pos.y*(2)).anchor('left').font('Arial', textSize);
@@ -585,6 +601,7 @@ exports.DollAdminV = function(globalVariables){
                         newMessage && displayErrorInput();
                     }
                 })
+                inputPosY.mark('inputPosY')
                 //For Taille
                 let inputSizeW = new gui.TextField(-rMenu.width/2  + pos.x*5 - textSize/3*2 + dimInput.w/2 + MARGIN, -rMenu.height/2 + pos.y*(3) - textSize/3,
                     dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
@@ -607,6 +624,8 @@ exports.DollAdminV = function(globalVariables){
                         rect.dimension(x,y);
                     }
                 }
+                inputSizeW.mark('inputSizeW')
+                inputSizeH.mark('inputSizeH')
                 inputSizeW.message(Math.round(rect.boundingRect().width));
                 inputSizeW.onInput((oldMessage, newMessage, valid)=>{
                     if (newMessage.match(/^-?\d+(\.\d+)?$/)){
@@ -624,7 +643,7 @@ exports.DollAdminV = function(globalVariables){
                     }
                 })
 
-                let keepProportionButton = new svg.Rect(20,20).color(myColors.white, 1, myColors.black);
+                let keepProportionButton = new svg.Rect(20,20).color(myColors.white, 1, myColors.black).mark('keepProportionButton');
                 keepProportionButton.position(posX.x + keepProportionButton.width/2, posX.y + 50);
                 keepProportionButton.enableProportion = !rect.keepProportion;
                 svg.addEvent(keepProportionButton, 'click', ()=>{
@@ -652,10 +671,10 @@ exports.DollAdminV = function(globalVariables){
                     .position(keepProportionButton.x + 20, keepProportionButton.y + 6)
                     .anchor('left');
 
-                let borderRect = new svg.Rect(40, 40);
+                let borderRect = new svg.Rect(40, 40).mark('borderColor');
                 borderRect.color(rect.strokeColor, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(4)-textSize/3);
 
-                let backgroundRect = new svg.Rect(40, 40);
+                let backgroundRect = new svg.Rect(40, 40).mark('backgroundColor');
                 backgroundRect.color(rect.fillColor, 1, myColors.black).position(-rMenu.width/2  + pos.x*5 + 20,  -rMenu.height/2 + pos.y*(5) -textSize/3);
 
 
@@ -729,26 +748,11 @@ exports.DollAdminV = function(globalVariables){
                 this.manipulator.add(this.rightMenuManipulator);
                 this.removeContextMenu();
             });
-            let forward = this._makeClickableItem('Avancer', () => {
-                this.forward(manipulator);
-                this.removeContextMenu();
-            })
-            let backward = this._makeClickableItem('Reculer', () => {
-                this.backward(manipulator);
-                this.removeContextMenu();
-            })
-            let foreground = this._makeClickableItem('Premier plan', () => {
-                this.toForeground(manipulator);
-                this.removeContextMenu();
-            })
-            let background = this._makeClickableItem('Arrière plan', () => {
-                this.toBackground(manipulator);
-                this.removeContextMenu();
-            })
             color.mark('colorOption');
             resize.mark('resizeOption');
             edit.mark('editOption');
-            arr.push(color,resize, edit, forward, backward, foreground, background);
+            arr.push(color,resize, edit);
+            arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -764,23 +768,9 @@ exports.DollAdminV = function(globalVariables){
                 this.resizeElement(image, manipulator);
                 this.removeContextMenu();
             });
-            let forward = this._makeClickableItem('Avancer', () => {
-                this.forward(manipulator);
-                this.removeContextMenu();
-            })
-            let backward = this._makeClickableItem('Reculer', () => {
-                this.backward(manipulator);
-                this.removeContextMenu();
-            })
-            let foreground = this._makeClickableItem('Premier plan', () => {
-                this.toForeground(manipulator);
-                this.removeContextMenu();
-            })
-            let background = this._makeClickableItem('Arrière plan', () => {
-                this.toBackground(manipulator);
-                this.removeContextMenu();
-            })
-            arr.push(resize, forward, backward, foreground, background);
+            arr.push(resize)
+            resize.mark('resizeOption');
+            arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);

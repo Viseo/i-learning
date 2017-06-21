@@ -8,7 +8,7 @@ const
     models = FModels({}, {}),
     {given, when, loadPage, retrieve, clickElement, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
         mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick, mouseDown,
-        mouseMove, mouseUpOnAnother, mouseUp} = testutils;
+        mouseMove, mouseUpOnAnother, mouseUp, click} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -298,6 +298,209 @@ describe('Doll admin Page', function(){
             mouseUpOnAnother(root, 'helpTabCopy', 'mainPanel');
         }).then(()=>{
             assertPresent(root, 'helpElement');
+        })
+    })
+    it('should test right menu for a rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+            let rectElem = retrieve(root, '[rectElement1]');
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            assertPresent(root,'rightMenu');
+        })
+    })
+    it('should test position in right menu for rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            enterTextField(root,'inputPosX', '100');
+            enterTextField(root, 'inputPosY', '100');
+            let rectElem = retrieve(root, '[rectElement1]');
+            assert.equal(rectElem.handler.parentManip.x, 100);
+            assert.equal(rectElem.handler.parentManip.y, 100);
+            enterTextField(root,'inputPosX', 'abc');
+            assertPresent(root, 'errorInputMessage');
+        });
+    })
+    it('should test size in right menu for rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            enterTextField(root,'inputSizeW', '100');
+            enterTextField(root, 'inputSizeH', '100');
+            let rectElem = retrieve(root, '[rectElement1]');
+            assert.equal(rectElem.handler.width, 100);
+            assert.equal(rectElem.handler.height, 100);
+            enterTextField(root,'inputSizeW', 'abc');
+            assertPresent(root, 'errorInputMessage');
+        });
+    })
+    it('should test size in right menu for rect with respect to proportion', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            enterTextField(root,'inputSizeW', '100');
+            enterTextField(root, 'inputSizeH', '100');
+            let rectElem = retrieve(root, '[rectElement1]');
+            assert.equal(rectElem.handler.width, 100);
+            assert.equal(rectElem.handler.height, 100);
+            clickElement(root, 'keepProportionButton');
+            enterTextField(root,'inputSizeW', '150');
+            assert.equal(rectElem.handler.height, 150);
+        });
+    });
+    it('should test color for rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+        }).then(()=>{
+            rightClick(root,'rectElement1', {});
+            clickElement(root,'editOption');
+            clickElement(root, 'borderColor');
+            let rec = retrieve(root, '[rectElement1]');
+            let color = retrieve(root, '[color1]').handler.color;
+            clickElement(root, 'color1');
+            assert.equal(true, rec.handler.strokeColor == color);
+
+            clickElement(root, 'backgroundColor');
+            let rec2 = retrieve(root, '[rectElement1]');
+            let color2 = retrieve(root, '[color1]').handler.color;
+            clickElement(root, 'color1');
+            assert.equal(true, rec.handler.fillColor == color);
+        });
+    });
+    it('should test deepness of a rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+        }).then(()=> {
+            rightClick(root, 'rectElement1', {});
+            clickElement(root, 'forwardOption');
+            rightClick(root, 'rectElement1', {});
+            clickElement(root, 'backwardOption');
+            rightClick(root, 'rectElement1', {});
+            clickElement(root, 'foregroundOption');
+            rightClick(root, 'rectElement1', {});
+            clickElement(root, 'backgroundOption');
+        })
+    });
+    it('should test selection and deselection of a rect', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(()=>{
+            clickElement(root, 'rectTab');
+            mouseDownElement(root, 'mainPanel', {x:150, y:150});
+            mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
+            mouseUpElement(root, 'mainPanel', {x:250,y:250});
+        }).then(()=> {
+            clickElement(root, 'rectElement1');
+            let rect = retrieve(root,'[rectElement1]')
+            assert.equal(true, state.currentPresenter.view.selectedElement == rect.handler);
+            clickElement(root, 'mainPanel');
+            assert.equal(true, state.currentPresenter.view.selectedElement == null)
+        })
+    });
+    it('should add an image in the panel and resize it', function() {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(() => {
+            clickElement(root, 'pictureTab');
+        }).then(() => {
+            mouseDownElement(root, 'img_592c24c36a4f592c987fa84e', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseDownElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseMoveElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+
+            mouseUpElementOnAnother(root, 'picDraggableCopy', 'mainPanel');
+            assertPresent(root,'picElement');
+            rightClick(root, 'picElement', {x:0, y:0});
+            clickElement(root, 'resizeOption');
+            let img = retrieve(root, '[picElement]');
+            let size = new Object({w:img.handler.width,h:img.handler.height});
+            mouseDownElement(root, 'botRight', {pageX:250,pageY:250});
+            mouseMoveElement(root, 'botRight', {pageX:400,pageY:400});
+            mouseUpElement(root, 'botRight', {pageX:400,pageY:400});
+            assert.equal(size.w + 150, img.handler.width);
+            assert.equal(size.h + 150, img.handler.height);
         })
     })
 })
