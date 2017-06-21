@@ -12,7 +12,7 @@ let quizJson = {
     id: "1",
     label: "quiz",
     questions: [
-        {label: "question 1", answers: [{label: "answer1", correct: true}]},
+        {label: "question 1", answers: [{label: "answer1", correct: true, explanation:{label:"explication"}}]},
         {label: "question 2", answers: [{label: "answer1"}, {label: "answer2", correct:true}]},
     ]
 }
@@ -135,6 +135,28 @@ describe('quiz collab page', function () {
             clickElement(root, "answeredButton");
         }).then(()=>{
             assertPresent(root, 'scoreText');
+        })
+    })
+
+    it('should display an explanation', function(){
+        let {root, state} = given(() => {
+            let page = loadPage("GameCollab", {
+                mockResponses,
+                data:quizJson,
+                className:"Quiz",
+                beforeLoad: (page)=>{
+                    page.state.formation = page.state.createFormation({_id: "1", "formationId": "2"});
+                }
+            });
+            click(page.root, "answer1");
+            click(page.root, "answer1");
+            clickElement(page.root, "answeredButton");
+            return page;
+        })
+        when(()=>{
+            clickElement(root, "explanationIconanswer1")
+        }).then(()=>{
+            assertPresent(root, 'explanation');
         })
     })
 })

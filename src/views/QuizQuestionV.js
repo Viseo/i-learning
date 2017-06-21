@@ -309,7 +309,7 @@ exports.QuizQuestionV = function (globalVariables) {
                     }else {
                         if(displayed) _hideExplanation();
                         displayed = explanation;
-                        this.explanationManipulator = new Manipulator(this).addOrdonator(3);
+                        this.explanationManipulator = new Manipulator(this).addOrdonator(3).mark('explanation');
                         this.explanationManipulator.move(drawing.width/2, this.header.height + MARGIN + explanationDim.h/2);
                         this.manipulator.add(this.explanationManipulator);
                         _displayExplanation();
@@ -323,6 +323,7 @@ exports.QuizQuestionV = function (globalVariables) {
                         let icon = IconCreator.createExplanationIcon(manip);
                         icon.position(this.answerWidth/2 - MARGIN - 25, this.answerHeight/2 - 25 - MARGIN)
                         icon.addEvent("click", () => _toggleExplanation(answer.explanation));
+                        icon.mark('explanationIcon'+answer.label);
                     }
                 })
             }
