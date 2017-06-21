@@ -206,8 +206,7 @@ exports.DollAdminV = function(globalVariables){
                         let target = this.sandboxManip.last.getTarget(globalPoints.x, globalPoints.y);
 
                         if(target && target == this.sandboxMain.back){
-                            let imgForDim  = new Image();
-                            imgForDim.src = what.components[0].src;
+                            let imgForDim  = svgr.getDimensionFromImage(what.components[0].src);
 
                             let picInPanelManip = new Manipulator(this);
                             let picInPanel = new svg.Image(what.components[0].src);
@@ -223,6 +222,7 @@ exports.DollAdminV = function(globalVariables){
                             });
                             
                             this.sandboxMain.content.add(picInPanelManip.component);
+                            picInPanel.mark('picElement');
                         }
                         return {x: what.x, y: what.y, parent: whatParent};
                     },

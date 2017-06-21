@@ -227,7 +227,7 @@ describe('Doll admin Page', function(){
             assertPresent(root, 'helpTab');
         })
     })
-    it.skip('should drag an image and drop it to the sandbox', function () {
+    it('should drag an image and drop it to the sandbox', function () {
         let {root, state, runtime} = given(() => {
             return loadPage('GameAdmin', {
                 mockResponses,
@@ -244,9 +244,9 @@ describe('Doll admin Page', function(){
             }});
             mouseMoveElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
             }});
-            // mouseUpElement(root, 'picDraggableCopy', {pageX: 0, pageY:0, preventDefault: () => {
-            // }});
+
             mouseUpElementOnAnother(root, 'picDraggableCopy', 'mainPanel');
+            assertPresent(root,'picElement');
         })
     })
 })
