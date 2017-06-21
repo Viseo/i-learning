@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, clickElement, assertMessage, assertPresent} = testutils;
+    {given, when, loadPage, click, clickElement, assertMessage, assertPresent, assertMissing} = testutils;
 
 let mockResponses = {
     "users/self/progress": {code: 200}
@@ -67,6 +67,9 @@ describe('quiz collab page', function () {
         when(()=>{
             click(root, 'answer1');
             click(root, 'answer2');
+            clickElement(root, 'resetButton');
+            click(root, 'answer1');
+            click(root, 'answer2');
             clickElement(root, "validateButton");
         }).then(()=>{
             assertMessage(root, 'questionTitle1', 'question 2');
@@ -118,7 +121,7 @@ describe('quiz collab page', function () {
     })
 
     it('should display an answered question', function(){
-        let {root, state} = given(() => {
+        let {root, state, runtime} = given(() => {
             let page = loadPage("GameCollab", {
                 mockResponses,
                 data:quizJson,
@@ -135,6 +138,7 @@ describe('quiz collab page', function () {
             clickElement(root, "answeredButton");
         }).then(()=>{
             assertPresent(root, 'scoreText');
+            runtime.globalEvent('resize');
         })
     })
 
@@ -157,6 +161,11 @@ describe('quiz collab page', function () {
             clickElement(root, "explanationIconanswer1")
         }).then(()=>{
             assertPresent(root, 'explanation');
+        })
+        when(() => {
+            clickElement(root, 'redCrossExplanation');
+        }).then(() => {
+            assertMissing(root, 'explanation');
         })
     })
 })

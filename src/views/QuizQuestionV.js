@@ -193,6 +193,7 @@ exports.QuizQuestionV = function (globalVariables) {
                     let resetButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [[43, 120, 228], 1, myColors.black], "Réinitialiser")
                     resetButton.position(-BUTTON_SIZE.w/2 - MARGIN/2, 0);
                     resetButton.onClick(_resetAnswers);
+                    resetButton.glass.mark('resetButton')
                     this.buttonsManipulator.add(resetButton.component);
                 }
 
@@ -269,6 +270,7 @@ exports.QuizQuestionV = function (globalVariables) {
                         let redCross = IconCreator.createRedCrossIcon(this.explanationManipulator);
                         redCross.position(explanationDim.w/2, -explanationDim.h/2);
                         redCross.addEvent('click', _hideExplanation);
+                        redCross.mark('redCrossExplanation');
                         if(explanation.label){
                             let text = new svg.Text(explanation.label)
                                 .font(FONT, FONT_SIZE)

@@ -7,6 +7,16 @@ const assert = require('assert'),
     {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('connection page', function () {
+    it('should resize', function(){
+        let {runtime} = given(()=>{
+            return loadPage("Connection");
+        })
+        when(()=>{
+            runtime.globalEvent('resize');
+        }).then(()=>{
+
+        });
+    })
     it('should connect', function () {
         let {root, state} = given(()=>{
             return loadPage("Connection", {

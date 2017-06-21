@@ -28,9 +28,8 @@ exports.View = function(globalVariables){
         }
 
         resize() {
-            let newWidth = document.documentElement.clientWidth,
-                newHeight = document.documentElement.clientHeight;
-            globalVariables.drawing.dimension(newWidth, newHeight);
+            let screenSize = globalVariables.runtime.screenSize();
+            globalVariables.drawing.dimension(screenSize.width, screenSize.height);
             this.flush();
             this.display();
         }
