@@ -419,51 +419,6 @@ exports.Models = function (globalVariables, mockResponses) {
                 });
         }
 
-
-        addNewFormation() {
-            const getObjectToSave = () => {
-                if (this.imageSrc) {
-                    return {
-                        label: this.label,
-                        gamesCounter: this.gamesCounter,
-                        links: this.links,
-                        levelsTab: this.levelsTab,
-                        imageSrc: this.imageSrc,
-                        status: this.status
-                    }
-                }
-                else {
-                    return {
-                        label: this.label,
-                        gamesCounter: this.gamesCounter,
-                        links: this.links,
-                        levelsTab: this.levelsTab,
-                        status: this.status
-                    };
-                }
-            };
-
-            const
-                messageSave = "Votre travail a bien été enregistré.",
-                messageError = "Vous devez remplir correctement le nom de la formation.",
-                messageReplace = "Les modifications ont bien été enregistrées.",
-                messageUsedName = "Le nom de cette formation est déjà utilisé !",
-                messageNoModification = "Les modifications ont déjà été enregistrées.";
-            return apiRequester.insertFormation(object, status)
-                .then(data => {
-                    let answer = JSON.parse(data);
-                    if (answer.saved) {
-                        this._id = answer.idVersion;
-                        this.formationId = answer.id;
-                        return messageSave;
-                    } else {
-                        if (answer.reason === "NameAlreadyUsed") {
-                            return messageUsedName;
-                        }
-                    }
-                })
-        }
-
         loadFormation(formation) {
             let tmpLevelsTab = this.levelsTab;
             this.levelsTab = [];
