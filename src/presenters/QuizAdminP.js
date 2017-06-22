@@ -26,14 +26,6 @@ exports.QuizAdminP = function (globalVariables) {
             this.previewVue.displayResult();
         }
 
-        getCurrentQuestionLabel(){
-            return this.quiz.getQuestionLabel(this.previewIndex);
-        }
-
-        getCurrentQuestionImageSrc(){
-            return this.quiz.getQuestionImageSrc(this.currentQuestionIndex);
-        }
-
         isLastAnsweredQuestion(){
             return true;
         }
@@ -70,9 +62,9 @@ exports.QuizAdminP = function (globalVariables) {
             return this.state.uploadVideo(file, progressDisplay);
         }
 
-        returnHandler(){
-            this.view.display();
-        }
+        // returnHandler(){
+        //     this.view.display();
+        // }
 
         updateQuiz(quizViewData) {
             const getObjectToSave = () => {
@@ -162,10 +154,6 @@ exports.QuizAdminP = function (globalVariables) {
 
         getLastQuestionIndex() {
             return this.quiz.getLastQuestionIndex();
-        }
-
-        replaceFormation() {
-            this.state.replaceFormation();
         }
 
         setLabel(quizLabel) {

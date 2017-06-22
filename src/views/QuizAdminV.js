@@ -220,11 +220,6 @@ exports.QuizAdminV = function (globalVariables) {
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
 
-            if (this.selectedQuestionIndex) {
-                this.questionsBlockListView.get(this.selectedQuestionIndex).select();
-            } else {
-                this.questionsBlockListView.length >= 2 && this.questionsBlockListView.get(0).select();
-            }
         }
 
         _calculateLibraryDimension(){
@@ -293,12 +288,13 @@ exports.QuizAdminV = function (globalVariables) {
                         drawings.piste.add(vidManip);
 
                         installDnD(vidManip, drawings.component.glass.parent.manipulator.last, conf);
-                        svg.event(drawings.component.glass, "mousedown", event);
+                        svg.event(drawings.component.glass, "mousedown", {pageX: vidManip.x, pageY: vidManip.y,preventDefault: () => {
+                        }});
                     };
 
                     let indexX = Math.floor(index % 1);
                     let indexY = Math.floor(index / 1);
-                    let video = new svg.Image('../../images/play-button.png');
+                    let video = new svg.Image('../../images/play-button.png').mark('video'+index);
                     let videoTitle = new svg.Text(videoElem.name).font('Arial', 12).anchor('left').position(30, 4);
                     video.dimension(30, 30);
                     let vidManip = new Manipulator(this);
@@ -558,6 +554,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                     questionButton.back.corners(5, 5);
                     questionButton.onClick(() => questionManip.select());
+                    questionButton.glass.mark('selectQuestionBlock' + lastQuestionIndex);
                     questionManip.add(questionButton.component);
 
                     IconCreator.createRedCrossIcon(questionManip)
@@ -976,7 +973,6 @@ exports.QuizAdminV = function (globalVariables) {
 
             };
 
-
             _declareManipulatorQuestionDetail(questionDetail);
             _displayToggleTypeResponse(questionDetail, question);
             _displayTextArea(questionDetail, index, question);
@@ -993,6 +989,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let questionDetail = this._loadOneQuestionInDetail(itQuestion, i);
                 this.questionsDetail.add(questionDetail);
             });
+            this.questionsBlockListView.length >= 2 && this.questionsBlockListView.get(0).select();
         }
 
         getFormationLabel() {
@@ -1085,7 +1082,7 @@ exports.QuizAdminV = function (globalVariables) {
             }
             this.presenter.updateQuiz(quizViewData).then(data => {
                 data.message && this.displayMessage(data.message);
-                if (data.saved) {
+                if (data.status) {
                     let formationLabel = this.getFormationLabel();
                     this.label = this.getLabel();
                     this.displayHeader(formationLabel + " - " + this.label);

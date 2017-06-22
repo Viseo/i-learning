@@ -272,10 +272,6 @@ exports.Models = function (globalVariables, mockResponses) {
             return new MediasLibrary();
         }
 
-        replaceFormation() {
-            this.formation.replaceFormation();
-        }
-
     }
 
     class Formations {

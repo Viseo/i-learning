@@ -3,13 +3,14 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, clickElement, inputValue, assertPresent, assertMissing, assertMessage} = testutils;
+    {given, when, loadPage, click, clickElement, inputValue, assertPresent, assertMissing, assertMessage, mouseDown} = testutils;
 
 let mockResponses = {
     "/medias/images": {code: 200, content: {images: []}},
     "/formations/update": {content: {saved: true}},
     "/formations/quiz": {code: 200, content: {valid: true}},
-    "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
+    "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+        src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
 }
 
 describe('quiz admin', function () {
@@ -20,8 +21,8 @@ describe('quiz admin', function () {
                 "/medias/images": {code: 200, content: {images: []}},
                 "/formations/update": {content: {saved: true}},
                 "/formations/quiz": {code: 200, content: {valid: false}},
-                "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
-            }
+                "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}            }
             return loadPage('GameAdmin', {
                 mockResponses,
                 className: "Quiz",
@@ -62,7 +63,8 @@ describe('quiz admin', function () {
                 "/medias/images": {code: 200, content: {images: []}},
                 "/formations/update": {content: {saved: true}},
                 "/formations/quiz": {code: 200, content: {valid: false}},
-                "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
+                "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
             }
             return loadPage('GameAdmin', {
                 mockResponses,
@@ -79,6 +81,33 @@ describe('quiz admin', function () {
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
         })
     })
+
+    it('should rename quiz with enter', function(){
+        let {root, state, runtime} = given(() => {
+            mockResponses = {
+                "/medias/images": {code: 200, content: {images: []}},
+                "/formations/update": {content: {saved: true}},
+                "/formations/quiz": {code: 200, content: {valid: true}},
+                "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
+            }
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {label: "quiz"},
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(() => {
+            inputValue(root, 'quizTitle', 'newQuizName');
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: () => {}})
+        }).then(() => {
+            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées");
+        })
+    })
+
     it('should create a question', function () {
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
@@ -96,6 +125,42 @@ describe('quiz admin', function () {
             assertPresent(root, "questionBlock0")
         })
     });
+
+    it('should switch between two question', function () {
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {
+                            label: "question 1",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 2",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        }
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(() => {
+            assertPresent(root, "questionBlock0");
+            assertPresent(root, "questionBlock1");
+            // clickElement(root, 'newQuestionButton')
+        }).then(() => {
+            clickElement(root, "selectQuestionBlock0");
+            clickElement(root, "selectQuestionBlock1");
+            // assertPresent(root, "questionBlock0")
+        })
+    });
+
     it('should add an answer', function () {
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
@@ -120,6 +185,7 @@ describe('quiz admin', function () {
             assertPresent(root, "answer1");
         })
     })
+
     it('should delete a question', function () {
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
@@ -204,8 +270,8 @@ describe('quiz admin', function () {
                 "/medias/images": {code: 200, content: {images: []}},
                 "/formations/update": {content: {saved: true}},
                 "/formations/quiz": {code: 200, content: {valid: false}},
-                "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
-            }
+                "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}            }
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {
@@ -237,8 +303,8 @@ describe('quiz admin', function () {
                 "/medias/images": {code: 200, content: {images: []}},
                 "/formations/update": {content: {saved: true}},
                 "/formations/quiz": {code: 200, content: {valid: true}},
-                "/medias/videos": {code:200, content:{name: "deepchord-presents-echospace-ghost-theory.mp4", src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}}
-            }
+                "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}            }
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {
@@ -388,5 +454,37 @@ describe('quiz admin', function () {
         })
     })
 
-    it('should rename a quizz');
+    it('should add a video to the question content', function () {
+        mockResponses = {
+            "/medias/images": {code: 200, content: {images: []}},
+            "/formations/update": {content: {saved: true}},
+            "/formations/quiz": {code: 200, content: {valid: true}},
+            "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+                src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
+        }
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {label: "question 1", answers: [{label: "answer1", correct: true}]}
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        });
+        when(()=>{
+            clickElement(root, 'videoTab');
+        }).then(()=>{
+            assertPresent(root, 'videoPanel');
+            mouseDown(root, 'video0');
+        })
+    })
+    it('should finish above test');
+
 })
