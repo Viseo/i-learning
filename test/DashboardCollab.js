@@ -162,16 +162,11 @@ describe('dashboard collab', function(){
 
         when(() => {
             click(root, "textMiniature1");
-        }).then(() => {
             assertMessage(root, "headerMessage", "formation inProgress");
-        });
-
-        runtime.advance();
-        when(() => {
             click(root, "return");
         }).then(() => {
             assertMessage(root, "headerMessage", "Dashboard");
-        })
+        });
     });
 
 
