@@ -61,25 +61,29 @@ exports.Lists = function (globalVariables) {
 
                 this.nbElementToshow = Math.floor((this.listDim.h - this.marge) / this.eleDim.h);
 
-                this.border = new svg.Rect(listW, listH + chevronH*2);
+                this.border = new svg.Rect(listW, listH);
                 this.chevronManip.add(this.border);
                 if (chevronW !=0 && chevronH !=0) {
+                    let posYChevron = (listH - chevronH)/2;
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, -listH / 2 - chevronH / 2);
+                        .position(0, -posYChevron);
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, listH / 2 + chevronH / 2);
+                        .position(0, posYChevron);
                     this.chevronManip
                         .add(this.chevrons.top)
                         .add(this.chevrons.down);
                     this.chevrons.top.onClick(onClickChevronTop);
                     this.chevrons.down.onClick(onClickChevronDown);
                 }
+                let heighView = listH - (MARGIN + this.chevronDim.h)*2;
 
                 this.height = listH + this.chevronDim.h;
                 this.width = listW;
                 this.contentManip.move(listW/2, eleH/2);
+                this.view = new svg.Drawing(listW, heighView)
+                    .position(-listW / 2, -heighView / 2);
             }else{
                 var onClickChevronLeft = () => {
                     this.indexShow++;

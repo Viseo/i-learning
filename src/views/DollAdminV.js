@@ -211,7 +211,7 @@ exports.DollAdminV = function(globalVariables){
                 };
 
                 this.listViewPicture =
-                    new ListManipulatorView([], 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 50, HEADER_TILE, HEADER_TILE, 8, undefined, 25);
+                    new ListManipulatorView([], 'H', SANDBOX_SIZE.w, SANDBOX_SIZE.header.h, 25, 50, HEADER_TILE, HEADER_TILE, 8, undefined, 25);
 
                 let picBackManip = new Manipulator(this);
                 let picBack = new svg.Image('../../images/doll/back.png').dimension(HEADER_TILE, HEADER_TILE);
@@ -488,7 +488,7 @@ exports.DollAdminV = function(globalVariables){
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h/3, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1026,7 +1026,7 @@ exports.DollAdminV = function(globalVariables){
         displaySandBoxZone(){
             this.sandboxManip = new Manipulator(this);
 
-            let actionList = new ListManipulatorView(this.actionTabs, 'H', SANDBOX_SIZE.w-50, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
+            let actionList = new ListManipulatorView(this.actionTabs, 'H', SANDBOX_SIZE.w, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
                 HEADER_TILE, 5, undefined, 25);
 
             this.sandboxMain = new gui.Panel(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h, myColors.white);
@@ -1192,8 +1192,10 @@ exports.DollAdminV = function(globalVariables){
             }
             objectivesAddButton.onClick(addObjectiveHandler);
 
-            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
-            this.objectivesList.position(0,RIGHTBOX_SIZE.h  -this.objectivesList.height - MARGIN);
+            //this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h - objectivesAddButton.height - MARGIN*2, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN,
+                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - objectivesAddButton.height - MARGIN*4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.objectivesList.position(0, this.objectivesList.height/2 + objectivesHeader.height/2 + objectivesAddButton.height + 2*MARGIN);
             this.objectivesList.markDropID('objectivesDrop')
 
             objectivesManip.add(objectivesHeader)
