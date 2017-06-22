@@ -490,9 +490,10 @@ exports.DollAdminV = function(globalVariables){
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
-            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.position(event.x + this.contextMenu.width/2 - MARGIN, event.y + this.contextMenu.height/2- MARGIN);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
         }
 
         rectRightClick(rect, manipulator, event){
@@ -756,9 +757,10 @@ exports.DollAdminV = function(globalVariables){
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
-            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.position(event.x + this.contextMenu.width/2 - MARGIN, event.y + this.contextMenu.height/2- MARGIN);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
         }
 
         imageRightClick(image, manipulator, event){
@@ -773,9 +775,10 @@ exports.DollAdminV = function(globalVariables){
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
-            this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
+            this.contextMenu.position(event.x + this.contextMenu.width/2 - MARGIN, event.y + this.contextMenu.height/2- MARGIN);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
+            this.contextMenu.refreshListView();
         }
 
         _makeClickableItem(message, handler){
@@ -1190,7 +1193,6 @@ exports.DollAdminV = function(globalVariables){
             }
             objectivesAddButton.onClick(addObjectiveHandler);
 
-            //this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h - objectivesAddButton.height - MARGIN*2, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
             this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN,
                 RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - objectivesAddButton.height - MARGIN*4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
             this.objectivesList.position(0, this.objectivesList.height/2 + objectivesHeader.height/2 + objectivesAddButton.height + 2*MARGIN);

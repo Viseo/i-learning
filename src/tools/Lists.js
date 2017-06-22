@@ -145,7 +145,7 @@ exports.Lists = function (globalVariables) {
             this.listElements = [];
             listElements.forEach(elem=>this.add(elem));
 
-            this.refreshListView();
+            this._showActualChevron();
         }
 
         markDropID(id){
