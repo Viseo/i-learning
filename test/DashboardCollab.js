@@ -170,5 +170,33 @@ describe('dashboard collab', function(){
     });
 
 
-    it('should load lastAction');
+    it('should load lastAction', function(){
+        let {root, state} = given(() => {
+            let user = {admin:false, lastAction: {formationId: "1", versionId:"1", gameId: "quiz1"}}
+            return loadPage("Dashboard", {
+                mockResponses: {
+                    "/formations": {
+                        code: 200,
+                        content: {
+                            myCollection: [
+                                {
+                                    _id: "1",
+                                    label: "formation inProgress",
+                                    levelsTab: [{gamesTab: [{id:"quiz1", label: "Quiz 1", type: 'Quiz', questions: [{label: "question 1"}, {label: "question 2", answers:[{}]}], answered: [{}]}]}]
+                                },
+                                {_id: "2", label: "formation done"}
+                            ]
+                        }
+                    }
+                },
+                data: user
+            })
+        })
+
+        when(() => {
+
+        }).then(() => {
+            assertMessage(root, "headerMessage", 'Quiz 1')
+        })
+    });
 })
