@@ -1290,8 +1290,9 @@ exports.DollAdminV = function(globalVariables){
             }
             responsesAddButton.onClick(addResponseHandler);
 
-            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN, RIGHTBOX_SIZE.h*0.3, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
-            this.responsesList.position(0,RIGHTBOX_SIZE.h -this.responsesList.height - MARGIN);
+            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2*MARGIN,
+                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - responsesAddButton.height - MARGIN*4, 75,25,  RIGHTBOX_SIZE.w - 2*MARGIN, 27, 5);
+            this.responsesList.position(0, this.responsesList.height/2 + responsesHeader.height/2 + responsesAddButton.height + 2*MARGIN);
             this.responsesList.markDropID('responsesDrop')
 
             responsesManip.add(responsesHeader)
@@ -1300,7 +1301,8 @@ exports.DollAdminV = function(globalVariables){
                 .add(responsesAddButton.component)
                 .add(this.responsesInput.component)
                 .add(this.responsesList.manipulator);
-            responsesManip.move(PANEL_SIZE.w/2 - RIGHTBOX_SIZE.w/2 - MARGIN, 2*MARGIN-PANEL_SIZE.h/2 + responsesHeader.height/2 + RIGHTBOX_SIZE.h + 2*MARGIN);
+            responsesManip.move(PANEL_SIZE.w/2 - RIGHTBOX_SIZE.w/2 - MARGIN,
+                2*MARGIN-PANEL_SIZE.h/2 + responsesHeader.height/2 + RIGHTBOX_SIZE.h + 2*MARGIN);
             this.mainPanelManipulator.add(responsesManip);
         }
 
