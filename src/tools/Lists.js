@@ -20,7 +20,7 @@ exports.Lists = function (globalVariables) {
                 this.marge = marge;
 
                 this.eleDim = {w: eleW + this.marge, h: eleH + this.marge};
-                this.listDim = {w : listW, h: listH};
+                this.listDim = (direction == "V") ? {w : listW, h: listH - (MARGIN+chevronH)*2} : {w : listW - (MARGIN+chevronW)*2, h: listH} ;
                 this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
             };
             this.direction = direction;
@@ -61,25 +61,29 @@ exports.Lists = function (globalVariables) {
 
                 this.nbElementToshow = Math.floor((this.listDim.h - this.marge) / this.eleDim.h);
 
-                this.border = new svg.Rect(listW, listH + chevronH*2);
+                this.border = new svg.Rect(listW, listH);
                 this.chevronManip.add(this.border);
                 if (chevronW !=0 && chevronH !=0) {
+                    let posYChevron = (listH - chevronH)/2;
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, -listH / 2 - chevronH / 2);
+                        .position(0, -posYChevron);
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, listH / 2 + chevronH / 2);
+                        .position(0, posYChevron);
                     this.chevronManip
                         .add(this.chevrons.top)
                         .add(this.chevrons.down);
                     this.chevrons.top.onClick(onClickChevronTop);
                     this.chevrons.down.onClick(onClickChevronDown);
                 }
+                let heighView = listH - (MARGIN + this.chevronDim.h)*2;
 
                 this.height = listH + this.chevronDim.h;
                 this.width = listW;
                 this.contentManip.move(listW/2, eleH/2);
+                this.view = new svg.Drawing(listW, heighView)
+                    .position(-listW / 2, -heighView / 2);
             }else{
                 var onClickChevronLeft = () => {
                     this.indexShow++;
@@ -94,32 +98,36 @@ exports.Lists = function (globalVariables) {
                 };
 
                 this.nbElementToshow = Math.floor((this.listDim.w - this.marge) / this.eleDim.w);
-                this.border = new svg.Rect(listW + chevronW * 2, listH);
+                this.border = new svg.Rect(listW, listH);
                 this.chevronManip.add(this.border);
                 if (chevronW !=0 && chevronH !=0) {
+                    let posXChevron = (listW - chevronW)/2;
                     this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
                         .color(myColors.black, 0, myColors.none)
-                        .position(-listW / 2 - chevronW / 2, 0);
+                        .position(-posXChevron, 0);
                     this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
                         .color(myColors.black, 0, myColors.none)
-                        .position(listW / 2 + chevronW / 2, 0);
+                        .position( posXChevron, 0);
                     this.chevronManip
                         .add(this.chevrons.left)
                         .add(this.chevrons.right);
                     this.chevrons.left.onClick(onClickChevronLeft);
                     this.chevrons.right.onClick(onClickChevronRight);
                 }
+                let widthView = listW - (MARGIN + this.chevronDim.w)*2;
 
                 this.height = listH;
                 this.width = listW + this.chevronDim.w;
                 this.contentManip.move(eleW/2, listH/2);
+                this.view = new svg.Drawing(widthView, listH)
+                    .position(-widthView / 2, -listH / 2);
             }
 
             this.border.color(color, 1, myColors.black).corners(5);
 
 
             this.contentBorder = new svg.Rect(listW, listH).color([], 0, [0, 0, 0]);
-            this.view = new svg.Drawing(listW, listH).position(-listW / 2, -listH / 2);
+
             this.translate = new svg.Translation();
             this.component.add(this.view.add(this.translate)).add(this.contentBorder);
 
@@ -225,38 +233,6 @@ exports.Lists = function (globalVariables) {
         }
     }
 
-    class ListSVGView extends ListView{
-        addElementInit(array){
-            array.forEach(elem=>this.contentManip.add(elem));
-        }
-
-        refreshListView() {
-            if(this.direction == "V"){
-                for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(0, -this.content.y + this.marge + this.eleDim.h * (i  + this.indexShow));
-                }
-            }else{
-                for (let i = 0; i < this.listElements.length; i++) {
-                    this.listElements[i].move(-this.content.x + this.marge + this.eleDim.w * (i  + this.indexShow), 0);
-                }
-            }
-            this._showActualChevron();
-        }
-
-        add(component){
-            let elemManip = new Manipulator(this)
-            elemManip.add(component)
-            this.listElements.push(elemManip);
-            this.contentManip.add(elemManip);
-        }
-
-        removeElementFromList(ele){
-            this.listElements.remove(ele);
-            this.contentManip.remove(ele);
-        }
-
-    }
-
     class ListManipulatorView extends ListView{
         addElementInit(array){
             array.forEach(elem=>this.contentManip.add(elem.component));
@@ -313,7 +289,6 @@ exports.Lists = function (globalVariables) {
     }
 
     return {
-        ListSVGView,
         ListManipulatorView
     };
 };
