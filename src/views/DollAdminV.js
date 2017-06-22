@@ -19,6 +19,7 @@ exports.DollAdminV = function(globalVariables){
         HEADER_TILE = SANDBOX_SIZE.header.h - 2*MARGIN,
         installDnD = globalVariables.gui.installDnD,
         CONTEXT_TILE_SIZE = {w:150 - 2*MARGIN,h:27},
+        NB_ELEMENT_RIGHT_CLICK = 3;
         IMAGE_SIZE = {w:30, h:30};
 
     class DollAdminV extends View{
@@ -488,11 +489,10 @@ exports.DollAdminV = function(globalVariables){
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h/3, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
-            this.contextMenu.refreshListView();
         }
 
         rectRightClick(rect, manipulator, event){
@@ -755,11 +755,10 @@ exports.DollAdminV = function(globalVariables){
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
-            this.contextMenu.refreshListView();
         }
 
         imageRightClick(image, manipulator, event){
@@ -773,11 +772,10 @@ exports.DollAdminV = function(globalVariables){
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V',150,3*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V',150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,15,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width/2, event.y + this.contextMenu.height/2);
             this.contextMenu.border.corners(2,2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
-            this.contextMenu.refreshListView();
         }
 
         _makeClickableItem(message, handler){
