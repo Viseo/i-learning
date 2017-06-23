@@ -15,22 +15,24 @@ exports.Models = function (globalVariables, mockResponses) {
             this.currentPresenter && this.currentPresenter.resizeView();
         }
 
-        createFormation(obj) {
-            if (typeof obj == 'string') obj = JSON.parse(obj);
-            let formation = new Formation(obj);
-            formation.loadFormation(obj);
+        createFormation(data) {
+            if (typeof data == 'string') data = JSON.parse(data);
+            let formation = new Formation(data);
+            formation.loadFormation(data);
             return formation;
         }
 
-        createQuiz(obj) {
-            if (typeof obj == 'string') obj = JSON.parse(obj);
-            let quiz = new Quiz(obj);
-            return quiz;
+        createQuiz(data) {
+            if (typeof data == 'string') data = JSON.parse(data);
+            return new Quiz(data);
         }
         createDoll(data){
             if (typeof data == 'string') data = JSON.parse(data);
-            let doll = new Doll(data);
-            return doll;
+            return new Doll(data);
+        }
+        createUser(data){
+            if(typeof data == 'string') data = JSON.parse(data);
+            return new User(data);
         }
         uploadImage(file, progressDisplay) {
             return MediasLibrary.upload(file, progressDisplay);

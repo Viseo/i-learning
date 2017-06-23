@@ -117,6 +117,27 @@ describe('formation admin page', function () {
             }
     });
 
+    it('should return to dashboard (header button)', function(){
+        let {root, state} = given(() => {
+            return loadPage('FormationAdmin', {
+                mockResponses: {
+                    "/formations": {content: {myCollection: []}},
+                    "/users/notes": {content: {}}
+                },
+                data: formationMock,
+                className: "Formation",
+                beforeLoad: function(page){
+                    page.state.user = page.state.createUser({})
+                }
+            })
+        })
+        when(() => {
+            clickElement(root, 'homeText')
+        }).then(() => {
+            assertMessage(root, 'headerMessage', 'Dashboard')
+        })
+    })
+
     it("should add a new quiz and save the new formation then publish it", function () {
         let {root, state, runtime} = given(() => {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});

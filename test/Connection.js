@@ -7,6 +7,22 @@ const assert = require('assert'),
     {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('connection page', function () {
+    it('should load cookie', function(){
+        let {root, state} = given(()=>{
+            return loadPage("Connection", {
+                mockResponses: {
+                    "/auth/verify":{content: {"ack": "OK", user:{admin:true}}},
+                    "/formations": {code: 200, content: {myCollection: []}},
+                    "/users/notes": {content: {}}
+                }
+            });
+        })
+        when(()=>{
+            state.tryLoadCookieForPresenter()
+        }).then(()=>{
+            assertMessage(root, 'headerMessage', 'Dashboard')
+        });
+    })
     it('should resize', function(){
         let {runtime} = given(()=>{
             return loadPage("Connection");

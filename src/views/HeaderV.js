@@ -46,7 +46,7 @@ exports.HeaderV = function(globalVariables){
                     .anchor('start')
                     .color(myColors.white)
                     .mark('homeText');
-                text.onMouseDown(this.gotToDashboard.bind(this));
+                text.onClick(this.gotToDashboard.bind(this));
                 this.manipulator.set(1, text);
             }
             var _displayMessage = () => {
