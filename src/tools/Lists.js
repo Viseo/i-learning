@@ -67,10 +67,12 @@ exports.Lists = function (globalVariables) {
                     let posYChevron = (listH - chevronH)/2;
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, -posYChevron);
+                        .position(0, -posYChevron)
+                        .mark('listChevronTop');
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, posYChevron);
+                        .position(0, posYChevron)
+                        .mark('listChevronBottom');
                     this.chevronManip
                         .add(this.chevrons.top)
                         .add(this.chevrons.down);
@@ -104,10 +106,12 @@ exports.Lists = function (globalVariables) {
                     let posXChevron = (listW - chevronW)/2;
                     this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
                         .color(myColors.black, 0, myColors.none)
-                        .position(-posXChevron, 0);
+                        .position(-posXChevron, 0)
+                        .mark('listChevronLeft')
                     this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
                         .color(myColors.black, 0, myColors.none)
-                        .position( posXChevron, 0);
+                        .position( posXChevron, 0)
+                        .mark('listChevronRight');
                     this.chevronManip
                         .add(this.chevrons.left)
                         .add(this.chevrons.right);

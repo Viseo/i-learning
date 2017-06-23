@@ -1057,17 +1057,8 @@ exports.Models = function (globalVariables, mockResponses) {
         getImages() {
             return apiRequester.getImages().then(data => JSON.parse(data));
         }
-
-        deleteImage(_id) {
-            return apiRequester.deleteImage(_id);
-        }
-
         getVideos() {
             return apiRequester.getVideos().then(data => JSON.parse(data));
-        }
-
-        deleteVideo(_id) {
-            return apiRequester.deleteVideo(_id);
         }
     }
 

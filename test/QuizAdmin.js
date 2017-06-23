@@ -487,4 +487,65 @@ describe('quiz admin', function () {
     })
     it('should finish above test');
 
+    it('should scroll through questions', function(){
+        let {root, state} = given(() => {
+            return loadPage('GameAdmin', {
+                mockResponses,
+                data: {
+                    id: "1",
+                    label: "quiz",
+                    questions: [
+                        {
+                            label: "question 1",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 2",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 3",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 4",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 5",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 6",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 7",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 8",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        },
+                        {
+                            label: "question 9",
+                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+                        }
+
+                    ]
+                },
+                className: "Quiz",
+                beforeLoad: (page) => {
+                    page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                }
+            })
+        })
+        when(() => {
+            clickElement(root, 'listChevronRight');
+            clickElement(root, 'listChevronRight');
+        }).then(() => {
+
+        })
+    })
+
 })
