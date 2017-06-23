@@ -4,7 +4,7 @@
 
 const assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
+    {retrieve, enterTextField, given, when, click, clickElement, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('connection page', function () {
     it('should load cookie', function(){
@@ -100,6 +100,24 @@ describe('connection page', function () {
         }).then(()=>{
             let focus = retrieve(root, '[loginselectedInput]');
             assert(focus);
+        });
+
+    });
+
+    it('should disconnect', function () {
+        let {root, state} = given(()=> {
+            let mockResponses = {
+                "/formations": {code: 200, content: {myCollection: []}},
+                "/users/notes": {content: {}}
+            };
+            let user = {admin: false};
+            return loadPage('Dashboard', {mockResponses, data:user});
+        });
+
+        when(()=>{
+            clickElement(root, "deconnection");
+        }).then(()=>{
+            assertMessage(root, "headerMessage", "Connexion");
         });
 
     });
