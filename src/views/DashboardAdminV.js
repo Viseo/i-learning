@@ -140,7 +140,6 @@ exports.DashboardAdmin = function (globalVariables) {
                     let content = new svg.Text(formation.label)
                         .position(CLIP_SIZE, -TILE_SIZE.h / 4)
                         .font(FONT, 20);
-                    resizeStringForText(content, TILE_SIZE.rect.w - 8 * MARGIN, TILE_SIZE.rect.h)
                     let iconAddPicture = IconCreator.createAddImage(manipulator);
                     iconAddPicture.position(TILE_SIZE.w / 2 - 3 * MARGIN, -TILE_SIZE.h / 4);
                     iconAddPicture.manipulator.mark("popUpImg" + formation.label);
@@ -151,7 +150,9 @@ exports.DashboardAdmin = function (globalVariables) {
                     manipulator.set(0, border)
                     manipulator.set(1, backCircle)
                     manipulator.set(2, picture);
-
+                    this.miniaturesManipulator.add(manipulator);
+                    resizeStringForText(content, TILE_SIZE.rect.w - 10 * MARGIN, TILE_SIZE.rect.h);
+                    
                     if (formation.status === 'Published') {
                         let displayNotationManip = new Manipulator(this);
                         let textNotation = new svg.Text(formation.note
@@ -191,7 +192,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 _placeMiniature();
                 _colorWhenHover();
                 manipulator.addEvent('click', () => { this.enterFormation(formation)});
-                this.miniaturesManipulator.add(manipulator);
+
             }
 
             this.getFormations().forEach((formation, i) => {
