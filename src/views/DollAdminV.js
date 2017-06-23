@@ -249,6 +249,9 @@ exports.DollAdminV = function(globalVariables){
                                 this.selectElement(picInPanel);
                                 this.imageRightClick(picInPanel, picInPanelManip, event);
                             });
+                            svg.addEvent(picInPanel, 'click', event=>{
+                                this.selectElement(picInPanel);
+                            })
                             
                             this.sandboxMain.content.add(picInPanelManip.component);
                             picInPanel.mark('picElement');
@@ -822,8 +825,9 @@ exports.DollAdminV = function(globalVariables){
                 let rect = new svg.Rect(elem.width, elem.height).color(myColors.none, 1, myColors.black);
                 elem.parentManip.add(rect);
                 elem.rectSelection = rect;
-            }else{
-                elem && elem.color(elem.fillColor, 4, myColors.blue)
+            }else if (elem){
+                elem.lastStrokeWidth = elem.strokeWidth;
+                elem.color(elem.fillColor, 4, elem.strokeColor);
             }
             this.selectedElement = elem;
         }
@@ -1009,17 +1013,17 @@ exports.DollAdminV = function(globalVariables){
             }
         }
 
-        clickPanelHandler(event, bool){
-            if (!bool) {
-                this.removeContextMenu()
-                let target = this.manipulator.translator.getTarget(event.x, event.y);
-                if (target != this.sandboxMain.back) {
-                    svg.event(target, 'click', event);
-                }
-            }
-            this.selectElement(null);
-            this.removeContextMenu();
-        }
+        // clickPanelHandler(event, bool){
+        //     if (!bool) {
+        //         this.removeContextMenu()
+        //         let target = this.manipulator.translator.getTarget(event.x, event.y);
+        //         if (target != this.sandboxMain.back) {
+        //             svg.event(target, 'click', event);
+        //         }
+        //     }
+        //     this.selectElement(null);
+        //     this.removeContextMenu();
+        // }
         // rightClickPanelHandler(event){
         //     event.preventDefault();
         // }
@@ -1037,7 +1041,7 @@ exports.DollAdminV = function(globalVariables){
                 .add(this.sandboxMain.component);
             this.sandboxMain.component.mark('mainPanel');
 
-            svg.addEvent(this.sandboxMain.component, 'click', (event)=>{this.clickPanelHandler(event, true)});
+            svg.addEvent(this.sandboxMain.component, 'click', (event)=>{this.selectElement(null); this.removeContextMenu()});
 
             this.sandboxManip.move(-PANEL_SIZE.w/2 + SANDBOX_SIZE.header.w/2 + MARGIN, -PANEL_SIZE.h/2 + SANDBOX_SIZE.header.h/2 + 2*MARGIN);
             this.mainPanelManipulator.add(this.sandboxManip);
