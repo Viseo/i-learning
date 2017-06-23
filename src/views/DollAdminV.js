@@ -709,9 +709,9 @@ exports.DollAdminV = function(globalVariables){
                 }
                 let colorManip = new Manipulator(this);
                 let colorBackgroundSelection = new ListManipulatorView(changeColorHandler(colorManip, false),
-                    'V', 150,3*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+                    'V', 150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
                 let colorBorderSelection = new ListManipulatorView(changeColorHandler(colorManip, true),
-                    'V', 150,3*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+                    'V', 150,(NB_ELEMENT_RIGHT_CLICK +1)*CONTEXT_TILE_SIZE.h, 75,20,CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
                 colorBackgroundSelection.refreshListView();
                 colorBorderSelection.refreshListView();
                 colorBackgroundSelection.manipulator.move(backgroundRect.x + CONTEXT_TILE_SIZE.w/2, backgroundRect.y);
