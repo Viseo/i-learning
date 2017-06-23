@@ -27,13 +27,14 @@ exports.Helpers = function(globalVariables){
             let result = '';
             var nbLines = 0;
             let computeWidth = (array) => {
-                if(nbLines >= 1 && text.message(result + array.join(' ')).boundingRect().height > height){
-                    result = result.split('').slice(0,-3).join('') + '...';
+                if(nbLines >= 1 && text.message(result + array.join(' ')).boundingRect().height > height) {
+                    result = result.split('').slice(0, -3).join('') + '...';
+                    text.message(result);
                     return;
                 }
-                if (array.length === 1){
-                    result += array[0];
-                    return;
+                text.message(array[0]);
+                if(text.boundingRect().width > width){
+                    return resizeStringForText(text, width, height);
                 }
                 text.message(array.join(' '));
                 if (text.boundingRect().width > width) {
@@ -44,14 +45,16 @@ exports.Helpers = function(globalVariables){
                     }
                     nbLines ++;
                     result += line1.join(' ') + '\n';
+                    text.message(result);
                     computeWidth(lines);
                 }
                 else{
                     result += array.join(' ');
+                    text.message(result);
                 }
             }
             computeWidth(splitonspace);
-            text.message(result);
+
         }
       
         return text;

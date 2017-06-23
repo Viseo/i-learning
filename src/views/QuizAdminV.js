@@ -666,7 +666,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let questionManip = this.questionsBlockListView.get(this.selectedQuestionIndex);
                     questionManip.buttonText.message(newMessage);
                     let tmpText = questionManip.buttonText;
-                    resizeStringForText(tmpText,QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h );
+                    resizeStringForText(tmpText,QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h/2);
                     //questionManip.add(tmpText)
                 }
 
