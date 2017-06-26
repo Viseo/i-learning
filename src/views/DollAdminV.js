@@ -27,7 +27,7 @@ exports.DollAdminV = function(globalVariables){
             super(presenter);
             this.rules = false;
             this.textElements = [];
-            this.rectElements = [];
+            this.rectElements = this.getRects();
             let declareActions = ()=>{
                 this.actions = [];
                 this.actionTabs = [];
@@ -313,6 +313,7 @@ exports.DollAdminV = function(globalVariables){
             this.displayTitle();
             this.displayMainPanel();
             this.displayTabs();
+            this.displayButtons();
         }
 
         displayTitle(){
@@ -405,6 +406,15 @@ exports.DollAdminV = function(globalVariables){
             else{
                 this.displaySandBoxZone();
             }
+        }
+
+        displayButtons(){
+            this.buttonsManipulator = new Manipulator(this);
+            let saveButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [[43, 120, 228], 1, myColors.black], 'Sauvegarder');
+            saveButton.onClick(this.saveDoll.bind(this));
+            this.buttonsManipulator.add(saveButton.component);
+            this.buttonsManipulator.move(drawing.width/2, drawing.height - INPUT_SIZE.h/2 -  MARGIN)
+            this.manipulator.add(this.buttonsManipulator);
         }
 
         toggleMode(mode){
@@ -970,23 +980,24 @@ exports.DollAdminV = function(globalVariables){
             let mouseupHandler = (eventUp)=>{
                 if (eventUp.x - event.x == 0 && eventUp.y - event.y == 0){
                     this.sandboxMain.content.remove(rect);
+                }else {
+                    let manip = new Manipulator(this);
+                    this.sandboxMain.content.add(manip.component);
+                    manip.move(rect.x, rect.y);
+                    rect.position(0,0);
+                    this.sandboxMain.content.remove(rect)
+                    manip.add(rect);
+                    this.rectElements.push(rect);
+                    rect.mark('rectElement' + this.rectElements.length);
+                    svg.removeEvent(this.sandboxMain.component, 'mousemove');
+                    rect.color(myColors.blue, 2, myColors.black);
+                    svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
+                    svg.addEvent(rect,'contextmenu',(event)=>{
+                        this.selectElement(rect);
+                        this.rectRightClick(rect, manip, event);
+                    });
+                    this.actionModes.actions['none']();
                 }
-                let manip = new Manipulator(this);
-                this.sandboxMain.content.add(manip.component);
-                manip.move(rect.x, rect.y);
-                rect.position(0,0);
-                this.sandboxMain.content.remove(rect)
-                manip.add(rect);
-                this.rectElements.push(rect);
-                rect.mark('rectElement' + this.rectElements.length);
-                svg.removeEvent(this.sandboxMain.component, 'mousemove');
-                rect.color(myColors.blue, 2, myColors.black);
-                svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
-                svg.addEvent(rect,'contextmenu',(event)=>{
-                   this.selectElement(rect);
-                   this.rectRightClick(rect, manip, event);
-                });
-                this.actionModes.actions['none']();
             }
             svg.addEvent(this.sandboxMain.component, 'mousemove', moveHandler)
             svg.addEvent(this.sandboxMain.component, 'mouseup', mouseupHandler)
@@ -1046,6 +1057,7 @@ exports.DollAdminV = function(globalVariables){
             this.sandboxManip.move(-PANEL_SIZE.w/2 + SANDBOX_SIZE.header.w/2 + MARGIN, -PANEL_SIZE.h/2 + SANDBOX_SIZE.header.h/2 + 2*MARGIN);
             this.mainPanelManipulator.add(this.sandboxManip);
             actionList.refreshListView();
+            this.displayElements();
             this.displayObjectives();
             this.displayResponses();
         }
@@ -1115,6 +1127,22 @@ exports.DollAdminV = function(globalVariables){
             solutionsBodyManip.move(4*MARGIN,-PANEL_SIZE.h/4)
             this.mainPanelManipulator.add(solutionsBodyManip);
 
+        }
+
+        displayElements(){
+            this.rectElements.forEach((rectDetails, index)=>{
+                let manip = new Manipulator(this);
+                let rect = new svg.Rect(rectDetails.width, rectDetails.height);
+                rect.color(rectDetails.fillColor, 2, rectDetails.strokeColor);
+                manip.add(rect).move(rectDetails.globalX, rectDetails.globalY);
+                this.sandboxMain.content.add(manip.component);
+                rect.mark('rectElement' + index);
+                svg.addEvent(rect, 'click', ()=>{this.selectElement(rect)});
+                svg.addEvent(rect,'contextmenu',(event)=>{
+                    this.selectElement(rect);
+                    this.rectRightClick(rect, manip, event);
+                });
+            })
         }
 
         displayObjectives(){
@@ -1314,6 +1342,10 @@ exports.DollAdminV = function(globalVariables){
             return this.presenter.getLabel();
         }
 
+        getRects(){
+            return this.presenter.getRects();
+        }
+
         toggleTabs(bool){
             if (this.rules != bool) {
                 this.rules = bool;
@@ -1327,6 +1359,10 @@ exports.DollAdminV = function(globalVariables){
 
         getImages() {
             return this.presenter.getImages();
+        }
+
+        saveDoll(){
+            this.presenter.save(this.rectElements);
         }
     }
 
