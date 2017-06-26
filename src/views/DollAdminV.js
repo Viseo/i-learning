@@ -1001,8 +1001,12 @@ exports.DollAdminV = function(globalVariables){
                     else if (this.selectedElement.component) {
                         this.selectedElement.component.parentManip.flush();
                     }
-
                     this.selectedElement = null;
+                }
+            } else if (event.keyCode == 13 &&!this.inModification) {    // enter keydown and no mods
+                if (this.selectedElement && this.selectedElement.component.parentManip){
+                    this.selectedElement.hideControl();
+                    this.selectElement(null);
                 }
             }
         }
