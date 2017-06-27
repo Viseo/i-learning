@@ -56,10 +56,8 @@ exports.QuizAdminV = function (globalVariables) {
                 this.height = drawing.height - this.header.height;
             }
             var _updateHeader = () => {
-                // let buttonSize = 20;
                 let formationLabel = this.getFormationLabel();
                 this.displayHeader(formationLabel + " - " + this.label);
-                // currentY += drawing.height * HEADER_SIZE + MARGIN + buttonSize + MARGIN;
             }
             var _displayReturnButton = () => {
                 this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
@@ -101,7 +99,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.titleManipulator.set(0, titleTextArea.component);
                 this.titleManipulator.move(MARGIN + titleTextArea.width / 2,
                     this.header.height + this.returnButton.height + titleTextArea.height);
-                // this.titleManipulator.move(MARGIN + titleTextArea.width / 2, currentY + titleTextArea.height / 2);
                 this.quizTitleField = titleTextArea;
 
                 let saveIcon = new svg.Image('../../images/save.png');
@@ -112,7 +109,6 @@ exports.QuizAdminV = function (globalVariables) {
                     .mark('saveNameButton');
                 svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
                 svg.addGlobalEvent('keydown', _renameWhenEnter);
-                // currentY += dimensions.height + MARGIN;
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
@@ -790,7 +786,6 @@ exports.QuizAdminV = function (globalVariables) {
                                     let titleManip = new Manipulator(popUpExplanation).addOrdonator(1);
                                     popUpExplanation.textTitle = new svg.Text("Explication de la réponse : Réponse").font('Arial', 25).color(myColors.grey);
                                     titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h / 2 + 50);
-                                    // titleManip.add(popUpExplanation.textTitle).move(0, 50);
                                     popUpExplanation.manipulator.add(titleManip);
                                 };
                                 var _drawContent = () => {
@@ -843,7 +838,6 @@ exports.QuizAdminV = function (globalVariables) {
 
                                 _createRedCross();
                                 _drawBackPanel();
-                                // _drawTitle();
                                 _drawContent();
 
                                 return popUpExplanation;

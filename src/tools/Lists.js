@@ -316,9 +316,21 @@ exports.Lists = function (globalVariables) {
             this._updateCurrentList();
         }
 
+        color(newColor) {
+            this.list.forEach(selectItem => {
+                selectItem.color(newColor);
+            })
+        }
+
         copySelectItem(index) {
             let copyElement = new SelectItem(this.itemWidth, this.itemHeight, this.list[index].getText(),0);
             return copyElement;
+        }
+
+        corners(radiusX, radiusY) {
+            this.list.forEach(selectItem => {
+                selectItem.corners(radiusX,radiusY);
+            })
         }
 
         getSelectedItem(index) {
@@ -339,7 +351,6 @@ exports.Lists = function (globalVariables) {
         }
 
         setClickAction(clickHandler) {
-            // this.manipulator.addEvent('click', clickHandler);
             this.list.forEach(selectItem => {
                 selectItem.setClickAction(clickHandler, true);
             })

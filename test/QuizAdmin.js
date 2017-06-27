@@ -153,11 +153,9 @@ describe('quiz admin', function () {
         when(() => {
             assertPresent(root, "questionBlock0");
             assertPresent(root, "questionBlock1");
-            // clickElement(root, 'newQuestionButton')
         }).then(() => {
             clickElement(root, "selectQuestionBlock0");
             clickElement(root, "selectQuestionBlock1");
-            // assertPresent(root, "questionBlock0")
         })
     });
 
