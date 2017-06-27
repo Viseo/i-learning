@@ -41,13 +41,7 @@ exports.DollAdminV = function (globalVariables) {
                 rect.color(rectDetails.fillColor, 2, rectDetails.strokeColor);
                 manip.add(rect).move(rectDetails.globalX, rectDetails.globalY);
                 rect.mark('rectElement' + index);
-                svg.addEvent(rect, 'click', () => {
-                    this.selectElement(rect)
-                });
-                svg.addEvent(rect, 'contextmenu', (event) => {
-                    this.selectElement(rect);
-                    this.rectRightClick(rect, manip, event);
-                });
+                this._assignRectElementEvents(rect, manip);
                 return rect;
             })
             this.declareActions();
@@ -128,6 +122,7 @@ exports.DollAdminV = function (globalVariables) {
             this.actionModes = {
                 actions: {
                     'text': () => {
+                        svgr.attr(drawing.component, 'style', 'cursor: crosshair');
                         svg.addEvent(this.sandboxMain.component, 'mousedown', (event) => {
                             this.textZoning(event)
                         });
@@ -865,21 +860,24 @@ exports.DollAdminV = function (globalVariables) {
             manipulator.corners = [];
             let br = function (x, y, Xcoeff, Ycoeff) {
                 let delta = {x: x - this.x, y: y - this.y};
-                console.log(initW + delta.x, initH + delta.y);
-                elem.dimension(initW + Xcoeff * delta.x, initH + Ycoeff * delta.y)
-                elem.position(+delta.x / 2, +delta.y / 2);
-                let updateCorners = () => {
-                    manipulator.corners.forEach(corner => {
-                        corner.move(corner.point.getX() + delta.x / 2, corner.point.getY() + delta.y / 2);
-                    });
+                if((initW + Xcoeff * delta.x) > 0 && (initH + Ycoeff * delta.y) > 0) {
+                    elem.dimension(initW + Xcoeff * delta.x, initH + Ycoeff * delta.y)
+                    elem.position(+delta.x / 2, +delta.y / 2);
+                    let updateCorners = () => {
+                        manipulator.corners.forEach(corner => {
+                            corner.move(corner.point.getX() + delta.x / 2, corner.point.getY() + delta.y / 2);
+                        });
+                    }
+                    updateCorners();
+                    elem.refresh && elem.refresh();
+                    return true;
                 }
-                updateCorners();
-                elem.refresh && elem.refresh();
+                return false;
             }
             let posArr = [
                 {
                     x: -elem.width / 2, y: -elem.height / 2, id: 'topLeft', drag: function (x, y) {
-                    br.call(this, x, y, -1, -1)
+                    return br.call(this, x, y, -1, -1)
                 }, getX: function () {
                     return -elem.width / 2
                 }, getY: function () {
@@ -888,7 +886,7 @@ exports.DollAdminV = function (globalVariables) {
                 },
                 {
                     x: -elem.width / 2, y: +elem.height / 2, id: 'topRight', drag: function (x, y) {
-                    br.call(this, x, y, -1, 1)
+                    return br.call(this, x, y, -1, 1)
                 }, getX: function () {
                     return -elem.width / 2
                 }, getY: function () {
@@ -897,7 +895,7 @@ exports.DollAdminV = function (globalVariables) {
                 },
                 {
                     x: +elem.width / 2, y: -elem.height / 2, id: 'botLeft', drag: function (x, y) {
-                    br.call(this, x, y, 1, -1)
+                    return br.call(this, x, y, 1, -1)
                 }, getX: function () {
                     return +elem.width / 2
                 }, getY: function () {
@@ -906,7 +904,7 @@ exports.DollAdminV = function (globalVariables) {
                 },
                 {
                     x: +elem.width / 2, y: +elem.height / 2, id: 'botRight', drag: function (x, y) {
-                    br.call(this, x, y, 1, 1)
+                    return br.call(this, x, y, 1, 1)
                 }, getX: function () {
                     return +elem.width / 2
                 }, getY: function () {
@@ -926,8 +924,11 @@ exports.DollAdminV = function (globalVariables) {
                 manip.add(rect)
                 let conf = {
                     drag: (what, x, y) => {
-                        point.drag.call(point, x, y);
-                        return {x: x, y: y};
+                        if(point.drag.call(point, x, y)) {
+                            return {x: x, y: y};
+                        }else {
+                            return {x:what.x, y:what.y};
+                        }
                     },
                     drop: (what, whatParent, finalX, finalY) => {
                         manipInitx = manipulator.x;
@@ -1072,13 +1073,7 @@ exports.DollAdminV = function (globalVariables) {
                     rect.mark('rectElement' + this.rectElements.length);
                     svg.removeEvent(this.sandboxMain.component, 'mousemove');
                     rect.color(myColors.blue, 2, myColors.black);
-                    svg.addEvent(rect, 'click', () => {
-                        this.selectElement(rect)
-                    });
-                    svg.addEvent(rect, 'contextmenu', (event) => {
-                        this.selectElement(rect);
-                        this.rectRightClick(rect, manip, event);
-                    });
+                    this._assignRectElementEvents(rect, manip);
                     this.actionModes.actions['none']();
                 }
             }
@@ -1120,228 +1115,7 @@ exports.DollAdminV = function (globalVariables) {
                 this.resizeElement(rect, manipulator);
                 this.removeContextMenu();
             });
-            let edit = this._makeClickableItem('Modifier', () => {
-                this.inModification = true;
-                let propertiesToSave = {
-                    position: {x: rect.x, y: rect.y},
-                    size: rect.boundingRect(),
-                    borderColor: rect.strokeColor,
-                    backgroundColor: rect.fillColor,
-                    opacity: rect._opacity
-                }
-                if (this.rightMenuManipulator) {
-                    this.manipulator.remove(this.rightMenuManipulator);
-                }
-
-                let textSize = 18;
-
-                this.rightMenuManipulator = new Manipulator(this).addOrdonator(2);
-                let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN * 2, this.height - this.header.height)
-                    .color(myColors.white, 1, myColors.black);
-                rMenu.mark('rightMenu');
-                this.rightMenuManipulator.set(0, rMenu);
-
-                let pos = {x: rMenu.width / 15, y: rMenu.height / 8};
-
-                let title = new svg.Text("Modifier Rectangle");
-                title.position(0, -rMenu.height / 2 + pos.y).font('Arial', 30);
-
-                let arrayText = ['Position', 'Taille', 'Bordure', 'Fond', 'Opacité'];
-                arrayText.forEach((ele, index) => {
-                    let text = new svg.Text(ele);
-                    text.position(-rMenu.width / 2 + pos.x, -rMenu.height / 2 + pos.y * (index + 2))
-                        .anchor('left').font('Arial', textSize);
-                    this.rightMenuManipulator.add(text);
-                });
-
-                //For position
-                let dimInput = {w: pos.x * 3, h: 40};
-                let displayErrorInput = () => {
-                    let text = new svg.Text('Veuillez entrer une valeur correcte (numérique)')
-                        .font('Arial', 18)
-                        .color(myColors.red)
-                        .mark('errorInputMessage');
-                    text.position(title.x, title.y + 30);
-                    this.rightMenuManipulator.set(1, text);
-                    resizeStringForText(text, RIGHTBOX_SIZE.w, 100);
-                    svg.timeout(() => {
-                        this.rightMenuManipulator.unset(1);
-                    }, 3000);
-                }
-                let posX = new svg.Text("X");
-                posX.position(-rMenu.width / 2 + pos.x * 5, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
-                let inputPosX = new gui.TextField(-rMenu.width / 2 + pos.x * 5 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
-                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                inputPosX.message(manipulator.x);
-                inputPosX.onInput((oldMessage, newMessage, valid) => {
-                    if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
-                        manipulator.move(newMessage, manipulator.y);
-                    }
-                    else {
-                        newMessage && displayErrorInput();
-                    }
-                })
-                inputPosX.mark('inputPosX')
-
-                let posY = new svg.Text("Y");
-                posY.position(-rMenu.width / 2 + pos.x * 10, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
-                let inputPosY = new gui.TextField(-rMenu.width / 2 + pos.x * 10 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
-                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                inputPosY.message(manipulator.y);
-                inputPosY.onInput((oldMessage, newMessage, valid) => {
-                    if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
-                        manipulator.move(manipulator.x, newMessage);
-                    }
-                    else {
-                        newMessage && displayErrorInput();
-                    }
-                })
-                inputPosY.mark('inputPosY')
-                //For Taille
-                let inputSizeW = new gui.TextField(-rMenu.width / 2 + pos.x * 5 - textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (3) - textSize / 3,
-                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                let inputSizeH = new gui.TextField(-rMenu.width / 2 + pos.x * 10 - textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (3) - textSize / 3,
-                    dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
-                let resizeRect = (x = rect.width, y = rect.height, Xbool) => {
-                    if (rect.keepProportion) {
-                        if (Xbool) {
-                            let ratio = x / rect.width;
-                            rect.dimension(x, ratio * y);
-                            inputSizeH.message(Math.round(rect.height));
-                        }
-                        else {
-                            let ratio = y / rect.height;
-                            rect.dimension(x * ratio, y);
-                            inputSizeW.message(Math.round(rect.width));
-                        }
-                    }
-                    else {
-                        rect.dimension(x, y);
-                    }
-                }
-                inputSizeW.mark('inputSizeW')
-                inputSizeH.mark('inputSizeH')
-                inputSizeW.message(Math.round(rect.boundingRect().width));
-                inputSizeW.onInput((oldMessage, newMessage, valid) => {
-                    if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
-                        resizeRect(Number(newMessage), rect.boundingRect().height, true);
-                    } else {
-                        newMessage && displayErrorInput();
-                    }
-                })
-                inputSizeH.message(Math.round(rect.boundingRect().height));
-                inputSizeH.onInput((oldMessage, newMessage, valid) => {
-                    if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
-                        resizeRect(rect.boundingRect().width, Number(newMessage), false);
-                    } else {
-                        newMessage && displayErrorInput();
-                    }
-                })
-
-                let keepProportionButton = new svg.Rect(20, 20).color(myColors.white, 1, myColors.black).mark('keepProportionButton');
-                keepProportionButton.position(posX.x + keepProportionButton.width / 2, posX.y + 50);
-                keepProportionButton.enableProportion = !rect.keepProportion;
-                svg.addEvent(keepProportionButton, 'click', () => {
-                    if (!keepProportionButton.enableButton) {
-                        let enableButton = new svg.Rect(keepProportionButton.width - 5, keepProportionButton.height - 5)
-                            .color(myColors.black, 0, myColors.black)
-                            .position(keepProportionButton.x, keepProportionButton.y);
-                        keepProportionButton.enableButton = enableButton;
-                        svg.addEvent(keepProportionButton.enableButton, 'click', keepProportionButton.component.listeners['click']);
-                    }
-                    if (keepProportionButton.enableProportion) {
-                        keepProportionButton.enableProportion = false;
-                        this.rightMenuManipulator.remove(keepProportionButton.enableButton);
-                        rect.keepProportion = false;
-                    }
-                    else {
-                        keepProportionButton.enableProportion = true;
-                        this.rightMenuManipulator.add(keepProportionButton.enableButton);
-                        rect.keepProportion = true;
-                    }
-                })
-
-                let keepProportionText = new svg.Text('Garder les proportions')
-                    .font('Arial', 18)
-                    .position(keepProportionButton.x + 20, keepProportionButton.y + 6)
-                    .anchor('left');
-
-                let borderRect = new svg.Rect(40, 40).mark('borderColor');
-                borderRect.color(rect.strokeColor, 1, myColors.black).position(-rMenu.width / 2 + pos.x * 5 + 20, -rMenu.height / 2 + pos.y * (4) - textSize / 3);
-
-                let backgroundRect = new svg.Rect(40, 40).mark('backgroundColor');
-                backgroundRect.color(rect.fillColor, 1, myColors.black).position(-rMenu.width / 2 + pos.x * 5 + 20, -rMenu.height / 2 + pos.y * (5) - textSize / 3);
-
-
-                let gauge = new Helpers.Gauge(pos.x * 8, 35, 0, 1);
-                gauge.position(-rMenu.width / 2 + pos.x * 5 + gauge.width / 2, -rMenu.height / 2 + pos.y * (6) - textSize / 3);
-                gauge.onChangeValue((data) => {
-                    rect.opacity(data);
-                });
-                gauge.setIndicateurToValue(rect._opacity || 1);
-
-                let changeColorHandler = (elementToRemove, border) => {
-                    let updateRects = () => {
-                        backgroundRect.color(rect.fillColor, 1, myColors.black);
-                        borderRect.color(rect.strokeColor, 1, myColors.black);
-                    }
-                    let colors = makeColors((color) => {
-                        if (border) {
-                            rect.color(rect.fillColor, rect.strokeWidth, color);
-                        }
-                        else {
-                            rect.color(color, rect.strokeWidth, rect.strokeColor);
-                        }
-                        this.rightMenuManipulator.remove(elementToRemove.first);
-                        // elementToRemove.flush();
-                        updateRects();
-                    });
-                    return colors;
-                }
-                let colorManip = new Manipulator(this);
-                let colorBackgroundSelection = new ListManipulatorView(changeColorHandler(colorManip, false),
-                    'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 20, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
-                let colorBorderSelection = new ListManipulatorView(changeColorHandler(colorManip, true),
-                    'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 20, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
-                colorBackgroundSelection.refreshListView();
-                colorBorderSelection.refreshListView();
-                colorBackgroundSelection.manipulator.move(backgroundRect.x + CONTEXT_TILE_SIZE.w / 2, backgroundRect.y);
-                colorBorderSelection.manipulator.move(borderRect.x + CONTEXT_TILE_SIZE.w / 2, borderRect.y);
-
-
-                svg.addEvent(borderRect, 'click', () => {
-                    this.rightMenuManipulator.add(colorManip);
-                    colorManip.add(colorBorderSelection.manipulator);
-                    colorManip.remove(colorBackgroundSelection.manipulator);
-                });
-                svg.addEvent(backgroundRect, 'click', () => {
-                    this.rightMenuManipulator.add(colorManip);
-                    colorManip.add(colorBackgroundSelection.manipulator);
-                    colorManip.remove(colorBorderSelection.manipulator);
-                });
-
-
-                let redCross = IconCreator.createRedCrossIcon(this.rightMenuManipulator);
-                redCross.position(rMenu.width / 2 - redCross.getSize() - MARGIN, -rMenu.height / 2 + redCross.getSize() + MARGIN);
-                redCross.addEvent('click', () => {
-                    this.manipulator.remove(this.rightMenuManipulator);
-                });
-
-                this.rightMenuManipulator.add(title)
-                    .add(posX).add(inputPosX.component)
-                    .add(posY).add(inputPosY.component)
-                    .add(inputSizeW.component).add(inputSizeH.component)
-                    .add(borderRect).add(backgroundRect)
-                    .add(gauge.manipulator)
-                    .add(colorManip)
-                    .add(keepProportionButton)
-                    .add(keepProportionText);
-                svg.event(keepProportionButton, 'click')
-
-                this.rightMenuManipulator.move(this.width - rMenu.width / 2, rMenu.height / 2 + this.header.height);
-                this.manipulator.add(this.rightMenuManipulator);
-                this.removeContextMenu();
-            });
+            let edit = this._makeClickableItem('Modifier',()=>{this._rightMenuForRect(rect,manipulator)});
             color.mark('colorOption');
             resize.mark('resizeOption');
             edit.mark('editOption');
@@ -1354,6 +1128,261 @@ exports.DollAdminV = function (globalVariables) {
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
             this.contextMenu.refreshListView();
+        }
+        _rightMenuForRect(rect, manipulator) {
+            let makeColors = (handler) => {
+                let colors = [[43, 120, 228],
+                    [125, 122, 117],
+                    [230, 122, 25],
+                    [155, 222, 17],
+                    [0, 0, 0],
+                    [255, 255, 255],
+                    [255, 20, 147]];
+                for (let i = 0; i < colors.length; i++) {
+                    let color = colors[i];
+                    let man = new Manipulator(this);
+                    let rec = new svg.Rect(CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h).corners(2, 2)
+                        .color(colors[i], 0.5, myColors.grey);
+                    man.add(rec);
+                    man.mark('color' + i);
+                    man.first.color = '' + color;
+                    man.addEvent('click', () => {
+                        handler(color)
+                    });
+                    colors[i] = man;
+                }
+                return colors;
+            }
+            this.inModification = true;
+            let propertiesToSave = {
+                position: {x: rect.x, y: rect.y},
+                size: rect.boundingRect(),
+                borderColor: rect.strokeColor,
+                backgroundColor: rect.fillColor,
+                opacity: rect._opacity
+            }
+            if (this.rightMenuManipulator) {
+                this.manipulator.remove(this.rightMenuManipulator);
+            }
+
+            let textSize = 18;
+
+            this.rightMenuManipulator = new Manipulator(this).addOrdonator(2);
+            let rMenu = new svg.Rect(RIGHTBOX_SIZE.w + MARGIN * 2, this.height - this.header.height)
+                .color(myColors.white, 1, myColors.black);
+            rMenu.mark('rightMenu');
+            this.rightMenuManipulator.set(0, rMenu);
+
+            let pos = {x: rMenu.width / 15, y: rMenu.height / 8};
+
+            let title = new svg.Text("Modifier Rectangle");
+            title.position(0, -rMenu.height / 2 + pos.y).font('Arial', 30);
+
+            let arrayText = ['Position', 'Taille', 'Bordure', 'Fond', 'Opacité'];
+            arrayText.forEach((ele, index) => {
+                let text = new svg.Text(ele);
+                text.position(-rMenu.width / 2 + pos.x, -rMenu.height / 2 + pos.y * (index + 2))
+                    .anchor('left').font('Arial', textSize);
+                this.rightMenuManipulator.add(text);
+            });
+
+            //For position
+            let dimInput = {w: pos.x * 3, h: 40};
+            let displayErrorInput = () => {
+                let text = new svg.Text('Veuillez entrer une valeur correcte (numérique)')
+                    .font('Arial', 18)
+                    .color(myColors.red)
+                    .mark('errorInputMessage');
+                text.position(title.x, title.y + 30);
+                this.rightMenuManipulator.set(1, text);
+                resizeStringForText(text, RIGHTBOX_SIZE.w, 100);
+                svg.timeout(() => {
+                    this.rightMenuManipulator.unset(1);
+                }, 3000);
+            }
+            let posX = new svg.Text("X");
+            posX.position(-rMenu.width / 2 + pos.x * 5, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
+            let inputPosX = new gui.TextField(-rMenu.width / 2 + pos.x * 5 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
+                dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+            inputPosX.message(manipulator.x);
+            inputPosX.onInput((oldMessage, newMessage, valid) => {
+                if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
+                    manipulator.move(newMessage, manipulator.y);
+                }
+                else {
+                    newMessage && displayErrorInput();
+                }
+            })
+            inputPosX.mark('inputPosX')
+
+            let posY = new svg.Text("Y");
+            posY.position(-rMenu.width / 2 + pos.x * 10, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
+            let inputPosY = new gui.TextField(-rMenu.width / 2 + pos.x * 10 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
+                dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+            inputPosY.message(manipulator.y);
+            inputPosY.onInput((oldMessage, newMessage, valid) => {
+                if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
+                    manipulator.move(manipulator.x, newMessage);
+                }
+                else {
+                    newMessage && displayErrorInput();
+                }
+            })
+            inputPosY.mark('inputPosY')
+            //For Taille
+            let inputSizeW = new gui.TextField(-rMenu.width / 2 + pos.x * 5 - textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (3) - textSize / 3,
+                dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+            let inputSizeH = new gui.TextField(-rMenu.width / 2 + pos.x * 10 - textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (3) - textSize / 3,
+                dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
+            let resizeRect = (x = rect.width, y = rect.height, Xbool) => {
+                if (rect.keepProportion) {
+                    if (Xbool) {
+                        let ratio = x / rect.width;
+                        rect.dimension(x, ratio * y);
+                        inputSizeH.message(Math.round(rect.height));
+                    }
+                    else {
+                        let ratio = y / rect.height;
+                        rect.dimension(x * ratio, y);
+                        inputSizeW.message(Math.round(rect.width));
+                    }
+                }
+                else {
+                    rect.dimension(x, y);
+                }
+            }
+            inputSizeW.mark('inputSizeW')
+            inputSizeH.mark('inputSizeH')
+            inputSizeW.message(Math.round(rect.boundingRect().width));
+            inputSizeW.onInput((oldMessage, newMessage, valid) => {
+                if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
+                    resizeRect(Number(newMessage), rect.boundingRect().height, true);
+                } else {
+                    newMessage && displayErrorInput();
+                }
+            })
+            inputSizeH.message(Math.round(rect.boundingRect().height));
+            inputSizeH.onInput((oldMessage, newMessage, valid) => {
+                if (newMessage.match(/^-?\d+(\.\d+)?$/)) {
+                    resizeRect(rect.boundingRect().width, Number(newMessage), false);
+                } else {
+                    newMessage && displayErrorInput();
+                }
+            })
+
+            let keepProportionButton = new svg.Rect(20, 20).color(myColors.white, 1, myColors.black).mark('keepProportionButton');
+            keepProportionButton.position(posX.x + keepProportionButton.width / 2, posX.y + 50);
+            keepProportionButton.enableProportion = !rect.keepProportion;
+            svg.addEvent(keepProportionButton, 'click', () => {
+                if (!keepProportionButton.enableButton) {
+                    let enableButton = new svg.Rect(keepProportionButton.width - 5, keepProportionButton.height - 5)
+                        .color(myColors.black, 0, myColors.black)
+                        .position(keepProportionButton.x, keepProportionButton.y);
+                    keepProportionButton.enableButton = enableButton;
+                    svg.addEvent(keepProportionButton.enableButton, 'click', keepProportionButton.component.listeners['click']);
+                }
+                if (keepProportionButton.enableProportion) {
+                    keepProportionButton.enableProportion = false;
+                    this.rightMenuManipulator.remove(keepProportionButton.enableButton);
+                    rect.keepProportion = false;
+                }
+                else {
+                    keepProportionButton.enableProportion = true;
+                    this.rightMenuManipulator.add(keepProportionButton.enableButton);
+                    rect.keepProportion = true;
+                }
+            })
+
+            let keepProportionText = new svg.Text('Garder les proportions')
+                .font('Arial', 18)
+                .position(keepProportionButton.x + 20, keepProportionButton.y + 6)
+                .anchor('left');
+
+            let borderRect = new svg.Rect(40, 40).mark('borderColor');
+            borderRect.color(rect.strokeColor, 1, myColors.black).position(-rMenu.width / 2 + pos.x * 5 + 20, -rMenu.height / 2 + pos.y * (4) - textSize / 3);
+
+            let backgroundRect = new svg.Rect(40, 40).mark('backgroundColor');
+            backgroundRect.color(rect.fillColor, 1, myColors.black).position(-rMenu.width / 2 + pos.x * 5 + 20, -rMenu.height / 2 + pos.y * (5) - textSize / 3);
+
+
+            let gauge = new Helpers.Gauge(pos.x * 8, 35, 0, 1);
+            gauge.position(-rMenu.width / 2 + pos.x * 5 + gauge.width / 2, -rMenu.height / 2 + pos.y * (6) - textSize / 3);
+            gauge.onChangeValue((data) => {
+                rect.opacity(data);
+            });
+            gauge.setIndicateurToValue(rect._opacity || 1);
+
+            let changeColorHandler = (elementToRemove, border) => {
+                let updateRects = () => {
+                    backgroundRect.color(rect.fillColor, 1, myColors.black);
+                    borderRect.color(rect.strokeColor, 1, myColors.black);
+                }
+                let colors = makeColors((color) => {
+                    if (border) {
+                        rect.color(rect.fillColor, rect.strokeWidth, color);
+                    }
+                    else {
+                        rect.color(color, rect.strokeWidth, rect.strokeColor);
+                    }
+                    this.rightMenuManipulator.remove(elementToRemove.first);
+                    // elementToRemove.flush();
+                    updateRects();
+                });
+                return colors;
+            }
+            let colorManip = new Manipulator(this);
+            let colorBackgroundSelection = new ListManipulatorView(changeColorHandler(colorManip, false),
+                'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 20, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            let colorBorderSelection = new ListManipulatorView(changeColorHandler(colorManip, true),
+                'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 20, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            colorBackgroundSelection.refreshListView();
+            colorBorderSelection.refreshListView();
+            colorBackgroundSelection.manipulator.move(backgroundRect.x + CONTEXT_TILE_SIZE.w / 2, backgroundRect.y);
+            colorBorderSelection.manipulator.move(borderRect.x + CONTEXT_TILE_SIZE.w / 2, borderRect.y);
+
+
+            svg.addEvent(borderRect, 'click', () => {
+                this.rightMenuManipulator.add(colorManip);
+                colorManip.add(colorBorderSelection.manipulator);
+                colorManip.remove(colorBackgroundSelection.manipulator);
+            });
+            svg.addEvent(backgroundRect, 'click', () => {
+                this.rightMenuManipulator.add(colorManip);
+                colorManip.add(colorBackgroundSelection.manipulator);
+                colorManip.remove(colorBorderSelection.manipulator);
+            });
+
+
+            let redCross = IconCreator.createRedCrossIcon(this.rightMenuManipulator);
+            redCross.position(rMenu.width / 2 - redCross.getSize() - MARGIN, -rMenu.height / 2 + redCross.getSize() + MARGIN);
+            redCross.addEvent('click', () => {
+                this.manipulator.remove(this.rightMenuManipulator);
+            });
+
+            this.rightMenuManipulator.add(title)
+                .add(posX).add(inputPosX.component)
+                .add(posY).add(inputPosY.component)
+                .add(inputSizeW.component).add(inputSizeH.component)
+                .add(borderRect).add(backgroundRect)
+                .add(gauge.manipulator)
+                .add(colorManip)
+                .add(keepProportionButton)
+                .add(keepProportionText);
+            svg.event(keepProportionButton, 'click')
+
+            this.rightMenuManipulator.move(this.width - rMenu.width / 2, rMenu.height / 2 + this.header.height);
+            this.manipulator.add(this.rightMenuManipulator);
+            this.removeContextMenu();
+        }
+
+        _assignRectElementEvents(rect, manip){
+            svg.addEvent(rect, 'click', () => {
+                this.selectElement(rect)
+            });
+            svg.addEvent(rect, 'contextmenu', (event) => {
+                this.selectElement(rect);
+                this.rectRightClick(rect, manip, event);
+            });
         }
 
         imageRightClick(image, manipulator, event) {
