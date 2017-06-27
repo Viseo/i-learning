@@ -141,6 +141,9 @@ exports.Helpers = function(globalVariables){
                     return{x:controlX, y:0};
                 },
                 moved: (what)=>{
+                    let parent = this.manipulator.last;
+                    parent.remove(what.component);
+                    parent.add(what.component);
                     return true;
                 },
             };
