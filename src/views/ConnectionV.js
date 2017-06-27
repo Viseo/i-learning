@@ -246,7 +246,7 @@ exports.ConnectionV = function (globalVariables) {
 
                 let currentIndex = this.inputs.indexOf(this.selectedInput);
                 let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
-                svg.event(this.inputs[newIndex].glass, 'click');
+                svg.event(this.inputs[newIndex].glass, 'click', event);
                 this.selectedInput = this.inputs[newIndex];
                 this.selectedInput.mark(this.selectedInput.id + 'selectedInput');
             }
