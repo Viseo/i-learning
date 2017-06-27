@@ -826,6 +826,7 @@ exports.DollAdminV = function (globalVariables) {
                     corner.flush();
                 });
                 this.selectedElement.color(this.selectedElement.fillColor, this.selectedElement.lastStrokeWidth, this.selectedElement.strokeColor);
+                this.selectedElement.parentManip.removeEvent('mousedown');
             }
             else if (this.selectedElement && this.selectedElement.component.parentManip) {//Text
                 this.selectedElement.component.parentManip.corners && this.selectedElement.component.parentManip.corners.forEach(corner => {
@@ -847,6 +848,8 @@ exports.DollAdminV = function (globalVariables) {
             } else if (elem) {
                 elem.lastStrokeWidth = elem.strokeWidth;
                 elem.color(elem.fillColor, 4, elem.strokeColor);
+                this.resizeElement(elem,elem.parentManip);
+                installDnD(elem.parentManip, this.sandboxMain.content, {});
             }
             this.selectedElement = elem;
         }
