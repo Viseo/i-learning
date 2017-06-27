@@ -5,6 +5,7 @@
 exports.Lists = function (globalVariables) {
     let
         svg = globalVariables.svg,
+        gui = globalVariables.gui,
         Manipulator = globalVariables.Handlers.Manipulator;
 
     class ListView {
@@ -477,9 +478,46 @@ exports.Lists = function (globalVariables) {
         }
     }
 
+    class SelectItemList2 {
+        constructor(listElements, width, height){
+            this.direction = "V";
+            this.width = width;
+            this.height = height;
+
+            this.manipulator = new Manipulator(this);
+            
+            this.selectButton = new gui.Button(width, height, [myColors.none, 1, myColors.black],
+                (listElements.length > 0) ? listElements[0] : '');
+            this.selectButton.back.corners(5, 5);
+
+            let chevronSize = {w: 100, h: 30};
+
+            this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h + MARGIN*2,
+                chevronSize.w, chevronSize.h, this.width, this.height, 10);
+            listElements.forEach(ele => {
+                let manip = new Manipulator(this);
+                let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
+                choice.back.corners(5, 5);
+                manip.add(choice.component);
+
+                this.listView.add(manip);
+            });
+            this.listView.refreshListView();
+            this.listView.manipulator.move(0, (this.listView.height)/2);
+
+
+            this.selectButton.onClick(() => {
+               this.manipulator.add(this.listView.manipulator);
+            });
+    
+            this.manipulator.add(this.selectButton.component);
+        }
+    }
+
     return {
         ListManipulatorView,
         SelectItemList,
-        SelectItem
+        SelectItem,
+        SelectItemList2
     };
 };
