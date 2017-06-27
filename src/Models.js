@@ -999,6 +999,22 @@ exports.Models = function (globalVariables, mockResponses) {
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
+            this.rects = game.rects || JSON.parse('[{"width":148,"height":119,"globalX":262,"globalY":102.9375,"fillColor":[25,122,230],"strokeColor":[0,0,0]}]')
+        }
+
+        save(rects=[]){
+            this.rects = rects.map((rect)=>{
+                return {
+                    width: rect.width,
+                    height: rect.height,
+                    globalX: rect.parentManip.x,
+                    globalY: rect.parentManip.y,
+                    fillColor: rect.fillColor,
+                    strokeColor: rect.strokeColor,
+                    layerIndex: rect.layerIndex
+                }
+            })
+            console.log(this.rects);
         }
 
         setImage(src) {
@@ -1012,6 +1028,10 @@ exports.Models = function (globalVariables, mockResponses) {
         getProgress() {
             //todo dois etre completer
             return 'undone';
+        }
+
+        getRects(){
+            return this.rects;
         }
     }
 

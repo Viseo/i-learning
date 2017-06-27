@@ -16,6 +16,10 @@ exports.DollAdminP = function(globalVariables) {
             return this.doll.getLabel();
         }
 
+        getRects(){
+            return this.doll.getRects();
+        }
+
         getImages() {
             return this.mediaLibrary.getImages();
         }
@@ -25,6 +29,10 @@ exports.DollAdminP = function(globalVariables) {
 
         uploadImageByFile(file, progressDisplay){
             return this.state.uploadImage(file, progressDisplay);
+        }
+
+        save(rects){
+            this.doll.save(rects);
         }
 
     }
