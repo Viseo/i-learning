@@ -51,7 +51,6 @@ exports.DollAdminV = function (globalVariables) {
                 return rect;
             })
             this.declareActions();
-            svg.addGlobalEvent('keydown', (event) => this.keyDown.call(this, event));
         }
 
         declareActions(){
@@ -417,6 +416,7 @@ exports.DollAdminV = function (globalVariables) {
             this.displayMainPanel();
             this.displayTabs();
             this.displayButtons();
+            svg.addGlobalEvent('keydown', (event) => this.keyDown.call(this, event));
         }
 
         displayTitle() {
