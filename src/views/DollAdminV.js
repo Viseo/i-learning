@@ -1141,7 +1141,7 @@ exports.DollAdminV = function(globalVariables){
                             completeSolutionListe.color(myColors.white, 1, myColors.grey);
                             completeSolutionListe.corners(5, 5);
                             completeSolutionListe.manipulator.move(-0.1 * addSolutionButton.width,
-                                INPUT_SIZE.h + addSolutionButton.height + 2 * MARGIN);
+                                (index+1) * (INPUT_SIZE.h + addSolutionButton.height) + 2 * MARGIN);
                             return completeSolutionListe;
                         }
                         var _addToLeftManip = (completeSolution) => {
