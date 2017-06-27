@@ -243,6 +243,55 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         displayPictureNavigation() {
+            let conf = {
+                drop: (what, whatParent, x, y) => {
+                    let globalPoints = whatParent.globalPoint(x, y);
+                    let target = this.sandboxManip.last.getTarget(globalPoints.x, globalPoints.y);
+
+                    if (target && target == this.sandboxMain.back) {
+                        let imgForDim = svgr.getDimensionFromImage(what.components[0].src);
+
+                        let picInPanelManip = new Manipulator(this);
+                        let picInPanel = new svg.Image(what.components[0].src);
+                        picInPanel.dimension(imgForDim.width, imgForDim.height);
+                        picInPanelManip.add(picInPanel);
+
+                        let localPoints = this.sandboxMain.content.localPoint(x, y);
+                        picInPanelManip.move(localPoints.x, localPoints.y);
+
+                        svg.addEvent(picInPanel, 'contextmenu', (event) => {
+                            this.selectElement(picInPanel);
+                            this.imageRightClick(picInPanel, picInPanelManip, event);
+                        });
+                        svg.addEvent(picInPanel, 'click', event => {
+                            this.selectElement(picInPanel);
+                        })
+
+                        this.sandboxMain.content.add(picInPanelManip.component);
+                        picInPanel.mark('picElement');
+                    }
+                    return {x: what.x, y: what.y, parent: whatParent};
+                },
+                moved: (what) => {
+                    what.flush();
+                    return true;
+                }
+            };
+            var createDraggableCopy = (pic) => {
+                let picManip = new Manipulator(this).addOrdonator(1);
+                let point = pic.globalPoint(0, 0);
+                picManip.move(point.x, point.y);
+                let picCopy = pic.duplicate(pic);
+                picManip.set(0, picCopy);
+                picManip.mark('picDraggableCopy');
+                drawings.piste.add(picManip);
+
+                installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
+                svg.event(drawings.component.glass, "mousedown", {
+                    pageX: picManip.x, pageY: picManip.y, preventDefault: () => {
+                    }
+                });
+            };
             let _createPopUpPicture = () => {
                 const onChangeFileExplorerHandler = () => {
                     let files = this.fileExplorer.component.files;
@@ -253,67 +302,12 @@ exports.DollAdminV = function (globalVariables) {
                             let pic = new svg.Image(data.src).dimension(HEADER_TILE, HEADER_TILE);
                             pictureAddManip.add(pic);
 
-                            var createDraggableCopy = (pic) => {
-                                let picManip = new Manipulator(this).addOrdonator(1);
-                                let point = pic.globalPoint(0, 0);
-                                picManip.move(point.x, point.y);
-                                let picCopy = pic.duplicate(pic);
-                                picManip.set(0, picCopy);
-                                picManip.mark('picDraggableCopy');
-                                drawings.piste.add(picManip);
-                                let confImag = {
-                                    drop: (what, whatParent, x, y) => {
-                                        let globalPoints = whatParent.globalPoint(x, y);
-                                        let target = this.sandboxManip.last.getTarget(globalPoints.x, globalPoints.y);
-
-                                        if (target && target == this.sandboxMain.back) {
-                                            let imgForDim = svgr.getDimensionFromImage(what.components[0].src);
-
-                                            let picInPanelManip = new Manipulator(this);
-                                            let picInPanel = new svg.Image(what.components[0].src);
-                                            picInPanel.dimension(imgForDim.width, imgForDim.height);
-                                            picInPanelManip.add(picInPanel);
-
-                                            let localPoints = this.sandboxMain.content.localPoint(x, y);
-                                            picInPanelManip.move(localPoints.x, localPoints.y);
-
-                                            svg.addEvent(picInPanel, 'contextmenu', (event) => {
-                                                this.selectElement(picInPanel);
-                                                this.imageRightClick(picInPanel, picInPanelManip, event);
-                                            });
-                                            svg.addEvent(picInPanel, 'click', event => {
-                                                this.selectElement(picInPanel);
-                                            })
-
-                                            this.sandboxMain.content.add(picInPanelManip.component);
-                                            picInPanel.mark('picElement');
-                                        }
-                                        return {x: what.x, y: what.y, parent: whatParent};
-                                    },
-                                    moved: (what) => {
-                                        what.flush();
-                                        return true;
-                                    }
-                                };
-
-
-                                installDnD(picManip, drawings.component.glass.parent.manipulator.last, confImag);
-                                svg.event(drawings.component.glass, "mousedown", {
-                                    pageX: picManip.x, pageY: picManip.y, preventDefault: () => {
-                                    }
-                                });
-                            };
                             pic.onMouseDown(() => createDraggableCopy(pic));
-
-
                             this.listViewPicture.addManipInIndex(pictureAddManip, 2);
                             this.listViewPicture.refreshListView();
                         });
                     }
-
-
                 };
-
                 const fileExplorerHandler = () => {
                     if (!this.fileExplorer) {
                         let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
@@ -364,58 +358,8 @@ exports.DollAdminV = function (globalVariables) {
                 picAddImageManip.addEvent('click', _createPopUpPicture);
                 picAddImageManip.mark('picAddImageManip');
 
-                let conf = {
-                    drop: (what, whatParent, x, y) => {
-                        let globalPoints = whatParent.globalPoint(x, y);
-                        let target = this.sandboxManip.last.getTarget(globalPoints.x, globalPoints.y);
-
-                        if (target && target == this.sandboxMain.back) {
-                            let imgForDim = svgr.getDimensionFromImage(what.components[0].src);
-
-                            let picInPanelManip = new Manipulator(this);
-                            let picInPanel = new svg.Image(what.components[0].src);
-                            picInPanel.dimension(imgForDim.width, imgForDim.height);
-                            picInPanelManip.add(picInPanel);
-
-                            let localPoints = this.sandboxMain.content.localPoint(x, y);
-                            picInPanelManip.move(localPoints.x, localPoints.y);
-
-                            svg.addEvent(picInPanel, 'contextmenu', (event) => {
-                                this.selectElement(picInPanel);
-                                this.imageRightClick(picInPanel, picInPanelManip, event);
-                            });
-                            svg.addEvent(picInPanel, 'click', event => {
-                                this.selectElement(picInPanel);
-                            })
-
-                            this.sandboxMain.content.add(picInPanelManip.component);
-                            picInPanel.mark('picElement');
-                        }
-                        return {x: what.x, y: what.y, parent: whatParent};
-                    },
-                    moved: (what) => {
-                        what.flush();
-                        return true;
-                    }
-                };
 
                 this.getImages().then((images) => {
-                    var createDraggableCopy = (pic) => {
-                        let picManip = new Manipulator(this).addOrdonator(1);
-                        let point = pic.globalPoint(0, 0);
-                        picManip.move(point.x, point.y);
-                        let picCopy = pic.duplicate(pic);
-                        picManip.set(0, picCopy);
-                        picManip.mark('picDraggableCopy');
-                        drawings.piste.add(picManip);
-
-                        installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
-                        svg.event(drawings.component.glass, "mousedown", {
-                            pageX: picManip.x, pageY: picManip.y, preventDefault: () => {
-                            }
-                        });
-                    };
-
                     images.images.forEach(ele => {
                         let picManip = new Manipulator(this);
                         let pic = new svg.Image(ele.imgSrc).dimension(HEADER_TILE, HEADER_TILE);
