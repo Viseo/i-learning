@@ -378,7 +378,6 @@ exports.Models = function (globalVariables, mockResponses) {
             return apiRequester.updateSingleFormationStars(this.getFormationId(), starId, this.getId());
         }
 
-
         saveNewFormation() {
             const getObjectToSave = () => {
                 if (this.imageSrc) {
@@ -999,22 +998,13 @@ exports.Models = function (globalVariables, mockResponses) {
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
-            this.rects = game.rects || JSON.parse('[{"width":148,"height":119,"globalX":262,"globalY":102.9375,"fillColor":[25,122,230],"strokeColor":[0,0,0]}]')
+            this.elements = game.elements || [];
         }
 
-        save(rects=[]){
-            this.rects = rects.map((rect)=>{
-                return {
-                    width: rect.width,
-                    height: rect.height,
-                    globalX: rect.parentManip.x,
-                    globalY: rect.parentManip.y,
-                    fillColor: rect.fillColor,
-                    strokeColor: rect.strokeColor,
-                    layerIndex: rect.layerIndex
-                }
-            })
-            console.log(this.rects);
+        save(elements=[]){
+            this.elements = elements;
+            console.log(this.elements);
+            console.log(JSON.stringify(this.elements));
         }
 
         setImage(src) {
@@ -1030,8 +1020,8 @@ exports.Models = function (globalVariables, mockResponses) {
             return 'undone';
         }
 
-        getRects(){
-            return this.rects;
+        getElements(){
+            return this.elements;
         }
     }
 
