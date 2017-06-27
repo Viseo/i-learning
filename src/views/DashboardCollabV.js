@@ -258,12 +258,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 strokeColor: myColors.brown
             };
 
-            const overColor = {
-                fillColor: myColors.ultraLightGrey,
-                strokeWidth: 0.1,
-                strokeColor: myColors.brown
-            };
-
             const ratingColor = {
                 fillColor: myColors.yellow,
                 strokeWidth: 0.2,

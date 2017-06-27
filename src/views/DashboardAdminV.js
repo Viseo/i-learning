@@ -64,7 +64,8 @@ exports.DashboardAdmin = function (globalVariables) {
                 publishedIcon.position(editedCaption.x + editedCaption.boundingRect().width + MARGIN + publishedIcon.getSize(), 0);
                 publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize() * 2 + 2 * MARGIN, 6.6);
                 let positionCaption = {
-                    x: drawing.width - 4 * editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 3 * MARGIN,
+                    x: Math.max(drawing.width - 4 * editedIcon.getSize() - editedCaption.boundingRect().width
+                        - publishedCaption.boundingRect().width - 3 * MARGIN, 550),
                     y: this.header.height + publishedIcon.getSize() + MARGIN
                 };
                 captionManipulator.move(positionCaption.x, positionCaption.y);
@@ -290,11 +291,11 @@ exports.DashboardAdmin = function (globalVariables) {
                 .position(borderLibrary.width / 2 - BUTTON_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - BUTTON_SIZE.h / 2 - MARGIN);
             addPictureButton.text.font(FONT, 13, 12).color(myColors.white).position(0, 4.33);
             addPictureButton.glass.mark('addPictureButtonGlass');
-            this.mediasManipulator.add(borderLibrary);
-            this.mediasManipulator.add(mediaPanel.component);
-            this.mediasManipulator.add(titleLibraryBack);
-            this.mediasManipulator.add(titleLibrary);
-            this.mediasManipulator.add(addPictureButton.component);
+            this.mediasManipulator.add(borderLibrary)
+                .add(mediaPanel.component)
+                .add(titleLibraryBack)
+                .add(titleLibrary)
+                .add(addPictureButton.component);
 
             _displayRedCross();
             _displayPictures();
