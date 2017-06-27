@@ -1394,9 +1394,11 @@ exports.DollAdminV = function (globalVariables) {
                 if (this.selectedElement) {
                     if (this.selectedElement.parentManip) {
                         this.selectedElement.parentManip.flush();
+                        this.sandboxMain.content.remove(this.selectedElement.parentManip.component)
                     }
                     else if (this.selectedElement.component) {
                         this.selectedElement.component.parentManip.flush();
+                        this.sandboxMain.content.remove(this.selectedElement.component.parentManip.component)
                     }
                     this.selectedElement = null;
                 }
