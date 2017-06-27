@@ -322,10 +322,10 @@ exports.Lists = function (globalVariables) {
             })
         }
 
-        copySelectItem(index) {
-            let copyElement = new SelectItem(this.itemWidth, this.itemHeight, this.list[index].getText(),0);
-            return copyElement;
-        }
+        // copySelectItem(index) {
+        //     let copyElement = new SelectItem(this.itemWidth, this.itemHeight, this.list[index].getText(),0);
+        //     return copyElement;
+        // }
 
         corners(radiusX, radiusY) {
             this.list.forEach(selectItem => {
@@ -347,7 +347,7 @@ exports.Lists = function (globalVariables) {
         }
 
         removeItem(index) {
-
+            this.list.remove(this.getSelectedItem(index));
         }
 
         setClickAction(clickHandler) {
@@ -456,7 +456,7 @@ exports.Lists = function (globalVariables) {
 
         }
 
-        setClickAction(clickHandler, flag) {
+        setClickAction(clickHandler, flag) {    // flag == false => afficher la liste SelectItemList
             this.manipulator.addEvent('click', ()=>clickHandler(this, flag));
         }
 
