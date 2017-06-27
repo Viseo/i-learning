@@ -293,7 +293,7 @@ exports.Lists = function (globalVariables) {
     }
 
     class SelectItemList {
-        constructor(width, height, numberItems = 1, selectItemViewElement, rootItemLabel = "") {
+        constructor(width, height, selectItemViewElement, rootItemLabel = "") {
             this.list = [];
             this.itemWidth = width;
             this.itemHeight = height;
@@ -353,6 +353,12 @@ exports.Lists = function (globalVariables) {
         setClickAction(clickHandler) {
             this.list.forEach(selectItem => {
                 selectItem.setClickAction(clickHandler, true);
+            })
+        }
+
+        setClickAction(clickHandler, ruleIndex) {   // complete or progress solutions
+            this.list.forEach(selectItem => {
+                selectItem.setClickAction(clickHandler, true, ruleIndex);
             })
         }
 
@@ -452,6 +458,10 @@ exports.Lists = function (globalVariables) {
 
         setClickAction(clickHandler, flag) {
             this.manipulator.addEvent('click', ()=>clickHandler(this, flag));
+        }
+
+        setClickAction(clickHandler, flag, ruleIndex) { // complete or progress solutions
+            this.manipulator.addEvent('click', ()=>clickHandler(this, flag, ruleIndex));
         }
 
         _setRectBgdColor(color) {
