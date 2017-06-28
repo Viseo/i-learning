@@ -512,6 +512,10 @@ exports.Lists = function (globalVariables) {
                 let manip = new Manipulator(this);
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);
+                choice.onClick(() => {
+                    // TODO changer valeur selectButton
+                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
+                })
                 manip.add(choice.component);
 
                 this.listView.add(manip);
@@ -526,6 +530,23 @@ exports.Lists = function (globalVariables) {
     
             this.manipulator.add(this.selectButton.component);
         }
+
+        getSelectButtonText(button) {
+            return button.text.getMessageText();
+        }
+
+        hideListView() {
+            this.manipulator.remove(this.listView.manipulator);
+        }
+
+        setSelectButtonText(label) {
+            this.selectButton.text.message(label);
+        }
+
+        setHandlerChangeValue(handler) {
+            this.onClickChangeValueHandler = handler;
+        }
+
     }
 
     return {
