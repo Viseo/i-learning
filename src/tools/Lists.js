@@ -21,7 +21,7 @@ exports.Lists = function (globalVariables) {
                 this.marge = marge;
 
                 this.eleDim = {w: eleW + this.marge, h: eleH + this.marge};
-                this.listDim = (direction == "V") ? {w : listW, h: listH - (MARGIN+chevronH)*2} : {w : listW - (MARGIN+chevronW)*2, h: listH} ;
+                this.listDim = (direction == "V") ? {w : listW, h: listH - chevronH*2} : {w : listW - chevronW*2, h: listH} ;
                 this.chevronDim = {w: chevronW - MARGIN, h:chevronH - MARGIN, thickness: chevronThickness};
             };
             this.direction = direction;
@@ -60,7 +60,7 @@ exports.Lists = function (globalVariables) {
                     this._showActualChevron();
                 };
 
-                this.nbElementToshow = Math.floor((this.listDim.h - this.marge) / this.eleDim.h);
+                this.nbElementToshow = Math.floor(this.listDim.h/ this.eleDim.h);
 
                 this.border = new svg.Rect(listW, listH);
                 this.chevronManip.add(this.border);
@@ -100,7 +100,7 @@ exports.Lists = function (globalVariables) {
                     this._showActualChevron();
                 };
 
-                this.nbElementToshow = Math.floor((this.listDim.w - this.marge) / this.eleDim.w);
+                this.nbElementToshow = Math.floor(this.listDim.w/ this.eleDim.w);
                 this.border = new svg.Rect(listW, listH);
                 this.chevronManip.add(this.border);
                 if (chevronW !=0 && chevronH !=0) {
@@ -492,7 +492,7 @@ exports.Lists = function (globalVariables) {
 
             let chevronSize = {w: 100, h: 30};
 
-            this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h + MARGIN*2,
+            this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h*2,
                 chevronSize.w, chevronSize.h, this.width, this.height, 10);
             listElements.forEach(ele => {
                 let manip = new Manipulator(this);
