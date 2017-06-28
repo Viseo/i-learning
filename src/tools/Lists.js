@@ -13,6 +13,8 @@ exports.Lists = function (globalVariables) {
                     chevronThickness, color = myColors.white, marge = 0) {
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this);
+                this.chevronsLTManipulator = new Manipulator(this);
+                this.chevronsRDManipulator = new Manipulator(this);
                 this.contentManip = new Manipulator(this);
                 this.chevronManip = new Manipulator(this);
                 this.manipulator.add(this.chevronManip).add(this.component);
@@ -47,6 +49,7 @@ exports.Lists = function (globalVariables) {
                 enumerable: true
             })
 
+
             if(direction == "V"){
                 var onClickChevronTop = () => {
                     this.indexShow++;
@@ -66,19 +69,29 @@ exports.Lists = function (globalVariables) {
                 this.chevronManip.add(this.border);
                 if (chevronW !=0 && chevronH !=0) {
                     let posYChevron = (listH - chevronH)/2;
+
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
                         .position(0, -posYChevron)
                         .mark('listChevronTop');
+                    this.chevrons.top.border =  new svg.Rect(listW-2, chevronH-2)
+                        .color(color, 0, myColors.yellow).position(0, -posYChevron);
+                    this.chevronsLTManipulator
+                        .add(this.chevrons.top.border)
+                        .add(this.chevrons.top);
+
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
                         .position(0, posYChevron)
                         .mark('listChevronBottom');
-                    this.chevronManip
-                        .add(this.chevrons.top)
+                    this.chevrons.down.border =  new svg.Rect(listW-2, chevronH-2)
+                        .color(color, 0, myColors.yellow).position(0, posYChevron);
+                    this.chevronsRDManipulator
+                        .add(this.chevrons.down.border)
                         .add(this.chevrons.down);
-                    this.chevrons.top.onClick(onClickChevronTop);
-                    this.chevrons.down.onClick(onClickChevronDown);
+
+                    this.chevronsLTManipulator.addEvent('click', onClickChevronTop);
+                    this.chevronsRDManipulator.addEvent('click', onClickChevronDown);
                 }
                 let heighView = listH - (MARGIN + this.chevronDim.h)*2;
 
@@ -108,16 +121,25 @@ exports.Lists = function (globalVariables) {
                     this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
                         .color(myColors.black, 0, myColors.none)
                         .position(-posXChevron, 0)
-                        .mark('listChevronLeft')
+                        .mark('listChevronLeft');
+                    this.chevrons.left.border =  new svg.Rect(chevronW-2, listH-2)
+                        .color(color, 0, myColors.black).position(-posXChevron, 0);
+                    this.chevronsLTManipulator
+                        .add(this.chevrons.left.border)
+                        .add(this.chevrons.left);
+
                     this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
                         .color(myColors.black, 0, myColors.none)
                         .position( posXChevron, 0)
                         .mark('listChevronRight');
-                    this.chevronManip
-                        .add(this.chevrons.left)
+                    this.chevrons.right.border =  new svg.Rect(chevronW-2, listH-2)
+                        .color(color, 0, myColors.black).position(posXChevron, 0);
+                    this.chevronsRDManipulator
+                        .add(this.chevrons.right.border)
                         .add(this.chevrons.right);
-                    this.chevrons.left.onClick(onClickChevronLeft);
-                    this.chevrons.right.onClick(onClickChevronRight);
+
+                    this.chevronsLTManipulator.addEvent('click', onClickChevronLeft);
+                    this.chevronsRDManipulator.addEvent('click', onClickChevronRight);
                 }
                 let widthView = listW - (MARGIN + this.chevronDim.w)*2;
 
@@ -127,6 +149,9 @@ exports.Lists = function (globalVariables) {
                 this.view = new svg.Drawing(widthView, listH)
                     .position(-widthView / 2, -listH / 2);
             }
+            this.chevronManip
+                .add(this.chevronsLTManipulator)
+                .add(this.chevronsRDManipulator);
 
             this.border.color(color, 1, myColors.black).corners(5);
 
@@ -195,31 +220,23 @@ exports.Lists = function (globalVariables) {
 
         _showActualChevron(){
             var _showAllChevron = () => {
-                this.chevrons.left && this.chevronManip.add(this.chevrons.left);
-                this.chevrons.right && this.chevronManip.add(this.chevrons.right);
-                this.chevrons.top && this.chevronManip.add(this.chevrons.top);
-                this.chevrons.down && this.chevronManip.add(this.chevrons.down);
+                this.chevronManip.add(this.chevronsLTManipulator);
+                this.chevronManip.add(this.chevronsRDManipulator);
             };
 
             var _showOnlyLeftOrTopChevron = () => {
-                this.chevrons.left && this.chevronManip.add(this.chevrons.left);
-                this.chevrons.top && this.chevronManip.add(this.chevrons.top);
-                this.chevrons.right && this.chevronManip.remove(this.chevrons.right);
-                this.chevrons.down && this.chevronManip.remove(this.chevrons.down);
+                this.chevronManip.add(this.chevronsLTManipulator);
+                this.chevronManip.remove(this.chevronsRDManipulator);
             };
 
             var _showOnlyRightOrDownChevron = () => {
-                this.chevrons.left && this.chevronManip.remove(this.chevrons.left);
-                this.chevrons.top && this.chevronManip.remove(this.chevrons.top);
-                this.chevrons.right && this.chevronManip.add(this.chevrons.right);
-                this.chevrons.down && this.chevronManip.add(this.chevrons.down);
+                this.chevronManip.add(this.chevronsRDManipulator);
+                this.chevronManip.remove(this.chevronsLTManipulator);
             };
 
             var _hideAllQuestionChevron = () => {
-                this.chevrons.left && this.chevronManip.remove(this.chevrons.left);
-                this.chevrons.top && this.chevronManip.remove(this.chevrons.top);
-                this.chevrons.right && this.chevronManip.remove(this.chevrons.right);
-                this.chevrons.down && this.chevronManip.remove(this.chevrons.down);
+                this.chevronManip.remove(this.chevronsLTManipulator);
+                this.chevronManip.remove(this.chevronsRDManipulator);
             };
 
             if(this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length){
