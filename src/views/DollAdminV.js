@@ -760,28 +760,30 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         displaySolutions() {
-            var _clickListHandler = (choiceButton) => {
-                let newLabel = objectifSelectList.getSelectButtonText(choiceButton);
-                    objectifSelectList.setSelectButtonText(newLabel);
-                    objectifSelectList.hideListView();
+            var _clickListHandler = (newValue) => {
+                //todo charger lebody selon la valeur
             };
-            let solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
-            let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2*PANEL_SIZE.h)
-                .color(myColors.white, 1, myColors.grey)
-                .corners(2,2);
-            let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
-        .font('Arial', 18)
-        .anchor('left')
-        .position(-PANEL_SIZE.w/2 + MARGIN, -solutionsHeader.height/5);
+            var _createSolutionsHeader = () => {
+                this.solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
+                let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2*PANEL_SIZE.h)
+                    .color(myColors.white, 1, myColors.grey)
+                    .corners(2,2);
+                let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
+                    .font('Arial', 18)
+                    .anchor('left')
+                    .position(-PANEL_SIZE.w/2 + MARGIN, -solutionsHeader.height/5);
 
-            let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
-            objectifSelectList.setHandlerChangeValue(_clickListHandler);
-            solutionsHeaderManipulator
-                .add(solutionsHeader)
-                .add(headerTitle)
-                .add(objectifSelectList.manipulator);
-            solutionsHeaderManipulator.move(0,solutionsHeader.height/2 - PANEL_SIZE.h/2);
-            this.mainPanelManipulator.add(solutionsHeaderManipulator);
+                let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
+                objectifSelectList.setHandlerChangeValue(_clickListHandler);
+                this.solutionsHeaderManipulator
+                    .add(solutionsHeader)
+                    .add(headerTitle)
+                    .add(objectifSelectList.manipulator);
+                this.solutionsHeaderManipulator.move(0,solutionsHeader.height/2 - PANEL_SIZE.h/2);
+            };
+
+            !this.solutionsHeaderManipulator && _createSolutionsHeader();
+            this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
         }
 
 

@@ -513,9 +513,10 @@ exports.Lists = function (globalVariables) {
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);
                 choice.onClick(() => {
-                    // TODO changer valeur selectButton
                     this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
-                })
+                    this.setSelectButtonText(ele);
+                    this.hideListView();
+                });
                 manip.add(choice.component);
 
                 this.listView.add(manip);
