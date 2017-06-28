@@ -95,8 +95,6 @@ exports.Lists = function (globalVariables) {
                 }
                 let heighView = listH - (MARGIN + this.chevronDim.h)*2;
 
-                this.height = listH + this.chevronDim.h;
-                this.width = listW;
                 this.contentManip.move(listW/2, eleH/2);
                 this.view = new svg.Drawing(listW, heighView)
                     .position(-listW / 2, -heighView / 2);
@@ -142,13 +140,12 @@ exports.Lists = function (globalVariables) {
                     this.chevronsRDManipulator.addEvent('click', onClickChevronRight);
                 }
                 let widthView = listW - (MARGIN + this.chevronDim.w)*2;
-
-                this.height = listH;
-                this.width = listW + this.chevronDim.w;
                 this.contentManip.move(eleW/2, listH/2);
                 this.view = new svg.Drawing(widthView, listH)
                     .position(-widthView / 2, -listH / 2);
             }
+            this.height = listH;
+            this.width = listW;
             this.chevronManip
                 .add(this.chevronsLTManipulator)
                 .add(this.chevronsRDManipulator);
@@ -520,7 +517,7 @@ exports.Lists = function (globalVariables) {
                 this.listView.add(manip);
             });
             this.listView.refreshListView();
-            this.listView.manipulator.move(0, (this.listView.height)/2);
+            this.listView.manipulator.move(0, (this.listView.height + this.height)/2);
 
 
             this.selectButton.onClick(() => {

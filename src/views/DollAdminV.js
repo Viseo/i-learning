@@ -30,6 +30,7 @@ exports.DollAdminV = function (globalVariables) {
         HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN,
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
         NB_ELEMENT_RIGHT_CLICK = 3,
+        CHEVRON_RCLICK_SIZE =  {w: 75, h: 20},
         IMAGE_SIZE = {w: 30, h: 30};
 
     class DollAdminV extends View {
@@ -638,7 +639,7 @@ exports.DollAdminV = function (globalVariables) {
             objectivesAddButton.onClick(addObjectiveHandler);
 
             this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2 * MARGIN,
-                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - objectivesAddButton.height - MARGIN * 4, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - objectivesAddButton.height - MARGIN * 3, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.objectivesList.position(0, this.objectivesList.height / 2 + objectivesHeader.height / 2 + objectivesAddButton.height + 2 * MARGIN);
             this.objectivesList.markDropID('objectivesDrop')
 
@@ -735,7 +736,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesAddButton.onClick(addResponseHandler);
 
             this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2 * MARGIN,
-                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - responsesAddButton.height - MARGIN * 4, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - responsesAddButton.height - MARGIN * 3, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
             this.responsesList.markDropID('responsesDrop')
 
@@ -1185,7 +1186,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1267,7 +1269,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1540,7 +1543,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
