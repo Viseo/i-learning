@@ -7,8 +7,8 @@ exports.DollCollabV = function(globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
-        drawings = globalVariables.drawings,
-        installDnD = globalVariables.gui.installDnD;
+        ListManipulatorView = globalVariables.Lists.ListManipulatorView,
+        resizeStringForText = globalVariables.Helpers.resizeStringForText;
 
     class DollCollabV extends View{
         constructor(presenter){
@@ -18,12 +18,12 @@ exports.DollCollabV = function(globalVariables) {
         display(){
             var _declareManip = () => {
                 this.sandboxManip = new Manipulator(this);
-                this.goalManip = new Manipulator(this);
+                this.objectivesManip = new Manipulator(this);
                 this.responseManip = new Manipulator(this);
                 this.actionbuttonZoneManip = new Manipulator(this);
                 this.manipulator
                     .add(this.sandboxManip)
-                    .add(this.goalManip)
+                    .add(this.objectivesManip)
                     .add(this.responseManip)
                     .add(this.actionbuttonZoneManip);
             };
@@ -38,12 +38,12 @@ exports.DollCollabV = function(globalVariables) {
             };
             this.actionButtonZoneSize = {w: this.statementDim.w, h: this.statementDim.h/6};
 
-            this.goalSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2 };
+            this.objectivesSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2 };
             this.responseSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2};
 
             this._displaySandbox();
-            this._displayGoal();
-            this._displayResponse();
+            this._displayObjectives();
+            this._displayResponses();
             this._displayButtonZone();
         }
 
@@ -64,7 +64,6 @@ exports.DollCollabV = function(globalVariables) {
                         manip.add(elem);
                         break;
                     case 'text':
-                        console.log(elemDetails)
                         elem = new svg.Text(elemDetails.textMessage)
                             .font(FONT, 32)
                             .dimension(elemDetails.width, elemDetails.height)
@@ -93,40 +92,77 @@ exports.DollCollabV = function(globalVariables) {
             });
         }
 
-        _displayGoal(){
-            let goalBorder = new svg.Rect(this.goalSize.w, this.goalSize.h);
-            goalBorder.corners(5);
-            goalBorder.color(myColors.white, 1 , myColors.grey);
-            this.goalManip.add(goalBorder);
-            this.goalManip.move(this.statementDim.w + this.goalSize.w/2 + 2*MARGIN, this.goalSize.h/2 + this.header.height + MARGIN);
-
-            let sizeElement = {w: 0, h: goalBorder.height/10};
-
-            this.getGoals().forEach((ele, index) => {
-                let guiElement = new svg.Text(ele.label);
-                guiElement.font("arial", 20).anchor('start');
-                guiElement.position(-goalBorder.width/3 + MARGIN, -goalBorder.height/2 + sizeElement.h/2 + MARGIN + index*(sizeElement.h+MARGIN));
-                this.goalManip.add(guiElement);
+        _displayObjectives(){
+            let objectivesHeader = new svg.Rect(this.objectivesSize.w, this.objectivesSize.h * 0.2)
+                .color(myColors.lightgrey, 1, myColors.grey)
+                .corners(2, 2);
+            objectivesHeader.position(0, -this.objectivesSize.h/2 + objectivesHeader.height/2);
+            let objectivesTitle = new svg.Text('Objectifs : ')
+                .font(FONT, 20)
+                .anchor('left')
+                .position(-this.objectivesSize.w/2+MARGIN, objectivesHeader.y);
+            resizeStringForText(objectivesTitle, this.objectivesSize.w - 2 * MARGIN, 15);
+            let objectivesBody = new svg.Rect(this.objectivesSize.w, this.objectivesSize.h*0.8)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(2, 2)
+            objectivesBody.position(0, -this.objectivesSize.h/2 + objectivesHeader.height + objectivesBody.height/2);
+            let objectives = this.getObjectives().map((ele) => {
+                let manip = new Manipulator(this);
+                let guiElement = new svg.Text(ele.label).font(FONT, 20);
+                manip.add(guiElement);
+                return manip;
             });
+            this.objectivesList = new ListManipulatorView(
+                objectives,
+                'V',
+                this.objectivesSize.w - 2*MARGIN, this.objectivesSize.h*0.8 - 2*MARGIN,
+                75, 25,
+                this.objectivesSize.w - 2*MARGIN, 27,
+                5
+            )
+            this.objectivesList.position(0, objectivesBody.y )
+            this.objectivesManip.add(objectivesHeader).add(objectivesTitle).add(objectivesBody).add(this.objectivesList.manipulator);
+            this.objectivesManip.move(this.statementDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
+            this.objectivesList.refreshListView();
         }
 
-        _displayResponse(){
-            let responseBorder = new svg.Rect(this.responseSize.w, this.responseSize.h);
-            responseBorder.corners(5);
-            responseBorder.color(myColors.white, 1 , myColors.grey);
-            this.responseManip.add(responseBorder);
+        _displayResponses(){
+            let responsesHeader = new svg.Rect(this.responseSize.w, this.responseSize.h*0.2)
+                .color(myColors.lightgrey, 1, myColors.grey)
+                .corners(2, 2);
+            responsesHeader.position(0, -this.responseSize.h/2 + responsesHeader.height/2);
+            let responsesTitle = new svg.Text('Réponses : ')
+                .font(FONT, 20)
+                .anchor('left')
+                .position(-this.responseSize.w/2+MARGIN, responsesHeader.y);
+            resizeStringForText(responsesTitle, this.responseSize.w - 2 * MARGIN, 15);
+            let responsesBody = new svg.Rect(this.responseSize.w, this.responseSize.h*0.8)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(2, 2)
+            responsesBody.position(0, -this.responseSize.h/2 + responsesHeader.height + responsesBody.height/2);
+            let responses = this.getResponses().map((ele)=> {
+                let manip = new Manipulator(this);
+                let guiElement = new svg.Text(ele.label).font(FONT, 20);
+                manip.add(guiElement);
+                return manip;
+            })
+            this.responsesList = new ListManipulatorView(
+                responses,
+                'V',
+                this.responseSize.w - 2*MARGIN, this.responseSize.h*0.8 - 2*MARGIN,
+                    75, 25,
+                this.responseSize.w - 2*MARGIN, 27,
+                    5
+            )
+            this.responsesList.position(0,responsesBody.y);
+            this.responseManip
+                .add(responsesHeader)
+                .add(responsesTitle)
+                .add(responsesBody)
+                .add(this.responsesList.manipulator);
             this.responseManip.move(this.statementDim.w + this.responseSize.w/2 + 2*MARGIN,
-                (this.goalSize.h+this.responseSize.h/2) + this.header.height + 2*MARGIN);
-
-
-            let sizeElement = {w: 0, h: responseBorder.height/10};
-
-            this.getResponses().forEach((ele, index) => {
-                let guiElement = new svg.Text(ele.label);
-                guiElement.font("arial", 20).anchor('start');
-                guiElement.position(-responseBorder.width / 3 + MARGIN, -responseBorder.height / 2 + sizeElement.h / 2 + MARGIN + index * (sizeElement.h + MARGIN));
-                this.responseManip.add(guiElement);
-            });
+                (this.objectivesSize.h+this.responseSize.h/2) + this.header.height + 2*MARGIN);
+            this.responsesList.refreshListView();
         }
 
 
@@ -144,7 +180,7 @@ exports.DollCollabV = function(globalVariables) {
             buttonNext.position(buttonSize.w*2 - MARGIN, 0);
 
             this.actionbuttonZoneManip.move(this.statementDim.w + this.actionButtonZoneSize.w/2 + 2*MARGIN,
-                (this.goalSize.h+this.responseSize.h + buttonSize.h/2) + this.header.height + 3*MARGIN);
+                (this.objectivesSize.h+this.responseSize.h + buttonSize.h/2) + this.header.height + 3*MARGIN);
 
             this.actionbuttonZoneManip
                 .add(buttonPrevious.component)
@@ -156,7 +192,7 @@ exports.DollCollabV = function(globalVariables) {
             return this.presenter.getElements();
         }
 
-        getGoals(){
+        getObjectives(){
             //todo impleter avec presenter
             let goals = [
                 {label : "goal 1"},
@@ -164,6 +200,22 @@ exports.DollCollabV = function(globalVariables) {
                 {label : "goal 3"},
                 {label : "goal 4"},
                 {label : "goal 4"},
+                {label : "goal 1"},
+                {label : "goal 2"},
+                {label : "goal 3"},
+                {label : "goal 4"},
+                {label : "goal 4"},
+                {label : "goal 1"},
+                {label : "goal 2"},
+                {label : "goal 3"},
+                {label : "goal 4"},
+                {label : "goal 4"},
+                {label : "goal 1"},
+                {label : "goal 2"},
+                {label : "goal 3"},
+                {label : "goal 4"},
+                {label : "goal 4"},
+
             ];
             return goals;
         }
@@ -171,6 +223,18 @@ exports.DollCollabV = function(globalVariables) {
         getResponses(){
             //todo impleter avec presenter
             let responses = [
+                {label : "response 1"},
+                {label : "response 2"},
+                {label : "response 3"},
+                {label : "response 4"},
+                {label : "response 4"},
+                {label : "response 4"},
+                {label : "response 1"},
+                {label : "response 2"},
+                {label : "response 3"},
+                {label : "response 4"},
+                {label : "response 4"},
+                {label : "response 4"},
                 {label : "response 1"},
                 {label : "response 2"},
                 {label : "response 3"},
