@@ -1003,10 +1003,22 @@ exports.Models = function (globalVariables, mockResponses) {
             this.valid = true //TODO changer en this.valid = game.valid
         }
 
-        save(elements=[]){
+        save(elements=[], formationId){
             this.elements = elements;
-            console.log(this.elements);
-            console.log(JSON.stringify(this.elements));
+            const completeDollMessage = "Les modifications ont bien été enregistrées",
+                errorDollMessage = "Erreur";
+            return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex)
+                .then((data) => {
+                    let answer = JSON.parse(data);
+                    if (answer.valid) {
+                        return {message: completeDollMessage, status: true};
+                    }// } else {
+                    //     return {message: incompleteQuizMessage, status: false};
+                    // }
+                }).catch(error => {
+                    console.log(error);
+                    return {message: errorDollMessage, status: false};
+                });
         }
 
         setImage(src) {

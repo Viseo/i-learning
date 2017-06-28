@@ -38,7 +38,7 @@ module.exports = function (app) {
 
     app.post('/formations/quiz', function (req, res) {
         formations.getFormationById(req.body.formationId).then(formation => {
-            return formations.replaceQuiz({
+            return formations.replaceGame({
                 level: req.body.levelIndex,
                 game: req.body.gameIndex,
                 valid: req.body.valid
@@ -52,6 +52,21 @@ module.exports = function (app) {
             res.send({ack: 'error'})
         });
     });
+
+    app.post('/formations/doll', function (req,res){
+        formations.getFormationById(req.body.formationId).then(formation => {
+            return formations.replaceGame({
+                level: req.body.levelIndex,
+                game: req.body.gameIndex
+            }, req.body.newDoll, formation)
+                .then(data => {
+                    res.send({valid: true});
+                })
+        }).catch(err => {
+            console.log(err);
+            res.send({ack: 'error'})
+        });
+    })
 
     app.post('/formations/userFormationEval/:id', function (req, res) {
         let userNote = req.body.starId.split('')[req.body.starId.length - 1];

@@ -56,7 +56,7 @@ exports.DollAdminP = function (globalVariables) {
                     globalY: elem.parentManip.y,
                     layerIndex: index
                 }, options);
-            }));
+            }), this.state.formation.formationId);
         }
     }
     return DollAdminP;

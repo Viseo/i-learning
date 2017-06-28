@@ -228,7 +228,7 @@ const updateNote = (req, versionId, note) => {
     })
 };
 
-const replaceQuiz = (indexes, game, formation) => {
+const replaceGame = (indexes, game, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         let version = {};
@@ -320,7 +320,7 @@ exports.deactivateFormation = deactivateFormation;
 exports.getLastVersions = getLastVersions;
 exports.getAllFormations = getAllFormations;
 exports.newVersion = newVersion;
-exports.replaceQuiz = replaceQuiz;
+exports.replaceGame = replaceGame;
 exports.getFormationByVersionId = getFormationByVersionId;
 exports.updateNote = updateNote;
 exports.updateImage = updateImage;
