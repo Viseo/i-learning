@@ -998,7 +998,9 @@ exports.Models = function (globalVariables, mockResponses) {
             this.id = game.id;
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
+            console.log(game.elements)
             this.elements = game.elements || [];
+            this.valid = true //TODO changer en this.valid = game.valid
         }
 
         save(elements=[]){

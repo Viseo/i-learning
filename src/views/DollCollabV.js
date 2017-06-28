@@ -6,7 +6,9 @@ exports.DollCollabV = function(globalVariables) {
         Manipulator = globalVariables.Handlers.Manipulator,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        drawing = globalVariables.drawing;
+        drawing = globalVariables.drawing,
+        drawings = globalVariables.drawings,
+        installDnD = globalVariables.gui.installDnD;
 
     class DollCollabV extends View{
         constructor(presenter){
@@ -15,12 +17,12 @@ exports.DollCollabV = function(globalVariables) {
 
         display(){
             var _declareManip = () => {
-                this.statementManip = new Manipulator(this);
+                this.sandboxManip = new Manipulator(this);
                 this.goalManip = new Manipulator(this);
                 this.responseManip = new Manipulator(this);
                 this.actionbuttonZoneManip = new Manipulator(this);
                 this.manipulator
-                    .add(this.statementManip)
+                    .add(this.sandboxManip)
                     .add(this.goalManip)
                     .add(this.responseManip)
                     .add(this.actionbuttonZoneManip);
@@ -39,40 +41,56 @@ exports.DollCollabV = function(globalVariables) {
             this.goalSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2 };
             this.responseSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2};
 
-            this._displayStatement();
+            this._displaySandbox();
             this._displayGoal();
             this._displayResponse();
             this._displayButtonZone();
         }
 
-        _displayStatement(){
-            let statementBorder = new svg.Rect(this.statementDim.w, this.statementDim.h);
-            statementBorder.color(myColors.white, 1 , myColors.grey).corners(5);
-            this.statementManip.add(statementBorder);
-            this.statementManip.move(this.statementDim.w/2 + MARGIN, this.statementDim.h/2 + this.header.height + MARGIN);
+        _displaySandbox(){
+            this.sandboxMain = new gui.Panel(this.statementDim.w, this.statementDim.h, myColors.white);
+            this.sandboxMain.border.corners(2, 2).color(myColors.none, 1, myColors.black);
+            this.sandboxManip.add(this.sandboxMain.component);
+            this.sandboxManip.move(this.statementDim.w/2 + MARGIN, this.statementDim.h/2 + this.header.height + MARGIN);
 
-            let sizeElement = {w : statementBorder.width/2, h: statementBorder.height/5}
-
-            this.getStatements().forEach((ele, index) => {
-                switch (ele.type){
-                    case "Textarea":
-                        let textField = new gui.TextField(0, -statementBorder.height/2 + sizeElement.h/2 + MARGIN + index*(sizeElement.h+MARGIN),
-                            sizeElement.w, sizeElement.h, "Zone Text");
-                        this.statementManip.add(textField.component);
+            this.getElements().forEach((elemDetails, index)=>{
+                let manip = new Manipulator(this);
+                let elem;
+                switch(elemDetails.type){
+                    case 'rect':
+                        elem = new svg.Rect(elemDetails.width, elemDetails.height);
+                        elem.color(elemDetails.fillColor, 1, elemDetails.strokeColor);
+                        elem.mark('rectElement' + index);
+                        manip.add(elem);
                         break;
-                    case "Picture":
-                        let image = new svg.Image(ele.src).dimension(sizeElement.w, sizeElement.h)
-                            .position(0, -statementBorder.height/2 + sizeElement.h/2 + MARGIN + index*(sizeElement.h+MARGIN));
-                        this.statementManip.add(image);
+                    case 'text':
+                        console.log(elemDetails)
+                        elem = new svg.Text(elemDetails.textMessage)
+                            .font(FONT, 32)
+                            .dimension(elemDetails.width, elemDetails.height)
+                            .position(-elemDetails.width/2, 32/3)
+                            .anchor('left')
+                        let border = new svg.Rect(elemDetails.width, elemDetails.height)
+                            .color(elemDetails.fillColor, 1, myColors.black)
+                        manip.add(border).add(elem);
                         break;
-                    case "Rectangle":
-                        let rect = new svg.Rect(sizeElement.w, sizeElement.h).color(myColors.blue, 1, myColors.darkBlue)
-                            .position(0, -statementBorder.height/2 + sizeElement.h/2 + MARGIN + index*(sizeElement.h+MARGIN));
-                        this.statementManip.add(rect);
+                    case 'picture':
+                        elem = new svg.Image(elemDetails.src);
+                        elem.dimension(elemDetails.width, elemDetails.height);
+                        manip.add(elem);
+                        elem.mark('picElement');
+                        break;
+                    case 'help':
+                        elem = new svg.Image('../../images/info.png');
+                        elem.dimension(elemDetails.width, elemDetails.height);
+                        manip.add(elem);
+                        elem.mark('helpElement');
                         break;
                 }
+                elem.type = elemDetails.type;
+                manip.move(elemDetails.globalX, elemDetails.globalY);
+                this.sandboxMain.content.add(manip.component);
             });
-
         }
 
         _displayGoal(){
@@ -134,22 +152,8 @@ exports.DollCollabV = function(globalVariables) {
                 .add(buttonNext.component);
         }
 
-        getStatements(){
-            //todo impleter avec presenter
-            let statements = [
-                {
-                    label : "",
-                    type : "Textarea"
-                },
-                {
-                    src: "../../images/unlink.png",
-                    type : "Picture"
-                },
-                {
-                    type : "Rectangle"
-                }
-            ];
-            return statements;
+        getElements(){
+            return this.presenter.getElements();
         }
 
         getGoals(){

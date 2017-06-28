@@ -18,6 +18,10 @@ exports.DollCollabP = function(globalVariables) {
             return this.doll.getLabel();
         }
 
+        getElements(){
+            return this.doll.getElements();
+        }
+
     }
     return DollCollabP;
 }
