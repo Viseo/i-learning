@@ -499,16 +499,16 @@ exports.Lists = function (globalVariables) {
             this.height = height;
 
             this.manipulator = new Manipulator(this);
-            
+            this.listElements = listElements;
             this.selectButton = new gui.Button(width, height, [myColors.none, 1, myColors.black],
-                (listElements.length > 0) ? listElements[0] : '');
+                (this.listElements.length > 0) ? this.listElements[0] : '');
             this.selectButton.back.corners(5, 5);
 
             let chevronSize = {w: 100, h: 30};
 
             this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h*2,
                 chevronSize.w, chevronSize.h, this.width, this.height, 10);
-            listElements.forEach(ele => {
+            this.listElements.forEach(ele => {
                 let manip = new Manipulator(this);
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);

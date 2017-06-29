@@ -1000,6 +1000,9 @@ exports.Models = function (globalVariables, mockResponses) {
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
             this.rects = game.rects || JSON.parse('[{"width":148,"height":119,"globalX":262,"globalY":102.9375,"fillColor":[25,122,230],"strokeColor":[0,0,0]}]')
+            this.rules = game.rules || [];
+            this.objectives = game.objectives || [];
+
         }
 
         save(rects=[]){
