@@ -808,11 +808,58 @@ exports.DollAdminV = function (globalVariables) {
                     .add(solutionsHeader)
                     .add(headerTitle)
                     .add(objectifSelectList.manipulator);
-                this.solutionsHeaderManipulator.move(0, solutionsHeader.height / 2 - PANEL_SIZE.h / 2);
+                this.solutionsHeaderManipulator.move(0,(solutionsHeader.height - PANEL_SIZE.h)/2);
             };
 
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
             this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
+
+            let solutionBodyCreated = this.createSolutionsBody();
+
+            this.solutionsHeaderManipulator.add(solutionBodyCreated);
+        }
+
+
+        createSolutionsBody(){
+            let onClickAddBestSolution = (w, h) => {
+                let selectItem = new SelectItemList2(this.getSolutions(), w, h);
+                selectItem.setManipShowListAndPosition(listBestSolution.manipulator)
+                selectItem.setHandlerChangeValue(() => {
+
+                });
+                listBestSolution.add(selectItem.manipulator);
+                listBestSolution.refreshListView();
+            };
+
+            let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
+            let chevronSize = {w: 70, h: 30};
+            let solutionBodyManip = new Manipulator(this);
+            solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
+
+
+            let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
+                chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h, 10, myColors.white, 10);
+            listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
+
+            let addBestSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
+                [myColors.white, 1, myColors.black], "Ajouter une solution");
+
+            addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
+                - sizeBody.h/2 + addBestSolutionButton.height);
+            addBestSolutionButton.onClick(() => onClickAddBestSolution(listBestSolution.width *2/3, INPUT_SIZE.h));
+
+
+
+            solutionBodyManip
+                .add(addBestSolutionButton.component)
+                .add(listBestSolution.manipulator);
+
+            return solutionBodyManip;
+        }
+
+
+        getSolutions(){
+            return ["j'adore", "manger", "=___=", "è_é"]
         }
 
 

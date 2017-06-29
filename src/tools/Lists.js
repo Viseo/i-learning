@@ -507,8 +507,8 @@ exports.Lists = function (globalVariables) {
             let chevronSize = {w: 100, h: 30};
 
             this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h*2,
-                chevronSize.w, chevronSize.h, this.width, this.height, 10);
-            this.listElements.forEach(ele => {
+                chevronSize.w, chevronSize.h, this.width, this.height, 10, myColors.lightgrey);
+            listElements.forEach(ele => {
                 let manip = new Manipulator(this);
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);
@@ -526,10 +526,20 @@ exports.Lists = function (globalVariables) {
 
 
             this.selectButton.onClick(() => {
-               this.manipulator.add(this.listView.manipulator);
+                if(this.manipShowList){
+                    this.manipShowList.add(this.listView.manipulator);
+                    //let localP = this.selectButton.component.localPoint();
+                    this.listView.manipulator.move(0, this.selectButton.component.y);
+                }else{
+                    this.manipulator.add(this.listView.manipulator);
+                }
             });
     
             this.manipulator.add(this.selectButton.component);
+        }
+
+        setManipShowListAndPosition(manipShowList, x, y) {
+            this.manipShowList = manipShowList;
         }
 
         getSelectButtonText(button) {
@@ -537,7 +547,11 @@ exports.Lists = function (globalVariables) {
         }
 
         hideListView() {
-            this.manipulator.remove(this.listView.manipulator);
+            if(this.manipShowList){
+                this.manipShowList.remove(this.listView.manipulator);
+            }else{
+                this.manipulator.remove(this.listView.manipulator);
+            }
         }
 
         setSelectButtonText(label) {
