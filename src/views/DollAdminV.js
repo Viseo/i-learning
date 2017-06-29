@@ -39,7 +39,7 @@ exports.DollAdminV = function (globalVariables) {
     class DollAdminV extends View {
         constructor(presenter) {
             super(presenter);
-            this.rules = [];
+            this.rules = false;
             this.textElements = [];
             this.rectElements = this.getRects().map((rectDetails, index)=>{
                 let manip = new Manipulator(this);
