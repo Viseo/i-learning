@@ -22,6 +22,14 @@ exports.DollCollabP = function(globalVariables) {
             return this.doll.getElements();
         }
 
+        getObjectives(){
+            return this.doll.getObjectives();
+        }
+
+        getResponses(){
+            return this.doll.getResponses();
+        }
+
     }
     return DollCollabP;
 }

@@ -24,6 +24,10 @@ exports.DollAdminV = function (globalVariables) {
             w: PANEL_SIZE.w - SANDBOX_SIZE.w - 3 * MARGIN, h: (PANEL_SIZE.h - 6 * MARGIN) / 2,
             header: {w: PANEL_SIZE.w - SANDBOX_SIZE.w, h: 0.2 * (PANEL_SIZE.h - 5 * MARGIN) / 2}
         },
+        LIST_SIZE = {
+            w: RIGHTBOX_SIZE.w - 2 * MARGIN,
+            h: RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - 0.8 * INPUT_SIZE.h - MARGIN * 4
+        },
         TAB_SIZE = {w: 0.1 * PANEL_SIZE.w, h: 0.1 * PANEL_SIZE.h},
         HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN,
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
@@ -34,12 +38,14 @@ exports.DollAdminV = function (globalVariables) {
         constructor(presenter) {
             super(presenter);
             this.rules = false;
-            this.loadElements();
+            this.responses = this.getResponses();
+            this.objectives = this.getObjectives();
+            this.elements = this.loadElements();
             this.declareActions();
         }
 
         loadElements(){
-            this.elements = this.getElements().map((elemDetails, index)=>{
+            return this.getElements().map((elemDetails, index)=>{
                 let manip = new Manipulator(this);
                 let elem;
                 switch(elemDetails.type){
@@ -405,6 +411,10 @@ exports.DollAdminV = function (globalVariables) {
                     w: PANEL_SIZE.w - SANDBOX_SIZE.w - 3 * MARGIN, h: (PANEL_SIZE.h - 6 * MARGIN) / 2,
                     header: {w: PANEL_SIZE.w - SANDBOX_SIZE.w, h: 0.2 * (PANEL_SIZE.h - 5 * MARGIN) / 2}
                 };
+                LIST_SIZE = {
+                    w: RIGHTBOX_SIZE.w - 2 * MARGIN,
+                    h: RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - 0.8 * INPUT_SIZE.h - MARGIN * 4
+                };
                 TAB_SIZE = {w: 0.1 * PANEL_SIZE.w, h: 0.1 * PANEL_SIZE.h};
                 HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN;
             }
@@ -557,11 +567,11 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         displayObjectives() {
-            let createMiniature = () => {
+            let createMiniature = (objective) => {
                 let miniature = {
-                    border: new svg.Line(-this.objectivesList.width / 2 + 2 * MARGIN, 15, this.objectivesList.width / 2 - 2 * MARGIN, 15)
+                    border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
-                    text: new svg.Text(this.objectivesInput.textMessage).font('Arial', 18).position(0, 6),
+                    text: new svg.Text(objective.label).font('Arial', 18).position(0, 6),
                     manip: new Manipulator(this)
                 };
                 miniature.manip.add(miniature.text)
@@ -574,6 +584,8 @@ exports.DollAdminV = function (globalVariables) {
                         let target = this.manipulator.last.getTarget(point.x, point.y);
                         if (!target || target && target.dropID != 'objectivesDrop' || !target.dropID) {
                             this.objectivesList.removeElementFromList(what);
+                            let index = this.objectives.findIndex((obj)=>obj.id===objective.id);
+                            if(index !==-1) this.objectives.splice(index, 1);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -587,6 +599,31 @@ exports.DollAdminV = function (globalVariables) {
                 installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
                 return miniature;
             }
+            let addObjectiveHandler = () => {
+                let newObjective = {label:this.objectivesInput.textMessage, id:1} //TODO id
+                let mini = createMiniature(newObjective);
+                if (mini.text.messageText == '') {
+                    let errorMsg = new svg.Text('Veuiller entrer un texte');
+                    errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
+                        .anchor('left')
+                        .font('Arial', 18)
+                        .color(myColors.red);
+                    resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
+                    objectivesManip.add(errorMsg);
+
+                    svg.timeout(() => {
+                        objectivesManip.remove(errorMsg);
+                    }, 3000);
+                }
+                else {
+                    this.objectives.push(newObjective);
+                    this.objectivesList.add(mini.manip);
+                    this.objectivesList.refreshListView();
+                    this.objectivesInput.message('');
+                }
+
+            }
+
             let objectivesManip = new Manipulator(this);
             let objectivesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -602,63 +639,37 @@ exports.DollAdminV = function (globalVariables) {
             objectivesBody.position(0, objectivesHeader.height / 2 + objectivesBody.height / 2);
             this.objectivesInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black]);
-
             this.objectivesInput.font('Arial', 18);
             this.objectivesInput.position(-RIGHTBOX_SIZE.w / 2 + this.objectivesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.objectivesInput.frame.corners(5, 5);
             let objectivesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
-
             objectivesAddButton.text
                 .font('Arial', 18)
                 .position(0, 6);
             objectivesAddButton.back.corners(5, 5);
             objectivesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - objectivesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
-            let addObjectiveHandler = () => {
-                let mini = createMiniature();
-                if (mini.text.messageText == '') {
-                    let errorMsg = new svg.Text('Veuiller entrer un texte');
-                    errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
-                        .anchor('left')
-                        .font('Arial', 18)
-                        .color(myColors.red);
-                    resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
-                    objectivesManip.add(errorMsg);
-
-                    svg.timeout(() => {
-                        objectivesManip.remove(errorMsg);
-                    }, 3000);
-                }
-                else {
-                    this.objectivesList.add(mini.manip);
-                    this.objectivesList.refreshListView();
-                }
-
-            }
             objectivesAddButton.onClick(addObjectiveHandler);
-
-            this.objectivesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2 * MARGIN,
-                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - objectivesAddButton.height - MARGIN * 4, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+            let objectives = this.objectives.map((obj)=>createMiniature(obj).manip);
+            this.objectivesList = new ListManipulatorView(objectives, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.objectivesList.position(0, this.objectivesList.height / 2 + objectivesHeader.height / 2 + objectivesAddButton.height + 2 * MARGIN);
             this.objectivesList.markDropID('objectivesDrop')
-
             objectivesManip.add(objectivesHeader)
                 .add(objectivesTitle)
                 .add(objectivesBody)
                 .add(objectivesAddButton.component)
                 .add(this.objectivesInput.component)
                 .add(this.objectivesList.manipulator);
-
             objectivesManip.move(PANEL_SIZE.w / 2 - RIGHTBOX_SIZE.w / 2 - MARGIN, 2 * MARGIN - PANEL_SIZE.h / 2 + objectivesHeader.height / 2);
             this.mainPanelManipulator.add(objectivesManip);
             this.objectivesList.refreshListView();
         }
 
         displayResponses() {
-            let createMiniature = () => {
+            let createMiniature = (response)=>{
                 let miniature = {
-                    border: new svg.Line(-this.objectivesList.width / 2 + 2 * MARGIN, 15, this.objectivesList.width / 2 - 2 * MARGIN, 15)
+                    border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
-                    text: new svg.Text(this.responsesInput.textMessage).font('Arial', 18).position(0, 6),
+                    text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
                     manip: new Manipulator(this)
                 };
                 miniature.manip.add(miniature.text)
@@ -671,6 +682,8 @@ exports.DollAdminV = function (globalVariables) {
                         let target = this.manipulator.last.getTarget(point.x, point.y);
                         if (!target || target && target.dropID != 'responsesDrop' || !target.dropID) {
                             this.responsesList.removeElementFromList(what);
+                            let index = this.responses.findIndex((resp)=>resp.id===response.id);
+                            if(index!==-1) this.responses.splice(index, 1);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -684,6 +697,31 @@ exports.DollAdminV = function (globalVariables) {
                 installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
                 return miniature;
             }
+            let addResponseHandler = () => {
+                let newResponse = {label: this.responsesInput.textMessage, id: 1}
+                let mini = createMiniature(newResponse);
+                if (mini.text.messageText == '') {
+                    let errorMsg = new svg.Text('Veuiller entrer un texte');
+                    errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
+                        .anchor('left')
+                        .font('Arial', 18)
+                        .color(myColors.red);
+                    resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
+                    responsesManip.add(errorMsg);
+
+                    svg.timeout(() => {
+                        responsesManip.remove(errorMsg);
+                    }, 3000);
+                }
+                else {
+                    this.responses.push(newResponse);
+                    this.responsesList.add(mini.manip);
+                    this.responsesList.refreshListView();
+                    this.responsesInput.message('');
+                }
+
+            }
+
             let responsesManip = new Manipulator(this);
             let responsesHeader = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h)
                 .color(myColors.lightgrey, 1, myColors.grey)
@@ -699,45 +737,20 @@ exports.DollAdminV = function (globalVariables) {
             responsesBody.position(0, responsesHeader.height / 2 + responsesBody.height / 2);
             this.responsesInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black])
-
             this.responsesInput.font('Arial', 18);
             this.responsesInput.position(-RIGHTBOX_SIZE.w / 2 + this.responsesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.responsesInput.frame.corners(5, 5);
             let responsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
-
             responsesAddButton.text
                 .font('Arial', 18)
                 .position(0, 6);
             responsesAddButton.back.corners(5, 5);
             responsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - responsesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
-            let addResponseHandler = () => {
-                let mini = createMiniature();
-                if (mini.text.messageText == '') {
-                    let errorMsg = new svg.Text('Veuiller entrer un texte');
-                    errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
-                        .anchor('left')
-                        .font('Arial', 18)
-                        .color(myColors.red);
-                    resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
-                    responsesManip.add(errorMsg);
-
-                    svg.timeout(() => {
-                        responsesManip.remove(errorMsg);
-                    }, 3000);
-                }
-                else {
-                    this.responsesList.add(mini.manip);
-                    this.responsesList.refreshListView();
-                }
-
-            }
             responsesAddButton.onClick(addResponseHandler);
-
-            this.responsesList = new ListManipulatorView([], 'V', RIGHTBOX_SIZE.w - 2 * MARGIN,
-                RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - responsesAddButton.height - MARGIN * 4, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+            let responses = this.responses.map((resp)=>createMiniature(resp).manip);
+            this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
             this.responsesList.markDropID('responsesDrop')
-
             responsesManip.add(responsesHeader)
                 .add(responsesTitle)
                 .add(responsesBody)
@@ -747,6 +760,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesManip.move(PANEL_SIZE.w / 2 - RIGHTBOX_SIZE.w / 2 - MARGIN,
                 2 * MARGIN - PANEL_SIZE.h / 2 + responsesHeader.height / 2 + RIGHTBOX_SIZE.h + 2 * MARGIN);
             this.mainPanelManipulator.add(responsesManip);
+            this.responsesList.refreshListView();
         }
 
         displaySolutions() {
@@ -1497,6 +1511,14 @@ exports.DollAdminV = function (globalVariables) {
             return this.presenter.getElements();
         }
 
+        getObjectives(){
+            return this.presenter.getObjectives();
+        }
+
+        getResponses(){
+            return this.presenter.getResponses();
+        }
+
         toggleTabs(bool) {
             if (this.rules != bool) {
                 this.rules = bool;
@@ -1513,7 +1535,12 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         saveDoll() {
-            this.presenter.save(this.elements);
+            this.presenter.save({
+                elements: this.elements,
+                objectives: this.objectives,
+                responses: this.responses,
+                rules: []
+            });
         }
     }
 

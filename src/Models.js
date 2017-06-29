@@ -999,11 +999,17 @@ exports.Models = function (globalVariables, mockResponses) {
             this.levelIndex = game.levelIndex;
             this.imageSrc = game.imageSrc || null;
             this.elements = game.elements || [];
+            this.objectives = game.objectives || [];
+            this.responses = game.responses || [];
+            this.rules = game.rules || [];
             this.valid = true //TODO changer en this.valid = game.valid
         }
 
-        save(elements=[], formationId){
-            this.elements = elements;
+        save(formationId, infos={}){
+            this.elements = infos.elements || [];
+            this.objectives = infos.objectives || [];
+            this.responses = infos.responses || [];
+            this.rules = infos.rules || [];
             const completeDollMessage = "Les modifications ont bien été enregistrées",
                 errorDollMessage = "Erreur";
             return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex)
@@ -1035,6 +1041,14 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getElements(){
             return this.elements;
+        }
+
+        getObjectives(){
+            return this.objectives;
+        }
+
+        getResponses(){
+            return this.responses;
         }
     }
 

@@ -33,13 +33,11 @@ exports.DollCollabV = function(globalVariables) {
             this.displayHeader(this.getLabel());
 
             this.size = {w : drawing.width - 2 * MARGIN, h : drawing.height - this.header.height - 2*MARGIN}
-            this.statementDim = {
-                w: (this.size.w - MARGIN)/2, h: this.size.h
-            };
-            this.actionButtonZoneSize = {w: this.statementDim.w, h: this.statementDim.h/6};
+            this.sandboxDim = {w: this.size.w*2/3, h: this.size.h};
 
-            this.objectivesSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2 };
-            this.responseSize = {w: this.statementDim.w, h: (this.statementDim.h - this.actionButtonZoneSize.h)/2};
+            this.actionButtonZoneSize = {w: this.size.w - this.sandboxDim.w, h: this.size.h/12};
+            this.objectivesSize = {w: this.size.w - this.sandboxDim.w - MARGIN, h: (this.size.h - this.actionButtonZoneSize.h)/2 };
+            this.responseSize = {w: this.size.w - this.sandboxDim.w - MARGIN, h: (this.size.h - this.actionButtonZoneSize.h)/2};
 
             this._displaySandbox();
             this._displayObjectives();
@@ -48,10 +46,10 @@ exports.DollCollabV = function(globalVariables) {
         }
 
         _displaySandbox(){
-            this.sandboxMain = new gui.Panel(this.statementDim.w, this.statementDim.h, myColors.white);
+            this.sandboxMain = new gui.Panel(this.sandboxDim.w, this.sandboxDim.h, myColors.white);
             this.sandboxMain.border.corners(2, 2).color(myColors.none, 1, myColors.black);
             this.sandboxManip.add(this.sandboxMain.component);
-            this.sandboxManip.move(this.statementDim.w/2 + MARGIN, this.statementDim.h/2 + this.header.height + MARGIN);
+            this.sandboxManip.move(this.sandboxDim.w/2 + MARGIN, this.sandboxDim.h/2 + this.header.height + MARGIN);
 
             this.getElements().forEach((elemDetails, index)=>{
                 let manip = new Manipulator(this);
@@ -122,7 +120,7 @@ exports.DollCollabV = function(globalVariables) {
             )
             this.objectivesList.position(0, objectivesBody.y )
             this.objectivesManip.add(objectivesHeader).add(objectivesTitle).add(objectivesBody).add(this.objectivesList.manipulator);
-            this.objectivesManip.move(this.statementDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
+            this.objectivesManip.move(this.sandboxDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
             this.objectivesList.refreshListView();
         }
 
@@ -160,14 +158,14 @@ exports.DollCollabV = function(globalVariables) {
                 .add(responsesTitle)
                 .add(responsesBody)
                 .add(this.responsesList.manipulator);
-            this.responseManip.move(this.statementDim.w + this.responseSize.w/2 + 2*MARGIN,
+            this.responseManip.move(this.sandboxDim.w + this.responseSize.w/2 + 2*MARGIN,
                 (this.objectivesSize.h+this.responseSize.h/2) + this.header.height + 2*MARGIN);
             this.responsesList.refreshListView();
         }
 
 
         _displayButtonZone(){
-            let buttonSize = {w: this.actionButtonZoneSize.w / 5, h: this.actionButtonZoneSize.h / 3};
+            let buttonSize = {w: this.actionButtonZoneSize.w / 5, h: this.actionButtonZoneSize.h - 2*MARGIN};
             let buttonPrevious = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Précédent");
             let buttonInit = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Réinitialiser");
             let buttonNext = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Suivant");
@@ -179,7 +177,7 @@ exports.DollCollabV = function(globalVariables) {
             buttonPrevious.position(-buttonSize.w*2 + MARGIN, 0);
             buttonNext.position(buttonSize.w*2 - MARGIN, 0);
 
-            this.actionbuttonZoneManip.move(this.statementDim.w + this.actionButtonZoneSize.w/2 + 2*MARGIN,
+            this.actionbuttonZoneManip.move(this.sandboxDim.w + this.actionButtonZoneSize.w/2 + 2*MARGIN,
                 (this.objectivesSize.h+this.responseSize.h + buttonSize.h/2) + this.header.height + 3*MARGIN);
 
             this.actionbuttonZoneManip
@@ -193,56 +191,11 @@ exports.DollCollabV = function(globalVariables) {
         }
 
         getObjectives(){
-            //todo impleter avec presenter
-            let goals = [
-                {label : "goal 1"},
-                {label : "goal 2"},
-                {label : "goal 3"},
-                {label : "goal 4"},
-                {label : "goal 4"},
-                {label : "goal 1"},
-                {label : "goal 2"},
-                {label : "goal 3"},
-                {label : "goal 4"},
-                {label : "goal 4"},
-                {label : "goal 1"},
-                {label : "goal 2"},
-                {label : "goal 3"},
-                {label : "goal 4"},
-                {label : "goal 4"},
-                {label : "goal 1"},
-                {label : "goal 2"},
-                {label : "goal 3"},
-                {label : "goal 4"},
-                {label : "goal 4"},
-
-            ];
-            return goals;
+            return this.presenter.getObjectives();
         }
 
         getResponses(){
-            //todo impleter avec presenter
-            let responses = [
-                {label : "response 1"},
-                {label : "response 2"},
-                {label : "response 3"},
-                {label : "response 4"},
-                {label : "response 4"},
-                {label : "response 4"},
-                {label : "response 1"},
-                {label : "response 2"},
-                {label : "response 3"},
-                {label : "response 4"},
-                {label : "response 4"},
-                {label : "response 4"},
-                {label : "response 1"},
-                {label : "response 2"},
-                {label : "response 3"},
-                {label : "response 4"},
-                {label : "response 4"},
-                {label : "response 4"},
-            ];
-            return responses;
+            return this.presenter.getResponses();
         }
 
         getLabel(){

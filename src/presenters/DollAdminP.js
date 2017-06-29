@@ -20,6 +20,14 @@ exports.DollAdminP = function (globalVariables) {
             return this.doll.getElements();
         }
 
+        getObjectives(){
+            return this.doll.getObjectives();
+        }
+
+        getResponses(){
+            return this.doll.getResponses();
+        }
+
         getImages() {
             return this.mediaLibrary.getImages();
         }
@@ -32,8 +40,8 @@ exports.DollAdminP = function (globalVariables) {
             return this.state.uploadImage(file, progressDisplay);
         }
 
-        save(elements) {
-            this.doll.save(elements.map((elem, index) => {
+        save(infos) {
+            infos.elements = infos.elements.map((elem, index) => {
                 let options = {};
                 switch(elem.type){
                     case 'rect':
@@ -56,7 +64,8 @@ exports.DollAdminP = function (globalVariables) {
                     globalY: elem.parentManip.y,
                     layerIndex: index
                 }, options);
-            }), this.state.formation.formationId);
+            })
+            this.doll.save(this.state.formation.formationId, infos);
         }
     }
     return DollAdminP;
