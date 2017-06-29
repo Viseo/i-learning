@@ -32,12 +32,14 @@ exports.DollAdminV = function (globalVariables) {
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
         NB_ELEMENT_RIGHT_CLICK = 3,
         CHEVRON_RCLICK_SIZE =  {w: 75, h: 20},
-        IMAGE_SIZE = {w: 30, h: 30};
+        IMAGE_SIZE = {w: 30, h: 30},
+        SOLUTION_BODY_WIDTH = drawing.width - 2 * MARGIN,
+        SOLUTION_BODY_HEIGHT = drawing.height * 0.7;
 
     class DollAdminV extends View {
         constructor(presenter) {
             super(presenter);
-            this.rules = false;
+            this.rules = [];
             this.textElements = [];
             this.rectElements = this.getRects().map((rectDetails, index)=>{
                 let manip = new Manipulator(this);
@@ -246,10 +248,10 @@ exports.DollAdminV = function (globalVariables) {
             return [foregroundItem, backgroundItem, forwardItem, backwardItem];
         }
         clearAllSolutions() {
-            leftTemplateManip
-                .remove(completeSolution.manipulator)
-                .remove(completeSolution.deleteSolutionButton.component);
-            this.completeSolutionArray.remove(completeSolution);
+            // leftTemplateManip
+            //     .remove(completeSolution.manipulator)
+            //     .remove(completeSolution.deleteSolutionButton.component);
+            // this.completeSolutionArray.remove(completeSolution);
         }
 
         displayPictureNavigation() {
@@ -527,7 +529,7 @@ exports.DollAdminV = function (globalVariables) {
             this.manipulator.add(this.mainPanelManipulator);
 
             if (this.rules) {
-                this.displaySolutions();
+                this.displaySolutionsHeader();
             }
             else {
                 this.displaySandBoxZone();
@@ -759,19 +761,46 @@ exports.DollAdminV = function (globalVariables) {
             this.mainPanelManipulator.add(responsesManip);
         }
 
-        displaySolutions() {
+        displaySolutionsHeader() {
             var _clickListHandler = (newValue) => {
                 //todo charger lebody selon la valeur
+                var _showSolutionBody = (objective) => {
+                    var _initCompleteSolutions = (objectiveItem) => {
+                        if (!objectiveItem) {
+                            return [
+                                {label: "Solution 1", impact: "Enoncé 2"}, {label: "Solution patate", impact: null}
+                            ];
+                        }
+                    }
+                    var _initProgressSolutions = (objectiveItem) => {
+                        if (!objectiveItem) {
+                            return [
+                                {label: "Solution 66", impact: null}, {label: "Solution Bourrine", impact: null}
+                            ];
+                        }
+                    }
+                    if (!this.getObjectiveDataFrom(objective)) {
+                        let objectiveGui = {    // exemple test
+                            completeSolutions: _initCompleteSolutions(),
+                            progressSolutions: _initProgressSolutions()
+                        };
+
+                    } else {    // données en BDD chargées
+
+                    }
+                }
+                _showSolutionBody(newValue);
             };
             var _createSolutionsHeader = () => {
                 this.solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
-                let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2*PANEL_SIZE.h)
+                let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2 * PANEL_SIZE.h)
                     .color(myColors.white, 1, myColors.grey)
-                    .corners(2,2);
+                    .corners(2, 2);
                 let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
                     .font('Arial', 18)
                     .anchor('left')
-                    .position(-PANEL_SIZE.w/2 + MARGIN, -solutionsHeader.height/5);
+                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
+
 
                 let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 objectifSelectList.setHandlerChangeValue(_clickListHandler);
@@ -779,7 +808,7 @@ exports.DollAdminV = function (globalVariables) {
                     .add(solutionsHeader)
                     .add(headerTitle)
                     .add(objectifSelectList.manipulator);
-                this.solutionsHeaderManipulator.move(0,solutionsHeader.height/2 - PANEL_SIZE.h/2);
+                this.solutionsHeaderManipulator.move(0, solutionsHeader.height / 2 - PANEL_SIZE.h / 2);
             };
 
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
@@ -1449,6 +1478,12 @@ exports.DollAdminV = function (globalVariables) {
 
         saveDoll() {
             this.presenter.save(this.rectElements);
+        }
+
+        getObjectiveDataFrom(objective) {
+            let objectiveLabel = objective.text.getMessageText();
+            // this.
+            return false;
         }
     }
 
