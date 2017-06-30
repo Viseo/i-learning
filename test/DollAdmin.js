@@ -103,9 +103,8 @@ describe('Doll admin Page', function(){
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
-            let rectElem = retrieve(root, '[rectElement1]');
             when(()=>{
-                customClick(root, 'rectElement1', {type:3});
+                customClick(root, 'rectElement2', {type:3});
             }).then(()=>{
                 let resize = retrieve(root, '[resizeOption]');
                 clickElement(root, 'resizeOption')
@@ -178,9 +177,8 @@ describe('Doll admin Page', function(){
             let rectElem = retrieve(root, '[rectElement1]');
             assert(rectElem);
             when(()=>{
-                rightClick(root, 'rectElement1', {x:100,y:100});
+                clickElement(root, 'rectElement1', {x:100,y:100});
             }).then(()=>{
-                clickElement(root, 'resizeOption');
                 let rect = retrieve(root, '[rectElement1]');
                 let size = new Object({w:rect.handler.width,h:rect.handler.height});
                 mouseDownElement(root, 'botRight', {pageX:250,pageY:250});
