@@ -822,7 +822,7 @@ exports.DollAdminV = function (globalVariables) {
 
 
         createSolutionsBody(){
-            var createValidCheckbox = () => {
+            var createValidCheckbox = (list, manipSelectItems) => {
                 let checkBoxManipulator = new Manipulator(this);
                 var _toggleChecked = () => {
                     if (checkBoxManipulator.checked) {                           // modele or state
@@ -831,6 +831,10 @@ exports.DollAdminV = function (globalVariables) {
                     } else {
                         checkBoxManipulator.add(checked);
                         checkBoxManipulator.checked = true;                      // modele or state
+
+                        let newSolutions = createOneBestSolution(list, list.width, INPUT_SIZE.h*2);
+                        list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
+                        list.refreshListView();
                     }
                 }
                 let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -841,7 +845,7 @@ exports.DollAdminV = function (globalVariables) {
                 return checkBoxManipulator;
             };
 
-            let onClickAddBestSolution = (list, w, h) => {
+            let createOneBestSolution = (list, w, h) => {
                 let manipSelectItems = new Manipulator(this);
 
                 let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h/2);
@@ -854,7 +858,7 @@ exports.DollAdminV = function (globalVariables) {
                     .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
                     .setManipShowListAndPosition(list.manipulator);
 
-                let validCheckboxManip = createValidCheckbox();
+                let validCheckboxManip = createValidCheckbox(list, manipSelectItems);
 
 
                 manipSelectItems
@@ -862,12 +866,10 @@ exports.DollAdminV = function (globalVariables) {
                     .add(selectItemResponse.manipulator)
                     .add(validCheckboxManip);
 
-
-                list.add(manipSelectItems);
-                list.refreshListView();
+                return manipSelectItems;
             };
 
-            let createSelectItems = () => {
+            let createSolutionsList = () => {
                 let solutionBodyManip = new Manipulator(this);
                 solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
 
@@ -882,14 +884,16 @@ exports.DollAdminV = function (globalVariables) {
 
             let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
             let chevronSize = {w: 70, h: 30};
-            let solutionBody = createSelectItems();
+            let solutionBody = createSolutionsList();
             let addBestSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                 [myColors.white, 1, myColors.black], "Ajouter une solution");
             addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
                 - sizeBody.h/2 + addBestSolutionButton.height);
-            addBestSolutionButton.onClick(() => onClickAddBestSolution(solutionBody.listBestSolution,
-                solutionBody.listBestSolution.width, INPUT_SIZE.h*2));
-
+            addBestSolutionButton.onClick(() =>{
+                let solution = createOneBestSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h*2);
+                solutionBody.listBestSolution.add(solution);
+                solutionBody.listBestSolution.refreshListView();
+            });
 
 
             solutionBody.manipulator

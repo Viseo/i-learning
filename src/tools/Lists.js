@@ -275,6 +275,10 @@ exports.Lists = function (globalVariables) {
             this.contentManip.add(manip.component);
         }
 
+        getIndexByManip(manip){
+            return this.listElements.indexOf(manip);
+        }
+
         empty(){
             this.listElements = [];
             this.contentManip.flush();
