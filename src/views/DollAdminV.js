@@ -822,12 +822,24 @@ exports.DollAdminV = function (globalVariables) {
 
         createSolutionsBody(){
             let onClickAddBestSolution = (w, h) => {
-                let selectItem = new SelectItemList2(this.getSolutions(), w, h);
-                selectItem.setManipShowListAndPosition(listBestSolution.manipulator)
-                selectItem.setHandlerChangeValue(() => {
+                let manipSelectItems = new Manipulator(this);
 
-                });
-                listBestSolution.add(selectItem.manipulator);
+                let selectItemStatement = new SelectItemList2(this.getSolutions(), w/3, h/2);
+                selectItemStatement
+                    .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
+                    .setManipShowListAndPosition(listBestSolution.manipulator);
+
+                let selectItemResponse = new SelectItemList2(this.getSolutions(), w/3, h/2);
+                selectItemResponse
+                    .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
+                    .setManipShowListAndPosition(listBestSolution.manipulator);
+
+                manipSelectItems
+                    .add(selectItemStatement.manipulator)
+                    .add(selectItemResponse.manipulator);
+
+
+                listBestSolution.add(manipSelectItems);
                 listBestSolution.refreshListView();
             };
 
@@ -838,7 +850,7 @@ exports.DollAdminV = function (globalVariables) {
 
 
             let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
-                chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h, 10, myColors.white, 10);
+                chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h*2, 10, myColors.white, 10);
             listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
 
             let addBestSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
@@ -846,8 +858,7 @@ exports.DollAdminV = function (globalVariables) {
 
             addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
                 - sizeBody.h/2 + addBestSolutionButton.height);
-            addBestSolutionButton.onClick(() => onClickAddBestSolution(listBestSolution.width *2/3, INPUT_SIZE.h));
-
+            addBestSolutionButton.onClick(() => onClickAddBestSolution(listBestSolution.width, INPUT_SIZE.h*2));
 
 
             solutionBodyManip

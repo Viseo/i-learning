@@ -542,6 +542,11 @@ exports.Lists = function (globalVariables) {
             this.manipShowList = manipShowList;
         }
 
+        position(x, y){
+            this.manipulator.move(x, y);
+            return this;
+        };
+
         getSelectButtonText(button) {
             return button.text.getMessageText();
         }
