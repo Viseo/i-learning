@@ -13,6 +13,7 @@ exports.DollAdminV = function (globalVariables) {
         SelectItemList = globalVariables.Lists.SelectItemList,
         SelectItemList2 = globalVariables.Lists.SelectItemList2,
         SelectItem = globalVariables.Lists.SelectItem,
+        drawCheck = globalVariables.Helpers.drawCheck,
         installDnD = globalVariables.gui.installDnD;
 
     var
@@ -821,27 +822,52 @@ exports.DollAdminV = function (globalVariables) {
 
 
         createSolutionsBody(){
+            var createValidCheckbox = () => {
+                let checkBoxManipulator = new Manipulator(this);
+                var _toggleChecked = () => {
+                    if (checkBoxManipulator.checked) {                           // modele or state
+                        checkBoxManipulator.remove(checked);
+                        checkBoxManipulator.checked = false;                     // modele or state
+                    } else {
+                        checkBoxManipulator.add(checked);
+                        checkBoxManipulator.checked = true;                      // modele or state
+                    }
+                }
+                let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+                let checked = drawCheck(checkbox.x, checkbox.y, 20);
+                checkBoxManipulator.addEvent('click', _toggleChecked);
+                checkBoxManipulator.add(checkbox) //.move(-answerTextDim.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+
+                return checkBoxManipulator;
+            };
+
             let onClickAddBestSolution = (w, h) => {
                 let manipSelectItems = new Manipulator(this);
 
-                let selectItemStatement = new SelectItemList2(this.getSolutions(), w/3, h/2);
+                let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h/2);
                 selectItemStatement
                     .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
                     .setManipShowListAndPosition(listBestSolution.manipulator);
 
-                let selectItemResponse = new SelectItemList2(this.getSolutions(), w/3, h/2);
+                let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h/2);
                 selectItemResponse
                     .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
                     .setManipShowListAndPosition(listBestSolution.manipulator);
 
+                let validCheckboxManip = createValidCheckbox();
+
+
                 manipSelectItems
                     .add(selectItemStatement.manipulator)
-                    .add(selectItemResponse.manipulator);
+                    .add(selectItemResponse.manipulator)
+                    .add(validCheckboxManip);
 
 
                 listBestSolution.add(manipSelectItems);
                 listBestSolution.refreshListView();
             };
+
+
 
             let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
             let chevronSize = {w: 70, h: 30};
@@ -869,8 +895,12 @@ exports.DollAdminV = function (globalVariables) {
         }
 
 
-        getSolutions(){
-            return ["j'adore", "manger", "=___=", "è_é"]
+        getResponses(){
+            return ["j'adore", "manger", "Oui", "Non"]
+        }
+
+        getStatement(){
+            return ["Longue", "Vie", "Cheval", "Comment"]
         }
 
 

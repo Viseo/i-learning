@@ -528,8 +528,7 @@ exports.Lists = function (globalVariables) {
             this.selectButton.onClick(() => {
                 if(this.manipShowList){
                     this.manipShowList.add(this.listView.manipulator);
-                    //let localP = this.selectButton.component.localPoint();
-                    this.listView.manipulator.move(0, this.selectButton.component.y);
+                    this.listView.manipulator.move(this.manipulator.x, this.manipulator.y + this.height/2);
                 }else{
                     this.manipulator.add(this.listView.manipulator);
                 }
