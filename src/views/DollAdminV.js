@@ -824,17 +824,34 @@ exports.DollAdminV = function (globalVariables) {
         createSolutionsBody(){
             var createValidCheckbox = (list, manipSelectItems) => {
                 let checkBoxManipulator = new Manipulator(this);
+
+                var _removeSolutionChild = (list, childSolutionManip) => {
+                    if(childSolutionManip.childSolution){
+                        _removeSolutionChild(list, childSolutionManip.childSolution);
+                        childSolutionManip.childSolution = null;
+                        list.removeElementFromList(childSolutionManip);
+                    }else{
+                        childSolutionManip.parentSolution.childSolution = null;
+                        list.removeElementFromList(childSolutionManip);
+                    }
+                };
+
                 var _toggleChecked = () => {
                     if (checkBoxManipulator.checked) {                           // modele or state
                         checkBoxManipulator.remove(checked);
                         checkBoxManipulator.checked = false;                     // modele or state
+                        _removeSolutionChild(list, manipSelectItems.childSolution);
+                        list.refreshListView();
                     } else {
                         checkBoxManipulator.add(checked);
                         checkBoxManipulator.checked = true;                      // modele or state
 
-                        let newSolutions = createOneBestSolution(list, list.width, INPUT_SIZE.h*2);
+                        let newSolutions = createOneBestSolution(list, list.width, INPUT_SIZE.h);
                         list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
                         list.refreshListView();
+
+                        newSolutions.parentSolution = manipSelectItems;
+                        manipSelectItems.childSolution = newSolutions;
                     }
                 }
                 let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -848,12 +865,12 @@ exports.DollAdminV = function (globalVariables) {
             let createOneBestSolution = (list, w, h) => {
                 let manipSelectItems = new Manipulator(this);
 
-                let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h/2);
+                let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h);
                 selectItemStatement
                     .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
                     .setManipShowListAndPosition(list.manipulator);
 
-                let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h/2);
+                let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h);
                 selectItemResponse
                     .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
                     .setManipShowListAndPosition(list.manipulator);
@@ -874,7 +891,7 @@ exports.DollAdminV = function (globalVariables) {
                 solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
 
                 let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
-                    chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h*2, 10, myColors.white, 10);
+                    chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h, 10, myColors.white, 10);
                 listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
 
                 solutionBodyManip.add(listBestSolution.manipulator);
@@ -890,7 +907,7 @@ exports.DollAdminV = function (globalVariables) {
             addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
                 - sizeBody.h/2 + addBestSolutionButton.height);
             addBestSolutionButton.onClick(() =>{
-                let solution = createOneBestSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h*2);
+                let solution = createOneBestSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h);
                 solutionBody.listBestSolution.add(solution);
                 solutionBody.listBestSolution.refreshListView();
             });
