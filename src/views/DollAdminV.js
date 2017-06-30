@@ -836,23 +836,23 @@ exports.DollAdminV = function (globalVariables) {
                 let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
                 let checked = drawCheck(checkbox.x, checkbox.y, 20);
                 checkBoxManipulator.addEvent('click', _toggleChecked);
-                checkBoxManipulator.add(checkbox) //.move(-answerTextDim.w / 2 + CHECKBOX_SIZE, -MARGIN + CHECKBOX_SIZE * 2);
+                checkBoxManipulator.add(checkbox);
 
                 return checkBoxManipulator;
             };
 
-            let onClickAddBestSolution = (w, h) => {
+            let onClickAddBestSolution = (list, w, h) => {
                 let manipSelectItems = new Manipulator(this);
 
                 let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h/2);
                 selectItemStatement
                     .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
-                    .setManipShowListAndPosition(listBestSolution.manipulator);
+                    .setManipShowListAndPosition(list.manipulator);
 
                 let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h/2);
                 selectItemResponse
                     .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
-                    .setManipShowListAndPosition(listBestSolution.manipulator);
+                    .setManipShowListAndPosition(list.manipulator);
 
                 let validCheckboxManip = createValidCheckbox();
 
@@ -863,35 +863,39 @@ exports.DollAdminV = function (globalVariables) {
                     .add(validCheckboxManip);
 
 
-                listBestSolution.add(manipSelectItems);
-                listBestSolution.refreshListView();
+                list.add(manipSelectItems);
+                list.refreshListView();
             };
 
+            let createSelectItems = () => {
+                let solutionBodyManip = new Manipulator(this);
+                solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
 
+                let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
+                    chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h*2, 10, myColors.white, 10);
+                listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
+
+                solutionBodyManip.add(listBestSolution.manipulator);
+
+                return {listBestSolution: listBestSolution, manipulator: solutionBodyManip};
+            };
 
             let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
             let chevronSize = {w: 70, h: 30};
-            let solutionBodyManip = new Manipulator(this);
-            solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
-
-
-            let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
-                chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h*2, 10, myColors.white, 10);
-            listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
-
+            let solutionBody = createSelectItems();
             let addBestSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                 [myColors.white, 1, myColors.black], "Ajouter une solution");
-
             addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
                 - sizeBody.h/2 + addBestSolutionButton.height);
-            addBestSolutionButton.onClick(() => onClickAddBestSolution(listBestSolution.width, INPUT_SIZE.h*2));
+            addBestSolutionButton.onClick(() => onClickAddBestSolution(solutionBody.listBestSolution,
+                solutionBody.listBestSolution.width, INPUT_SIZE.h*2));
 
 
-            solutionBodyManip
-                .add(addBestSolutionButton.component)
-                .add(listBestSolution.manipulator);
 
-            return solutionBodyManip;
+            solutionBody.manipulator
+                .add(addBestSolutionButton.component);
+
+            return solutionBody.manipulator;
         }
 
 
