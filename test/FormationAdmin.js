@@ -7,7 +7,7 @@ const
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
     {
-        given, when, loadPage, mouseDown, mouseUp, mouseUpElement, mouseMove, clickElement, assertMessage, onChangeElement, inputValue,
+        given, when, loadPage, mouseDown, mouseUp, mouseUpElement, mouseMove, click, clickElement, assertMessage, onChangeElement, inputValue,
         mouseDownOnGlassElement, mouseUpOnGlassElement, mouseMoveOnGlassElement, getElement, dblclickElement
     } = testutils;
 
@@ -178,14 +178,17 @@ describe('formation admin page', function () {
         });
     });
 
-    it('should enter in a quiz', function () {
+    it('should enter in a quiz and return to Formation', function () {
        let {root} = given(() => {
            return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
        });
        when(() => {
-            dblclickElement(root, "miniatureGameManipquizz0");
+           assertMessage(root, 'headerMessage', 'Agilité');
+           dblclickElement(root, "miniatureGameManipquizz0");
+           assertMessage(root, 'headerMessage', 'Agilité - Introduction aux méthodes agiles');
+           click(root, "return");
        }).then(() => {
-
+           assertMessage(root, 'headerMessage', 'Agilité');
        })
     });
 
