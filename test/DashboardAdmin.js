@@ -5,7 +5,7 @@ const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
     {
-        given, when, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
+        given, when, click, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
         mouseLeave, checkBorderColor, onChangeElement
     } = testutils;
 
@@ -141,7 +141,7 @@ describe('dashboard admin page', function () {
             runtime.advance();
         });
     });
-    it("should enter in a formation", function () {
+    it("should enter in a formation and return to DashBoard", function () {
         let mockResponses = {
                 '/formations': {code: 200, content: jsonFormation},
             },
@@ -150,10 +150,14 @@ describe('dashboard admin page', function () {
             });
         when(() => {
             clickElement(root, "miniatureManipAgilité");
-        }).then(() => {
             assertMissing(root, "formationErrorMessage");
+            assertMessage(root, "headerMessage", "Agilité");
+            click(root, "return");
+        }).then(() => {
+            assertMessage(root, "headerMessage", "Dashboard");
         });
     });
+
     it("should highlight some formations", function () {
         let mockResponses = {
                 '/formations': {code: 200, content: jsonFormation},
