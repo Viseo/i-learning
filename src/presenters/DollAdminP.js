@@ -67,6 +67,18 @@ exports.DollAdminP = function (globalVariables) {
             })
             this.doll.save(this.state.formation.formationId, infos);
         }
+        addResponse(response){
+            this.doll.addResponse(response);
+        }
+        removeResponse(response){
+            this.doll.removeResponse(response);
+        }
+        addObjective(obj){
+            this.doll.addObjective(obj);
+        }
+        removeObjective(obj){
+            this.doll.removeObjective(obj);
+        }
     }
     return DollAdminP;
 }

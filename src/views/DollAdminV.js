@@ -590,6 +590,7 @@ exports.DollAdminV = function (globalVariables) {
                 };
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
+                miniature.manip.text = miniature.text;
                 miniature.text.markDropID('objectivesDrop');
                 miniature.border.markDropID('objectivesDrop');
                 let conf = {
@@ -598,8 +599,7 @@ exports.DollAdminV = function (globalVariables) {
                         let target = this.manipulator.last.getTarget(point.x, point.y);
                         if (!target || target && target.dropID != 'objectivesDrop' || !target.dropID) {
                             this.objectivesList.removeElementFromList(what);
-                            let index = this.objectives.findIndex((obj)=>obj.id===objective.id);
-                            if(index !==-1) this.objectives.splice(index, 1);
+                            this.removeObjective(what.text.messageText);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -614,7 +614,7 @@ exports.DollAdminV = function (globalVariables) {
                 return miniature;
             }
             let addObjectiveHandler = () => {
-                let newObjective = {label:this.objectivesInput.textMessage, id:1} //TODO id
+                let newObjective = {label:this.objectivesInput.textMessage} //TODO id
                 let mini = createMiniature(newObjective);
                 if (mini.text.messageText == '') {
                     let errorMsg = new svg.Text('Veuiller entrer un texte');
@@ -633,6 +633,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.objectives.push(newObjective);
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
+                    this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
                 }
 
@@ -679,6 +680,15 @@ exports.DollAdminV = function (globalVariables) {
             this.objectivesList.refreshListView();
         }
 
+        addObjective(obj){
+            this.presenter.addObjective(obj);
+        }
+        removeObjective(obj){
+            this.presenter.removeObjective(obj);
+            let index = this.objectives.findIndex((elem)=>elem.label == obj);
+            if(index !==-1) this.objectives.splice(index, 1);
+        }
+
         displayResponses() {
             let createMiniature = (response)=>{
                 let miniature = {
@@ -687,6 +697,7 @@ exports.DollAdminV = function (globalVariables) {
                     text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
                     manip: new Manipulator(this)
                 };
+                miniature.manip.text = miniature.text;
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
                 miniature.text.markDropID('responsesDrop');
@@ -697,8 +708,7 @@ exports.DollAdminV = function (globalVariables) {
                         let target = this.manipulator.last.getTarget(point.x, point.y);
                         if (!target || target && target.dropID != 'responsesDrop' || !target.dropID) {
                             this.responsesList.removeElementFromList(what);
-                            let index = this.responses.findIndex((resp)=>resp.id===response.id);
-                            if(index!==-1) this.responses.splice(index, 1);
+                            this.removeResponse(what.text.messageText);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -733,6 +743,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.add(mini.manip);
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
+                    this.addResponse(response);
                 }
 
             }
@@ -777,6 +788,15 @@ exports.DollAdminV = function (globalVariables) {
                 2 * MARGIN - PANEL_SIZE.h / 2 + responsesHeader.height / 2 + RIGHTBOX_SIZE.h + 2 * MARGIN);
             this.mainPanelManipulator.add(responsesManip);
             this.responsesList.refreshListView();
+        }
+
+        addResponse(response){
+            this.presenter.addResponse(response);
+        }
+        removeResponse(response){
+            this.presenter.removeResponse(response);
+            let index = this.responses.findIndex((resp)=>resp.label===response);
+            if(index!==-1) this.responses.splice(index, 1);
         }
 
         displaySolutionsHeader() {

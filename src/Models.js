@@ -1026,6 +1026,25 @@ exports.Models = function (globalVariables, mockResponses) {
                 });
         }
 
+        addResponse(response){
+            this.responses.push(response);
+        }
+
+        removeResponse(response){
+            this.responses.remove(response);
+        }
+        addObjective(obj){
+            this.objectives.push({label:obj});
+        }
+        removeObjective(obj){
+            this.objectives.remove(this.findObjective(obj));
+        }
+        findObjective(obj){
+            let predicat = (element)=>{
+                return element.name == obj;
+            }
+            return this.objectives.find(predicat);
+        }
         setImage(src) {
             this.imageSrc = src;
         }
