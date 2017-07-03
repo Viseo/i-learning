@@ -1001,6 +1001,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.elements = game.elements || [];
             this.objectives = game.objectives || [];
             this.responses = game.responses || [];
+            this.statements = game.statements || [];
             this.rules = game.rules || [];
             this.valid = true //TODO changer en this.valid = game.valid
         }
@@ -1061,6 +1062,9 @@ exports.Models = function (globalVariables, mockResponses) {
         getElements(){
             return this.elements;
         }
+        addStatement(obj){
+            this.statements.push(obj);
+        }
 
         getObjectives(){
             return this.objectives;
@@ -1068,6 +1072,9 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getResponses(){
             return this.responses;
+        }
+        getStatement(){
+            return this.statements;
         }
     }
 

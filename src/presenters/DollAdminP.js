@@ -27,7 +27,12 @@ exports.DollAdminP = function (globalVariables) {
         getResponses(){
             return this.doll.getResponses();
         }
-
+        getStatement(){
+            return this.doll.getStatement();
+        }
+        addStatement(obj){
+            this.doll.addStatement(obj)
+        }
         getImages() {
             return this.mediaLibrary.getImages();
         }

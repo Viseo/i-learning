@@ -630,7 +630,6 @@ exports.DollAdminV = function (globalVariables) {
                     }, 3000);
                 }
                 else {
-                    this.objectives.push(newObjective);
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
                     this.addObjective(mini.text.messageText);
@@ -665,7 +664,7 @@ exports.DollAdminV = function (globalVariables) {
             objectivesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - objectivesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
             objectivesAddButton.onClick(addObjectiveHandler);
 
-            let objectives = this.objectives.map((obj)=>createMiniature(obj).manip);
+            let objectives = this.getObjectives().map(elem=>{return createMiniature(elem).manip});
             this.objectivesList = new ListManipulatorView(objectives, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.objectivesList.position(0, this.objectivesList.height / 2 + objectivesHeader.height / 2 + objectivesAddButton.height + 2 * MARGIN);
             this.objectivesList.markDropID('objectivesDrop')
@@ -723,7 +722,7 @@ exports.DollAdminV = function (globalVariables) {
                 return miniature;
             }
             let addResponseHandler = () => {
-                let newResponse = {label: this.responsesInput.textMessage, id: 1}
+                let newResponse = {label:this.responsesInput.textMessage};
                 let mini = createMiniature(newResponse);
                 if (mini.text.messageText == '') {
                     let errorMsg = new svg.Text('Veuiller entrer un texte');
@@ -739,11 +738,10 @@ exports.DollAdminV = function (globalVariables) {
                     }, 3000);
                 }
                 else {
-                    this.responses.push(newResponse);
                     this.responsesList.add(mini.manip);
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
-                    this.addResponse(response);
+                    this.addResponse(mini.text.messageText);
                 }
 
             }
@@ -774,7 +772,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - responsesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
             responsesAddButton.onClick(addResponseHandler);
 
-            let responses = this.responses.map((resp)=>createMiniature(resp).manip);
+            let responses = this.getResponses().map(elem=>{return createMiniature({label:elem}).manip});
             this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
             this.responsesList.markDropID('responsesDrop')
@@ -839,8 +837,11 @@ exports.DollAdminV = function (globalVariables) {
                     .anchor('left')
                     .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
 
-
-                let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
+                let objectives = this.getObjectives().map((elem)=>{return elem.label});
+                if(objectives.length == 0){
+                    objectives.push('Veuillez ajouter au moins un objectif');
+                }
+                let objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 objectifSelectList.setHandlerChangeValue(_clickListHandler);
                 objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
 
@@ -904,8 +905,8 @@ exports.DollAdminV = function (globalVariables) {
 
                 let createOneSolution = (list, w, h) => {
                     let manipSelectItems = new Manipulator(this);
-
-                    let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h);
+                    let statementsLabels = this.getStatement().map(elem=>{return elem.id});
+                    let selectItemStatement = new SelectItemList2(statementsLabels, w/3, h);
                     selectItemStatement
                         .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
                         .setManipShowListAndPosition(list.manipulator);
@@ -975,7 +976,7 @@ exports.DollAdminV = function (globalVariables) {
 
         //todo
         getStatement(){
-            return ["Longue", "Vie", "Cheval", "Comment"]
+            return this.presenter.getStatement();
         }
 
 
@@ -1588,6 +1589,8 @@ exports.DollAdminV = function (globalVariables) {
                         });
                         this.elements.push(helpPanel);
                         this.sandboxMain.content.add(helpPanelManip.first);
+                        this.addStatement({id:'Enoncé' + this.getStatement().length})
+                        helpPanel.statementId = 'Enoncé' + this.getStatement().length;
                         helpPanel.mark('helpElement');
                         let conf = {
                             drop: (what, whatParent, x, y) => {
@@ -1617,6 +1620,9 @@ exports.DollAdminV = function (globalVariables) {
 
             installDnD(helpManip, drawings.component.glass.parent.manipulator.last, confHelp);
             svg.event(drawings.component.glass, "mousedown", event);
+        }
+        addStatement(obj){
+            this.presenter.addStatement(obj);
         }
 
         _makeClickableItem(message, handler) {
@@ -1670,9 +1676,7 @@ exports.DollAdminV = function (globalVariables) {
 
         //todo
         getResponses(){
-            return ["Cheval", "Comment", "jadire", "manger", "Oui", "Non"]
-
-            //return this.presenter.getResponses();
+            return this.presenter.getResponses();
         }
 
         toggleTabs(bool) {
