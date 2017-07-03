@@ -10,6 +10,10 @@ exports.DollAdminV = function (globalVariables) {
         IconCreator = globalVariables.Icons.IconCreator,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        SelectItemList = globalVariables.Lists.SelectItemList,
+        SelectItemList2 = globalVariables.Lists.SelectItemList2,
+        SelectItem = globalVariables.Lists.SelectItem,
+        drawCheck = globalVariables.Helpers.drawCheck,
         installDnD = globalVariables.gui.installDnD;
 
     var
@@ -32,7 +36,10 @@ exports.DollAdminV = function (globalVariables) {
         HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN,
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
         NB_ELEMENT_RIGHT_CLICK = 3,
-        IMAGE_SIZE = {w: 30, h: 30};
+        CHEVRON_RCLICK_SIZE =  {w: 75, h: 20},
+        IMAGE_SIZE = {w: 30, h: 30},
+        SOLUTION_BODY_WIDTH = drawing.width - 2 * MARGIN,
+        SOLUTION_BODY_HEIGHT = drawing.height * 0.7;
 
     class DollAdminV extends View {
         constructor(presenter) {
@@ -254,6 +261,12 @@ exports.DollAdminV = function (globalVariables) {
             backgroundItem.mark('backgroundOption');
 
             return [foregroundItem, backgroundItem, forwardItem, backwardItem];
+        }
+        clearAllSolutions() {
+            // leftTemplateManip
+            //     .remove(completeSolution.manipulator)
+            //     .remove(completeSolution.deleteSolutionButton.component);
+            // this.completeSolutionArray.remove(completeSolution);
         }
 
         displayPictureNavigation() {
@@ -528,10 +541,11 @@ exports.DollAdminV = function (globalVariables) {
                 .corners(5, 5);
             this.mainPanelManipulator.add(backRect);
             this.mainPanelManipulator.move(drawing.width / 2, drawing.height / 2 + PANEL_SIZE.h / 8)
+            this.solutionsBodyManip = new Manipulator(this);
             this.manipulator.add(this.mainPanelManipulator);
 
             if (this.rules) {
-                this.displaySolutions();
+                this.displaySolutionsHeader();
             }
             else {
                 this.displaySandBoxZone();
@@ -649,6 +663,7 @@ exports.DollAdminV = function (globalVariables) {
             objectivesAddButton.back.corners(5, 5);
             objectivesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - objectivesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
             objectivesAddButton.onClick(addObjectiveHandler);
+
             let objectives = this.objectives.map((obj)=>createMiniature(obj).manip);
             this.objectivesList = new ListManipulatorView(objectives, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.objectivesList.position(0, this.objectivesList.height / 2 + objectivesHeader.height / 2 + objectivesAddButton.height + 2 * MARGIN);
@@ -747,6 +762,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesAddButton.back.corners(5, 5);
             responsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - responsesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
             responsesAddButton.onClick(addResponseHandler);
+
             let responses = this.responses.map((resp)=>createMiniature(resp).manip);
             this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
@@ -763,71 +779,172 @@ exports.DollAdminV = function (globalVariables) {
             this.responsesList.refreshListView();
         }
 
-        displaySolutions() {
-            let solutionsHeaderManipulator = new Manipulator(this);
-            let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2 * PANEL_SIZE.h)
-                .color(myColors.white, 1, myColors.grey)
-                .corners(2, 2);
-            let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
-                .font('Arial', 18)
-                .anchor('left')
-                .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
-            let headerRollPanel = new svg.Rect(0.8 * PANEL_SIZE.w, INPUT_SIZE.h)
-                .color(myColors.white, 1, myColors.grey);
+        displaySolutionsHeader() {
+            var _clickListHandler = (newValue) => {
+                //todo charger lebody selon la valeur
+                var _showSolutionBody = (objective) => {
+                    var _initCompleteSolutions = (objectiveItem) => {
+                        if (!objectiveItem) {
+                            return [
+                                {label: "Solution 1", impact: "Enoncé 2"}, {label: "Solution patate", impact: null}
+                            ];
+                        }
+                    }
+                    var _initProgressSolutions = (objectiveItem) => {
+                        if (!objectiveItem) {
+                            return [
+                                {label: "Solution 66", impact: null}, {label: "Solution Bourrine", impact: null}
+                            ];
+                        }
+                    }
+                    if (!this.getObjectiveDataFrom(objective)) {
+                        let objectiveGui = {    // exemple test
+                            completeSolutions: _initCompleteSolutions(),
+                            progressSolutions: _initProgressSolutions()
+                        };
 
-            solutionsHeaderManipulator.add(solutionsHeader)
-                .add(headerTitle)
-                .add(headerRollPanel);
-            solutionsHeaderManipulator.move(0, solutionsHeader.height / 2 - PANEL_SIZE.h / 2);
-            this.mainPanelManipulator.add(solutionsHeaderManipulator);
-            this.displaySolutionsBody();
-        }
+                    } else {    // données en BDD chargées
 
-        displaySolutionsBody() {
-            let solutionsBodyManip = new Manipulator(this);
-            let createLeftTemplate = () => {
-                let leftTemplateManip = new Manipulator(this).addOrdonator(2);
-                let addSolutionButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.green],
-                    'Ajouter une solution');
-                addSolutionButton.glass.mark('addSolutionButton');
-                let selectSolution = new svg.Rect(0.8 * addSolutionButton.width, INPUT_SIZE.h)
+                    }
+                }
+                _showSolutionBody(newValue);
+            };
+            var _createSolutionsHeader = () => {
+                this.solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
+                let solutionsHeader = new svg.Rect(PANEL_SIZE.w, 0.2 * PANEL_SIZE.h)
                     .color(myColors.white, 1, myColors.grey)
-                    .corners(5, 5);
-                let deleteSolutionButton = new gui.Button(0.15 * selectSolution.width, INPUT_SIZE.h,
-                    [myColors.lightgrey, 0, myColors.none], 'X');
-                let framedRollPanel = new svg.Rect(0.3 * addSolutionButton.width, INPUT_SIZE.h)
-                    .color(myColors.white, 1, myColors.grey);
-                let linkImage = new svg.Image('../../images/unlink.png');
-                let pictureImage = new svg.Image('../../images/picture.png');
-                let rollPanel = new svg.Rect(0.4 * addSolutionButton.width, INPUT_SIZE.h)
-                    .color(myColors.white, 1, myColors.grey);
+                    .corners(2, 2);
+                let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
+                    .font('Arial', 18)
+                    .anchor('left')
+                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
 
-                selectSolution.position(-0.1 * addSolutionButton.width, addSolutionButton.height + 2 * MARGIN);
-                deleteSolutionButton.position(addSolutionButton.width * 0.4 + MARGIN, addSolutionButton.height + 2 * MARGIN);
-                framedRollPanel.position(-0.35 * addSolutionButton.width, 2 * (addSolutionButton.height + 2 * MARGIN));
-                rollPanel.position(-addSolutionButton.width / 2 + framedRollPanel.width + IMAGE_SIZE.w + rollPanel.width / 2 + 1.5 * MARGIN,
-                    2 * (addSolutionButton.height + 2 * MARGIN));
-                linkImage
-                    .position(-addSolutionButton.width / 2 + rollPanel.width - IMAGE_SIZE.w / 2 + 0.5 * MARGIN, 2 * (addSolutionButton.height + 2 * MARGIN))
-                    .dimension(IMAGE_SIZE.w, IMAGE_SIZE.h)
-                pictureImage
-                    .position(addSolutionButton.width / 2 - IMAGE_SIZE.w / 2, 2 * (addSolutionButton.height + 2 * MARGIN))
-                    .dimension(IMAGE_SIZE.w, IMAGE_SIZE.h)
 
-                leftTemplateManip.set(0, linkImage);
-                leftTemplateManip.set(1, pictureImage);
-                leftTemplateManip.add(selectSolution)
-                    .add(addSolutionButton.component)
-                    .add(deleteSolutionButton.component)
-                    .add(framedRollPanel)
-                    .add(rollPanel)
-                leftTemplateManip.move(-PANEL_SIZE.w / 2 + INPUT_SIZE.w / 2 + MARGIN, 0)
-                solutionsBodyManip.add(leftTemplateManip);
-            }
-            createLeftTemplate();
-            solutionsBodyManip.move(4 * MARGIN, -PANEL_SIZE.h / 4)
-            this.mainPanelManipulator.add(solutionsBodyManip);
+                let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
+                objectifSelectList.setHandlerChangeValue(_clickListHandler);
+                this.solutionsHeaderManipulator
+                    .add(solutionsHeader)
+                    .add(headerTitle)
+                    .add(objectifSelectList.manipulator);
+                this.solutionsHeaderManipulator.move(0,(solutionsHeader.height - PANEL_SIZE.h)/2);
+            };
+
+            !this.solutionsHeaderManipulator && _createSolutionsHeader();
+            this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
+
+            let solutionBodyCreated = this.createSolutionsBody();
+
+            this.solutionsHeaderManipulator.add(solutionBodyCreated);
         }
+
+
+        createSolutionsBody(){
+            var createValidCheckbox = (list, manipSelectItems) => {
+                let checkBoxManipulator = new Manipulator(this);
+
+                var _removeSolutionChild = (list, childSolutionManip) => {
+                    if(childSolutionManip.childSolution){
+                        _removeSolutionChild(list, childSolutionManip.childSolution);
+                        childSolutionManip.childSolution = null;
+                        list.removeElementFromList(childSolutionManip);
+                    }else{
+                        childSolutionManip.parentSolution.childSolution = null;
+                        list.removeElementFromList(childSolutionManip);
+                    }
+                };
+
+                var _toggleChecked = () => {
+                    if (checkBoxManipulator.checked) {                           // modele or state
+                        checkBoxManipulator.remove(checked);
+                        checkBoxManipulator.checked = false;                     // modele or state
+                        _removeSolutionChild(list, manipSelectItems.childSolution);
+                        list.refreshListView();
+                    } else {
+                        checkBoxManipulator.add(checked);
+                        checkBoxManipulator.checked = true;                      // modele or state
+
+                        let newSolutions = createOneBestSolution(list, list.width, INPUT_SIZE.h);
+                        list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
+                        list.refreshListView();
+
+                        newSolutions.parentSolution = manipSelectItems;
+                        manipSelectItems.childSolution = newSolutions;
+                    }
+                }
+                let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+                let checked = drawCheck(checkbox.x, checkbox.y, 20);
+                checkBoxManipulator.addEvent('click', _toggleChecked);
+                checkBoxManipulator.add(checkbox);
+
+                return checkBoxManipulator;
+            };
+
+            let createOneBestSolution = (list, w, h) => {
+                let manipSelectItems = new Manipulator(this);
+
+                let selectItemStatement = new SelectItemList2(this.getStatement(), w/3, h);
+                selectItemStatement
+                    .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
+                    .setManipShowListAndPosition(list.manipulator);
+
+                let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h);
+                selectItemResponse
+                    .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
+                    .setManipShowListAndPosition(list.manipulator);
+
+                let validCheckboxManip = createValidCheckbox(list, manipSelectItems);
+
+
+                manipSelectItems
+                    .add(selectItemStatement.manipulator)
+                    .add(selectItemResponse.manipulator)
+                    .add(validCheckboxManip);
+
+                return manipSelectItems;
+            };
+
+            let createSolutionsList = () => {
+                let solutionBodyManip = new Manipulator(this);
+                solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
+
+                let listBestSolution = new ListManipulatorView([], "V", sizeBody.w/3, sizeBody.h/2 + chevronSize.h*2,
+                    chevronSize.w, chevronSize.h, sizeBody.w/3, INPUT_SIZE.h, 10, myColors.white, 10);
+                listBestSolution.position(- sizeBody.w/2 + listBestSolution.width/2 + MARGIN, 0);
+
+                solutionBodyManip.add(listBestSolution.manipulator);
+
+                return {listBestSolution: listBestSolution, manipulator: solutionBodyManip};
+            };
+
+            let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
+            let chevronSize = {w: 70, h: 30};
+            let solutionBody = createSolutionsList();
+            let addBestSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
+                [myColors.white, 1, myColors.black], "Ajouter une solution");
+            addBestSolutionButton.position(- sizeBody.w/2 + addBestSolutionButton.width/2 + addBestSolutionButton.height/2,
+                - sizeBody.h/2 + addBestSolutionButton.height);
+            addBestSolutionButton.onClick(() =>{
+                let solution = createOneBestSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h);
+                solutionBody.listBestSolution.add(solution);
+                solutionBody.listBestSolution.refreshListView();
+            });
+
+
+            solutionBody.manipulator
+                .add(addBestSolutionButton.component);
+
+            return solutionBody.manipulator;
+        }
+
+
+        getResponses(){
+            return ["j'adore", "manger", "Oui", "Non"]
+        }
+
+        getStatement(){
+            return ["Longue", "Vie", "Cheval", "Comment"]
+        }
+
 
         selectElement(elem) {
             if(this.selectedElement){
@@ -1047,7 +1164,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1130,7 +1248,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1404,7 +1523,8 @@ exports.DollAdminV = function (globalVariables) {
             arr = arr.concat(this._createDeepnessElement(manipulator));
 
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
-            this.contextMenu = new ListManipulatorView(arr, 'V', 150, (NB_ELEMENT_RIGHT_CLICK + 1) * CONTEXT_TILE_SIZE.h, 75, 15, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
+            this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
+                CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
             this.contextMenu.position(event.x + this.contextMenu.width / 2 - MARGIN, event.y + this.contextMenu.height / 2 - MARGIN);
             this.contextMenu.border.corners(2, 2).color(myColors.white, 1, myColors.grey);
             this.manipulator.add(this.contextMenu.manipulator);
@@ -1541,6 +1661,12 @@ exports.DollAdminV = function (globalVariables) {
                 responses: this.responses,
                 rules: []
             });
+        }
+
+        getObjectiveDataFrom(objective) {
+            let objectiveLabel = objective.text.getMessageText();
+            // this.
+            return false;
         }
     }
 

@@ -87,11 +87,6 @@ exports.QuizAdminP = function (globalVariables) {
                 this.isQuizValid();
                 let quizToSave = getObjectToSave();
                 return this.quiz.updateQuiz(quizToSave);
-                // if (this.isQuizValid()) {
-                //     return this.quiz.updateQuiz(quizToSave);
-                // } else {
-                //     return Promise.reject("Quiz non valide");
-                // }
             } else {
                 return Promise.reject("Le nom du quiz est incorrect");
             }
