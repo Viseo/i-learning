@@ -273,6 +273,7 @@ exports.Lists = function (globalVariables) {
         add(manip){
             this.listElements.push(manip);
             this.contentManip.add(manip.component);
+            return this;
         }
 
         getIndexByManip(manip){
@@ -530,11 +531,13 @@ exports.Lists = function (globalVariables) {
 
 
             this.selectButton.onClick(() => {
-                if(this.manipShowList){
-                    this.manipShowList.add(this.listView.manipulator);
-                    this.listView.manipulator.move(this.manipulator.x, this.manipulator.y + this.height/2);
-                }else{
-                    this.manipulator.add(this.listView.manipulator);
+                if(this.listElements.length > 0 ){
+                    if(this.manipShowList){
+                        this.manipShowList.add(this.listView.manipulator);
+                        this.listView.manipulator.move(this.manipulator.x, this.manipulator.y + this.height/2);
+                    }else{
+                        this.manipulator.add(this.listView.manipulator);
+                    }
                 }
             });
     
