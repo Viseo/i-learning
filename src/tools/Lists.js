@@ -534,7 +534,11 @@ exports.Lists = function (globalVariables) {
                 if(this.listElements.length > 0 ){
                     if(this.manipShowList){
                         this.manipShowList.add(this.listView.manipulator);
-                        this.listView.manipulator.move(this.manipulator.x, this.manipulator.y + this.height/2);
+                        let globalPointButton = this.getButtonGlobalPoint(0, 0);
+                        let localPointParentManip = this.manipShowList.translator.localPoint(globalPointButton.x, globalPointButton.y);
+
+                        this.listView.manipulator.move(localPointParentManip.x, (this.selectButton.height + this.listView.height)/2 + localPointParentManip.y);
+
                     }else{
                         this.manipulator.add(this.listView.manipulator);
                     }
@@ -542,6 +546,10 @@ exports.Lists = function (globalVariables) {
             });
     
             this.manipulator.add(this.selectButton.component);
+        }
+
+        getButtonGlobalPoint(x, y){
+            return this.selectButton.component.globalPoint(x, y);
         }
 
         setManipShowListAndPosition(manipShowList, x, y) {

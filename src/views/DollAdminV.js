@@ -822,6 +822,8 @@ exports.DollAdminV = function (globalVariables) {
 
                 let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 objectifSelectList.setHandlerChangeValue(_clickListHandler);
+                objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
+
                 this.solutionsHeaderManipulator
                     .add(solutionsHeader)
                     .add(headerTitle)
