@@ -51,7 +51,8 @@ exports.QuizQuestionV = function (globalVariables) {
                 chevron.position(-130, 0);
                 this.returnButtonManipulator
                     .add(this.returnButton.component)
-                    .add(chevron)
+                    .add(chevron).mark('return')
+                this.returnButtonManipulator.addEvent('click', this.returnHandler.bind(this));
                 this.returnButtonManipulator.move(this.returnButton.width / 2 + MARGIN, currentY + this.returnButton.height / 2);
                 currentY += this.returnButton.height + MARGIN;
             }

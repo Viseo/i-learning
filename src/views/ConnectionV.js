@@ -184,6 +184,7 @@ exports.ConnectionV = function (globalVariables) {
                         .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
                         .color(myColors.greyerBlue)
                         .font(FONT, FONT_SIZE_TITLE * 2 / 3);
+                    registerText.mark('createAccount');
                     this.registerTextManipulator.add(registerText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
                     this.registerTextManipulator.addEvent('click', () => this.goToRegister.call(this));
                 }
