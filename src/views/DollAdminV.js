@@ -741,7 +741,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.add(mini.manip);
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
-                    this.addResponse(mini.text.messageText);
+                    this.addResponse(newResponse);
                 }
 
             }
@@ -772,7 +772,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - responsesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
             responsesAddButton.onClick(addResponseHandler);
 
-            let responses = this.getResponses().map(elem=>{return createMiniature({label:elem}).manip});
+            let responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
             this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
             this.responsesList.markDropID('responsesDrop')
@@ -910,8 +910,8 @@ exports.DollAdminV = function (globalVariables) {
                     selectItemStatement
                         .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
                         .setManipShowListAndPosition(list.manipulator);
-
-                    let selectItemResponse = new SelectItemList2(this.getResponses(), w/3, h);
+                    let responsesLabels = this.getResponses().map(elem=>{return elem.label});
+                    let selectItemResponse = new SelectItemList2(responsesLabels, w/3, h);
                     selectItemResponse
                         .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
                         .setManipShowListAndPosition(list.manipulator);
