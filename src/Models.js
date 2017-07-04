@@ -1035,7 +1035,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.responses.remove(response);
         }
         addObjective(obj){
-            this.objectives.push({label:obj});
+            this.objectives.push({label:obj, bestSolutions:[], acceptedSolutions:[]});
         }
         removeObjective(obj){
             this.objectives.remove(this.findObjective(obj));

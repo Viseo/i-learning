@@ -44,11 +44,21 @@ exports.DollAdminV = function (globalVariables) {
     class DollAdminV extends View {
         constructor(presenter) {
             super(presenter);
-            this.rules = false;
+            this.rulesDisplay = false;
+            this.rules = this.getRules();
+            this.bestSolutionsList = this.getBestSolutionsList();
+            this.rulesSet = {best:0, accepted:0};
             this.responses = this.getResponses();
             this.objectives = this.getObjectives();
             this.elements = this.loadElements();
             this.declareActions();
+        }
+
+        getRules(){//TODO link to model
+            return [];
+        }
+        getBestSolutionsList(){//TODO link to model
+            return [];
         }
 
         loadElements(){
@@ -544,7 +554,7 @@ exports.DollAdminV = function (globalVariables) {
             this.solutionsBodyManip = new Manipulator(this);
             this.manipulator.add(this.mainPanelManipulator);
 
-            if (this.rules) {
+            if (this.rulesDisplay) {
                 this.displaySolutionsHeader();
             }
             else {
@@ -799,6 +809,8 @@ exports.DollAdminV = function (globalVariables) {
 
         displaySolutionsHeader() {
             var _clickListHandler = (newValue) => {
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == newValue.text.messageText});
+                this.solutionsHeaderManipulator.add(this.createSolutionsBody());
                 //todo charger lebody selon la valeur
                 var _showSolutionBody = (objective) => {
                     var _initCompleteSolutions = (objectiveItem) => {
@@ -844,6 +856,7 @@ exports.DollAdminV = function (globalVariables) {
                 let objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 objectifSelectList.setHandlerChangeValue(_clickListHandler);
                 objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == objectifSelectList.getSelectButtonText()})
 
                 this.solutionsHeaderManipulator
                     .add(solutionsHeader)
@@ -862,7 +875,7 @@ exports.DollAdminV = function (globalVariables) {
 
 
         createSolutionsBody(){
-            var _createBlockSolution = (x, y) => {
+            var _createBlockSolution = (x, y, best) => {
                 var createValidCheckbox = (list, manipSelectItems) => {
                     let checkBoxManipulator = new Manipulator(this);
 
@@ -893,6 +906,10 @@ exports.DollAdminV = function (globalVariables) {
 
                             newSolutions.parentSolution = manipSelectItems;
                             manipSelectItems.childSolution = newSolutions;
+                            newSolutions.groupId = manipSelectItems.groupId;
+                            best && this.currentObjective.bestSolutions.push(newSolutions);
+                            !best && this.currentObjective.acceptedSolutions.push(newSolutions);
+                            this.createRule();
                         }
                     }
                     let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -918,7 +935,11 @@ exports.DollAdminV = function (globalVariables) {
 
                     let validCheckboxManip = createValidCheckbox(list, manipSelectItems);
 
-
+                    selectItemStatement.onClickChangeValueHandler = (choice)=>{
+                        this.createRule();
+                    }
+                    manipSelectItems.statements = selectItemStatement;
+                    manipSelectItems.responses = selectItemResponse;
                     manipSelectItems
                         .add(selectItemStatement.manipulator)
                         .add(selectItemResponse.manipulator)
@@ -947,6 +968,10 @@ exports.DollAdminV = function (globalVariables) {
                 addSolutionButton.onClick(() =>{
                     let solution = createOneSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h);
                     solution.spaceManip = new Manipulator(this);
+                    solution.groupId = best ? this.rulesSet.best ++ : this.rulesSet.accepted ++;
+                    best && this.currentObjective.bestSolutions.push(solution);
+                    !best && this.currentObjective.acceptedSolutions.push(solution);
+                    this.createRule();
                     solutionBody.listBestSolution
                         .add(solution)
                         .add(solution.spaceManip);
@@ -963,14 +988,51 @@ exports.DollAdminV = function (globalVariables) {
             let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
             let chevronSize = {w: 70, h: 30};
             let sizeBlock = {w: sizeBody.w/3, h: sizeBody.h/2 + chevronSize.h*2};
-            let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, 0);
-            let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, 0);
+            let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, 0, true);
+            let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, 0, false);
 
             manipBlockSolutions
                 .add(blockBestSolution)
                 .add(blockNotOptimalSolution);
 
             return manipBlockSolutions;
+        }
+
+        createRule(){
+            let rulesBest = {};
+            let rulesAccepted = {};
+            let groupCount = 0;
+            this.currentObjective.bestSolutions.forEach(line=>{
+                if(rulesBest[line.groupId]){
+                    rulesBest[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+                }
+                else{
+                    rulesBest[line.groupId] = [];
+                    rulesBest[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+                    groupCount++;
+                }
+            });
+            let bestSolutions = [];
+            for (let i = 0; i<groupCount; i++){
+                bestSolutions.push(rulesBest[i]);
+            }
+            groupCount = 0;
+            this.currentObjective.acceptedSolutions.forEach(line=>{
+                if(rulesAccepted[line.groupId]){
+                    rulesAccepted[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+                }
+                else{
+                    rulesAccepted[line.groupId] = [];
+                    rulesAccepted[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+                    groupCount++;
+                }
+            });
+            let acceptedSolutions = [];
+            for (let i = 0; i<groupCount; i++){
+                acceptedSolutions.push(rulesAccepted[i]);
+            }
+
+            this.currentObjective.rules = {bestSolutions:bestSolutions, acceptedSolutions:acceptedSolutions};
         }
 
 
@@ -1680,8 +1742,8 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         toggleTabs(bool) {
-            if (this.rules != bool) {
-                this.rules = bool;
+            if (this.rulesDisplay != bool) {
+                this.rulesDisplay = bool;
                 this.displayMainPanel();
             }
         }
@@ -1695,11 +1757,11 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         saveDoll() {
+            let obj = this.objectives.map(elem=>{return {bestSolutions:elem.bestSolutions, acceptedSolutions:elem.acceptedSolutions, label:elem.label}});
             this.presenter.save({
                 elements: this.elements,
-                objectives: this.objectives,
+                objectives: obj,
                 responses: this.responses,
-                rules: []
             });
         }
 

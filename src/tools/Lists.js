@@ -518,9 +518,10 @@ exports.Lists = function (globalVariables) {
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);
                 choice.onClick(() => {
-                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
                     this.setSelectButtonText(ele);
+                    this.selectedManipulator = manip;
                     this.hideListView();
+                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
                 });
                 manip.add(choice.component);
 
@@ -551,6 +552,9 @@ exports.Lists = function (globalVariables) {
         getButtonGlobalPoint(x, y){
             return this.selectButton.component.globalPoint(x, y);
         }
+        getSelectedManipulator(){
+            return this.selectedManipulator;
+        }
 
         setManipShowListAndPosition(manipShowList, x, y) {
             this.manipShowList = manipShowList;
@@ -561,8 +565,8 @@ exports.Lists = function (globalVariables) {
             return this;
         };
 
-        getSelectButtonText(button) {
-            return button.text.getMessageText();
+        getSelectButtonText() {
+            return this.selectButton.text.getMessageText();
         }
 
         hideListView() {
