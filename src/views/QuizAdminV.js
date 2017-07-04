@@ -16,9 +16,7 @@ exports.QuizAdminV = function (globalVariables) {
         installDnD = gui.installDnD;
 
     const
-        BUTTON_WIDTH = 250,
-        BUTTON2_WIDTH = 115,
-        BUTTON_HEIGHT = 30,
+        BUTTON_SIZE = {w:250, h:30},
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
@@ -46,7 +44,6 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
                     .add(this.mediasLibraryManipulator)
-
                     .add(this.saveQuizButtonManipulator)
                     .add(this.returnButtonManipulator)
                     .add(this.previewButtonManipulator);
@@ -60,14 +57,14 @@ exports.QuizAdminV = function (globalVariables) {
                 this.displayHeader(formationLabel + " - " + this.label);
             }
             var _displayReturnButton = () => {
-                this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton = new gui.Button(BUTTON_SIZE.w + 2 * MARGIN, BUTTON_SIZE.h - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
                 this.returnButton.text.font('Arial', 20).position(0, 6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
-                chevron.position(-BUTTON_WIDTH / 2, 0);
+                chevron.position(-BUTTON_SIZE.w / 2, 0);
                 this.returnButtonManipulator.add(chevron);
             }
             var _displayTitleArea = () => {
@@ -80,7 +77,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                 let quizTitleDim = {
                     w: Math.max(this.width * 1 / 4, 300),
-                    h: BUTTON_HEIGHT
+                    h: BUTTON_SIZE.h
                 };
                 let titleTextArea = new gui.TextField(0, 0, quizTitleDim.w, quizTitleDim.h, this.label);
                 titleTextArea.font('Arial', 15);
@@ -112,10 +109,10 @@ exports.QuizAdminV = function (globalVariables) {
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
-                    w: Math.max(this.width, 1260 ),
+                    w: Math.max(this.width, 1260),
                     h: Math.max(this.height * 1 / 6, 100)
                 };
-                this.questionsBlockListView = new ListManipulatorView([],'H',
+                this.questionsBlockListView = new ListManipulatorView([], 'H',
                     questionListDim.w, questionListDim.h, 50, 80,
                     QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
 
@@ -129,24 +126,21 @@ exports.QuizAdminV = function (globalVariables) {
                 let questionDetailsDim = {
                     w: Math.max(this.width * 4 / 5, 850),
                     h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
-                        - this.returnButton.height - this.quizTitleField.height  - BUTTON_HEIGHT - MARGIN,280)
+                        - this.returnButton.height - this.quizTitleField.height - BUTTON_SIZE.h - MARGIN, 280)
                 }
                 this.questionDetailsDim = questionDetailsDim;
                 let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
                 this.questionDetailsManipulator.set(0, border);
-                this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w/2 + 2 * MARGIN,
-                    questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
+                this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w / 2 + 2 * MARGIN,
+                    questionDetailsDim.h / 2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h / 2 + MARGIN);
 
             }
-            let calculateButtonBottomDim = () =>{
-                let dim = {
-                    w: BUTTON_WIDTH,
-                    h: BUTTON_HEIGHT
-                }
-                dim.x = Math.max(this.width / 2 + dim.w / 2 + MARGIN,this.questionDetailsDim.w/2+ this._calculateLibraryDimension().w);
+            let calculateButtonBottomDim = () => {
+                let dim = BUTTON_SIZE;
+                dim.x = Math.max(this.width / 2 + dim.w / 2 + MARGIN, this.questionDetailsDim.w / 2 + this._calculateLibraryDimension().w);
                 dim.y = this.header.height + this.returnButton.height + this.quizTitleField.height
-                        + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + dim.h / 2 + 5 * MARGIN;
-                 return dim;
+                    + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + dim.h / 2 + 5 * MARGIN;
+                return dim;
             }
             var _displayPreviewButton = () => {
                 let dim = calculateButtonBottomDim();
@@ -162,12 +156,12 @@ exports.QuizAdminV = function (globalVariables) {
                 saveButton.glass.mark('saveButtonQuiz');
                 saveButton.onClick(this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
-                this.saveQuizButtonManipulator.move(dim.x+dim.w+ MARGIN ,  dim.y);
+                this.saveQuizButtonManipulator.move(dim.x + dim.w + MARGIN, dim.y);
             }
             var _displayToggleMedias = () => {
                 let tabsDim = {
-                    w: Math.max((this.width * 1 / 5 - MARGIN) / 2, 250/2),
-                    h: BUTTON_HEIGHT
+                    w: Math.max((this.width * 1 / 5 - MARGIN) / 2, 250 / 2),
+                    h: BUTTON_SIZE.h
                 };
                 let imageTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey)
                     .mark('imageTab');
@@ -196,13 +190,10 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator.add(tabsManipulator);
             }
 
-
             this.mediaPanel = true;
             super.display();
             _declareManipulator();
             _resetDrawings();
-
-
             _updateHeader();
             _displayReturnButton();
             _displayTitleArea();
@@ -215,44 +206,34 @@ exports.QuizAdminV = function (globalVariables) {
             _displaySaveButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
-
         }
 
-        _calculateLibraryDimension(){
+        _calculateLibraryDimension() {
             return {
                 w: Math.max(this.width * 1 / 5 - MARGIN, 250),
                 h: Math.max(this.height - this.header.height - this.questionsBlockListView.getListDim().h
-                    - this.returnButton.height - this.quizTitleField.height  - 2*BUTTON_HEIGHT - MARGIN, 280 - BUTTON_HEIGHT)
+                    - this.returnButton.height - this.quizTitleField.height - 2 * BUTTON_SIZE.h - MARGIN, 280 - BUTTON_SIZE.h)
             };
         }
 
         displayVideoLibrary() {
-            this.manipulator.remove(this.mediasLibraryManipulator);
-            this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
-
-            let mediaLibDim = this._calculateLibraryDimension();
-
             var _createPanel = () => {
                 let videosPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
                 videosPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
                 this.mediaLibrary = videosPanel;
                 let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(videosPanel.width / 2, videosPanel.height / 2);
-
-               //  let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Ajouter une image')
-               //      .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
-               // addPictureButton.text.font('Arial',15).color(myColors.black).position(0, 4.33);
-               //  resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
-               //  addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
                 this.mediasLibraryManipulator.set(0, videosPanel.component);
                 this.mediasLibraryManipulator.move(videosPanel.width / 2 + MARGIN,
-                    mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
+                    mediaLibDim.h / 2 + BUTTON_SIZE.h + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h / 2 + MARGIN);
                 this.manipulator.add(this.mediasLibraryManipulator);
                 videosPanel.back.mark('videoPanel');
-
             };
 
-           _createPanel();
+            this.manipulator.remove(this.mediasLibraryManipulator);
+            this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
+            let mediaLibDim = this._calculateLibraryDimension();
+            _createPanel();
             this.loadVideos();
         }
 
@@ -276,58 +257,44 @@ exports.QuizAdminV = function (globalVariables) {
                         let vidManip = new Manipulator(this).addOrdonator(1);
                         let point = vid.globalPoint(0, 0);
                         vidManip.move(point.x, point.y);
-
-
                         let vidCopy = vid.duplicate(vid);
                         vidManip.set(0, vidCopy);
                         vidManip.videoSrc = videoElem.src;
                         drawings.piste.add(vidManip);
-
                         installDnD(vidManip, drawings.component.glass.parent.manipulator.last, conf);
-                        svg.event(drawings.component.glass, "mousedown", {pageX: vidManip.x, pageY: vidManip.y,preventDefault: () => {
-                        }});
+                        svg.event(drawings.component.glass, "mousedown", {
+                            pageX: vidManip.x, pageY: vidManip.y, preventDefault: () => {
+                            }
+                        });
                     };
 
                     let indexX = Math.floor(index % 1);
                     let indexY = Math.floor(index / 1);
-                    let video = new svg.Image('../../images/play-button.png').mark('video'+index);
+                    let video = new svg.Image('../../images/play-button.png').mark('video' + index);
                     let videoTitle = new svg.Text(videoElem.name).font('Arial', 12).anchor('left').position(30, 4);
                     video.dimension(30, 30);
                     let vidManip = new Manipulator(this);
                     vidManip.move(indexX * (30 + MARGIN / 2) + 30 / 2 + MARGIN, 30 + indexY * (30 + 2 * MARGIN))
                     vidManip.add(video);
                     vidManip.add(videoTitle)
-
-
                     this.mediaLibrary.content.add(vidManip.component);
-
-
                     video.onMouseDown(() => createDraggableCopy(video));
                 });
             })
-        }
-
-        getVideos() {
-            return this.presenter.getVideos();
         }
 
         displayImageLibrary() {
             this.manipulator.remove(this.mediasLibraryManipulator);
             this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(4);
             let mediaLibDim = this._calculateLibraryDimension();
-
             let mediasPanel = new gui.Panel(mediaLibDim.w, mediaLibDim.h);
             mediasPanel.border.color(myColors.none, 1, myColors.black).corners(5, 5);
             this.mediaLibrary = mediasPanel;
             let rectWhite = new svg.Rect(5000, 5000).color(myColors.white, 1, myColors.white).position(mediasPanel.width / 2, mediasPanel.height / 2);
-
-
             mediasPanel.add(rectWhite);
             this.mediasLibraryManipulator.set(0, mediasPanel.component);
             this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN,
-                mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
-
-
+                mediaLibDim.h / 2 + BUTTON_SIZE.h + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h / 2 + MARGIN);
             this.imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
             let imagesManipulator = new Manipulator(this);
             mediasPanel.content.add(imagesManipulator.first);
@@ -340,50 +307,18 @@ exports.QuizAdminV = function (globalVariables) {
 
         displayUploadButton() {
             const onChangeFileExplorerHandler = () => {
-                uploadFiles(fileExplorer.component.files)
-            };
-
-            var uploadFiles = (files) => {
-                var _progressDisplayer = () => {
-                    return (e) => {
-                        var _displayProgressBar = manipulator => {
-                            const progwidth = w * e.loaded / e.total;
-                            const bar = new svg.Rect(progwidth - 15, 14)
-                                .color(myColors.green)
-                                .position(-(w - progwidth) / 2, 0);
-                            manipulator.set(2, bar);
-                        }
-                        var _displayPercentage = manipulator => {
-                            const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
-                            percentage.position(0, percentage.boundingRect().height / 4);
-                            manipulator.set(3, percentage);
-                        }
-
-                        _displayProgressBar(manipulator);
-                        _displayPercentage(manipulator);
-                        if (e.loaded === e.total) {
-
-                        }
-                    };
-                };
-
-                for (let file of files) {
-                    let progressDisplay;
-                    this.selectedTab = 0;
+                for (let file of fileExplorer.component.files) {
                     if (file.type === 'video/mp4') {
-                        this.selectedTab = 1;
-                        progressDisplay = _progressDisplayer();
-                        this.presenter.uploadVideo(file, progressDisplay).then(() => {
+                        this.presenter.uploadVideo(file).then(() => {
                             this.loadVideos();
                         })
                     } else {
-                        this.presenter.uploadImage(file, progressDisplay).then(() => {
+                        this.presenter.uploadImage(file).then(() => {
                             this.loadImage(this.mediaLibrary);
                         });
                     }
                 }
             };
-            let fileExplorer;
             const fileExplorerHandler = () => {
                 if (!fileExplorer) {
                     let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
@@ -407,14 +342,16 @@ exports.QuizAdminV = function (globalVariables) {
                 }
                 fileExplorer.fileClick();
             };
-            let addPictureButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT,  [[43, 120, 228], 1, myColors.black], 'Ajouter un Media');
-            resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
+
+            let fileExplorer;
+            let addPictureButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [[43, 120, 228], 1, myColors.black], 'Ajouter un Media');
+            resizeStringForText(addPictureButton.text, BUTTON_SIZE.w - MARGIN, BUTTON_SIZE.h);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.onClick(fileExplorerHandler);
             svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
             let addButtonManip = new Manipulator(this);
             addButtonManip.add(addPictureButton.component);
-            addButtonManip.move(BUTTON_WIDTH/2 + MARGIN , this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_HEIGHT - MARGIN)
+            addButtonManip.move(BUTTON_SIZE.w / 2 + MARGIN, this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_SIZE.h - MARGIN)
             this.manipulator.add(addButtonManip);
         }
 
@@ -450,12 +387,9 @@ exports.QuizAdminV = function (globalVariables) {
                         let picManip = new Manipulator(this).addOrdonator(1);
                         let point = pic.globalPoint(0, 0);
                         picManip.move(point.x, point.y);
-
-
                         let picCopy = pic.duplicate(pic);
                         picManip.set(0, picCopy);
                         drawings.piste.add(picManip);
-
                         installDnD(picManip, drawings.component.glass.parent.manipulator.last, conf);
                         svg.event(drawings.component.glass, "mousedown", event);
                     };
@@ -467,10 +401,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let picManip = new Manipulator(this);
                     picManip.move(indexX * (this.imageWidth + MARGIN / 2) + this.imageWidth / 2 + MARGIN, this.imageWidth / 2 + indexY * (this.imageWidth + 2 * MARGIN))
                     picManip.add(picture);
-
                     panel.content.add(picManip.component);
-
-
                     picture.onMouseDown(() => createDraggableCopy(picture));
                 })
             })
@@ -481,11 +412,8 @@ exports.QuizAdminV = function (globalVariables) {
                 let globalPoints = parent.globalPoint(x, y);
                 let target = this.questionsDetail[this.selectedQuestionIndex].guiManipulator
                     .last.getTarget(globalPoints.x, globalPoints.y);
-
-                if (target) {
-                    if (target instanceof svg.Image && !target.id && target.id != "explanation") {
-                        cb(target);
-                    }
+                if (target && target instanceof svg.Image && !target.id && target.id != "explanation") {
+                    cb(target);
                 }
             }
         }
@@ -499,7 +427,6 @@ exports.QuizAdminV = function (globalVariables) {
                 this.manipulator.remove(messageText);
             }, 3000);
         }
-
 
         _displayQuestionsBlock() {
             var _displayQuestionBlock = (question, lastQuestionIndex) => {
@@ -566,7 +493,6 @@ exports.QuizAdminV = function (globalVariables) {
                 questionManip.mark('questionBlock' + lastQuestionIndex);
                 _initBlock(questionManip);
                 _displayBlock();
-
                 return questionManip;
             };
             var _displayNewQuestionBlock = () => {
@@ -586,12 +512,10 @@ exports.QuizAdminV = function (globalVariables) {
                 let questionButton = new gui.Button(QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, [myColors.white, 1, myColors.black], "");
                 questionButton.back.corners(5, 5);
                 addNewQuestionManip.set(0, questionButton.component);
-
                 let iconAddNewQuestion = IconCreator.createPlusIcon(addNewQuestionManip, 1);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
                 questionButton.onClick(() => onClickOnAddNewQuestion());
                 questionButton.glass.mark('newQuestionButton');
-
                 this.questionsBlockListView.add(addNewQuestionManip);
             };
 
@@ -605,15 +529,7 @@ exports.QuizAdminV = function (globalVariables) {
             this.questionsBlockListView.refreshListView();
         }
 
-
         _loadOneQuestionInDetail(question, index) {
-            let questionDetail = {};
-
-            questionDetail.answersDimension = {
-                width: this.questionDetailsDim.w - 2 * MARGIN,
-                height: this.questionDetailsDim.h - 2 * MARGIN
-            };
-
             var _declareManipulatorQuestionDetail = (questionGui) => {
                 questionGui.typeManipulator = new Manipulator(this).addOrdonator(2);
                 questionGui.textAreaManipulator = new Manipulator(this).addOrdonator(3);
@@ -628,8 +544,8 @@ exports.QuizAdminV = function (globalVariables) {
             };
             var _displayToggleTypeResponse = (questionGui, question) => {
                 let toggleButtonDim = {
-                    w: BUTTON_WIDTH,
-                    h: BUTTON_HEIGHT
+                    w: BUTTON_SIZE.w,
+                    h: BUTTON_SIZE.h
                 }
                 questionGui.uniqueButton = new gui.Button(toggleButtonDim.w, toggleButtonDim.h, [myColors.white, 1, myColors.black], "Réponse unique");
                 questionGui.multipleButton = new gui.Button(toggleButtonDim.w, toggleButtonDim.h, [myColors.white, 1, myColors.black], 'Réponses multiples');
@@ -659,7 +575,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let questionManip = this.questionsBlockListView.get(this.selectedQuestionIndex);
                     questionManip.buttonText.message(newMessage);
                     let tmpText = questionManip.buttonText;
-                    resizeStringForText(tmpText,QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h/2);
+                    resizeStringForText(tmpText, QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h / 2);
                     //questionManip.add(tmpText)
                 }
 
@@ -686,7 +602,7 @@ exports.QuizAdminV = function (globalVariables) {
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
                 questionGui.textArea.onInput(_setQuestionBlockTitle);
-                questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.h / 2 + questionTextAreaDim.h / 2 + 2 * MARGIN + BUTTON_HEIGHT);
+                questionGui.textAreaManipulator.move(0, -this.questionDetailsDim.h / 2 + questionTextAreaDim.h / 2 + 2 * MARGIN + BUTTON_SIZE.h);
                 questionGui.answersDimension.height -= questionTextAreaDim.h;
             };
             var _loadAnswerBlockForOneQuestion = (questionGui, questionIndex, question) => {
@@ -967,11 +883,16 @@ exports.QuizAdminV = function (globalVariables) {
 
             };
 
+            let questionDetail = {};
+            questionDetail.answersDimension = {
+                width: this.questionDetailsDim.w - 2 * MARGIN,
+                height: this.questionDetailsDim.h - 2 * MARGIN
+            };
+
             _declareManipulatorQuestionDetail(questionDetail);
             _displayToggleTypeResponse(questionDetail, question);
             _displayTextArea(questionDetail, index, question);
             _loadAnswerBlockForOneQuestion(questionDetail, index, question);
-
             return questionDetail;
         }
 
@@ -1011,7 +932,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let media = answerGui.popUpExplanation.media;
                 if (media.imageSrc) {
                     answer.explanation.imageSrc = media.imageSrc;
-                }else if(media.videoSrc){
+                } else if (media.videoSrc) {
                     answer.explanation.videoSrc = media.videoSrc;
                 }
                 answers.push(answer);
@@ -1039,7 +960,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let media = questionElementVue.textAreaPicture;
                 if (media.imageSrc) {
                     question.imageSrc = media.imageSrc;
-                }else if(media.videoSrc){
+                } else if (media.videoSrc) {
                     question.videoSrc = media.videoSrc;
                 }
 
@@ -1050,6 +971,10 @@ exports.QuizAdminV = function (globalVariables) {
 
         getImages() {
             return this.presenter.getImages();
+        }
+
+        getVideos() {
+            return this.presenter.getVideos();
         }
 
         getQuestions() {
@@ -1105,14 +1030,13 @@ exports.QuizAdminV = function (globalVariables) {
                 label: this.getNewLabel(),
                 questions: this.getNewQuestions(),
             }
-            this.presenter.updateQuiz(quizViewData).then((data)=>{
+            this.presenter.updateQuiz(quizViewData).then((data) => {
                 data.message && this.displayMessage(data.message);
             }).catch((error) => {
                 console.log(error);
                 this.displayMessage(error);
             })
         }
-
     }
 
     return QuizAdminV;
