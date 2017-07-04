@@ -10,9 +10,7 @@ exports.DollAdminV = function (globalVariables) {
         IconCreator = globalVariables.Icons.IconCreator,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
-        SelectItemList = globalVariables.Lists.SelectItemList,
         SelectItemList2 = globalVariables.Lists.SelectItemList2,
-        SelectItem = globalVariables.Lists.SelectItem,
         drawCheck = globalVariables.Helpers.drawCheck,
         installDnD = globalVariables.gui.installDnD;
 
