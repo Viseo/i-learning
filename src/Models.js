@@ -1035,7 +1035,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.responses.remove(response);
         }
         addObjective(obj){
-            this.objectives.push({label:obj, bestSolutions:[], acceptedSolutions:[]});
+            this.objectives.push({label:obj, rules: new Rule()});
         }
         removeObjective(obj){
             this.objectives.remove(this.findObjective(obj));
@@ -1109,7 +1109,13 @@ exports.Models = function (globalVariables, mockResponses) {
             ]
         }
     }
-
+    class Rule{
+        constructor(rule){
+            this.bestSolutions = rule.bestSolutions || [];
+            this.acceptedSolutions = rule.acceptedSolutions || [];
+        }
+        add
+    }
     class MediasLibrary {
         constructor() {}
 
