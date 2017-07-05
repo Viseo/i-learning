@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, clickElement, assertMessage, assertPresent, assertMissing, mouseEnterElement} = testutils;
+    {given, when, loadPage, click, assertMessage, assertPresent, assertMissing, mouseEnterElement} = testutils;
 
 describe('dashboard collab', function(){
     it('should display undone formation', function(){
@@ -161,7 +161,7 @@ describe('dashboard collab', function(){
         });
 
         when(() => {
-            click(root, "textMiniature1");
+            click(root, "miniature1");
             assertMessage(root, "headerMessage", "formation inProgress");
             click(root, "return");
         }).then(() => {

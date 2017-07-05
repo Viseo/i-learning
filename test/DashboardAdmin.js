@@ -5,7 +5,7 @@ const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
     {
-        given, when, click, clickElement, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
+        given, when, click, clickPos, inputValue, assertMessage, loadPage, assertMissing, mouseEnterElement,
         mouseLeave, checkBorderColor, onChangeElement
     } = testutils;
 
@@ -149,7 +149,7 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
-            clickElement(root, "miniatureManipAgilité");
+            click(root, "miniatureManipAgilité");
             assertMissing(root, "formationErrorMessage");
             assertMessage(root, "headerMessage", "Agilité");
             click(root, "return");
@@ -193,9 +193,9 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
-            clickElement(root, "popUpImgAgilité");
+            click(root, "popUpImgAgilité");
         }).then(() => {
-            clickElement(root, "image0-0");
+            click(root, "image0-0");
         });
 
     });
@@ -218,8 +218,8 @@ describe('dashboard admin page', function () {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
         when(() => {
-            clickElement(root, "popUpImgAgilité");
-            clickElement(root, "addPictureButtonGlass");
+            click(root, "popUpImgAgilité");
+            click(root, "addPictureButtonGlass");
             onChangeElement(root, "fileExplorer");
         }).then(() => {
 

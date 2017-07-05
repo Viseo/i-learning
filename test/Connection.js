@@ -4,7 +4,7 @@
 
 const assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {retrieve, enterTextField, given, when, click, clickElement, assertMessage, loadPage, assertMissing} = testutils;
+    {retrieve, enterTextField, given, when, click, assertMessage, loadPage, assertMissing} = testutils;
 
 describe('connection page', function () {
     it('should load cookie', function(){
@@ -115,7 +115,7 @@ describe('connection page', function () {
         });
 
         when(()=>{
-            clickElement(root, "deconnection");
+            click(root, "deconnection");
         }).then(()=>{
             assertMessage(root, "headerMessage", "Connexion");
         });

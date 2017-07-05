@@ -32,11 +32,11 @@ exports.DashboardCollabV = function (globalVariables) {
                     let iconCreator = new IconCreator();
                     let paddingIconX = (IconCreator.getRadiusContent() * 2 + MARGIN);
                     this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
-                    this.undoneIcon.content.mark("unDoneIcon");
+                    this.undoneIcon.mark("unDoneIcon");
                     this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
-                    this.inProgressIcon.position(paddingIconX, 0).content.mark('inProgressIcon');
+                    this.inProgressIcon.position(paddingIconX, 0).mark('inProgressIcon');
                     this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
-                    this.doneIcon.position(2 * paddingIconX, 0).content.mark("doneIcon");
+                    this.doneIcon.position(2 * paddingIconX, 0).mark("doneIcon");
                 }
                 var _createFilter = () => {
                     var _drawBorderFilter = () => {
@@ -114,7 +114,7 @@ exports.DashboardCollabV = function (globalVariables) {
         displayFormations() {
             var _displayMiniature = (formation, i, note) => {
                 let _createMiniature = () => {
-                    let manipulator = new Manipulator(this).addOrdonator(4);
+                    let manipulator = new Manipulator(this).addOrdonator(4).mark('miniature' + formation._id);
                     let border = new svg.Rect(TILE_SIZE.w - 2 * CLIP_SIZE, TILE_SIZE.h)
                         .corners(2, 2)
                         .color(myColors.lightgrey, 0.5, myColors.grey)
@@ -164,7 +164,6 @@ exports.DashboardCollabV = function (globalVariables) {
                         miniature.border.color(myColors.lightgrey, 0.5, myColors.grey);
                     };
                     miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
-                    miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
                 }
                 let _createStars = () => {
                     let _displayNotation = () => {
@@ -230,6 +229,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 let miniature = _createMiniature();
                 this.miniaturesManipulator.add(miniature.manipulator);
                 _placeMiniature(miniature, i);
+                miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
                 _colorWhenHover();
                 if (formation.progress === 'done') _createStars();
             };

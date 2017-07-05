@@ -1,7 +1,7 @@
 
 const assert = require('assert'),
     testutils = require('../lib/testutils'),
-    {given, when, loadPage, clickElement, assertPresent} = testutils;
+    {given, when, loadPage, click, assertPresent} = testutils;
 
 describe('doll collab', function(){
     it('should display', function(){
