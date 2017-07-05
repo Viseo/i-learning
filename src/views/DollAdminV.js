@@ -1602,7 +1602,7 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         keyDown(event) {
-            if ((event.keyCode == 8 || event.keyCode == 46) && !this.inModification) {
+            if ((event.keyCode == 46) && !this.inModification) {
                 if (this.selectedElement) {
                     if(this.selectedElement.type === 'text') this.selectedElement.hideControl();
                     this.sandboxMain.content.remove(this.selectedElement.parentManip.component)
