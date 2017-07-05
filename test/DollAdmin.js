@@ -159,7 +159,7 @@ describe('Doll admin Page', function(){
         when(()=>{
             clickElement(root, 'rules');
         }).then(()=>{
-            let button = retrieve(root, '[addSolutionButton]');
+            let button = retrieve(root, '[headerTitle]');
             assert(button);
         })
     })

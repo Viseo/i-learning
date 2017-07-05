@@ -815,7 +815,8 @@ exports.DollAdminV = function (globalVariables) {
                 let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
                     .font('Arial', 18)
                     .anchor('left')
-                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
+                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5)
+                    .mark('headerTitle');
 
 
                 let objectifSelectList = new SelectItemList2(["Objectif1", "Objectif2", "Objectif3", "Objectif4", "Objectif5"], 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
