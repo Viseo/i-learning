@@ -72,8 +72,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, -posYChevron)
-                        .mark('listChevronTop');
+                        .position(0, -posYChevron);
                     this.chevrons.top.border =  new svg.Rect(listW-2, chevronH-2)
                         .color(color, 0, myColors.yellow).position(0, -posYChevron);
                     this.chevronsLTManipulator
@@ -82,8 +81,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, posYChevron)
-                        .mark('listChevronBottom');
+                        .position(0, posYChevron);
                     this.chevrons.down.border =  new svg.Rect(listW-2, chevronH-2)
                         .color(color, 0, myColors.yellow).position(0, posYChevron);
                     this.chevronsRDManipulator
@@ -118,8 +116,7 @@ exports.Lists = function (globalVariables) {
                     let posXChevron = (listW - chevronW)/2;
                     this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
                         .color(myColors.black, 0, myColors.none)
-                        .position(-posXChevron, 0)
-                        .mark('listChevronLeft');
+                        .position(-posXChevron, 0);
                     this.chevrons.left.border =  new svg.Rect(chevronW-2, listH-2)
                         .color(color, 0, myColors.black).position(-posXChevron, 0);
                     this.chevronsLTManipulator
@@ -128,8 +125,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
                         .color(myColors.black, 0, myColors.none)
-                        .position( posXChevron, 0)
-                        .mark('listChevronRight');
+                        .position( posXChevron, 0);
                     this.chevrons.right.border =  new svg.Rect(chevronW-2, listH-2)
                         .color(color, 0, myColors.black).position(posXChevron, 0);
                     this.chevronsRDManipulator
@@ -249,6 +245,11 @@ exports.Lists = function (globalVariables) {
 
         getListElements(){
             return this.listElements;
+        }
+
+        mark(preId){
+            this.chevronsLTManipulator.mark(preId + "ChevronLT")
+            this.chevronsRDManipulator.mark(preId + "ChevronRD")
         }
     }
 

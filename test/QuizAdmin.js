@@ -486,51 +486,23 @@ describe('quiz admin', function () {
     it('should finish above test');
 
     it('should scroll through questions', function(){
+        let questions = [];
+
+        for(let i = 1; i<15; i++){
+            let question = {
+                label: "question " + i,
+                    answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+            }
+            questions.push(question)
+        }
+
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {
                     id: "1",
                     label: "quiz",
-                    questions: [
-                        {
-                            label: "question 1",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 2",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 3",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 4",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 5",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 6",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 7",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 8",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 9",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        }
-
-                    ]
+                    questions: questions
                 },
                 className: "Quiz",
                 beforeLoad: (page) => {
@@ -539,8 +511,8 @@ describe('quiz admin', function () {
             })
         })
         when(() => {
-            clickElement(root, 'listChevronRight');
-            clickElement(root, 'listChevronRight');
+            clickElement(root, 'listQChevronRD');
+            clickElement(root, 'listQChevronLT');
         }).then(() => {
 
         })

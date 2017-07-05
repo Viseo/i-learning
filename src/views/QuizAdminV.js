@@ -119,6 +119,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockListView = new ListManipulatorView([],'H',
                     questionListDim.w, questionListDim.h, 50, 80,
                     QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
+                this.questionsBlockListView.mark("listQ")
 
                 this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2,
