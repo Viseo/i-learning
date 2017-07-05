@@ -812,32 +812,6 @@ exports.DollAdminV = function (globalVariables) {
                 this.currentObjective = this.objectives.find(elem=>{return elem.label == newValue.text.messageText});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
                 //todo charger lebody selon la valeur
-                var _showSolutionBody = (objective) => {
-                    var _initCompleteSolutions = (objectiveItem) => {
-                        if (!objectiveItem) {
-                            return [
-                                {label: "Solution 1", impact: "Enoncé 2"}, {label: "Solution patate", impact: null}
-                            ];
-                        }
-                    }
-                    var _initProgressSolutions = (objectiveItem) => {
-                        if (!objectiveItem) {
-                            return [
-                                {label: "Solution 66", impact: null}, {label: "Solution Bourrine", impact: null}
-                            ];
-                        }
-                    }
-                    if (!this.getObjectiveDataFrom(objective)) {
-                        let objectiveGui = {    // exemple test
-                            completeSolutions: _initCompleteSolutions(),
-                            progressSolutions: _initProgressSolutions()
-                        };
-
-                    } else {    // données en BDD chargées
-
-                    }
-                }
-                _showSolutionBody(newValue);
             };
             var _createSolutionsHeader = () => {
                 this.solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
@@ -868,9 +842,9 @@ exports.DollAdminV = function (globalVariables) {
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
             this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
 
-            let solutionBodyCreated = this.createSolutionsBody();
+            // let solutionBodyCreated = this.createSolutionsBody();
 
-            this.solutionsHeaderManipulator.add(solutionBodyCreated);
+            // this.solutionsHeaderManipulator.add(solutionBodyCreated);
         }
 
 
@@ -907,8 +881,8 @@ exports.DollAdminV = function (globalVariables) {
                             newSolutions.parentSolution = manipSelectItems;
                             manipSelectItems.childSolution = newSolutions;
                             newSolutions.groupId = manipSelectItems.groupId;
-                            best && this.currentObjective.bestSolutions.push(newSolutions);
-                            !best && this.currentObjective.acceptedSolutions.push(newSolutions);
+                            best && this.currentObjective.rules.bestSolutions.push(newSolutions);
+                            !best && this.currentObjective.rules.acceptedSolutions.push(newSolutions);
                             this.createRule();
                         }
                     }
@@ -920,7 +894,7 @@ exports.DollAdminV = function (globalVariables) {
                     return checkBoxManipulator;
                 };
 
-                let createOneSolution = (list, w, h) => {
+                var createOneSolution = (list, w, h) => {
                     let manipSelectItems = new Manipulator(this);
                     let statementsLabels = this.getStatement().map(elem=>{return elem.id});
                     let selectItemStatement = new SelectItemList2(statementsLabels, w/3, h);
@@ -948,37 +922,45 @@ exports.DollAdminV = function (globalVariables) {
                     return manipSelectItems;
                 };
 
-                let createSolutionsList = () => {
+                var createSolutionsList = () => {
                     let solutionBodyManip = new Manipulator(this);
                     solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
 
-                    let listBestSolution = new ListManipulatorView([], "V", sizeBlock.w, sizeBlock.h,
+                    let listSolution = new ListManipulatorView([], "V", sizeBlock.w, sizeBlock.h,
                         chevronSize.w, chevronSize.h, sizeBlock.w, INPUT_SIZE.h, 10, myColors.white, 10);
-                    listBestSolution.position(x, y);
+                    listSolution.position(x, y);
 
-                    solutionBodyManip.add(listBestSolution.manipulator);
+                    solutionBodyManip.add(listSolution.manipulator);
 
-                    return {listBestSolution: listBestSolution, manipulator: solutionBodyManip};
+                    return {listSolution: listSolution, manipulator: solutionBodyManip};
                 };
+
+                var _loadCurrentRules = () => {
+                    if (this.currentObjective.rules) {
+
+                    }
+                }
 
                 let solutionBody = createSolutionsList();
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                     [myColors.white, 1, myColors.black], "Ajouter une solution");
                 addSolutionButton.position(x, - sizeBody.h/2 + addSolutionButton.height);
                 addSolutionButton.onClick(() =>{
-                    let solution = createOneSolution(solutionBody.listBestSolution, solutionBody.listBestSolution.width, INPUT_SIZE.h);
+                    let solution = createOneSolution(solutionBody.listSolution, solutionBody.listSolution.width, INPUT_SIZE.h);
                     solution.spaceManip = new Manipulator(this);
                     solution.groupId = best ? this.rulesSet.best ++ : this.rulesSet.accepted ++;
-                    best && this.currentObjective.bestSolutions.push(solution);
-                    !best && this.currentObjective.acceptedSolutions.push(solution);
+                    best && this.currentObjective.rules.bestSolutions.push(solution);
+                    !best && this.currentObjective.rules.acceptedSolutions.push(solution);
                     this.createRule();
-                    solutionBody.listBestSolution
+                    solutionBody.listSolution
                         .add(solution)
                         .add(solution.spaceManip);
-                    solutionBody.listBestSolution.refreshListView();
+                    solutionBody.listSolution.refreshListView();
                 });
                 solutionBody.manipulator
                     .add(addSolutionButton.component);
+
+                _loadCurrentRules();
 
                 return solutionBody.manipulator;
             };
@@ -1002,7 +984,7 @@ exports.DollAdminV = function (globalVariables) {
             let rulesBest = {};
             let rulesAccepted = {};
             let groupCount = 0;
-            this.currentObjective.bestSolutions.forEach(line=>{
+            this.currentObjective.rules.bestSolutions.forEach(line=>{
                 if(rulesBest[line.groupId]){
                     rulesBest[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
                 }
@@ -1017,7 +999,7 @@ exports.DollAdminV = function (globalVariables) {
                 bestSolutions.push(rulesBest[i]);
             }
             groupCount = 0;
-            this.currentObjective.acceptedSolutions.forEach(line=>{
+            this.currentObjective.rules.acceptedSolutions.forEach(line=>{
                 if(rulesAccepted[line.groupId]){
                     rulesAccepted[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
                 }
@@ -1031,10 +1013,12 @@ exports.DollAdminV = function (globalVariables) {
             for (let i = 0; i<groupCount; i++){
                 acceptedSolutions.push(rulesAccepted[i]);
             }
-
-            this.currentObjective.rules = {bestSolutions:bestSolutions, acceptedSolutions:acceptedSolutions};
+            // TODO vue liée à la donnée (warning)
+            this.setRules(this.currentObjective, {bestSolutions:bestSolutions, acceptedSolutions: acceptedSolutions});
+            // this.currentObjective.rules.bestSolutions = bestSolutions;
+            // this.currentObjective.rules.acceptedSolutions = acceptedSolutions;
+            // this.currentObjective.rules = {bestSolutions:bestSolutions, acceptedSolutions:acceptedSolutions};
         }
-
 
         //todo
         getStatement(){
@@ -1757,7 +1741,7 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         saveDoll() {
-            let obj = this.objectives.map(elem=>{return {bestSolutions:elem.bestSolutions, acceptedSolutions:elem.acceptedSolutions, label:elem.label}});
+            let obj = this.objectives.map(elem=>{return {label:elem.label, rules:elem.rules}});
             this.presenter.save({
                 elements: this.elements,
                 objectives: obj,
@@ -1765,11 +1749,19 @@ exports.DollAdminV = function (globalVariables) {
             });
         }
 
-        getObjectiveDataFrom(objective) {
-            let objectiveLabel = objective.text.getMessageText();
-            // this.
-            return false;
+        setRules(objective, rules) {
+            if (this.findObjective(objective)) {
+                console.log("test");
+            } else {
+                console.log("shiet");
+            }
         }
+
+        findObjective(objective) {
+            this.presenter.findObjective(objective);
+        }
+
+
     }
 
     return DollAdminV;

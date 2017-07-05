@@ -84,6 +84,9 @@ exports.DollAdminP = function (globalVariables) {
         removeObjective(obj){
             this.doll.removeObjective(obj);
         }
+        findObjective(obj) {
+            this.doll.findObjective(obj);
+        }
     }
     return DollAdminP;
 }

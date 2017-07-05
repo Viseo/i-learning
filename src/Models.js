@@ -330,6 +330,7 @@ exports.Models = function (globalVariables, mockResponses) {
                             gamesTab.push(new Quiz(game, false, formation));
                             break;
                         case GameType.DOLL:
+                            game.objectives.forEach((objective)=>{objective.rules = new Rule(objective.rules)});
                             gamesTab.push(new Doll(game));
                             break;
                         default:
@@ -1010,7 +1011,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.elements = infos.elements || [];
             this.objectives = infos.objectives || [];
             this.responses = infos.responses || [];
-            this.rules = infos.rules || [];
+            // this.rules = infos.rules || [];
             const completeDollMessage = "Les modifications ont bien été enregistrées",
                 errorDollMessage = "Erreur";
             return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex)
@@ -1035,16 +1036,19 @@ exports.Models = function (globalVariables, mockResponses) {
             this.responses.remove(response);
         }
         addObjective(obj){
-            this.objectives.push({label:obj, rules: new Rule()});
+            this.objectives.push({label:obj, rules: new Rule({})});
         }
         removeObjective(obj){
             this.objectives.remove(this.findObjective(obj));
         }
-        findObjective(obj){
-            let predicat = (element)=>{
-                return element.name == obj;
-            }
-            return this.objectives.find(predicat);
+        // findObjective(obj){
+        //     let predicat = (element)=>{
+        //         return element.name == obj;
+        //     }
+        //     return this.objectives.find(predicat);
+        // }
+        findObjective(obj) {
+            return this.objectives.indexOf(obj);
         }
         setImage(src) {
             this.imageSrc = src;
@@ -1114,7 +1118,10 @@ exports.Models = function (globalVariables, mockResponses) {
             this.bestSolutions = rule.bestSolutions || [];
             this.acceptedSolutions = rule.acceptedSolutions || [];
         }
-        add
+        add() {
+
+        }
+
     }
     class MediasLibrary {
         constructor() {}
