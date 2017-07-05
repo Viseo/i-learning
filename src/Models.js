@@ -1028,6 +1028,13 @@ exports.Models = function (globalVariables, mockResponses) {
                 });
         }
 
+        createRule(conf, objective, best){
+            objective.rules.createRule(conf, best);
+        }
+        removeRule(conf, objective){
+            objective.rules.removeRule(conf);
+        }
+
         addResponse(response){
             this.responses.push(response);
         }
@@ -1048,7 +1055,7 @@ exports.Models = function (globalVariables, mockResponses) {
         //     return this.objectives.find(predicat);
         // }
         findObjective(obj) {
-            return this.objectives.indexOf(obj);
+            return this.objectives.find(obj);
         }
         setImage(src) {
             this.imageSrc = src;
@@ -1115,11 +1122,43 @@ exports.Models = function (globalVariables, mockResponses) {
     }
     class Rule{
         constructor(rule){
-            this.bestSolutions = rule.bestSolutions || [];
-            this.acceptedSolutions = rule.acceptedSolutions || [];
+            rule = rule || {};
+            this.bestSolutions = rule.bestSolutions || {};
+            this.acceptedSolutions = rule.acceptedSolutions || {};
         }
-        add() {
+        createRule(conf, best){
+            let obj = best ? this.bestSolutions : this.acceptedSolutions;
+            if (obj[conf.groupId]){
+                let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                if(solutionToUpdate){
+                    best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                }else{
+                    best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
 
+                }
+            }else{
+                if(best){
+                    this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+                }else{
+                    this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+
+                }
+            }
+        }
+        removeRule(conf){
+            let best = conf.solutionId.split('')[0] == 'A' ? false : true;
+            if(best){
+                let elem = this.bestSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                let index = this.bestSolutions[conf.groupId].indexOf(elem);
+                this.bestSolutions[conf.groupId].splice(index, 1);
+            }
+            else{
+                let elem = this.acceptedSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                let index = this.acceptedSolutions[conf.groupId].indexOf(elem);
+                this.acceptedSolutions[conf.groupId].splice(index, 1);
+            }
         }
 
     }

@@ -524,6 +524,7 @@ exports.Lists = function (globalVariables) {
                     this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
                 });
                 manip.add(choice.component);
+                manip.choice = choice;
 
                 this.listView.add(manip);
             });

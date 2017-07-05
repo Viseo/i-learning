@@ -807,11 +807,58 @@ exports.DollAdminV = function (globalVariables) {
             if(index!==-1) this.responses.splice(index, 1);
         }
 
+        loadBodyRules(bestList, acceptedList, sizeBlock){
+            this.currentObjective.rules.bestSolutions.forEach(group=>{
+                let lastSolution;//Used to recreate parent/child link
+                group.forEach((solution, i)=>{
+                    let isChecked = i==group.length-1 ? false : true;
+                    let obj = {
+                        labelToSelectResponse:solution.response,
+                        labelToSelectStatement:solution.statement,
+                        isChecked: isChecked,
+                        groupId: solution.groupId,
+                        solutionId: solution.solutionId
+                    }
+                    let sol = this.createOneSolution(bestList.listSolution, sizeBlock.w, INPUT_SIZE.h,true, obj);
+                    if(i>0){
+                        sol.parentSolution = lastSolution;
+                        lastSolution.childSolution = sol;
+                    }
+                    bestList.listSolution.add(sol);
+                    lastSolution = sol;
+                })
+                bestList.listSolution.add(new Manipulator());
+            })
+            this.currentObjective.rules.acceptedSolutions.forEach(group=>{
+                let lastSolution;
+                group.forEach((solution,i)=>{
+                    let isChecked = i==group.length-1 ? false : true;
+                    let obj = {
+                        labelToSelectResponse:solution.response,
+                        labelToSelectStatement:solution.statement,
+                        isChecked: isChecked,
+                        groupId: solution.groupId,
+                        solutionId: solution.solutionId
+                    }
+                    let sol = this.createOneSolution(acceptedList.listSolution, sizeBlock.w, INPUT_SIZE.h,true, obj);
+                    if(i>0){
+                        sol.parentSolution = lastSolution;
+                        lastSolution.childSolution = sol;
+                    }
+                    acceptedList.listSolution.add(sol);
+                    lastSolution = sol;
+                })
+                acceptedList.listSolution.add(new Manipulator());
+            })
+
+            bestList.listSolution.refreshListView();
+            acceptedList.listSolution.refreshListView();
+        }
+
         displaySolutionsHeader() {
             var _clickListHandler = (newValue) => {
                 this.currentObjective = this.objectives.find(elem=>{return elem.label == newValue.text.messageText});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
-                //todo charger lebody selon la valeur
             };
             var _createSolutionsHeader = () => {
                 this.solutionsHeaderManipulator = new Manipulator(this).addOrdonator(4);
@@ -830,7 +877,8 @@ exports.DollAdminV = function (globalVariables) {
                 let objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 objectifSelectList.setHandlerChangeValue(_clickListHandler);
                 objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
-                this.currentObjective = this.objectives.find(elem=>{return elem.label == objectifSelectList.getSelectButtonText()})
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == objectifSelectList.getSelectButtonText()});
+                this.solutionsHeaderManipulator.add(this.createSolutionsBody());
 
                 this.solutionsHeaderManipulator
                     .add(solutionsHeader)
@@ -842,86 +890,11 @@ exports.DollAdminV = function (globalVariables) {
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
             this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
 
-            // let solutionBodyCreated = this.createSolutionsBody();
-
-            // this.solutionsHeaderManipulator.add(solutionBodyCreated);
         }
 
 
         createSolutionsBody(){
             var _createBlockSolution = (x, y, best) => {
-                var createValidCheckbox = (list, manipSelectItems) => {
-                    let checkBoxManipulator = new Manipulator(this);
-
-                    var _removeSolutionChild = (list, childSolutionManip) => {
-                        if(childSolutionManip.childSolution){
-                            _removeSolutionChild(list, childSolutionManip.childSolution);
-                            childSolutionManip.childSolution = null;
-                            list.removeElementFromList(childSolutionManip);
-                        }else{
-                            childSolutionManip.parentSolution.childSolution = null;
-                            list.removeElementFromList(childSolutionManip);
-                        }
-                    };
-
-                    var _toggleChecked = () => {
-                        if (checkBoxManipulator.checked) {                           // modele or state
-                            checkBoxManipulator.remove(checked);
-                            checkBoxManipulator.checked = false;                     // modele or state
-                            _removeSolutionChild(list, manipSelectItems.childSolution);
-                            list.refreshListView();
-                        } else {
-                            checkBoxManipulator.add(checked);
-                            checkBoxManipulator.checked = true;                      // modele or state
-
-                            let newSolutions = createOneSolution(list, list.width, INPUT_SIZE.h);
-                            list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
-                            list.refreshListView();
-
-                            newSolutions.parentSolution = manipSelectItems;
-                            manipSelectItems.childSolution = newSolutions;
-                            newSolutions.groupId = manipSelectItems.groupId;
-                            best && this.currentObjective.rules.bestSolutions.push(newSolutions);
-                            !best && this.currentObjective.rules.acceptedSolutions.push(newSolutions);
-                            this.createRule();
-                        }
-                    }
-                    let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-                    let checked = drawCheck(checkbox.x, checkbox.y, 20);
-                    checkBoxManipulator.addEvent('click', _toggleChecked);
-                    checkBoxManipulator.add(checkbox);
-
-                    return checkBoxManipulator;
-                };
-
-                var createOneSolution = (list, w, h) => {
-                    let manipSelectItems = new Manipulator(this);
-                    let statementsLabels = this.getStatement().map(elem=>{return elem.id});
-                    let selectItemStatement = new SelectItemList2(statementsLabels, w/3, h);
-                    selectItemStatement
-                        .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
-                        .setManipShowListAndPosition(list.manipulator);
-                    let responsesLabels = this.getResponses().map(elem=>{return elem.label});
-                    let selectItemResponse = new SelectItemList2(responsesLabels, w/3, h);
-                    selectItemResponse
-                        .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
-                        .setManipShowListAndPosition(list.manipulator);
-
-                    let validCheckboxManip = createValidCheckbox(list, manipSelectItems);
-
-                    selectItemStatement.onClickChangeValueHandler = (choice)=>{
-                        this.createRule();
-                    }
-                    manipSelectItems.statements = selectItemStatement;
-                    manipSelectItems.responses = selectItemResponse;
-                    manipSelectItems
-                        .add(selectItemStatement.manipulator)
-                        .add(selectItemResponse.manipulator)
-                        .add(validCheckboxManip);
-
-                    return manipSelectItems;
-                };
-
                 var createSolutionsList = () => {
                     let solutionBodyManip = new Manipulator(this);
                     solutionBodyManip.move(0, (0.2*PANEL_SIZE.h + sizeBody.h)/2);
@@ -935,23 +908,14 @@ exports.DollAdminV = function (globalVariables) {
                     return {listSolution: listSolution, manipulator: solutionBodyManip};
                 };
 
-                var _loadCurrentRules = () => {
-                    if (this.currentObjective.rules) {
-
-                    }
-                }
-
                 let solutionBody = createSolutionsList();
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                     [myColors.white, 1, myColors.black], "Ajouter une solution");
                 addSolutionButton.position(x, - sizeBody.h/2 + addSolutionButton.height);
                 addSolutionButton.onClick(() =>{
-                    let solution = createOneSolution(solutionBody.listSolution, solutionBody.listSolution.width, INPUT_SIZE.h);
+                    let solution = this.createOneSolution(solutionBody.listSolution, solutionBody.listSolution.width, INPUT_SIZE.h, best);
                     solution.spaceManip = new Manipulator(this);
-                    solution.groupId = best ? this.rulesSet.best ++ : this.rulesSet.accepted ++;
-                    best && this.currentObjective.rules.bestSolutions.push(solution);
-                    !best && this.currentObjective.rules.acceptedSolutions.push(solution);
-                    this.createRule();
+                    this.createRule(solution, best);
                     solutionBody.listSolution
                         .add(solution)
                         .add(solution.spaceManip);
@@ -960,9 +924,7 @@ exports.DollAdminV = function (globalVariables) {
                 solutionBody.manipulator
                     .add(addSolutionButton.component);
 
-                _loadCurrentRules();
-
-                return solutionBody.manipulator;
+                return solutionBody;
             };
 
             let manipBlockSolutions = new Manipulator(this);
@@ -972,52 +934,122 @@ exports.DollAdminV = function (globalVariables) {
             let sizeBlock = {w: sizeBody.w/3, h: sizeBody.h/2 + chevronSize.h*2};
             let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, 0, true);
             let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, 0, false);
+            this.loadBodyRules(blockBestSolution, blockNotOptimalSolution, sizeBlock);
 
             manipBlockSolutions
-                .add(blockBestSolution)
-                .add(blockNotOptimalSolution);
+                .add(blockBestSolution.manipulator)
+                .add(blockNotOptimalSolution.manipulator);
 
             return manipBlockSolutions;
         }
+        createOneSolution(list, w, h, best, conf) {
+            let manipSelectItems = new Manipulator(this);
+            let statementsLabels = this.getStatement().map(elem=>{return elem.id});
+            let selectItemStatement = new SelectItemList2(statementsLabels, w/3, h);
+            selectItemStatement
+                .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
+                .setManipShowListAndPosition(list.manipulator);
+            let responsesLabels = this.getResponses().map(elem=>{return elem.label});
+            let selectItemResponse = new SelectItemList2(responsesLabels, w/3, h);
+            selectItemResponse
+                .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
+                .setManipShowListAndPosition(list.manipulator);
 
-        createRule(){
-            let rulesBest = {};
-            let rulesAccepted = {};
-            let groupCount = 0;
-            this.currentObjective.rules.bestSolutions.forEach(line=>{
-                if(rulesBest[line.groupId]){
-                    rulesBest[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+            let validCheckboxManip = this.createValidCheckbox(list, manipSelectItems, best, conf&&conf.isChecked);
+
+            if (best) {
+                selectItemStatement.onClickChangeValueHandler = (choice) => {
+                    this.createRule(manipSelectItems, true);
                 }
-                else{
-                    rulesBest[line.groupId] = [];
-                    rulesBest[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
-                    groupCount++;
+                selectItemResponse.onClickChangeValueHandler = (choice) => {
+                    this.createRule(manipSelectItems, true);
                 }
-            });
-            let bestSolutions = [];
-            for (let i = 0; i<groupCount; i++){
-                bestSolutions.push(rulesBest[i]);
+            }else{
+                selectItemStatement.onClickChangeValueHandler = (choice) => {
+                    this.createRule(manipSelectItems, false);
+                }
+                selectItemResponse.onClickChangeValueHandler = (choice) => {
+                    this.createRule(manipSelectItems, false);
+                }
             }
-            groupCount = 0;
-            this.currentObjective.rules.acceptedSolutions.forEach(line=>{
-                if(rulesAccepted[line.groupId]){
-                    rulesAccepted[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
+            conf && conf.labelToSelectStatement && selectItemStatement.setSelectButtonText(conf.labelToSelectStatement);
+            conf && conf.labelToSelectResponse && selectItemResponse.setSelectButtonText(conf.labelToSelectResponse);
+            manipSelectItems.statements = selectItemStatement;
+            manipSelectItems.responses = selectItemResponse;
+            manipSelectItems.groupId = conf && conf.groupId ? conf.groupId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
+            manipSelectItems.solutionId = conf && conf.solutionId ? conf.solutionId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
+            manipSelectItems
+                .add(selectItemStatement.manipulator)
+                .add(selectItemResponse.manipulator)
+                .add(validCheckboxManip);
+
+            return manipSelectItems;
+        }
+        createValidCheckbox(list, manipSelectItems, best, isChecked){
+            let checkBoxManipulator = new Manipulator(this);
+
+            var _removeSolutionChild = (list, childSolutionManip) => {
+                if(childSolutionManip.childSolution){
+                    _removeSolutionChild(list, childSolutionManip.childSolution);
+                    childSolutionManip.childSolution = null;
+                    list.removeElementFromList(childSolutionManip);
+                }else{
+                    childSolutionManip.parentSolution.childSolution = null;
+                    list.removeElementFromList(childSolutionManip);
+                    this.removeRule(childSolutionManip);
                 }
-                else{
-                    rulesAccepted[line.groupId] = [];
-                    rulesAccepted[line.groupId].push({statement:line.statements.getSelectButtonText(), response:line.responses.getSelectButtonText()});
-                    groupCount++;
+            };
+
+            var _toggleChecked = () => {
+                if (checkBoxManipulator.checked) {                           // modele or state
+                    checkBoxManipulator.remove(checked);
+                    checkBoxManipulator.checked = false;                     // modele or state
+                    _removeSolutionChild(list, manipSelectItems.childSolution);
+                    list.refreshListView();
+                } else {
+                    checkBoxManipulator.add(checked);
+                    checkBoxManipulator.checked = true;                      // modele or state
+
+                    let newSolutions = this.createOneSolution(list, list.width, INPUT_SIZE.h, best);
+                    list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
+                    list.refreshListView();
+
+                    newSolutions.parentSolution = manipSelectItems;
+                    manipSelectItems.childSolution = newSolutions;
+                    newSolutions.groupId = manipSelectItems.groupId;
+                    newSolutions.solutionId = best ? 'B' + Number(new Date()) : 'A' + Number(new Date());
+                    this.createRule(newSolutions, best);
                 }
-            });
-            let acceptedSolutions = [];
-            for (let i = 0; i<groupCount; i++){
-                acceptedSolutions.push(rulesAccepted[i]);
             }
-            // TODO vue liée à la donnée (warning)
-            this.setRules(this.currentObjective, {bestSolutions:bestSolutions, acceptedSolutions: acceptedSolutions});
-            // this.currentObjective.rules.bestSolutions = bestSolutions;
-            // this.currentObjective.rules.acceptedSolutions = acceptedSolutions;
-            // this.currentObjective.rules = {bestSolutions:bestSolutions, acceptedSolutions:acceptedSolutions};
+            let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+            let checked = drawCheck(checkbox.x, checkbox.y, 20);
+            checkBoxManipulator.addEvent('click', _toggleChecked);
+            checkBoxManipulator.add(checkbox);
+            if (isChecked){
+                checkBoxManipulator.add(checked);
+                checkBoxManipulator.checked = true;
+            }
+
+            return checkBoxManipulator;
+        };
+
+        createRule(solution, best){
+            let obj = {
+                statement : solution.statements.getSelectButtonText(),
+                response : solution.responses.getSelectButtonText(),
+                groupId : solution.groupId,
+                solutionId : solution.solutionId
+            }
+            this.presenter.createRule(obj, this.currentObjective, best);
+        }
+        removeRule(manip){
+            let obj = {
+                statement : manip.statements.getSelectButtonText(),
+                response : manip.responses.getSelectButtonText(),
+                groupId : manip.groupId,
+                solutionId: manip.solutionId
+            }
+            this.presenter.removeRule(obj, this.currentObjective);
         }
 
         //todo

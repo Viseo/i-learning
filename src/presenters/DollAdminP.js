@@ -72,6 +72,12 @@ exports.DollAdminP = function (globalVariables) {
             })
             this.doll.save(this.state.formation.formationId, infos);
         }
+        createRule(conf, objective, best){
+            this.doll.createRule(conf, objective, best);
+        }
+        removeRule(obj, objective, best){
+            this.doll.removeRule(obj, objective);
+        }
         addResponse(response){
             this.doll.addResponse(response);
         }
