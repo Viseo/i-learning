@@ -936,10 +936,10 @@ exports.DollAdminV = function (globalVariables) {
             let responsesLabels = this.getResponses().map(elem=>{return elem.label});
             let selectItemResponse = new SelectItemList2(responsesLabels, w/3, h);
             selectItemResponse
-                .position(w/2 - selectItemResponse.width/2 - MARGIN, 0)
+                .position(-w/2 + selectItemResponse.width*1.5 + MARGIN*2, 0)
                 .setManipShowListAndPosition(list.manipulator);
 
-            let validCheckboxManip = this.createValidCheckbox(list, manipSelectItems, best, conf&&conf.isChecked);
+            let validCheckboxManip = this.createConditionAND(list, manipSelectItems, best, conf&&conf.isChecked);
 
             if (best) {
                 selectItemStatement.onClickChangeValueHandler = (choice) => {
@@ -963,15 +963,15 @@ exports.DollAdminV = function (globalVariables) {
             manipSelectItems.groupId = conf && conf.groupId ? conf.groupId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
             manipSelectItems.solutionId = conf && conf.solutionId ? conf.solutionId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
             manipSelectItems
+                .add(validCheckboxManip)
                 .add(selectItemStatement.manipulator)
-                .add(selectItemResponse.manipulator)
-                .add(validCheckboxManip);
+                .add(selectItemResponse.manipulator);
 
             return manipSelectItems;
         }
 
-        createValidCheckbox(list, manipSelectItems, best, isChecked){
-            let checkBoxManipulator = new Manipulator(this);
+        createConditionAND(list, manipSelectItems, best, isChecked){
+            let checkBoxManipulator = new Manipulator(this).addOrdonator(4);
 
             var _removeSolutionChild = (list, childSolutionManip) => {
                 if(childSolutionManip.childSolution){
@@ -985,8 +985,6 @@ exports.DollAdminV = function (globalVariables) {
                 }
             };
 
-            let icon = IconCreator.createLockUnlockIcon(checkBoxManipulator);
-
             var _toggleChecked = () => {
                 if (icon.getStatus()) {
                     let newSolutions = this.createOneSolution(list, list.width, INPUT_SIZE.h, best);
@@ -997,11 +995,28 @@ exports.DollAdminV = function (globalVariables) {
                     newSolutions.groupId = manipSelectItems.groupId;
                     newSolutions.solutionId = best ? 'B' + Number(new Date()) : 'A' + Number(new Date());
                     this.createRule(newSolutions, best);
+
+                    /*let downLine = new svg.Rect(hideRect.width, hideRect.height).corners(5, 5);
+                    downLine.position(list.width/2 - icon.getSize() - topLine.width/2 - MARGIN, list.getEleDim().h/2 + MARGIN/3);
+                    checkBoxManipulator.set(1, downLine);*/
                 } else {
                     _removeSolutionChild(list, manipSelectItems.childSolution);
                     list.refreshListView();
                 }
             };
+
+
+            let hideRect = new svg.Rect(60, list.getEleDim().h - MARGIN/2).color(myColors.white, 0 , myColors.white);
+            let topLine = new svg.Rect(hideRect.width, hideRect.height).corners(5, 5);
+
+            checkBoxManipulator.set(2, hideRect);
+            checkBoxManipulator.set(0, topLine);
+
+            let icon = IconCreator.createLockUnlockIcon(checkBoxManipulator, 3);
+            icon.position(list.width/2 - icon.getSize() - MARGIN, list.getEleDim().h/2);
+
+            hideRect.position(list.width/2 - icon.getSize() - hideRect.width/2 - MARGIN*1.3, list.getEleDim().h/2);
+            topLine.position(list.width/2 - icon.getSize() - topLine.width/2 - MARGIN, list.getEleDim().h/2 - MARGIN/3);
 
             icon.changeStatusHandler(_toggleChecked);
             if(isChecked){
