@@ -43,21 +43,12 @@ exports.DollAdminV = function (globalVariables) {
         constructor(presenter) {
             super(presenter);
             this.rulesDisplay = false;
-            this.rules = this.getRules();
-            this.bestSolutionsList = this.getBestSolutionsList();
-            this.rulesSet = {best:0, accepted:0};
             this.responses = this.getResponses();
             this.objectives = this.getObjectives();
             this.elements = this.loadElements();
             this.declareActions();
         }
 
-        getRules(){//TODO link to model
-            return [];
-        }
-        getBestSolutionsList(){//TODO link to model
-            return [];
-        }
 
         loadElements(){
             return this.getElements().map((elemDetails, index)=>{
@@ -269,12 +260,6 @@ exports.DollAdminV = function (globalVariables) {
             backgroundItem.mark('backgroundOption');
 
             return [foregroundItem, backgroundItem, forwardItem, backwardItem];
-        }
-        clearAllSolutions() {
-            // leftTemplateManip
-            //     .remove(completeSolution.manipulator)
-            //     .remove(completeSolution.deleteSolutionButton.component);
-            // this.completeSolutionArray.remove(completeSolution);
         }
 
         displayPictureNavigation() {
@@ -1780,18 +1765,9 @@ exports.DollAdminV = function (globalVariables) {
             });
         }
 
-        setRules(objective, rules) {
-            if (this.findObjective(objective)) {
-                console.log("test");
-            } else {
-                console.log("shiet");
-            }
-        }
-
         findObjective(objective) {
             this.presenter.findObjective(objective);
         }
-
 
     }
 
