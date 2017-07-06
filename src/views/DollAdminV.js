@@ -918,7 +918,7 @@ exports.DollAdminV = function (globalVariables) {
             let sizeBlock = {w: sizeBody.w/3, h: sizeBody.h/2 + chevronSize.h*2};
             let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, 0, true);
             let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, 0, false);
-            this.loadBodyRules(blockBestSolution, blockNotOptimalSolution, sizeBlock);
+            this.currentObjective && this.loadBodyRules(blockBestSolution, blockNotOptimalSolution, sizeBlock);
 
             manipBlockSolutions
                 .add(blockBestSolution.manipulator)
