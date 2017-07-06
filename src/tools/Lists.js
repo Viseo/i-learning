@@ -273,6 +273,7 @@ exports.Lists = function (globalVariables) {
         add(manip){
             this.listElements.push(manip);
             this.contentManip.add(manip.component);
+            return this;
         }
 
         getIndexByManip(manip){
@@ -517,11 +518,13 @@ exports.Lists = function (globalVariables) {
                 let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
                 choice.back.corners(5, 5);
                 choice.onClick(() => {
-                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
                     this.setSelectButtonText(ele);
+                    this.selectedManipulator = manip;
                     this.hideListView();
+                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
                 });
                 manip.add(choice.component);
+                manip.choice = choice;
 
                 this.listView.add(manip);
             });
@@ -530,15 +533,28 @@ exports.Lists = function (globalVariables) {
 
 
             this.selectButton.onClick(() => {
-                if(this.manipShowList){
-                    this.manipShowList.add(this.listView.manipulator);
-                    this.listView.manipulator.move(this.manipulator.x, this.manipulator.y + this.height/2);
-                }else{
-                    this.manipulator.add(this.listView.manipulator);
+                if(this.listElements.length > 0 ){
+                    if(this.manipShowList){
+                        this.manipShowList.add(this.listView.manipulator);
+                        let globalPointButton = this.getButtonGlobalPoint(0, 0);
+                        let localPointParentManip = this.manipShowList.translator.localPoint(globalPointButton.x, globalPointButton.y);
+
+                        this.listView.manipulator.move(localPointParentManip.x, (this.selectButton.height + this.listView.height)/2 + localPointParentManip.y);
+
+                    }else{
+                        this.manipulator.add(this.listView.manipulator);
+                    }
                 }
             });
     
             this.manipulator.add(this.selectButton.component);
+        }
+
+        getButtonGlobalPoint(x, y){
+            return this.selectButton.component.globalPoint(x, y);
+        }
+        getSelectedManipulator(){
+            return this.selectedManipulator;
         }
 
         setManipShowListAndPosition(manipShowList, x, y) {
@@ -550,8 +566,8 @@ exports.Lists = function (globalVariables) {
             return this;
         };
 
-        getSelectButtonText(button) {
-            return button.text.getMessageText();
+        getSelectButtonText() {
+            return this.selectButton.text.getMessageText();
         }
 
         hideListView() {

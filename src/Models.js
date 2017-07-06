@@ -330,6 +330,7 @@ exports.Models = function (globalVariables, mockResponses) {
                             gamesTab.push(new Quiz(game, false, formation));
                             break;
                         case GameType.DOLL:
+                            game.objectives.forEach((objective)=>{objective.rules = new Rule(objective.rules)});
                             gamesTab.push(new Doll(game));
                             break;
                         default:
@@ -1001,6 +1002,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.elements = game.elements || [];
             this.objectives = game.objectives || [];
             this.responses = game.responses || [];
+            this.statements = game.statements || [];
             this.rules = game.rules || [];
             this.valid = true //TODO changer en this.valid = game.valid
         }
@@ -1009,7 +1011,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.elements = infos.elements || [];
             this.objectives = infos.objectives || [];
             this.responses = infos.responses || [];
-            this.rules = infos.rules || [];
+            // this.rules = infos.rules || [];
             const completeDollMessage = "Les modifications ont bien été enregistrées",
                 errorDollMessage = "Erreur";
             return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex)
@@ -1026,6 +1028,35 @@ exports.Models = function (globalVariables, mockResponses) {
                 });
         }
 
+        createRule(conf, objective, best){
+            objective.rules.createRule(conf, best);
+        }
+        removeRule(conf, objective){
+            objective.rules.removeRule(conf);
+        }
+
+        addResponse(response){
+            this.responses.push(response);
+        }
+
+        removeResponse(response){
+            this.responses.remove(response);
+        }
+        addObjective(obj){
+            this.objectives.push({label:obj, rules: new Rule({})});
+        }
+        removeObjective(obj){
+            this.objectives.remove(this.findObjective(obj));
+        }
+        // findObjective(obj){
+        //     let predicat = (element)=>{
+        //         return element.name == obj;
+        //     }
+        //     return this.objectives.find(predicat);
+        // }
+        findObjective(obj) {
+            return this.objectives.find(obj);
+        }
         setImage(src) {
             this.imageSrc = src;
         }
@@ -1042,6 +1073,9 @@ exports.Models = function (globalVariables, mockResponses) {
         getElements(){
             return this.elements;
         }
+        addStatement(obj){
+            this.statements.push(obj);
+        }
 
         getObjectives(){
             return this.objectives;
@@ -1049,6 +1083,9 @@ exports.Models = function (globalVariables, mockResponses) {
 
         getResponses(){
             return this.responses;
+        }
+        getStatement(){
+            return this.statements;
         }
     }
 
@@ -1083,7 +1120,48 @@ exports.Models = function (globalVariables, mockResponses) {
             ]
         }
     }
+    class Rule{
+        constructor(rule){
+            rule = rule || {};
+            this.bestSolutions = rule.bestSolutions || {};
+            this.acceptedSolutions = rule.acceptedSolutions || {};
+        }
+        createRule(conf, best){
+            let obj = best ? this.bestSolutions : this.acceptedSolutions;
+            if (obj[conf.groupId]){
+                let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                if(solutionToUpdate){
+                    best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                }else{
+                    best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
 
+                }
+            }else{
+                if(best){
+                    this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+                }else{
+                    this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+
+                }
+            }
+        }
+        removeRule(conf){
+            let best = conf.solutionId.split('')[0] == 'A' ? false : true;
+            if(best){
+                let elem = this.bestSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                let index = this.bestSolutions[conf.groupId].indexOf(elem);
+                this.bestSolutions[conf.groupId].splice(index, 1);
+            }
+            else{
+                let elem = this.acceptedSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                let index = this.acceptedSolutions[conf.groupId].indexOf(elem);
+                this.acceptedSolutions[conf.groupId].splice(index, 1);
+            }
+        }
+
+    }
     class MediasLibrary {
         constructor() {}
 

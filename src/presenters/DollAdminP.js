@@ -27,7 +27,12 @@ exports.DollAdminP = function (globalVariables) {
         getResponses(){
             return this.doll.getResponses();
         }
-
+        getStatement(){
+            return this.doll.getStatement();
+        }
+        addStatement(obj){
+            this.doll.addStatement(obj)
+        }
         getImages() {
             return this.mediaLibrary.getImages();
         }
@@ -66,6 +71,27 @@ exports.DollAdminP = function (globalVariables) {
                 }, options);
             })
             this.doll.save(this.state.formation.formationId, infos);
+        }
+        createRule(conf, objective, best){
+            this.doll.createRule(conf, objective, best);
+        }
+        removeRule(obj, objective, best){
+            this.doll.removeRule(obj, objective);
+        }
+        addResponse(response){
+            this.doll.addResponse(response);
+        }
+        removeResponse(response){
+            this.doll.removeResponse(response);
+        }
+        addObjective(obj){
+            this.doll.addObjective(obj);
+        }
+        removeObjective(obj){
+            this.doll.removeObjective(obj);
+        }
+        findObjective(obj) {
+            this.doll.findObjective(obj);
         }
     }
     return DollAdminP;
