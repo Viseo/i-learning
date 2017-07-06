@@ -969,6 +969,7 @@ exports.DollAdminV = function (globalVariables) {
 
             return manipSelectItems;
         }
+
         createValidCheckbox(list, manipSelectItems, best, isChecked){
             let checkBoxManipulator = new Manipulator(this);
 
@@ -984,34 +985,27 @@ exports.DollAdminV = function (globalVariables) {
                 }
             };
 
-            var _toggleChecked = () => {
-                if (checkBoxManipulator.checked) {                           // modele or state
-                    checkBoxManipulator.remove(checked);
-                    checkBoxManipulator.checked = false;                     // modele or state
-                    _removeSolutionChild(list, manipSelectItems.childSolution);
-                    list.refreshListView();
-                } else {
-                    checkBoxManipulator.add(checked);
-                    checkBoxManipulator.checked = true;                      // modele or state
+            let icon = IconCreator.createLockUnlockIcon(checkBoxManipulator);
 
+            var _toggleChecked = () => {
+                if (icon.getStatus()) {
                     let newSolutions = this.createOneSolution(list, list.width, INPUT_SIZE.h, best);
                     list.addManipInIndex(newSolutions, list.getIndexByManip(manipSelectItems)+1);
                     list.refreshListView();
-
                     newSolutions.parentSolution = manipSelectItems;
                     manipSelectItems.childSolution = newSolutions;
                     newSolutions.groupId = manipSelectItems.groupId;
                     newSolutions.solutionId = best ? 'B' + Number(new Date()) : 'A' + Number(new Date());
                     this.createRule(newSolutions, best);
+                } else {
+                    _removeSolutionChild(list, manipSelectItems.childSolution);
+                    list.refreshListView();
                 }
-            }
-            let checkbox = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-            let checked = drawCheck(checkbox.x, checkbox.y, 20);
-            checkBoxManipulator.addEvent('click', _toggleChecked);
-            checkBoxManipulator.add(checkbox);
-            if (isChecked){
-                checkBoxManipulator.add(checked);
-                checkBoxManipulator.checked = true;
+            };
+
+            icon.changeStatusHandler(_toggleChecked);
+            if(isChecked){
+                icon.activeStatusActionIcon();
             }
 
             return checkBoxManipulator;
