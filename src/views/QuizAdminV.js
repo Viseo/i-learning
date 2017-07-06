@@ -68,7 +68,8 @@ exports.QuizAdminV = function (globalVariables) {
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
                 chevron.position(-BUTTON_WIDTH / 2, 0);
-                this.returnButtonManipulator.add(chevron);
+                this.returnButtonManipulator.add(chevron).mark('return');
+                this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
             }
             var _displayTitleArea = () => {
                 var _renameWhenEnter = (event) => {
@@ -118,6 +119,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionsBlockListView = new ListManipulatorView([],'H',
                     questionListDim.w, questionListDim.h, 50, 80,
                     QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h, 10, myColors.white, 10);
+                this.questionsBlockListView.mark("listQ")
 
                 this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2,

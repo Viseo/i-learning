@@ -84,7 +84,6 @@ exports.FormationAdminV = function (globalVariables) {
             let _createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
                 this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
-                this.returnButton.glass.mark('returnDashboard');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
                 this.returnButton.text.font(FONT, 20).position(0, 6.6);
@@ -92,7 +91,8 @@ exports.FormationAdminV = function (globalVariables) {
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
                 chevron.position(-130, 0);
-                this.returnButtonManipulator.add(chevron);
+                this.returnButtonManipulator.add(chevron).mark('return');
+                this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
                 this.manipulator.add(this.returnButtonManipulator);
             }
             let createGraphPanel = () => {

@@ -6,9 +6,9 @@ const
     testutils = require('../lib/testutils'),
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
-    {given, when, loadPage, retrieve, clickElement, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
+    {given, when, loadPage, retrieve, click, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
         mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick, mouseDown,
-        mouseMove, mouseUpOnAnother, mouseUp, click} = testutils;
+        mouseMove, mouseUpOnAnother, mouseUp} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -51,7 +51,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'textTab');
+            click(root, 'textTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -69,7 +69,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -83,7 +83,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'textTab');
+            click(root, 'textTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -98,17 +98,16 @@ describe('Doll admin Page', function(){
         })
 
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
-            let rectElem = retrieve(root, '[rectElement1]');
             when(()=>{
-                customClick(root, 'rectElement1', {type:3});
+                customClick(root, 'rectElement2', {type:3});
             }).then(()=>{
                 let resize = retrieve(root, '[resizeOption]');
-                clickElement(root, 'resizeOption')
+                click(root, 'resizeOption')
                 assert(resize);
             })
         })
@@ -118,7 +117,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'textTab');
+            click(root, 'textTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -128,7 +127,7 @@ describe('Doll admin Page', function(){
                 customClick(root, 'textElement1click', {which:3});
             }).then(()=>{
                 let color = retrieve(root, '[colorOption]');
-                clickElement(root, 'colorOption');
+                click(root, 'colorOption');
                 assert(color);
             })
         })
@@ -138,7 +137,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -148,7 +147,7 @@ describe('Doll admin Page', function(){
                 rightClick(root, 'rectElement1', {x:100,y:100});
             }).then(()=>{
                 let color = retrieve(root, '[colorOption]');
-                clickElement(root, 'colorOption');
+                click(root, 'colorOption');
                 assert(color);
             })
         })
@@ -158,9 +157,9 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'rules');
+            click(root, 'rules');
         }).then(()=>{
-            let button = retrieve(root, '[addSolutionButton]');
+            let button = retrieve(root, '[headerTitle]');
             assert(button);
         })
     })
@@ -170,7 +169,7 @@ describe('Doll admin Page', function(){
             return loadPage('GameAdmin', {data:{type:'Doll', label:'testDoll', id:'testDollId'}, className:'Doll'});
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
         }).then(()=>{
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
@@ -178,9 +177,8 @@ describe('Doll admin Page', function(){
             let rectElem = retrieve(root, '[rectElement1]');
             assert(rectElem);
             when(()=>{
-                rightClick(root, 'rectElement1', {x:100,y:100});
+                click(root, 'rectElement1', {x:100,y:100});
             }).then(()=>{
-                clickElement(root, 'resizeOption');
                 let rect = retrieve(root, '[rectElement1]');
                 let size = new Object({w:rect.handler.width,h:rect.handler.height});
                 mouseDownElement(root, 'botRight', {pageX:250,pageY:250});
@@ -202,8 +200,8 @@ describe('Doll admin Page', function(){
             });
         });
         when(() => {
-            clickElement(root, 'pictureTab');
-            clickElement(root, 'picAddImageManip');
+            click(root, 'pictureTab');
+            click(root, 'picAddImageManip');
             onChangeElement(root, 'fileExplorer');
         }).then(() => {
 
@@ -219,9 +217,9 @@ describe('Doll admin Page', function(){
             });
         });
         when(() => {
-            clickElement(root, 'pictureTab');
+            click(root, 'pictureTab');
         }).then(() => {
-            clickElement(root, 'picBackManip');
+            click(root, 'picBackManip');
             assertPresent(root, 'rectTab');
             assertPresent(root, 'pictureTab');
             assertPresent(root, 'textTab');
@@ -237,7 +235,7 @@ describe('Doll admin Page', function(){
             });
         });
         when(() => {
-            clickElement(root, 'pictureTab');
+            click(root, 'pictureTab');
         }).then(() => {
             mouseDownElement(root, 'img_592c24c36a4f592c987fa84e', {pageX: 0, pageY:0, preventDefault: () => {
             }});
@@ -259,14 +257,14 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
             let rectElem = retrieve(root, '[rectElement1]');
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
+            click(root,'editOption');
             mouseDown(root, 'gaugeIndicator', {pageX: 10000, pageY:0, preventDefault: () => {
             }});
             mouseMove(root, 'gaugeIndicator', {pageX: 0, pageY:0, preventDefault: () => {
@@ -309,14 +307,14 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
             let rectElem = retrieve(root, '[rectElement1]');
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
+            click(root,'editOption');
             assertPresent(root,'rightMenu');
         })
     })
@@ -329,14 +327,14 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
 
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
+            click(root,'editOption');
             enterTextField(root,'inputPosX', '100');
             enterTextField(root, 'inputPosY', '100');
             let rectElem = retrieve(root, '[rectElement1]');
@@ -355,14 +353,14 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
 
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
+            click(root,'editOption');
             enterTextField(root,'inputSizeW', '100');
             enterTextField(root, 'inputSizeH', '100');
             let rectElem = retrieve(root, '[rectElement1]');
@@ -381,19 +379,19 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
+            click(root,'editOption');
             enterTextField(root,'inputSizeW', '100');
             enterTextField(root, 'inputSizeH', '100');
             let rectElem = retrieve(root, '[rectElement1]');
             assert.equal(rectElem.handler.width, 100);
             assert.equal(rectElem.handler.height, 100);
-            clickElement(root, 'keepProportionButton');
+            click(root, 'keepProportionButton');
             enterTextField(root,'inputSizeW', '150');
             assert.equal(rectElem.handler.height, 150);
         });
@@ -407,23 +405,23 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
         }).then(()=>{
             rightClick(root,'rectElement1', {});
-            clickElement(root,'editOption');
-            clickElement(root, 'borderColor');
+            click(root,'editOption');
+            click(root, 'borderColor');
             let rec = retrieve(root, '[rectElement1]');
             let color = retrieve(root, '[color1]').handler.color;
-            clickElement(root, 'color1');
+            click(root, 'color1');
             assert.equal(true, rec.handler.strokeColor == color);
 
-            clickElement(root, 'backgroundColor');
+            click(root, 'backgroundColor');
             let rec2 = retrieve(root, '[rectElement1]');
             let color2 = retrieve(root, '[color1]').handler.color;
-            clickElement(root, 'color1');
+            click(root, 'color1');
             assert.equal(true, rec.handler.fillColor == color);
         });
     });
@@ -436,19 +434,19 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
         }).then(()=> {
             rightClick(root, 'rectElement1', {});
-            clickElement(root, 'forwardOption');
+            click(root, 'forwardOption');
             rightClick(root, 'rectElement1', {});
-            clickElement(root, 'backwardOption');
+            click(root, 'backwardOption');
             rightClick(root, 'rectElement1', {});
-            clickElement(root, 'foregroundOption');
+            click(root, 'foregroundOption');
             rightClick(root, 'rectElement1', {});
-            clickElement(root, 'backgroundOption');
+            click(root, 'backgroundOption');
         })
     });
     it('should test selection and deselection of a rect', function() {
@@ -460,15 +458,15 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            clickElement(root, 'rectTab');
+            click(root, 'rectTab');
             mouseDownElement(root, 'mainPanel', {x:150, y:150});
             mouseMoveElement(root, 'mainPanel', {x: 250, y: 250});
             mouseUpElement(root, 'mainPanel', {x:250,y:250});
         }).then(()=> {
-            clickElement(root, 'rectElement1');
+            click(root, 'rectElement1');
             let rect = retrieve(root,'[rectElement1]')
             assert.equal(true, state.currentPresenter.view.selectedElement == rect.handler);
-            clickElement(root, 'mainPanel');
+            click(root, 'mainPanel');
             assert.equal(true, state.currentPresenter.view.selectedElement == null)
         })
     });
@@ -481,7 +479,7 @@ describe('Doll admin Page', function(){
             });
         });
         when(() => {
-            clickElement(root, 'pictureTab');
+            click(root, 'pictureTab');
         }).then(() => {
             mouseDownElement(root, 'img_592c24c36a4f592c987fa84e', {pageX: 0, pageY:0, preventDefault: () => {
             }});
@@ -493,7 +491,7 @@ describe('Doll admin Page', function(){
             mouseUpElementOnAnother(root, 'picDraggableCopy', 'mainPanel');
             assertPresent(root,'picElement');
             rightClick(root, 'picElement', {x:0, y:0});
-            clickElement(root, 'resizeOption');
+            click(root, 'resizeOption');
             let img = retrieve(root, '[picElement]');
             let size = new Object({w:img.handler.width,h:img.handler.height});
             mouseDownElement(root, 'botRight', {pageX:250,pageY:250});

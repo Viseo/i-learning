@@ -60,8 +60,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 case'FormationAdminP':
                     this.loadPresenterFormationAdmin(this.formation);
                     break;
-                default:
-                    break;
+                default:;
             }
             this._unFrozenStackPage();
         }

@@ -72,8 +72,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.top = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'N')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, -posYChevron)
-                        .mark('listChevronTop');
+                        .position(0, -posYChevron);
                     this.chevrons.top.border =  new svg.Rect(listW-2, chevronH-2)
                         .color(color, 0, myColors.yellow).position(0, -posYChevron);
                     this.chevronsLTManipulator
@@ -82,8 +81,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.down = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'S')
                         .color(myColors.black, 0, myColors.none)
-                        .position(0, posYChevron)
-                        .mark('listChevronBottom');
+                        .position(0, posYChevron);
                     this.chevrons.down.border =  new svg.Rect(listW-2, chevronH-2)
                         .color(color, 0, myColors.yellow).position(0, posYChevron);
                     this.chevronsRDManipulator
@@ -118,8 +116,7 @@ exports.Lists = function (globalVariables) {
                     let posXChevron = (listW - chevronW)/2;
                     this.chevrons.left = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'W')
                         .color(myColors.black, 0, myColors.none)
-                        .position(-posXChevron, 0)
-                        .mark('listChevronLeft');
+                        .position(-posXChevron, 0);
                     this.chevrons.left.border =  new svg.Rect(chevronW-2, listH-2)
                         .color(color, 0, myColors.black).position(-posXChevron, 0);
                     this.chevronsLTManipulator
@@ -128,8 +125,7 @@ exports.Lists = function (globalVariables) {
 
                     this.chevrons.right = new svg.Chevron(this.chevronDim.w, this.chevronDim.h, this.chevronDim.thickness, 'E')
                         .color(myColors.black, 0, myColors.none)
-                        .position( posXChevron, 0)
-                        .mark('listChevronRight');
+                        .position( posXChevron, 0);
                     this.chevrons.right.border =  new svg.Rect(chevronW-2, listH-2)
                         .color(color, 0, myColors.black).position(posXChevron, 0);
                     this.chevronsRDManipulator
@@ -250,6 +246,11 @@ exports.Lists = function (globalVariables) {
         getListElements(){
             return this.listElements;
         }
+
+        mark(preId){
+            this.chevronsLTManipulator.mark(preId + "ChevronLT")
+            this.chevronsRDManipulator.mark(preId + "ChevronRD")
+        }
     }
 
     class ListManipulatorView extends ListView{
@@ -309,191 +310,6 @@ exports.Lists = function (globalVariables) {
             tmp.forEach(elem=>this.removeElementFromList(elem))
             list.forEach(elem=>this.add(elem));
             this.refreshListView();
-        }
-    }
-
-    class SelectItemList {
-        constructor(width, height, selectItemViewElement, rootItemLabel = "") {
-            this.list = [];
-            this.itemWidth = width;
-            this.itemHeight = height;
-            if (!selectItemViewElement) {
-                this.rootItemElement = new SelectItem(this.itemWidth, this.itemHeight, rootItemLabel, 0);
-                this.list.push(this.rootItemElement);
-            } else {
-                this.rootItemElement = selectItemViewElement.duplicate();
-                this.list.push(this.rootItemElement);
-            }
-            this.scrollable = true;
-            this.highlight = true;
-            this.highlightColor = myColors.blue;
-            this.manipulator = new Manipulator(this);
-            this._updateCurrentList();
-        }
-
-        addItem(label, index) {
-            this.list.push(new SelectItem(this.itemWidth, this.itemHeight, label, index));
-            this._updateCurrentList();
-        }
-
-        color(newColor) {
-            this.list.forEach(selectItem => {
-                selectItem.color(newColor);
-            })
-        }
-
-        // copySelectItem(index) {
-        //     let copyElement = new SelectItem(this.itemWidth, this.itemHeight, this.list[index].getText(),0);
-        //     return copyElement;
-        // }
-
-        corners(radiusX, radiusY) {
-            this.list.forEach(selectItem => {
-                selectItem.corners(radiusX,radiusY);
-            })
-        }
-
-        getSelectedItem(index) {
-            return this.list[index];
-        }
-
-        highlightHandler(selectItem) {
-            selectItem.setHighlightColor(this.highlightColor);
-            selectItem.addEvent('mouseleave', () => selectItem.setHighlightColor(myColors.white));
-        }
-
-        move(x, y) {
-            this.manipulator.move(x, y);
-        }
-
-        removeItem(index) {
-            this.list.remove(this.getSelectedItem(index));
-        }
-
-        setClickAction(clickHandler) {
-            this.list.forEach(selectItem => {
-                selectItem.setClickAction(clickHandler, true);
-            })
-        }
-
-        setClickAction(clickHandler, ruleIndex) {   // complete or progress solutions
-            this.list.forEach(selectItem => {
-                selectItem.setClickAction(clickHandler, true, ruleIndex);
-            })
-        }
-
-        setHighlightItems(flag) {
-            this.highlight = flag;
-        }
-
-        setHighlightOptions(backgroundColor) {
-            this.highlightColor = backgroundColor;
-        }
-
-        setScrollable(flag) {
-            this.scrollable = flag;
-        }
-
-        toggleEvents(selectItem) {
-            if (this.highlight && this.highlightColor) {
-                selectItem.addEvent('mouseenter', () => this.highlightHandler(selectItem));
-            }
-            if (this.scrollable) {
-                selectItem.addEvent('wheel', () => {console.log('HotWheels')});
-            }
-        }
-
-        _updateCurrentList() {
-            this.list.forEach(selectItem => {
-                this.toggleEvents(selectItem);
-                this.manipulator.remove(selectItem.manipulator);
-                this.manipulator.add(selectItem.manipulator);
-                selectItem.move(0,selectItem.index * this.itemHeight);
-            });
-        }
-
-    }
-
-    class SelectItem {
-        constructor(itemWidth, itemHeight, textContent = "", index) {
-            this.width = itemWidth;
-            this.height = itemHeight;
-            this.textContent = new svg.Text(textContent)
-                .font('Arial', 18)
-                .position(0,5);
-            this.textRect = new svg.Rect(this.width, this.height)
-                .color(myColors.white, 1, myColors.grey)
-                .corners(2,2);
-            this.index = index;
-            this.manipulator = new Manipulator(this);
-            this.manipulator
-                .add(this.textRect)
-                .add(this.textContent);
-        }
-
-        addEvent(eventName, handler) {
-            this.manipulator.addEvent(eventName, handler);
-        }
-
-        color(newColor) {
-            this.textRect.color(newColor, 1, myColors.grey);
-        }
-
-        corners(radiusX, radiusY) {
-            this.textRect.corners(radiusX,radiusY);
-        }
-
-        duplicate() {
-            return new SelectItem(this.getWidth(), this.getHeight(), this.getText(), this.getIndex());
-        }
-
-        getWidth() {
-            return this.width;
-        }
-
-        getHeight() {
-            return this.height;
-        }
-
-        getIndex() {
-            return this.index;
-        }
-
-        getText() {
-            return this.textContent.messageText;
-        }
-
-        move(x, y) {
-            this.manipulator.move(x,y);
-        }
-
-
-        mark(id) {
-            this.manipulator.mark(id);
-        }
-
-        position(x,y) {
-
-        }
-
-        setClickAction(clickHandler, flag) {    // flag == false => afficher la liste SelectItemList
-            this.manipulator.addEvent('click', ()=>clickHandler(this, flag));
-        }
-
-        setClickAction(clickHandler, flag, ruleIndex) { // complete or progress solutions
-            this.manipulator.addEvent('click', ()=>clickHandler(this, flag, ruleIndex));
-        }
-
-        _setRectBgdColor(color) {
-            this.textRect.color(color, 1, myColors.grey);
-        }
-
-        setHighlightColor(color) {
-            this._setRectBgdColor(color);
-        }
-
-        setText(messageText) {
-            this.textContent.message(messageText);
         }
     }
 
@@ -590,8 +406,6 @@ exports.Lists = function (globalVariables) {
 
     return {
         ListManipulatorView,
-        SelectItemList,
-        SelectItem,
         SelectItemList2
     };
 };

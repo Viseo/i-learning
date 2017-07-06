@@ -7,7 +7,7 @@ const
     FModels = require('../src/Models').Models,
     models = FModels({}, {}),
     {
-        given, when, loadPage, mouseDown, mouseUp, mouseUpElement, mouseMove, clickElement, assertMessage, onChangeElement, inputValue,
+        given, when, loadPage, mouseDown, mouseUp, mouseUpElement, mouseMove, click, assertMessage, onChangeElement, inputValue,
         mouseDownOnGlassElement, mouseUpOnGlassElement, mouseMoveOnGlassElement, getElement, dblclickElement
     } = testutils;
 
@@ -132,7 +132,7 @@ describe('formation admin page', function () {
             })
         })
         when(() => {
-            clickElement(root, 'homeText')
+            click(root, 'homeText')
         }).then(() => {
             assertMessage(root, 'headerMessage', 'Dashboard')
         })
@@ -154,12 +154,12 @@ describe('formation admin page', function () {
                 }
             });
             when(() => {
-                clickElement(root, "saveFormation");
+                click(root, "saveFormation");
             }).then(() => {
                 assertMessage(root, "infoMessage", "Votre travail a bien été enregistré.");
             });
             when(() => {
-                clickElement(root, "publishFormation");
+                click(root, "publishFormation");
             }).then(() => {
 
             });
@@ -178,14 +178,17 @@ describe('formation admin page', function () {
         });
     });
 
-    it('should enter in a quiz', function () {
+    it('should enter in a quiz and return to Formation', function () {
        let {root} = given(() => {
            return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
        });
        when(() => {
-            dblclickElement(root, "miniatureGameManipquizz0");
+           assertMessage(root, 'headerMessage', 'Agilité');
+           dblclickElement(root, "miniatureGameManipquizz0");
+           assertMessage(root, 'headerMessage', 'Agilité - Introduction aux méthodes agiles');
+           click(root, "return");
        }).then(() => {
-
+           assertMessage(root, 'headerMessage', 'Agilité');
        })
     });
 
@@ -194,9 +197,9 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
         });
         when(() => {
-            clickElement(root, "popUpImgquizz0");
+            click(root, "popUpImgquizz0");
         }).then(() => {
-            clickElement(root, "image0-0");
+            click(root, "image0-0");
         });
     });
 
@@ -205,8 +208,8 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
         });
         when(() => {
-            clickElement(root, "popUpImgquizz0");
-            clickElement(root, "addPictureButtonGlass");
+            click(root, "popUpImgquizz0");
+            click(root, "addPictureButtonGlass");
             onChangeElement(root, "fileExplorer");
         }).then(() => {
 
@@ -219,14 +222,14 @@ describe('formation admin page', function () {
         });
         when(() => {
             inputValue(root, 'formationTitle', 'AAAAAAA-_-56+626fa0&ér');
-            clickElement(root, 'saveNameButton');
+            click(root, 'saveNameButton');
         }).then(() => {
             assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
             runtime.advance();
-            clickElement(root, "saveFormation");
+            click(root, "saveFormation");
             assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
             runtime.advance();
-            clickElement(root, "publishFormation");
+            click(root, "publishFormation");
             assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
             runtime.advance();
         })
@@ -250,7 +253,7 @@ describe('formation admin page', function () {
         when(() => {
             assertMessage(root, 'headerMessage', 'Agilité');
             inputValue(root, 'formationTitle', 'Agility');
-            clickElement(root, 'saveNameButton');
+            click(root, 'saveNameButton');
         }).then(() => {
             assertMessage(root, 'headerMessage', 'Agility');
         })
@@ -261,7 +264,7 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: {}, className: "Formation"});
         });
         when(() => {
-            clickElement(root, "publishFormation")
+            click(root, "publishFormation")
         }).then(() => {
             assertMessage(root, "infoMessage", "Veuillez ajouter au moins un jeu à votre formation.");
         })
@@ -271,7 +274,7 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
         });
         when(() => {
-            clickElement(root, 'toggleArrowManip');
+            click(root, 'toggleArrowManip');
             mouseDownOnGlassElement(root, 'miniatureGameManipquizz0');
             mouseMoveOnGlassElement(root, 'miniatureGameManipquizz0');
             mouseUpOnGlassElement(root, 'miniatureGameManipquizz1');
@@ -299,7 +302,7 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock2, className: "Formation"});
         });
         when(() => {
-            clickElement(root, "redCrossLevel0");
+            click(root, "redCrossLevel0");
         }).then(() => {
 
         })

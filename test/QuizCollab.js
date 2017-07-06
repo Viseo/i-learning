@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, clickElement, assertMessage, assertPresent, assertMissing} = testutils;
+    {given, when, loadPage, click, assertMessage, assertPresent, assertMissing} = testutils;
 
 let mockResponses = {
     "users/self/progress": {code: 200}
@@ -67,10 +67,10 @@ describe('quiz collab page', function () {
         when(()=>{
             click(root, 'answer1');
             click(root, 'answer2');
-            clickElement(root, 'resetButton');
+            click(root, 'resetButton');
             click(root, 'answer1');
             click(root, 'answer2');
-            clickElement(root, "validateButton");
+            click(root, "validateButton");
         }).then(()=>{
             assertMessage(root, 'questionTitle1', 'question 2');
         })
@@ -135,7 +135,7 @@ describe('quiz collab page', function () {
             return page;
         })
         when(()=>{
-            clickElement(root, "answeredButton");
+            click(root, "answeredButton");
         }).then(()=>{
             assertPresent(root, 'scoreText');
             runtime.globalEvent('resize');
@@ -154,16 +154,16 @@ describe('quiz collab page', function () {
             });
             click(page.root, "answer1");
             click(page.root, "answer1");
-            clickElement(page.root, "answeredButton");
+            click(page.root, "answeredButton");
             return page;
         })
         when(()=>{
-            clickElement(root, "explanationIconanswer1")
+            click(root, "explanationIconanswer1")
         }).then(()=>{
             assertPresent(root, 'explanation');
         })
         when(() => {
-            clickElement(root, 'redCrossExplanation');
+            click(root, 'redCrossExplanation');
         }).then(() => {
             assertMissing(root, 'explanation');
         })

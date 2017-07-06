@@ -27,14 +27,16 @@ describe('Formation Collab', function () {
         })
     })
 
-    it('should enter a game', function(){
+    it('should enter a game and return to FormationCollabV', function(){
         let {root, state} = given(() => {
             return loadPage("FormationCollab", {data:doneFormationJson, className: "Formation"});
         })
         when(() => {
             click(root, 'miniatureQuiz 0');
+            assertMessage(root, 'headerMessage', 'Quiz 0');
+            click(root, "return");
         }).then(() => {
-            assertMessage(root, 'headerMessage', 'Quiz 0')
+            assertMessage(root, 'headerMessage', 'aaa');
         })
     })
 });

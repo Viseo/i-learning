@@ -3,7 +3,7 @@
  */
 
 const testutils = require('../lib/testutils'),
-    {given, when, loadPage, click, clickElement, inputValue, assertPresent, assertMissing, assertMessage, mouseDown} = testutils;
+    {given, when, retrieve, loadPage, click, inputValue, assertPresent, assertMissing, assertMessage, mouseDown} = testutils;
 
 let mockResponses = {
     "/medias/images": {code: 200, content: {images: []}},
@@ -33,7 +33,7 @@ describe('quiz admin', function () {
         })
         when(() => {
             inputValue(root, 'quizTitle', '@@@@');
-            clickElement(root, 'saveNameButton');
+            click(root, 'saveNameButton');
         }).then(() => {
             assertMessage(root, "infoMessage", "Le nom du quiz est incorrect");
         })
@@ -52,7 +52,7 @@ describe('quiz admin', function () {
         when(() => {
             assertMessage(root, "headerMessage", "formation - quiz")
             inputValue(root, 'quizTitle', 'quizname');
-            clickElement(root, 'saveNameButton');
+            click(root, 'saveNameButton');
         }).then(() => {
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
         })
@@ -120,7 +120,7 @@ describe('quiz admin', function () {
         })
         when(() => {
             assertMissing(root, "questionBlock0");
-            clickElement(root, 'newQuestionButton')
+            click(root, 'newQuestionButton')
         }).then(() => {
             assertPresent(root, "questionBlock0")
         })
@@ -154,8 +154,8 @@ describe('quiz admin', function () {
             assertPresent(root, "questionBlock0");
             assertPresent(root, "questionBlock1");
         }).then(() => {
-            clickElement(root, "selectQuestionBlock0");
-            clickElement(root, "selectQuestionBlock1");
+            click(root, "selectQuestionBlock0");
+            click(root, "selectQuestionBlock1");
         })
     });
 
@@ -290,7 +290,7 @@ describe('quiz admin', function () {
         })
         when(()=>{
             click(root, "answerCheckbox1");
-            clickElement(root, "saveButtonQuiz");
+            click(root, "saveButtonQuiz");
         }).then(()=>{
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide")
         })
@@ -322,7 +322,7 @@ describe('quiz admin', function () {
             })
         })
         when(()=>{
-            clickElement(root, "saveButtonQuiz");
+            click(root, "saveButtonQuiz");
         }).then(()=>{
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées")
         })
@@ -351,7 +351,7 @@ describe('quiz admin', function () {
         when(()=>{
             assertMessage(root, "headerMessage", "formation - quiz")
             inputValue(root, 'quizTitle', 'quizname');
-            clickElement(root, "saveButtonQuiz");
+            click(root, "saveButtonQuiz");
         }).then(()=>{
             assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées")
         })
@@ -378,7 +378,7 @@ describe('quiz admin', function () {
             })
         })
         when(()=>{
-            clickElement(root, 'previewButton');
+            click(root, 'previewButton');
         }).then(()=>{
             assertPresent(root, "questionTitle1");
         })
@@ -404,7 +404,7 @@ describe('quiz admin', function () {
             })
         })
         when(()=>{
-            clickElement(root, 'videoTab');
+            click(root, 'videoTab');
         }).then(()=>{
             assertPresent(root, 'videoPanel')
         })
@@ -431,22 +431,22 @@ describe('quiz admin', function () {
             })
         })
         when(()=>{
-            clickElement(root, 'videoTab');
+            click(root, 'videoTab');
         }).then(()=>{
             assertPresent(root, 'videoPanel')
         })
         when(()=>{
-            clickElement(root, 'imageTab');
+            click(root, 'imageTab');
         }).then(()=>{
             assertPresent(root, 'imagePanel')
         })
         when(()=>{
-            clickElement(root, 'videoTabText');
+            click(root, 'videoTabText');
         }).then(()=>{
             assertPresent(root, 'videoPanel')
         })
         when(()=>{
-            clickElement(root, 'imageTabText');
+            click(root, 'imageTabText');
         }).then(()=>{
             assertPresent(root, 'imagePanel')
         })
@@ -477,7 +477,7 @@ describe('quiz admin', function () {
             })
         });
         when(()=>{
-            clickElement(root, 'videoTab');
+            click(root, 'videoTab');
         }).then(()=>{
             assertPresent(root, 'videoPanel');
             mouseDown(root, 'video0');
@@ -486,51 +486,23 @@ describe('quiz admin', function () {
     it('should finish above test');
 
     it('should scroll through questions', function(){
+        let questions = [];
+
+        for(let i = 1; i<15; i++){
+            let question = {
+                label: "question " + i,
+                    answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
+            }
+            questions.push(question)
+        }
+
         let {root, state} = given(() => {
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {
                     id: "1",
                     label: "quiz",
-                    questions: [
-                        {
-                            label: "question 1",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 2",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 3",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 4",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 5",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 6",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 7",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 8",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        },
-                        {
-                            label: "question 9",
-                            answers: [{label: "answer1", correct: true}, {label: "answer2"}, {label: "answer3"}]
-                        }
-
-                    ]
+                    questions: questions
                 },
                 className: "Quiz",
                 beforeLoad: (page) => {
@@ -539,10 +511,11 @@ describe('quiz admin', function () {
             })
         })
         when(() => {
-            clickElement(root, 'listChevronRight');
-            clickElement(root, 'listChevronRight');
+            do{
+                click(root, 'listQChevronRD');
+            }while(retrieve(root, '[listQChevronRD]'))
         }).then(() => {
-
+            assertPresent(root, 'listQChevronLT');
         })
     })
 

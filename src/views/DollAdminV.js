@@ -10,9 +10,7 @@ exports.DollAdminV = function (globalVariables) {
         IconCreator = globalVariables.Icons.IconCreator,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
-        SelectItemList = globalVariables.Lists.SelectItemList,
         SelectItemList2 = globalVariables.Lists.SelectItemList2,
-        SelectItem = globalVariables.Lists.SelectItem,
         drawCheck = globalVariables.Helpers.drawCheck,
         installDnD = globalVariables.gui.installDnD;
 
@@ -868,7 +866,8 @@ exports.DollAdminV = function (globalVariables) {
                 let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
                     .font('Arial', 18)
                     .anchor('left')
-                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5);
+                    .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5)
+                    .mark('headerTitle');
 
                 let objectives = this.getObjectives().map((elem)=>{return elem.label});
                 if(objectives.length == 0){
