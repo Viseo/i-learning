@@ -179,9 +179,10 @@ exports.Icons = function (globalVariables) {
             return this;
         }
 
-        setPictureContent(src, size) {
+        setPictureContent(size, src, srcActive = undefined) {
             this.contentProperties.type = "Picture";
             this.contentProperties.src = src;
+            if(srcActive) this.contentProperties.srcActive = srcActive;
             this.contentProperties.size = size;
             return this;
         }
@@ -346,19 +347,49 @@ exports.Icons = function (globalVariables) {
 
         changeStatusActionIcon() {
             this.action = !this.action;
+
+            let contentProperties = this.iconSetting.contentProperties;
+            if(contentProperties.type == "Picture"){
+                if(this.action){
+                    this.imageSVG.url(contentProperties.srcActive);
+                }else{
+                    this.imageSVG.url(contentProperties.src);
+                }
+            }
+
+            this.changeStatusHandler && this.changeStatusHandler();
+        }
+
+        changeStatusHandler(handler){
+            this.changeStatusHandler = handler;
         }
 
         activeStatusActionIcon() {
             this.action = true;
+
+            let contentProperties = this.iconSetting.contentProperties;
+            if(contentProperties.type == "Picture"){
+                this.imageSVG.url(contentProperties.srcActive);
+            }
         }
 
         cancelActionIcon() {
             this.action = false;
+
+            let contentProperties = this.iconSetting.contentProperties;
+            if(contentProperties.type == "Picture"){
+                this.imageSVG.url(contentProperties.src);
+            }
         }
 
         isInAction() {
             return this.action;
         }
+
+        getStatus(){
+            return this.action;
+        }
+
     }
 
     class IconCreator {
@@ -462,21 +493,21 @@ exports.Icons = function (globalVariables) {
             return icon;
         }
 
-        createSettingIcon(manipulator, layer) {
+        /*createSettingIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)
                 .setPictureContent("../images/settings.png", (ICON_SIZE * 2) * 0.8);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
-        }
+        }*/
 
         static createExplanationIcon(manipulator, layer) {
             let radiusSize = 25;
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
-                .setPictureContent("../images/quiz/explanation.png", (radiusSize*2)*0.8);
+                .setPictureContent((radiusSize*2)*0.8, "../images/quiz/explanation.png");
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
@@ -488,7 +519,7 @@ exports.Icons = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
-                .setPictureContent("../images/ajoutImage.png", (radiusSize*2)*0.8);
+                .setPictureContent((radiusSize*2)*0.8, "../images/ajoutImage.png");
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
@@ -498,12 +529,24 @@ exports.Icons = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
-                .setPictureContent("../images/speaker.png", (radiusSize*2)*0.8);
+                .setPictureContent((radiusSize*2)*0.8, "../images/speaker.png");
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         }
 
+        static createLockUnlockIcon(manipulator, layer) {
+            let radiusSize = 15;
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
+                .setBorderDefaultColor(myColors.white, 1, myColors.black)
+                .setBorderActionColor(myColors.white, 1, myColors.black)
+                .setPictureContent((radiusSize*2)*0.8, "../images/unlock.png", "../images/lock.png");
+            let icon = new Icon(manipulator, iconSetting);
+            icon.addEvent('click', () => {
+                icon.changeStatusActionIcon();
+            });
+            return icon;
+        }
 
 
         static getRadiusContent() {
@@ -513,7 +556,7 @@ exports.Icons = function (globalVariables) {
         static createImageIcon(src, manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
-                .setPictureContent(src, ICON_SIZE * 2);
+                .setPictureContent(ICON_SIZE * 2, src);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;

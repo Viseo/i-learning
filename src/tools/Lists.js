@@ -247,6 +247,10 @@ exports.Lists = function (globalVariables) {
             return this.listElements;
         }
 
+        getEleDim(){
+            return this.eleDim;
+        }
+
         mark(preId){
             this.chevronsLTManipulator.mark(preId + "ChevronLT")
             this.chevronsRDManipulator.mark(preId + "ChevronRD")
