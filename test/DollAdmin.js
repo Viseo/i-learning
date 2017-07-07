@@ -32,16 +32,49 @@ const ImageRuntime = {
     }
 };
 let mockResponses = {
-    '/medias/images': {
-        content: {
-            images: [{
-                imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
-                name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
-            }]
-        }
+        '/medias/images': {
+            content: {
+                images: [{
+                    imgSrc: "../resource/625dd8b7bb91c04f4f07c88500d50e19",
+                    name: "svg-guy.png", _id: "592c24c36a4f592c987fa84e"
+                }]
+            }
+        },
+        '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'}}
     },
-    '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'} }
-}
+    dollData = {
+        type: 'Doll',
+        label: 'testDoll',
+        id: 'testDollId',
+        gameIndex: 0,
+        elements: [{globalX: 361, globalY: 161.6375, height: 80, layerIndex: 0, type: "help", width: 80},
+            {globalX: 499, globalY: 154, height: 80, layerIndex: 1, type: "rect", width: 80},
+            {globalX: 719, globalY: 110, height: 80, layerIndex: 2, type: "text", width: 80},
+            {globalX: 800, globalY: 140, height: 80, layerIndex: 3, type: "picture", width: 80}],
+        objectives: [{label: "o1", rules: {acceptedSolutions: {}, bestSolutions: {}}},
+            {label: "o2", rules: {acceptedSolutions: {}, bestSolutions: {}}},
+            {
+                label: "o3",
+                rules: {
+                    acceptedSolutions: {
+                        A01: [{groupId: "A01", response: "r1", solutionId: "A001", statement: "Enoncé0"}],
+                        A02: [{groupId: "A02", response: "r1", solutionId: "A002", statement: "Enoncé0"}],
+                        A03: [{groupId: "A03", response: "r1", solutionId: "A003", statement: "Enoncé0"},
+                            {groupId: "A03", response: "r1", solutionId: "A0031", statement: "Enoncé0"}
+                        ]
+                    },
+                    bestSolutions: {
+                        B01: [{groupId: "B01", response: "r1", solutionId: "B001", statement: "Enoncé0"}],
+                        B02: [{groupId: "B02", response: "r1", solutionId: "B002", statement: "Enoncé0"}],
+                        B03: [{groupId: "B03", response: "r1", solutionId: "B003", statement: "Enoncé0"},
+                            {groupId: "B03", response: "r1", solutionId: "B0031", statement: "Enoncé0"}
+                        ]
+                    }
+                }
+            }],
+        responses: [{label: "r1"}, {label: "r2"}, {label: "r3"}, {label: "r4"}],
+        statements: [{id: "Enoncé0"}, {id: "Enoncé1"}, {id: "Enoncé2"}]
+    }
 
 describe('Doll admin Page', function(){
     beforeEach(function(){
@@ -499,6 +532,18 @@ describe('Doll admin Page', function(){
             mouseUpElement(root, 'botRight', {pageX:400,pageY:400});
             assert.equal(size.w + 150, img.handler.width);
             assert.equal(size.h + 150, img.handler.height);
+        })
+    })
+
+    it('should load objectives, responses and linked elements', function(){
+        let {root, state, runtime} = given(()=>{
+            return loadPage('GameAdmin', {data:dollData, className:'Doll'});
+        });
+        when(()=>{
+            click(root, 'rules');
+        }).then(()=>{
+            let button = retrieve(root, '[headerTitle]');
+            assert(button);
         })
     })
 })

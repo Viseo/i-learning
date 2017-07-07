@@ -1002,7 +1002,6 @@ exports.Models = function (globalVariables, mockResponses) {
             this.objectives = game.objectives || [];
             this.responses = game.responses || [];
             this.statements = game.statements || [];
-            this.rules = game.rules || [];
             this.valid = true //TODO changer en this.valid = game.valid
         }
 

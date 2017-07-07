@@ -178,9 +178,9 @@ exports.DollAdminV = function (globalVariables) {
             svg.addEvent(pictureA, 'click', () => {
                 toggleMode('picture')
             });
-            svg.addEvent(helpA, 'click', () => {
-                toggleMode('help')
-            });
+            // svg.addEvent(helpA, 'click', () => {
+            //     toggleMode('help')
+            // });
             for (let i = 0; i < this.actions.length; i++) {
                 let manip = new Manipulator(this);
                 let rect = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.white, 1, myColors.grey).corners(3, 3);
@@ -534,7 +534,6 @@ exports.DollAdminV = function (globalVariables) {
                 .corners(5, 5);
             this.mainPanelManipulator.add(backRect);
             this.mainPanelManipulator.move(drawing.width / 2, drawing.height / 2 + PANEL_SIZE.h / 8)
-            this.solutionsBodyManip = new Manipulator(this);
             this.manipulator.add(this.mainPanelManipulator);
 
             if (this.rulesDisplay) {
