@@ -536,7 +536,7 @@ exports.Icons = function (globalVariables) {
         }
 
         static createLockUnlockIcon(manipulator, layer) {
-            let radiusSize = 20;
+            let radiusSize = 15;
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.white, 1, myColors.black)
                 .setBorderActionColor(myColors.white, 1, myColors.black)
