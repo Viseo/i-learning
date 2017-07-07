@@ -329,7 +329,7 @@ exports.Models = function (globalVariables, mockResponses) {
                             gamesTab.push(new Quiz(game, false, formation));
                             break;
                         case GameType.DOLL:
-                            game.objectives.forEach((objective)=>{objective.rules = new Rule(objective.rules)});
+                            game.objectives && game.objectives.forEach((objective)=>{objective.rules = new Rule(objective.rules)});
                             gamesTab.push(new Doll(game));
                             break;
                         default:
