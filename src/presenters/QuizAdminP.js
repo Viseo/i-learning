@@ -62,9 +62,9 @@ exports.QuizAdminP = function (globalVariables) {
             return this.state.uploadVideo(file, progressDisplay);
         }
 
-        // returnHandler(){
-        //     this.view.display();
-        // }
+        returnHandler(){
+            this.view.display();
+        }
 
         updateQuiz(quizViewData) {
             const getObjectToSave = () => {
