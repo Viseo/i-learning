@@ -8,7 +8,8 @@ exports.DollCollabV = function(globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
-        resizeStringForText = globalVariables.Helpers.resizeStringForText;
+        resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        INPUT_SIZE = {w: 400, h: 30};
 
     class DollCollabV extends View{
         constructor(presenter){
@@ -21,19 +22,33 @@ exports.DollCollabV = function(globalVariables) {
                 this.objectivesManip = new Manipulator(this);
                 this.responseManip = new Manipulator(this);
                 this.actionbuttonZoneManip = new Manipulator(this);
+                this.returnButtonManipulator = new Manipulator(this);
                 this.manipulator
                     .add(this.sandboxManip)
                     .add(this.objectivesManip)
                     .add(this.responseManip)
-                    .add(this.actionbuttonZoneManip);
+                    .add(this.actionbuttonZoneManip)
+                    .add(this.returnButtonManipulator);
+            };
+            let createReturnButton = () => {
+                this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton.onClick(this.returnToOldPage.bind(this));
+                this.returnButton.back.corners(5, 5);
+                this.returnButton.text.font('Arial', 20).position(0, 6.6);
+                this.returnButtonManipulator.add(this.returnButton.component)
+                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
+                chevron.position(-130, 0);
+                this.returnButtonManipulator.add(chevron);
             };
 
             super.display();
             _declareManip();
             this.displayHeader(this.getLabel());
+            createReturnButton();
 
             this.size = {w : drawing.width - 2 * MARGIN, h : drawing.height - this.header.height - 2*MARGIN}
-            this.sandboxDim = {w: this.size.w*2/3, h: this.size.h};
+            this.sandboxDim = {w: this.size.w*2/3, h: this.size.h - this.returnButton.height - MARGIN};
 
             this.actionButtonZoneSize = {w: this.size.w - this.sandboxDim.w, h: this.size.h/12};
             this.objectivesSize = {w: this.size.w - this.sandboxDim.w - MARGIN, h: (this.size.h - this.actionButtonZoneSize.h)/2 };
@@ -49,7 +64,7 @@ exports.DollCollabV = function(globalVariables) {
             this.sandboxMain = new gui.Panel(this.sandboxDim.w, this.sandboxDim.h, myColors.white);
             this.sandboxMain.border.corners(2, 2).color(myColors.none, 1, myColors.black);
             this.sandboxManip.add(this.sandboxMain.component);
-            this.sandboxManip.move(this.sandboxDim.w/2 + MARGIN, this.sandboxDim.h/2 + this.header.height + MARGIN);
+            this.sandboxManip.move(this.sandboxDim.w/2 + MARGIN, this.sandboxDim.h/2 + this.header.height + MARGIN*2 + this.returnButton.height);
 
             this.getElements().forEach((elemDetails, index)=>{
                 let manip = new Manipulator(this);
