@@ -93,6 +93,9 @@ exports.DollAdminP = function (globalVariables) {
         findObjective(obj) {
             this.doll.findObjective(obj);
         }
+        renameDoll(label) {
+            this.doll.renameDoll(label);
+        }
     }
     return DollAdminP;
 }

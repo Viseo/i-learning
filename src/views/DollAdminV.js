@@ -42,6 +42,7 @@ exports.DollAdminV = function (globalVariables) {
     class DollAdminV extends View {
         constructor(presenter) {
             super(presenter);
+            this.label = this.getLabel();
             this.rulesDisplay = false;
             this.responses = this.getResponses();
             this.objectives = this.getObjectives();
@@ -458,6 +459,7 @@ exports.DollAdminV = function (globalVariables) {
                 exerciseTitleInput.font('Arial', 15).color(myColors.grey);
                 exerciseTitleInput.text.position(-INPUT_SIZE.w / 2 + MARGIN, 7.5);
                 exerciseTitleInput.control.placeHolder(this.getLabel());
+
                 exerciseTitleInput.onInput((oldMessage, message, valid) => {
                     if (!message || !oldMessage) {
                         exerciseTitleInput.text.message(this.getLabel());
@@ -466,9 +468,25 @@ exports.DollAdminV = function (globalVariables) {
                 });
                 exerciseTitleInput.color([myColors.lightgrey, 1, myColors.black])
                     .position(0, INPUT_SIZE.h)
+                    .onClick( () => {
+                        this.selectCurrentInput = exerciseTitleInput;
+                        this.selectCurrentInputHandler = () => {
+                            this.renameDoll(this.selectCurrentInput.text.getMessageText());
+                            this.selectCurrentInput.hideControl();
+                        };
+                    });
                 titleManipulator.add(exerciseTitleInput.component)
                     .add(title);
                 titleManipulator.move(this.returnButton.width / 2 + MARGIN, this.header.height + 2 * INPUT_SIZE.h + MARGIN);
+                let saveIcon = new svg.Image('../../images/save.png');
+                titleManipulator.add(saveIcon);
+                saveIcon
+                    .dimension(25, 25)
+                    .position(exerciseTitleInput.width / 2 + 12.5 + MARGIN, exerciseTitleInput.height)
+                    .mark('saveNameButton');
+                svg.addEvent(saveIcon, 'click', () => {
+                    this.renameDoll(exerciseTitleInput.text.getMessageText());
+                });
                 this.manipulator.add(titleManipulator);
             }
 
@@ -626,6 +644,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.objectivesList.refreshListView();
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
+                    this.objectivesInput.hideControl();
                 }
 
             }
@@ -739,6 +758,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.add(mini.manip);
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
+                    this.responsesInput.hideControl();
                     this.addResponse(newResponse);
                 }
 
@@ -1782,6 +1802,7 @@ exports.DollAdminV = function (globalVariables) {
         saveDoll() {
             let obj = this.objectives.map(elem=>{return {label:elem.label, rules:elem.rules}});
             this.presenter.save({
+                label: this.getLabel(),
                 elements: this.elements,
                 objectives: obj,
                 responses: this.responses,
@@ -1798,6 +1819,10 @@ exports.DollAdminV = function (globalVariables) {
                 if(this.selectCurrentInput && this.selectCurrentInput.controlShown)
                     this.selectCurrentInputHandler && this.selectCurrentInputHandler();
             }
+        }
+
+        renameDoll(label) {
+            this.presenter.renameDoll(label);
         }
 
     }

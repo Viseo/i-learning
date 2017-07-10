@@ -1006,6 +1006,7 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         save(formationId, infos={}){
+            this.label = infos.label || this.label;
             this.elements = infos.elements || [];
             this.objectives = infos.objectives || [];
             this.responses = infos.responses || [];
@@ -1084,6 +1085,10 @@ exports.Models = function (globalVariables, mockResponses) {
         }
         getStatement(){
             return this.statements;
+        }
+
+        renameDoll(label) {
+            this.label = label;
         }
     }
 
