@@ -503,9 +503,6 @@ exports.FormationAdminV = function (globalVariables) {
 
         arrow(parent, child) {
             var _onClickArrow = () => {
-                if(this.selectedArrowRedCross){
-                    this.arrowsManipulator.remove(this.selectedArrowRedCross);
-                }
                 this.arrowsManipulator.add(redCrossManipulator);
                 this.selectedArrowRedCross = redCrossManipulator;
                 this.unselectMiniature();
@@ -527,7 +524,7 @@ exports.FormationAdminV = function (globalVariables) {
             redCross
                 .position((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2)
                 .mark('redCross')
-                .addEvent('click', () => _onClickRedCross(parent.id, child.id));
+                .addEvent('mousedown', () => _onClickRedCross(parent.id, child.id));
 
             let arrowPath = this.drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             this.arrowsManipulator.add(arrowPath);
