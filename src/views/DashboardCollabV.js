@@ -237,6 +237,7 @@ exports.DashboardCollabV = function (globalVariables) {
             this.getNotes().then((data) => {
                 let notes = data;
 
+                let indexShow = 0;
                 this.getFormations().forEach((formation, i) => {
                     if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
                     if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
@@ -244,7 +245,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     let note = notes.filter(function (el) {
                         return (el.formationId === formation.formationId)
                     });
-                    _displayMiniature(formation, i, note.length > 0 ? note[0] : null);
+                    _displayMiniature(formation, indexShow++, note.length > 0 ? note[0] : null);
                 });
                 this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             });
