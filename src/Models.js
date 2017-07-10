@@ -569,8 +569,8 @@ exports.Models = function (globalVariables, mockResponses) {
 
         removeGame(game) {
             this.levelsTab[game.levelIndex].getGamesTab().forEach(g => {
-                if (g.index > game.gameIndex) {
-                    g.index--;
+                if (g.gameIndex > game.gameIndex) {
+                    g.gameIndex--;
                 }
             });
             this.levelsTab[game.levelIndex].getGamesTab().splice(game.gameIndex, 1);

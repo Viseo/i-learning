@@ -417,10 +417,11 @@ exports.FormationAdminV = function (globalVariables) {
                         if (this.arrowMode) {
                             let point = whatParent.globalPoint(finalX, finalY);
                             let target = this.graphManipulator.last.getTarget(point.x, point.y);
-                            if (target && !target.notTarget && what.miniatureGame != target.parentManip.miniatureGame
-                                && target.parentManip.miniatureGame) {
-                                let child = target.parentManip.game;
-                                this.createLink(this.currentParent, child);
+                            if (target && !target.notTarget && target.parentManip) {
+                                if (what.miniatureGame != target.parentManip.miniatureGame) {
+                                    let child = target.parentManip.game;
+                                    this.createLink(this.currentParent, child);
+                                }
                             }
                             let {x: X, y: Y} = miniature.conf.drag(what, finalX, finalY);
                             return {x: X, y: Y, parent: whatParent};
