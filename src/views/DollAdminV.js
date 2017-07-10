@@ -645,6 +645,12 @@ exports.DollAdminV = function (globalVariables) {
             objectivesBody.position(0, objectivesHeader.height / 2 + objectivesBody.height / 2);
             this.objectivesInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black]);
+
+            this.objectivesInput.onClick( () => {
+                this.selectCurrentInput = this.objectivesInput;
+                this.selectCurrentInputHandler = addObjectiveHandler;
+            });
+
             this.objectivesInput.font('Arial', 18);
             this.objectivesInput.position(-RIGHTBOX_SIZE.w / 2 + this.objectivesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.objectivesInput.frame.corners(5, 5);
@@ -756,6 +762,12 @@ exports.DollAdminV = function (globalVariables) {
             this.responsesInput.font('Arial', 18);
             this.responsesInput.position(-RIGHTBOX_SIZE.w / 2 + this.responsesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.responsesInput.frame.corners(5, 5);
+
+            this.responsesInput.onClick( () => {
+                this.selectCurrentInput = this.responsesInput;
+                this.selectCurrentInputHandler = addResponseHandler;
+            });
+
             let responsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             responsesAddButton.text
                 .font('Arial', 18)
@@ -1778,6 +1790,14 @@ exports.DollAdminV = function (globalVariables) {
 
         findObjective(objective) {
             this.presenter.findObjective(objective);
+        }
+
+        keyDown(event) {
+            if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                if(this.selectCurrentInput && this.selectCurrentInput.controlShown)
+                    this.selectCurrentInputHandler && this.selectCurrentInputHandler();
+            }
         }
 
     }
