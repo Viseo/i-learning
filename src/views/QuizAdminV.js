@@ -566,6 +566,7 @@ exports.QuizAdminV = function (globalVariables) {
                 };
                 var _displayBlock = () => {
                     this.questionsBlockListView.addManipInIndex(questionManip, lastQuestionIndex);
+                    resizeStringForText(questionManip.buttonText, QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h/2);
                 }
 
                 let questionManip = new Manipulator(this).addOrdonator(2);
