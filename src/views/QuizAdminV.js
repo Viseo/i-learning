@@ -444,6 +444,10 @@ exports.QuizAdminV = function (globalVariables) {
                     moved: (what) => {
                         what.flush();
                         return true;
+                    },
+                    clicked: (what)=>{
+                        what.flush();
+                        return true;
                     }
                 };
 
