@@ -73,7 +73,9 @@ exports.DashboardAdminP = function(globalVariables) {
 
         enterFormation(formation){
             this.state.loadPresenterFormationAdmin(formation);
+
         }
+
     }
     return DashboardAdminP;
 }

@@ -1883,11 +1883,11 @@ exports.DollAdminV = function (globalVariables) {
             this.presenter.findObjective(objective);
         }
 
-       
-
         renameDoll(label) {
             this.presenter.renameDoll(label);
         }
+
+
 
     }
 

@@ -9,6 +9,7 @@ exports.DashboardAdmin = function (globalVariables) {
         IconCreator = globalVariables.Icons.IconCreator,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         Helpers = globalVariables.Helpers,
+        popUp = globalVariables.popUp,
         ClipPath = globalVariables.clipPath;
 
     const TILE_SIZE = {w: 440, h: 100, rect: {w: 350, h: 100}},
@@ -202,6 +203,7 @@ exports.DashboardAdmin = function (globalVariables) {
             });
         }
 
+
         displayPopUpImage(formation){
             let _hideMediaPopup = () => {
                 this.mediasManipulator.flush()
@@ -295,15 +297,7 @@ exports.DashboardAdmin = function (globalVariables) {
         }
 
         displayErrorMessage(message) {
-            let errorMessage = new svg.Text(message).color(myColors.red, 0, myColors.none);
-            errorMessage.position(INPUT_SIZE.w / 2 + BUTTON_SIZE.w + 3 * MARGIN, 8.3)
-                .mark('formationErrorMessage')
-                .font(FONT, 25)
-                .anchor('left');
-            this.addFormationManipulator.set(2, errorMessage);
-            svg.timeout(() => {
-                this.addFormationManipulator.unset(2);
-            }, 3000);
+            popUp.display(message, this.manipulator);
         }
 
         getFormations() {
@@ -317,6 +311,9 @@ exports.DashboardAdmin = function (globalVariables) {
         enterFormation(formation){
             this.presenter.enterFormation(formation);
         }
+
+
+
     }
     return DashboardAdminV;
 }

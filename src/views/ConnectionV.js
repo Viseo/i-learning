@@ -152,7 +152,8 @@ exports.ConnectionV = function (globalVariables) {
                             .color(myColors.greyerBlue)
                             .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                             .mark("forgottenPassText");
-                        this.newPasswordManipulator.set(0, forgotttenPassText);
+
+                       this.newPasswordManipulator.set(0, forgotttenPassText);
                         svg.timeout(() => {
                             this.newPasswordManipulator.set(0, fieldTitle);
                         }, 5000);
