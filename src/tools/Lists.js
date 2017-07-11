@@ -334,19 +334,7 @@ exports.Lists = function (globalVariables) {
             this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h*2,
                 chevronSize.w, chevronSize.h, this.width, this.height, 10, myColors.lightgrey);
             listElements.forEach(ele => {
-                let manip = new Manipulator(this);
-                let choice = new gui.Button(width, height, [myColors.none, 1, myColors.black], ele);
-                choice.back.corners(5, 5);
-                choice.onClick(() => {
-                    this.setSelectButtonText(ele);
-                    this.selectedManipulator = manip;
-                    this.hideListView();
-                    this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
-                });
-                manip.add(choice.component);
-                manip.choice = choice;
-
-                this.listView.add(manip);
+                this.addElement(ele);
             });
             this.listView.refreshListView();
             this.listView.manipulator.move(0, (this.listView.height + this.height)/2);
@@ -406,6 +394,22 @@ exports.Lists = function (globalVariables) {
             this.onClickChangeValueHandler = handler;
         }
 
+        addElement(ele){
+            let manip = new Manipulator(this);
+            let choice = new gui.Button(this.width, this.height, [myColors.none, 1, myColors.black], ele);
+            choice.back.corners(5, 5);
+            choice.onClick(() => {
+                this.setSelectButtonText(ele);
+                this.selectedManipulator = manip;
+                this.hideListView();
+                this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
+            });
+            manip.add(choice.component);
+            manip.choice = choice;
+
+            this.listView.add(manip);
+            this.listView.refreshListView();
+        }
     }
 
     return {

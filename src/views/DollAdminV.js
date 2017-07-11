@@ -642,6 +642,7 @@ exports.DollAdminV = function (globalVariables) {
                 else {
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
+                    this.objectifSelectList.addElement(mini.text.messageText);
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
                 }
@@ -887,16 +888,16 @@ exports.DollAdminV = function (globalVariables) {
                 if(objectives.length == 0){
                     objectives.push('Veuillez ajouter au moins un objectif');
                 }
-                let objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
-                objectifSelectList.setHandlerChangeValue(_clickListHandler);
-                objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
-                this.currentObjective = this.objectives.find(elem=>{return elem.label == objectifSelectList.getSelectButtonText()});
+                this.objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
+                this.objectifSelectList.setHandlerChangeValue(_clickListHandler);
+                this.objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectifSelectList.getSelectButtonText()});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
 
                 this.solutionsHeaderManipulator
                     .add(solutionsHeader)
                     .add(headerTitle)
-                    .add(objectifSelectList.manipulator);
+                    .add(this.objectifSelectList.manipulator);
                 this.solutionsHeaderManipulator.move(0,(solutionsHeader.height - PANEL_SIZE.h)/2);
             };
 
