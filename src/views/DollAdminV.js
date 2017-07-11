@@ -610,6 +610,7 @@ exports.DollAdminV = function (globalVariables) {
                         if (!target || target && target.dropID != 'objectivesDrop' || !target.dropID) {
                             this.objectivesList.removeElementFromList(what);
                             this.removeObjective(what.text.messageText);
+                            this.objectifSelectList && this.objectifSelectList.removeElementByText(what.text.messageText);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -642,7 +643,7 @@ exports.DollAdminV = function (globalVariables) {
                 else {
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
-                    this.objectifSelectList.addElement(mini.text.messageText);
+                    this.objectifSelectList.addElementByText(mini.text.messageText);
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
                 }

@@ -330,11 +330,13 @@ exports.Lists = function (globalVariables) {
             this.selectButton.back.corners(5, 5);
 
             let chevronSize = {w: 100, h: 30};
+            this.mapElements = {};
+
 
             this.listView = new ListManipulatorView([], this.direction, this.width, this.height*3 + chevronSize.h*2,
                 chevronSize.w, chevronSize.h, this.width, this.height, 10, myColors.lightgrey);
             listElements.forEach(ele => {
-                this.addElement(ele);
+                this.addElementByText(ele);
             });
             this.listView.refreshListView();
             this.listView.manipulator.move(0, (this.listView.height + this.height)/2);
@@ -356,6 +358,8 @@ exports.Lists = function (globalVariables) {
             });
     
             this.manipulator.add(this.selectButton.component);
+
+
         }
 
         getButtonGlobalPoint(x, y){
@@ -394,7 +398,7 @@ exports.Lists = function (globalVariables) {
             this.onClickChangeValueHandler = handler;
         }
 
-        addElement(ele){
+        addElementByText(ele){
             let manip = new Manipulator(this);
             let choice = new gui.Button(this.width, this.height, [myColors.none, 1, myColors.black], ele);
             choice.back.corners(5, 5);
@@ -408,6 +412,14 @@ exports.Lists = function (globalVariables) {
             manip.choice = choice;
 
             this.listView.add(manip);
+            this.listView.refreshListView();
+
+            this.mapElements[ele] = manip;
+        }
+
+        removeElementByText(ele){
+            let manip = this.mapElements[ele];
+            manip && this.listView.removeElementFromList(manip);
             this.listView.refreshListView();
         }
     }
