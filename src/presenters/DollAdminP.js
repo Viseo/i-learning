@@ -69,7 +69,7 @@ exports.DollAdminP = function (globalVariables) {
                     globalY: elem.parentManip.y
                 }, options);
             })
-            this.doll.save(this.state.formation.formationId, infos);
+            return this.doll.save(this.state.formation.formationId, infos);
         }
         createRule(conf, objective, best){
             this.doll.createRule(conf, objective, best);

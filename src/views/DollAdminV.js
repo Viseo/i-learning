@@ -11,7 +11,7 @@ exports.DollAdminV = function (globalVariables) {
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         SelectItemList2 = globalVariables.Lists.SelectItemList2,
-        drawCheck = globalVariables.Helpers.drawCheck,
+        popUp = globalVariables.popUp,
         installDnD = globalVariables.gui.installDnD;
 
     var
@@ -34,10 +34,7 @@ exports.DollAdminV = function (globalVariables) {
         HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN,
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
         NB_ELEMENT_RIGHT_CLICK = 3,
-        CHEVRON_RCLICK_SIZE =  {w: 75, h: 20},
-        IMAGE_SIZE = {w: 30, h: 30},
-        SOLUTION_BODY_WIDTH = drawing.width - 2 * MARGIN,
-        SOLUTION_BODY_HEIGHT = drawing.height * 0.7;
+        CHEVRON_RCLICK_SIZE =  {w: 75, h: 20};
 
     class DollAdminV extends View {
         constructor(presenter) {
@@ -1831,7 +1828,9 @@ exports.DollAdminV = function (globalVariables) {
                 elements: this.elements,
                 objectives: obj,
                 responses: this.responses,
-            });
+            }).then(()=>{
+                popUp.display('Jeu sauvegardé', this.manipulator);
+            })
         }
 
         findObjective(objective) {

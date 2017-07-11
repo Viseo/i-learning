@@ -10,6 +10,7 @@ const
     FHandlers = require('./tools/Handlers').Handlers,
     FIcons = require('./tools/Icons').Icons,
     FHelpers = require('./tools/Helpers').Helpers,
+    FPopup = require('./tools/Popup').Popup,
     FLists = require('./tools/Lists').Lists,
     FModels = require('./Models').Models,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
@@ -44,6 +45,9 @@ function main(mockResponses) {
     globalVariables.Icons = FIcons(globalVariables);
     globalVariables.Lists = FLists(globalVariables);
     globalVariables.Helpers = FHelpers(globalVariables);
+
+    let Popup = FPopup(globalVariables);
+    globalVariables.popUp = new Popup();
 
     presenterFactory(globalVariables);
     let models = FModels(globalVariables, mockResponses);
