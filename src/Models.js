@@ -1130,14 +1130,16 @@ exports.Models = function (globalVariables, mockResponses) {
             this.acceptedSolutions = rule.acceptedSolutions || {};
         }
         createRule(conf, best){
-            let obj = best ? this.bestSolutions : this.acceptedSolutions;
+            let obj = best ? this.bestSolutions : this.acceptedSolutions,
+                sol = {};
             if (obj[conf.groupId]){
                 let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                    // sol[conf.statement].push(conf.response);
                 if(solutionToUpdate){
                     best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
                     !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
                 }else{
-                    best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    best && this.bestSolutions[conf.groupId].push(sol);
                     !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
 
                 }
