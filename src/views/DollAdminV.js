@@ -662,7 +662,7 @@ exports.DollAdminV = function (globalVariables) {
                 else {
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
-                    this.objectifSelectList.addElementByText(mini.text.messageText);
+                    this.objectifSelectList && this.objectifSelectList.addElementByText(mini.text.messageText);
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
                 }
