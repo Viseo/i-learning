@@ -1768,6 +1768,8 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         keyDown(event) {
+
+
             if ((event.keyCode == 46) && !this.inModification) {
                 if (this.selectedElement) {
                     if(this.selectedElement.type === 'text') this.selectedElement.hideControl();
@@ -1782,6 +1784,7 @@ exports.DollAdminV = function (globalVariables) {
                 }
             }
         }
+
 
         removeContextMenu() {
             if (this.contextMenu) {
@@ -1837,13 +1840,7 @@ exports.DollAdminV = function (globalVariables) {
             this.presenter.findObjective(objective);
         }
 
-        keyDown(event) {
-            if (event.keyCode === 13) { // Entrée
-                event.preventDefault();
-                if(this.selectCurrentInput && this.selectCurrentInput.controlShown)
-                    this.selectCurrentInputHandler && this.selectCurrentInputHandler();
-            }
-        }
+       
 
         renameDoll(label) {
             this.presenter.renameDoll(label);
