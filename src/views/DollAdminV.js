@@ -644,7 +644,6 @@ exports.DollAdminV = function (globalVariables) {
                     this.objectivesList.refreshListView();
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
-                    this.objectivesInput.hideControl();
                 }
 
             }
@@ -758,7 +757,6 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.add(mini.manip);
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
-                    this.responsesInput.hideControl();
                     this.addResponse(newResponse);
                 }
 
