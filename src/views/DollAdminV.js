@@ -924,9 +924,12 @@ exports.DollAdminV = function (globalVariables) {
                 };
 
                 let solutionBody = createSolutionsList();
+                let title = new svg.Text(best ? "Solution optimale" : "Solution accepter")
+                    .position(x, y - sizeBody.h/2)
+                    .font('Arial', 20);
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                     [myColors.white, 1, myColors.black], "Ajouter une solution");
-                addSolutionButton.position(x, - sizeBody.h/2 + addSolutionButton.height);
+                addSolutionButton.position(x, y - sizeBody.h/2 + addSolutionButton.height);
                 addSolutionButton.onClick(() =>{
                     let solution = this.createOneSolution(solutionBody.listSolution, solutionBody.listSolution.width, INPUT_SIZE.h, best);
                     solution.spaceManip = new Manipulator(this);
@@ -937,7 +940,8 @@ exports.DollAdminV = function (globalVariables) {
                     solutionBody.listSolution.refreshListView();
                 });
                 solutionBody.manipulator
-                    .add(addSolutionButton.component);
+                    .add(addSolutionButton.component)
+                    .add(title);
 
                 return solutionBody;
             };
@@ -947,8 +951,8 @@ exports.DollAdminV = function (globalVariables) {
             let sizeBody = {w : PANEL_SIZE.w, h : 0.8*PANEL_SIZE.h};
             let chevronSize = {w: 70, h: 30};
             let sizeBlock = {w: sizeBody.w/3, h: sizeBody.h/2 + chevronSize.h*2};
-            let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, 0, true);
-            let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, 0, false);
+            let blockBestSolution =  _createBlockSolution(-sizeBody.w/2 + sizeBlock.w/2 + MARGIN, (sizeBody.h - sizeBlock.h)/4, true);
+            let blockNotOptimalSolution =  _createBlockSolution(sizeBody.w/2 - sizeBlock.w/2 - MARGIN, (sizeBody.h - sizeBlock.h)/4, false);
             this.currentObjective && this.loadBodyRules(blockBestSolution, blockNotOptimalSolution, sizeBlock);
 
             manipBlockSolutions
