@@ -66,8 +66,7 @@ exports.DollAdminP = function (globalVariables) {
                     width: elem.width,
                     height: elem.height,
                     globalX: elem.parentManip.x,
-                    globalY: elem.parentManip.y,
-                    layerIndex: index
+                    globalY: elem.parentManip.y
                 }, options);
             })
             this.doll.save(this.state.formation.formationId, infos);

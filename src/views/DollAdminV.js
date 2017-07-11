@@ -62,6 +62,7 @@ exports.DollAdminV = function (globalVariables) {
                         elem.mark('rectElement' + index);
                         this._assignRectElementEvents(elem, manip);
                         manip.add(elem);
+                        manip.childObject = elem;
                         break;
                     case 'text':
                         elem = new gui.TextField(0, 0, elemDetails.width, elemDetails.height, '');
@@ -79,6 +80,8 @@ exports.DollAdminV = function (globalVariables) {
                         elem.glass.mark('textElement' + index + 'click');
                         elem.mark('textElement' + index);
                         manip.add(elem.component);
+                        manip.childObject = elem;
+
                         break;
                     case 'picture':
                         elem = new svg.Image(elemDetails.src);
@@ -92,11 +95,14 @@ exports.DollAdminV = function (globalVariables) {
                             this.selectElement(elem);
                         })
                         elem.mark('picElement');
+                        manip.childObject = elem;
+
                         break;
                     case 'help':
                         elem = new svg.Image('../../images/info.png');
                         elem.dimension(elemDetails.width, elemDetails.height);
                         manip.add(elem);
+                        manip.childObject = elem;
                         svg.addEvent(elem, 'click', (event) => {
                             this.selectElement(elem);
                             if (event.which == 3) {
@@ -196,6 +202,9 @@ exports.DollAdminV = function (globalVariables) {
             let toForeground = (manipulator) => {
                 this.sandboxMain.content.remove(manipulator.component);
                 this.sandboxMain.content.add(manipulator.component);
+                let index = this.elements.indexOf(manipulator.childObject);
+                this.elements.splice(index, 1);
+                this.elements.push(manipulator.childObject);
             }
             let toBackground = (manipulator) => {
                 let temp = [];
@@ -209,6 +218,9 @@ exports.DollAdminV = function (globalVariables) {
                 temp.forEach((elem) => {
                     this.sandboxMain.content.add(elem);
                 })
+                let index = this.elements.indexOf(manipulator.childObject);
+                this.elements.splice(index, 1);
+                this.elements.unshift(manipulator.childObject);
             }
             let _switchManipulators = (manipulator, withBefore) => {
                 let temp = [];
@@ -229,6 +241,15 @@ exports.DollAdminV = function (globalVariables) {
                     this.sandboxMain.content.add(temp[0]);
                     for (let i = 2; i < temp.length; i++) {
                         this.sandboxMain.content.add(temp[i]);
+                    }
+                    if(withBefore){
+                        let index = this.elements.indexOf(manipulator.childObject);
+                        this.elements[index] = this.elements[index-1];
+                        this.elements[index-1] = manipulator.childObject;
+                    }else{
+                        let index = this.elements.indexOf(manipulator.childObject);
+                        this.elements[index] = this.elements[index+1];
+                        this.elements[index+1] = manipulator.childObject;
                     }
                 }
             }
@@ -291,6 +312,7 @@ exports.DollAdminV = function (globalVariables) {
 
                         this.elements.push(picInPanel);
                         this.sandboxMain.content.add(picInPanelManip.component);
+                        picInPanelManip.childObject = picInPanel;
                         picInPanel.mark('picElement');
                     }
                     return {x: what.x, y: what.y, parent: whatParent};
@@ -1251,6 +1273,7 @@ exports.DollAdminV = function (globalVariables) {
                     manip.move(rect.x, rect.y);
                     manip.add(text.component);
                     text.parentManip = manip;
+                    manip.childObject = text;
                     text.onClick(() => {
                         this.selectElement(text);
                     })
@@ -1335,6 +1358,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.elements.push(rect);
                     rect.mark('rectElement' + this.elements.length);
                     rect.type = 'rect';
+                    manip.childObject = rect;
                     svg.removeEvent(this.sandboxMain.component, 'mousemove');
                     rect.color(myColors.blue, 2, myColors.black);
                     this._assignRectElementEvents(rect, manip);
@@ -1694,6 +1718,7 @@ exports.DollAdminV = function (globalVariables) {
                         });
                         this.elements.push(helpPanel);
                         this.sandboxMain.content.add(helpPanelManip.first);
+                        helpPanelManip.childObject = helpPanel;
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
                         helpPanel.statementId = 'Enoncé' + this.getStatement().length;
                         helpPanel.mark('helpElement');
