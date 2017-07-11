@@ -1054,7 +1054,7 @@ exports.Models = function (globalVariables, mockResponses) {
         //     return this.objectives.find(predicat);
         // }
         findObjective(obj) {
-            return this.objectives.find(obj);
+            return this.objectives.find((elem)=>{return elem.label == obj});
         }
         setImage(src) {
             this.imageSrc = src;
