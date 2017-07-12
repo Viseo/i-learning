@@ -361,6 +361,13 @@ exports.Lists = function (globalVariables) {
 
 
         }
+        setDefaultLabel(label){
+            this.setSelectButtonText(label);
+            this.defaultLabel = label;
+        }
+        setToDefault(){
+            this.defaultLabel && this.setSelectButtonText(this.defaultLabel);
+        }
 
         getButtonGlobalPoint(x, y){
             return this.selectButton.component.globalPoint(x, y);

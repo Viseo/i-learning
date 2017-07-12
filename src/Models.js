@@ -1124,36 +1124,55 @@ exports.Models = function (globalVariables, mockResponses) {
             this.acceptedSolutions = rule.acceptedSolutions || {};
         }
         createRule(conf, best){
-            let obj = best ? this.bestSolutions : this.acceptedSolutions,
-                keyStateAnswer = {}
-            if (obj[conf.groupId]){
-                keyStateAnswer[conf.newStatement] = conf.newResponse;
-                // let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem == conf.response});
-                    // sol[conf.statement].push(conf.response);
-                if (obj[conf.groupId][conf.oldStatement]){
-                    best && this.bestSolutions[conf.groupId][conf.oldStatement];
-                }
-                // if(solutionToUpdate){
-                    // best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                    // !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                // }else{
-                    best && (this.bestSolutions[conf.groupId][conf.statement] = conf.response);
-                    !best && (this.acceptedSolutions[conf.groupId][conf.statement] = conf.response);
-                    // best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                    // !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-
-                // }
-            }else{
-                keyStateAnswer[conf.newStatement] = conf.newResponse;
-                if(best){
-                    this.bestSolutions[conf.groupId] = [];
-                    this.bestSolutions[conf.groupId].push(keyStateAnswer);
-                    // this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+            if (best){
+                if (this.bestSolutions[conf.groupId]) {
+                    let group = this.bestSolutions[conf.groupId];
+                    if(group[conf.oldStatement]){
+                        delete group[conf.oldStatement];
+                        group[conf.newStatement] = conf.newResponse;
+                    }else{
+                        group[conf.newStatement] = conf.newResponse;
+                    }
                 }else{
-                    this.acceptedSolutions[conf.groupId] = [];
-                    this.acceptedSolutions[conf.groupId].push(keyStateAnswer);
-                    // this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
-
+                    this.bestSolutions[conf.groupId] = {};
+                    this.bestSolutions[conf.groupId][conf.newStatement] = conf.newResponse;
+                }
+            }
+            else{
+                if (this.acceptedSolutions[conf.groupId]) {
+                    let group = this.acceptedSolutions[conf.groupId];
+                    if(group[conf.oldStatement]){
+                        delete group[conf.oldStatement];
+                        group[conf.newStatement] = conf.newResponse;
+                    }else{
+                        group[conf.newStatement] = conf.newResponse;
+                    }
+                }else{
+                    this.acceptedSolutions[conf.groupId] = {};
+                    this.acceptedSolutions[conf.groupId][conf.newStatement] = conf.newResponse;
+                }
+            }
+        }
+        statementAlreadyInGroup(conf, best){
+            if(best){
+                if(this.bestSolutions[conf.groupId]){
+                    let group = this.bestSolutions[conf.groupId];
+                    if(group[conf.newStatement]){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
+            }else{
+                if(this.acceptedSolutions[conf.groupId]){
+                    let group = this.acceptedSolutions[conf.groupId];
+                    if(group[conf.newStatement]){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
                 }
             }
         }
