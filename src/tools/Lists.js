@@ -368,6 +368,9 @@ exports.Lists = function (globalVariables) {
         getSelectedManipulator(){
             return this.selectedManipulator;
         }
+        getSelectedElement(label) {
+            return this.listElements.find((elem) => {return elem == label;})
+        }
 
         setManipShowListAndPosition(manipShowList, x, y) {
             this.manipShowList = manipShowList;
@@ -378,7 +381,7 @@ exports.Lists = function (globalVariables) {
             return this;
         };
 
-        getSelectButtonText() {
+        getSelectedButtonText() {
             return this.selectButton.text.getMessageText();
         }
 
@@ -403,10 +406,11 @@ exports.Lists = function (globalVariables) {
             let choice = new gui.Button(this.width, this.height, [myColors.none, 1, myColors.black], ele);
             choice.back.corners(5, 5);
             choice.onClick(() => {
+                let selectedChoice = this.getSelectedElement(this.getSelectedButtonText());
                 this.setSelectButtonText(ele);
                 this.selectedManipulator = manip;
                 this.hideListView();
-                this.onClickChangeValueHandler && this.onClickChangeValueHandler(choice);
+                this.onClickChangeValueHandler && this.onClickChangeValueHandler(this.getSelectedButtonText(), selectedChoice);
             });
             manip.add(choice.component);
             manip.choice = choice;

@@ -841,16 +841,18 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         loadBodyRules(bestList, acceptedList, sizeBlock){
-            this.currentObjective.rules.bestSolutions.forEach(group=>{
+            this.currentObjective.rules.bestSolutions.forEach((group,i)=>{
                 let lastSolution;//Used to recreate parent/child link
-                group.forEach((solution, i)=>{
-                    let isChecked = i==group.length-1 ? false : true;
+                group.forEach((solution, j)=>{
+                    let isChecked = j==group.length-1 ? false : true,
+                        statement = Object.keys(solution),
+                        response = Object.values(solution);
                     let obj = {
-                        labelToSelectResponse:solution.response,
-                        labelToSelectStatement:solution.statement,
+                        labelToSelectResponse:response[0],
+                        labelToSelectStatement:statement[0],
                         isChecked: isChecked,
-                        groupId: solution.groupId,
-                        solutionId: solution.solutionId
+                        groupId: i
+                        // solutionId: solution.solutionId
                     }
                     let sol = this.createOneSolution(bestList.listSolution, sizeBlock.w, INPUT_SIZE.h,true, obj, lastSolution);
                     if(i>0){
@@ -911,7 +913,7 @@ exports.DollAdminV = function (globalVariables) {
                 this.objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
                 this.objectifSelectList.setHandlerChangeValue(_clickListHandler);
                 this.objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
-                this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectifSelectList.getSelectButtonText()});
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectifSelectList.getSelectedButtonText()});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
 
                 this.solutionsHeaderManipulator
@@ -997,18 +999,18 @@ exports.DollAdminV = function (globalVariables) {
                 (parentManip) ? parentManip.conditionManipulator : undefined);
 
             if (best) {
-                selectItemStatement.onClickChangeValueHandler = (choice) => {
-                    this.createRule(manipSelectItems, true);
+                selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
+                    this.createRule(manipSelectItems, true, newChoice, oldChoice);
                 }
-                selectItemResponse.onClickChangeValueHandler = (choice) => {
-                    this.createRule(manipSelectItems, true);
+                selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
+                    this.createRule(manipSelectItems, true, newChoice, oldChoice);
                 }
             }else{
-                selectItemStatement.onClickChangeValueHandler = (choice) => {
-                    this.createRule(manipSelectItems, false);
+                selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
+                    this.createRule(manipSelectItems, false, newChoice, oldChoice);
                 }
-                selectItemResponse.onClickChangeValueHandler = (choice) => {
-                    this.createRule(manipSelectItems, false);
+                selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
+                    this.createRule(manipSelectItems, false, newChoice, oldChoice);
                 }
             }
             conf && conf.labelToSelectStatement && selectItemStatement.setSelectButtonText(conf.labelToSelectStatement);
@@ -1016,7 +1018,7 @@ exports.DollAdminV = function (globalVariables) {
             manipSelectItems.statements = selectItemStatement;
             manipSelectItems.responses = selectItemResponse;
             manipSelectItems.groupId = conf && conf.groupId ? conf.groupId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
-            manipSelectItems.solutionId = conf && conf.solutionId ? conf.solutionId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
+            // manipSelectItems.solutionId = conf && conf.solutionId ? conf.solutionId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
             manipSelectItems
                 .add(manipSelectItems.conditionManipulator)
                 .add(selectItemStatement.manipulator)
@@ -1083,19 +1085,23 @@ exports.DollAdminV = function (globalVariables) {
             }
         };
 
-        createRule(solution, best){
+        createRule(solution, best, newChoice, oldChoice){
             let obj = {
-                statement : solution.statements.getSelectButtonText(),
-                response : solution.responses.getSelectButtonText(),
+                newStatement : solution.statements.getSelectedButtonText(),
+                newResponse : solution.responses.getSelectedButtonText(),
                 groupId : solution.groupId,
-                solutionId : solution.solutionId
+            }
+            if (newChoice == obj.newStatement) {
+                obj["oldStatement"] = oldChoice;
+            } else if (newChoice == obj.newResponse) {
+                obj["oldResponse"] = oldChoice;
             }
             this.presenter.createRule(obj, this.currentObjective, best);
         }
         removeRule(manip){
             let obj = {
-                statement : manip.statements.getSelectButtonText(),
-                response : manip.responses.getSelectButtonText(),
+                statement : manip.statements.getSelectedButtonText(),
+                response : manip.responses.getSelectedButtonText(),
                 groupId : manip.groupId,
                 solutionId: manip.solutionId
             }

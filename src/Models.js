@@ -1047,12 +1047,6 @@ exports.Models = function (globalVariables, mockResponses) {
         removeObjective(obj){
             this.objectives.remove(this.findObjective(obj));
         }
-        // findObjective(obj){
-        //     let predicat = (element)=>{
-        //         return element.name == obj;
-        //     }
-        //     return this.objectives.find(predicat);
-        // }
         findObjective(obj) {
             return this.objectives.find((elem)=>{return elem.label == obj});
         }
@@ -1131,23 +1125,34 @@ exports.Models = function (globalVariables, mockResponses) {
         }
         createRule(conf, best){
             let obj = best ? this.bestSolutions : this.acceptedSolutions,
-                sol = {};
+                keyStateAnswer = {}
             if (obj[conf.groupId]){
-                let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
+                keyStateAnswer[conf.newStatement] = conf.newResponse;
+                // let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem == conf.response});
                     // sol[conf.statement].push(conf.response);
-                if(solutionToUpdate){
-                    best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                    !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                }else{
-                    best && this.bestSolutions[conf.groupId].push(sol);
-                    !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-
+                if (obj[conf.groupId][conf.oldStatement]){
+                    best && this.bestSolutions[conf.groupId][conf.oldStatement];
                 }
+                // if(solutionToUpdate){
+                    // best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    // !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                // }else{
+                    best && (this.bestSolutions[conf.groupId][conf.statement] = conf.response);
+                    !best && (this.acceptedSolutions[conf.groupId][conf.statement] = conf.response);
+                    // best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+                    // !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
+
+                // }
             }else{
+                keyStateAnswer[conf.newStatement] = conf.newResponse;
                 if(best){
-                    this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+                    this.bestSolutions[conf.groupId] = [];
+                    this.bestSolutions[conf.groupId].push(keyStateAnswer);
+                    // this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
                 }else{
-                    this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+                    this.acceptedSolutions[conf.groupId] = [];
+                    this.acceptedSolutions[conf.groupId].push(keyStateAnswer);
+                    // this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
 
                 }
             }
