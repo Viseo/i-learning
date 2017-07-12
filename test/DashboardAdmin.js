@@ -100,7 +100,12 @@ describe('dashboard admin page', function () {
             {root, state, runtime} = given(() => {
                 return loadPage("Dashboard", {mockResponses, data: user});
             });
-
+        when(() => {
+            inputValue(root, "addFormationTextInput", "MaFormation");
+            clickPos(root, "addFormationButton");
+        }).then(() => {
+            assertMissing(root, "formationErrorMessage");
+        });
         when(() => {
             clickPos(root, "addFormationButton");
         }).then(() => {
@@ -118,13 +123,7 @@ describe('dashboard admin page', function () {
             inputValue(root, "addFormationTextInput", "Le");
             clickPos(root, "addFormationButton");
         }).then(() => {
-            assertMissing(root, "formationErrorMessage");
-        });
-        when(() => {
-            inputValue(root, "addFormationTextInput", "MaFormation");
-            clickPos(root, "addFormationButton");
-        }).then(() => {
-            assertMissing(root, "formationErrorMessage");
+            assertMessage(root, "formationErrorMessage" , "Caractère(s) non autorisé(s).");
         });
     });
     it('should try create a new formation (Enter keydown)', function(){
