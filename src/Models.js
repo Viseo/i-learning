@@ -1189,6 +1189,46 @@ exports.Models = function (globalVariables, mockResponses) {
                 this.acceptedSolutions[conf.groupId].splice(index, 1);
             }
         }
+        findPossibleStatement(arr, best, groupId){
+            function arr_diff (a1, a2) {
+
+                var a = [], diff = [];
+
+                for (var i = 0; i < a1.length; i++) {
+                    a[a1[i]] = true;
+                }
+
+                for (var i = 0; i < a2.length; i++) {
+                    if (a[a2[i]]) {
+                        delete a[a2[i]];
+                    } else {
+                        a[a2[i]] = true;
+                    }
+                }
+
+                for (var k in a) {
+                    diff.push(k);
+                }
+
+                return diff;
+            }
+            if (best){
+                if(this.bestSolutions[groupId]) {
+                    return arr_diff(Object.keys(this.bestSolutions[groupId]), arr);
+                }
+                else{
+                    return arr;
+                }
+            }
+            else{
+                if(this.acceptedSolutions[groupId]) {
+                    return arr_diff(Object.keys(this.acceptedSolutions[groupId]), arr);
+                }
+                else{
+                    return arr;
+                }
+            }
+        }
 
     }
     class MediasLibrary {
