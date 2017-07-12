@@ -1787,10 +1787,15 @@ exports.DollAdminV = function (globalVariables) {
                     this.elements.remove(this.selectedElement);
                     this.selectedElement = null;
                 }
-            } else if (event.keyCode == 13 &&!this.inModification) {    // enter keydown and no mods
-                if (this.selectedElement && this.selectedElement.type === "text"){
-                    this.selectedElement.hideControl();
-                    this.selectElement(null);
+            } else if (event.keyCode == 13){
+                if(this.selectCurrentInput && this.selectCurrentInput.controlShown)
+                    this.selectCurrentInputHandler && this.selectCurrentInputHandler();
+
+                if(!this.inModification) {    // enter keydown and no mods
+                    if (this.selectedElement && this.selectedElement.type === "text"){
+                        this.selectedElement.hideControl();
+                        this.selectElement(null);
+                    }
                 }
             }
         }
