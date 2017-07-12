@@ -1063,7 +1063,6 @@ exports.DollAdminV = function (globalVariables) {
                     newSolutions.parentSolution = manipSelectItems;
                     manipSelectItems.childSolution = newSolutions;
                     newSolutions.groupId = manipSelectItems.groupId;
-                    newSolutions.solutionId = best ? 'B' + Number(new Date()) : 'A' + Number(new Date());
                     //this.createRule(newSolutions, best);
                 } else {
                     _removeSolutionChild(list, manipSelectItems.childSolution);
@@ -1124,7 +1123,6 @@ exports.DollAdminV = function (globalVariables) {
                 statement : manip.statements.getSelectedButtonText(),
                 response : manip.responses.getSelectedButtonText(),
                 groupId : manip.groupId,
-                solutionId: manip.solutionId
             }
             this.presenter.removeRule(obj, this.currentObjective);
         }

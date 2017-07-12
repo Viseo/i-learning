@@ -1177,17 +1177,19 @@ exports.Models = function (globalVariables, mockResponses) {
             }
         }
         removeRule(conf){
-            let best = conf.solutionId.split('')[0] == 'A' ? false : true;
+            let best = conf.groupId.split('')[0] == 'A' ? false : true;
             if(best){
-                let elem = this.bestSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
-                let index = this.bestSolutions[conf.groupId].indexOf(elem);
-                this.bestSolutions[conf.groupId].splice(index, 1);
+                let elem = this.bestSolutions[conf.groupId].find((resp, stat)=>{return stat == conf.statement && resp == conf.response});
+                if (elem && this.bestSolutions[conf.groupId][conf.statement] && this.bestSolutions[conf.groupId][conf.statement] == conf.response) {
+                    delete this.bestSolutions[conf.groupId][conf.statement];
+                }
             }
             else{
-                let elem = this.acceptedSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
-                let index = this.acceptedSolutions[conf.groupId].indexOf(elem);
-                this.acceptedSolutions[conf.groupId].splice(index, 1);
-            }
+                let elem = this.acceptedSolutions[conf.groupId].find((resp, stat)=>{return stat == conf.statement && resp == conf.response});
+                if (elem && this.acceptedSolutions[conf.groupId][conf.statement] && this.acceptedSolutions[conf.groupId][conf.statement] == conf.response) {
+                    delete this.acceptedSolutions[conf.groupId][conf.statement];
+                }
+            }}
         }
         findPossibleStatement(arr, best, groupId){
             function arr_diff (a1, a2) {
