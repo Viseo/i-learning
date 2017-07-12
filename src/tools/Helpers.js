@@ -169,10 +169,60 @@ exports.Helpers = function(globalVariables){
         }
     }
 
+    class FileExplorer {
+        constructor(w, h, multipleChoice=false){
+            let globalPointCenter = {x: w / 2, y: h / 2};
+            var fileExplorerStyle = {
+                leftpx: globalPointCenter.x,
+                toppx: globalPointCenter.y,
+                width: w / 5,
+                height: w / 5
+            };
+            this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+            this.fileExplorer.type("file");
+
+
+            svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
+            svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
+            multipleChoice && svg.runtime.attr(this.fileExplorer.component, "multiple", "true");
+
+            drawings.component.add(this.fileExplorer);
+        }
+
+        display(){
+            svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+        }
+
+        acceptImages(){
+            svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
+            return this;
+        }
+
+        acceptVideoMP4(){
+            svg.runtime.attr(this.fileExplorer.component, "accept", "video/mp4");
+            return this;
+        }
+
+        acceptImageAndVideoMP4(){
+            svg.runtime.attr(this.fileExplorer.component, "accept", "image/*, video/mp4");
+            return this;
+        }
+
+        handlerOnValide(handler){
+            svg.addEvent(this.fileExplorer, "change", handler);
+            return this;
+        }
+
+        getFilesSelected(){
+            return this.fileExplorer.component.files;
+        }
+    }
+
     return {
         resizeStringForText,
         drawCheck,
         drawHexagon,
+        FileExplorer,
         Gauge
     }
 }

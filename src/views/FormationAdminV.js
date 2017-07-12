@@ -8,6 +8,7 @@ exports.FormationAdminV = function (globalVariables) {
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         IconCreator = globalVariables.Icons.IconCreator,
         installDnD = globalVariables.gui.installDnD,
+        Helpers = globalVariables.Helpers,
         View = globalVariables.View;
     
     const
@@ -263,66 +264,55 @@ exports.FormationAdminV = function (globalVariables) {
                 let redCross = IconCreator.createRedCrossIcon(this.mediasManipulator).position(dimensions.width / 2, -dimensions.height / 2);
                 redCross.addEvent('click', _hideMediaPopup)
             }
+            let _createOnePicture = (src, imageWidth, index, pictureClickHandler) => {
+                let indexX = Math.floor(index % IMAGES_PER_LINE);
+                let indexY = Math.floor(index / IMAGES_PER_LINE);
+                let picture = new svg.Image(src);
+                picture
+                    .dimension(imageWidth, imageWidth)
+                    .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
+                    .mark('image' + indexX + '-' + indexY);
+                this.imagesManipulator.add(picture);
+                svg.addEvent(picture, 'click', () => {
+                    pictureClickHandler(picture);
+                    _hideMediaPopup();
+                });
+
+            };
+
+            let pictureClickHandler = (picture) => {
+                this.setImageOnMiniature(miniature, picture.src);
+            };
+
             let _displayPictures = () => {
-                let pictureClickHandler = (picture) => {
-                    this.setImageOnMiniature(miniature, picture.src);
-                };
-
                 let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
-                let imagesManipulator = new Manipulator(this);
+                this.imagesManipulator = new Manipulator(this);
 
-                mediaPanel.content.add(imagesManipulator.first);
-                imagesManipulator.move(imageWidth / 2 + MARGIN, imageWidth / 2 + MARGIN);
+                mediaPanel.content.add(this.imagesManipulator.first);
+                this.imagesManipulator.move(imageWidth / 2 + MARGIN, imageWidth / 2 + MARGIN);
                 this.getImages().then((images) => {
                     images.images.forEach((image, index) => {
-                        let indexX = Math.floor(index % IMAGES_PER_LINE);
-                        let indexY = Math.floor(index / IMAGES_PER_LINE);
-                        let picture = new svg.Image(image.imgSrc);
-                        picture
-                            .dimension(imageWidth, imageWidth)
-                            .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
-                            .mark('image' + indexX + '-' + indexY);
-                        imagesManipulator.add(picture);
-                        svg.addEvent(picture, 'click', () => {
-                            pictureClickHandler(picture);
-                            _hideMediaPopup();
-                        });
+                        _createOnePicture(image.imgSrc, imageWidth, index, pictureClickHandler);
                     })
                 });
-            }
-            let _displayFileExplorerWhenClick = () => {
-                let fileExplorer;
-                let fileExplorerHandler = () => {
-                    let onChangeFileExplorerHandler = () => {
-                        for (let file of fileExplorer.component.files) {
-                            this.presenter.uploadImage(file).then(() => {
-                                this.displayPopUpImage(miniature);
-                            });
-                        }
-                    };
+            };
 
-                    if (!fileExplorer) {
-                        let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
-                        var fileExplorerStyle = {
-                            leftpx: globalPointCenter.x,
-                            toppx: globalPointCenter.y,
-                            width: this.w / 5,
-                            height: this.w / 5
-                        };
-                        fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                        fileExplorer.type("file");
-                        svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
-                        svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
-                        svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
-                        svg.runtime.attr(fileExplorer.component, "hidden", "true");
-                        svg.runtime.attr(fileExplorer.component, "multiple", "true");
-                        drawings.component.add(fileExplorer);
+            
+            let _displayFileExplorerWhenClick = () => {
+                let onChangeFileExplorerHandler = () => {
+                    for (let file of fileExplorer.getFilesSelected()) {
+                        this.presenter.uploadImage(file).then((data) => {
+                            let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
+                            _createOnePicture(data.src, imageWidth, this.imagesManipulator.components.length, pictureClickHandler);
+                        });
                     }
-                    svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
                 };
-                addPictureButton.onClick(fileExplorerHandler);
-                svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
-            }
+
+                let fileExplorer = new Helpers.FileExplorer(this.width, this.height, true);
+                fileExplorer.acceptImages()
+                    .handlerOnValide(onChangeFileExplorerHandler);
+                addPictureButton.onClick(fileExplorer.display);
+            };
 
             let dimensions = {
                 width: drawing.width * 1 / 2 - MARGIN,
