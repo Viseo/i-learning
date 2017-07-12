@@ -67,7 +67,6 @@ exports.FormationAdminV = function (globalVariables) {
                 })
                 nameFieldFormation.color([myColors.lightgrey, 1, myColors.black]);
                 nameFieldFormation.mark('formationTitle');
-                this.headHeight += 30 + MARGIN;
                 this.nameFieldManipulator.set(0, nameFieldFormation.component);
 
                 this.nameFieldManipulator.move(MARGIN + nameFieldFormation.width / 2, this.header.height + MARGIN + INPUT_SIZE.h * 2);
@@ -346,11 +345,11 @@ exports.FormationAdminV = function (globalVariables) {
                 .position(borderLibrary.width / 2 - PLUS_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - PLUS_SIZE.h / 2 - MARGIN);
             addPictureButton.text.font(FONT, 13, 12).color(myColors.white).position(0, 4.33);
             addPictureButton.glass.mark('addPictureButtonGlass');
-            this.mediasManipulator.add(borderLibrary);
-            this.mediasManipulator.add(mediaPanel.component);
-            this.mediasManipulator.add(titleLibraryBack);
-            this.mediasManipulator.add(titleLibrary);
-            this.mediasManipulator.add(addPictureButton.component);
+            this.mediasManipulator.add(borderLibrary)
+                .add(mediaPanel.component)
+                .add(titleLibraryBack)
+                .add(titleLibrary)
+                .add(addPictureButton.component);
 
             _displayRedCross();
             _displayPictures();

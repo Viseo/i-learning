@@ -17,7 +17,6 @@ exports.QuizAdminV = function (globalVariables) {
 
     const
         BUTTON_WIDTH = 250,
-        BUTTON2_WIDTH = 115,
         BUTTON_HEIGHT = 30,
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
@@ -46,7 +45,6 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
                     .add(this.mediasLibraryManipulator)
-
                     .add(this.saveQuizButtonManipulator)
                     .add(this.returnButtonManipulator)
                     .add(this.previewButtonManipulator);
@@ -140,32 +138,35 @@ exports.QuizAdminV = function (globalVariables) {
                     questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
 
             }
-            let calculateButtonBottomDim = () =>{
-                let dim = {
-                    w: BUTTON_WIDTH,
-                    h: BUTTON_HEIGHT
-                }
-                dim.x = Math.max(this.width / 2 + dim.w / 2 + MARGIN,this.questionDetailsDim.w/2+ this._calculateLibraryDimension().w);
-                dim.y = this.header.height + this.returnButton.height + this.quizTitleField.height
+
+            let _createBottomButton = () => {
+                let calculateButtonBottomDim = () =>{
+                    let dim = {
+                        w: BUTTON_WIDTH,
+                        h: BUTTON_HEIGHT
+                    }
+                    dim.x = Math.max(this.width / 2 + dim.w / 2 + MARGIN,this.questionDetailsDim.w/2+ this._calculateLibraryDimension().w);
+                    dim.y = this.header.height + this.returnButton.height + this.quizTitleField.height
                         + this.questionsBlockListView.listDim.h + this.questionDetailsDim.h + dim.h / 2 + 5 * MARGIN;
-                 return dim;
-            }
-            var _displayPreviewButton = () => {
+                    return dim;
+                }
+                let _createButton = (dim, labelButton, markId, clickHandler) => {
+                    let button = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], labelButton);
+                    button.glass.mark(markId);
+                    button.onClick(clickHandler);
+                    return button;
+                };
+
                 let dim = calculateButtonBottomDim();
-                let previewButton = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], "Aperçu");
-                previewButton.glass.mark('previewButton');
-                previewButton.onClick(this.previewQuiz.bind(this));
+                let previewButton = _createButton(dim, "Aperçu", "previewButton", this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
                 this.previewButtonManipulator.move(dim.x, dim.y);
-            };
-            var _displaySaveButton = () => {
-                let dim = calculateButtonBottomDim();
-                let saveButton = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], "Sauvegarder");
-                saveButton.glass.mark('saveButtonQuiz');
-                saveButton.onClick(this.updateQuiz.bind(this));
+
+                let saveButton = _createButton(dim, "Sauvegarder", "saveButtonQuiz", this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
-                this.saveQuizButtonManipulator.move(dim.x+dim.w+ MARGIN ,  dim.y);
-            }
+                this.saveQuizButtonManipulator.move(dim.x+dim.w+ MARGIN , dim.y);
+            };
+
             var _displayToggleMedias = () => {
                 let tabsDim = {
                     w: Math.max((this.width * 1 / 5 - MARGIN) / 2, 250/2),
@@ -213,8 +214,7 @@ exports.QuizAdminV = function (globalVariables) {
             this.displayImageLibrary();
             this.displayUploadButton();
             _displayQuestionDetails();
-            _displayPreviewButton();
-            _displaySaveButton();
+            _createBottomButton();
             this._displayQuestionsBlock();
             this._loadQuestionsDetail();
 
@@ -371,9 +371,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                 for (let file of files) {
                     let progressDisplay;
-                    this.selectedTab = 0;
                     if (file.type === 'video/mp4') {
-                        this.selectedTab = 1;
                         progressDisplay = _progressDisplayer();
                         this.presenter.uploadVideo(file, progressDisplay).then(() => {
                             this.loadVideos();
@@ -471,7 +469,8 @@ exports.QuizAdminV = function (globalVariables) {
                     let picture = new svg.Image(image.imgSrc);
                     picture.dimension(this.imageWidth, this.imageWidth);
                     let picManip = new Manipulator(this);
-                    picManip.move(indexX * (this.imageWidth + MARGIN / 2) + this.imageWidth / 2 + MARGIN, this.imageWidth / 2 + indexY * (this.imageWidth + 2 * MARGIN))
+                    picManip.move(indexX * (this.imageWidth + MARGIN / 2) + this.imageWidth / 2 + MARGIN,
+                        this.imageWidth / 2 + indexY * (this.imageWidth + 2 * MARGIN))
                     picManip.add(picture);
 
                     panel.content.add(picManip.component);
