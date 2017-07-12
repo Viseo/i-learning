@@ -1189,7 +1189,7 @@ exports.Models = function (globalVariables, mockResponses) {
                 if (elem && this.acceptedSolutions[conf.groupId][conf.statement] && this.acceptedSolutions[conf.groupId][conf.statement] == conf.response) {
                     delete this.acceptedSolutions[conf.groupId][conf.statement];
                 }
-            }}
+            }
         }
         findPossibleStatement(arr, best, groupId){
             function arr_diff (a1, a2) {
