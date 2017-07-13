@@ -13,6 +13,7 @@ exports.QuizAdminV = function (globalVariables) {
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         drawCheck = globalVariables.Helpers.drawCheck,
+        Helpers = globalVariables.Helpers,
         installDnD = gui.installDnD;
 
     const
@@ -342,76 +343,34 @@ exports.QuizAdminV = function (globalVariables) {
 
         displayUploadButton() {
             const onChangeFileExplorerHandler = () => {
-                uploadFiles(fileExplorer.component.files)
+                uploadFiles(fileExplorer.getFilesSelected())
             };
 
             var uploadFiles = (files) => {
-                var _progressDisplayer = () => {
-                    return (e) => {
-                        var _displayProgressBar = manipulator => {
-                            const progwidth = w * e.loaded / e.total;
-                            const bar = new svg.Rect(progwidth - 15, 14)
-                                .color(myColors.green)
-                                .position(-(w - progwidth) / 2, 0);
-                            manipulator.set(2, bar);
-                        }
-                        var _displayPercentage = manipulator => {
-                            const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
-                            percentage.position(0, percentage.boundingRect().height / 4);
-                            manipulator.set(3, percentage);
-                        }
-
-                        _displayProgressBar(manipulator);
-                        _displayPercentage(manipulator);
-                        if (e.loaded === e.total) {
-
-                        }
-                    };
-                };
-
                 for (let file of files) {
                     let progressDisplay;
                     if (file.type === 'video/mp4') {
                         progressDisplay = _progressDisplayer();
-                        this.presenter.uploadVideo(file, progressDisplay).then(() => {
+                        this.presenter.uploadVideo(file, () => {}).then(() => {
                             this.loadVideos();
                         })
                     } else {
-                        this.presenter.uploadImage(file, progressDisplay).then(() => {
+                        this.presenter.uploadImage(file, () => {}).then(() => {
                             this.loadImage(this.mediaLibrary);
                         });
                     }
                 }
             };
-            let fileExplorer;
-            const fileExplorerHandler = () => {
-                if (!fileExplorer) {
-                    let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
-                    var fileExplorerStyle = {
-                        leftpx: globalPointCenter.x,
-                        toppx: globalPointCenter.y,
-                        width: this.w / 5,
-                        height: this.w / 5
-                    };
-                    fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                    fileExplorer.type("file");
-                    svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
-                    svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
-                    svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
-                    svg.runtime.attr(fileExplorer.component, "hidden", "true");
-                    svg.runtime.attr(fileExplorer.component, "multiple", "true");
-                    drawings.component.add(fileExplorer);
-                    fileExplorer.fileClick = function () {
-                        svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
-                    }
-                }
-                fileExplorer.fileClick();
-            };
+
+            let fileExplorer = new Helpers.FileExplorer(this.width, this.height, true);
+            fileExplorer.acceptImageAndVideoMP4()
+                .handlerOnValide(onChangeFileExplorerHandler);
+
             let addPictureButton = new gui.Button(BUTTON_WIDTH, BUTTON_HEIGHT,  [[43, 120, 228], 1, myColors.black], 'Ajouter un Media');
             resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
             addPictureButton.component.add(addPictureButton.text);
-            addPictureButton.onClick(fileExplorerHandler);
-            svg.addEvent(addPictureButton.text, 'click', fileExplorerHandler);
+            addPictureButton.onClick(fileExplorer.display);
+            svg.addEvent(addPictureButton.text, 'click', fileExplorer.display);
             let addButtonManip = new Manipulator(this);
             addButtonManip.add(addPictureButton.component);
             addButtonManip.move(BUTTON_WIDTH/2 + MARGIN , this.mediasLibraryManipulator.y + this.mediaLibrary.height / 2 + BUTTON_HEIGHT - MARGIN)
