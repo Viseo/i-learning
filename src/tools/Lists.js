@@ -343,12 +343,12 @@ exports.Lists = function (globalVariables) {
 
 
             this.selectButton.onClick(() => {
+                this.handlerBeforeClick && this.handlerBeforeClick();
                 if(this.listElements.length > 0 ){
                     if(this.manipShowList){
                         this.manipShowList.add(this.listView.manipulator);
                         let globalPointButton = this.getButtonGlobalPoint(0, 0);
                         let localPointParentManip = this.manipShowList.translator.localPoint(globalPointButton.x, globalPointButton.y);
-
                         this.listView.manipulator.move(localPointParentManip.x, (this.selectButton.height + this.listView.height)/2 + localPointParentManip.y);
 
                     }else{
@@ -360,6 +360,22 @@ exports.Lists = function (globalVariables) {
             this.manipulator.add(this.selectButton.component);
 
 
+        }
+        setElementsList(arr){
+            this.listView.empty();
+            arr.forEach(elem=>{
+                this.addElementByText(elem);
+            })
+        }
+        setHandlerBeforeClick(handler){
+            this.handlerBeforeClick = handler;
+        }
+        setDefaultLabel(label){
+            this.setSelectButtonText(label);
+            this.defaultLabel = label;
+        }
+        setToDefault(){
+            this.defaultLabel && this.setSelectButtonText(this.defaultLabel);
         }
 
         getButtonGlobalPoint(x, y){

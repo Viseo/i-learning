@@ -843,45 +843,49 @@ exports.DollAdminV = function (globalVariables) {
         loadBodyRules(bestList, acceptedList, sizeBlock){
             this.currentObjective.rules.bestSolutions.forEach((group,i)=>{
                 let lastSolution;//Used to recreate parent/child link
-                group.forEach((solution, j)=>{
-                    let isChecked = j==group.length-1 ? false : true,
-                        statement = Object.keys(solution),
-                        response = Object.values(solution);
+                let count =0;
+                group.forEach((resp, stat)=>{
+                    let isChecked = count == Object.keys(group).length-1 ? false : true,
+                        statement = stat,
+                        response = resp;
                     let obj = {
-                        labelToSelectResponse:response[0],
-                        labelToSelectStatement:statement[0],
+                        labelToSelectResponse:response,
+                        labelToSelectStatement:statement,
                         isChecked: isChecked,
                         groupId: i
-                        // solutionId: solution.solutionId
                     }
                     let sol = this.createOneSolution(bestList.listSolution, sizeBlock.w, INPUT_SIZE.h,true, obj, lastSolution);
-                    if(i>0){
+                    if(count>0){
                         sol.parentSolution = lastSolution;
                         lastSolution.childSolution = sol;
                     }
                     bestList.listSolution.add(sol);
                     lastSolution = sol;
+                    count++;
                 })
                 bestList.listSolution.add(new Manipulator());
             })
-            this.currentObjective.rules.acceptedSolutions.forEach(group=>{
-                let lastSolution;
-                group.forEach((solution,i)=>{
-                    let isChecked = i==group.length-1 ? false : true;
+            this.currentObjective.rules.acceptedSolutions.forEach((group,i)=>{
+                let lastSolution;//Used to recreate parent/child link
+                let count =0;
+                group.forEach((resp, stat)=>{
+                    let isChecked = count == Object.keys(group).length-1 ? false : true,
+                        statement = stat,
+                        response = resp;
                     let obj = {
-                        labelToSelectResponse:solution.response,
-                        labelToSelectStatement:solution.statement,
+                        labelToSelectResponse:response,
+                        labelToSelectStatement:statement,
                         isChecked: isChecked,
-                        groupId: solution.groupId,
-                        solutionId: solution.solutionId
+                        groupId: i
                     }
                     let sol = this.createOneSolution(acceptedList.listSolution, sizeBlock.w, INPUT_SIZE.h,true, obj, lastSolution);
-                    if(i>0){
+                    if(count>0){
                         sol.parentSolution = lastSolution;
                         lastSolution.childSolution = sol;
                     }
                     acceptedList.listSolution.add(sol);
                     lastSolution = sol;
+                    count++;
                 })
                 acceptedList.listSolution.add(new Manipulator());
             })
@@ -892,7 +896,7 @@ exports.DollAdminV = function (globalVariables) {
 
         displaySolutionsHeader() {
             var _clickListHandler = (newValue) => {
-                this.currentObjective = this.objectives.find(elem=>{return elem.label == newValue.text.messageText});
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == newValue});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
             };
             var _createSolutionsHeader = () => {
@@ -954,7 +958,7 @@ exports.DollAdminV = function (globalVariables) {
                 addSolutionButton.onClick(() =>{
                     let solution = this.createOneSolution(solutionBody.listSolution, solutionBody.listSolution.width, INPUT_SIZE.h, best);
                     solution.spaceManip = new Manipulator(this);
-                    this.createRule(solution, best);
+                    //this.createRule(solution, best);
                     solutionBody.listSolution
                         .add(solution)
                         .add(solution.spaceManip);
@@ -983,24 +987,36 @@ exports.DollAdminV = function (globalVariables) {
             return manipBlockSolutions;
         }
         createOneSolution(list, w, h, best, conf, parentManip) {
+
             let manipSelectItems = new Manipulator(this);
             let statementsLabels = this.getStatement().map(elem=>{return elem.id});
             let selectItemStatement = new SelectItemList2(statementsLabels, w/3, h);
             selectItemStatement
                 .position(-w/2 + selectItemStatement.width/2 + MARGIN, 0)
                 .setManipShowListAndPosition(list.manipulator);
+            selectItemStatement.setDefaultLabel('Choisir');
             let responsesLabels = this.getResponses().map(elem=>{return elem.label});
             let selectItemResponse = new SelectItemList2(responsesLabels, w/3, h);
             selectItemResponse
                 .position(-w/2 + selectItemResponse.width*1.5 + MARGIN*2, 0)
                 .setManipShowListAndPosition(list.manipulator);
-
+            selectItemResponse.setDefaultLabel('Choisir');
             this.createConditionAND(list, manipSelectItems, best, conf&&conf.isChecked,
                 (parentManip) ? parentManip.conditionManipulator : undefined);
-
+            conf && conf.labelToSelectStatement && selectItemStatement.setSelectButtonText(conf.labelToSelectStatement);
+            conf && conf.labelToSelectResponse && selectItemResponse.setSelectButtonText(conf.labelToSelectResponse);
+            manipSelectItems.statements = selectItemStatement;
+            manipSelectItems.responses = selectItemResponse;
+            manipSelectItems.groupId = conf && conf.groupId ? conf.groupId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
+            let handlerBeforeClick = ()=>{
+                let possibleStatement = this.currentObjective.rules.findPossibleStatement(this.getStatement().map(elem=>{return elem.id}) , best, manipSelectItems.groupId);
+                selectItemStatement.setElementsList(possibleStatement);
+            }
+            selectItemStatement.setHandlerBeforeClick(handlerBeforeClick);
             if (best) {
                 selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, true, newChoice, oldChoice);
+                    this.setAllPossibleStatement(newChoice);
                 }
                 selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, true, newChoice, oldChoice);
@@ -1008,17 +1024,12 @@ exports.DollAdminV = function (globalVariables) {
             }else{
                 selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, false, newChoice, oldChoice);
+                    this.setAllPossibleStatement(newChoice);
                 }
                 selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, false, newChoice, oldChoice);
                 }
             }
-            conf && conf.labelToSelectStatement && selectItemStatement.setSelectButtonText(conf.labelToSelectStatement);
-            conf && conf.labelToSelectResponse && selectItemResponse.setSelectButtonText(conf.labelToSelectResponse);
-            manipSelectItems.statements = selectItemStatement;
-            manipSelectItems.responses = selectItemResponse;
-            manipSelectItems.groupId = conf && conf.groupId ? conf.groupId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
-            // manipSelectItems.solutionId = conf && conf.solutionId ? conf.solutionId : best ? 'B' +Number(new Date()) : 'A' + Number(new Date());
             manipSelectItems
                 .add(manipSelectItems.conditionManipulator)
                 .add(selectItemStatement.manipulator)
@@ -1052,8 +1063,7 @@ exports.DollAdminV = function (globalVariables) {
                     newSolutions.parentSolution = manipSelectItems;
                     manipSelectItems.childSolution = newSolutions;
                     newSolutions.groupId = manipSelectItems.groupId;
-                    newSolutions.solutionId = best ? 'B' + Number(new Date()) : 'A' + Number(new Date());
-                    this.createRule(newSolutions, best);
+                    //this.createRule(newSolutions, best);
                 } else {
                     _removeSolutionChild(list, manipSelectItems.childSolution);
                     list.refreshListView();
@@ -1083,27 +1093,36 @@ exports.DollAdminV = function (globalVariables) {
             if(isChecked){
                 icon.activeStatusActionIcon();
             }
-        };
+        }
+        setAllPossibleStatement(choice){
 
+        }
         createRule(solution, best, newChoice, oldChoice){
-            let obj = {
-                newStatement : solution.statements.getSelectedButtonText(),
-                newResponse : solution.responses.getSelectedButtonText(),
-                groupId : solution.groupId,
+            if (solution.statements.defaultLabel != solution.statements.getSelectedButtonText()
+                && solution.responses.defaultLabel != solution.responses.getSelectedButtonText()) {
+                let obj = {
+                    newStatement: solution.statements.getSelectedButtonText(),
+                    newResponse: solution.responses.getSelectedButtonText(),
+                    groupId: solution.groupId,
+                }
+                if (newChoice == obj.newStatement) {
+                    obj["oldStatement"] = oldChoice;
+                } else if (newChoice == obj.newResponse) {
+                    obj["oldResponse"] = oldChoice;
+                }
+                if(!this.currentObjective.rules.statementAlreadyInGroup(obj, best)) {
+                    this.presenter.createRule(obj, this.currentObjective, best);
+                }else{
+                    popUp.display('Attention, une réponse par énoncé', this.manipulator);
+                    solution.statements.setToDefault();
+                }
             }
-            if (newChoice == obj.newStatement) {
-                obj["oldStatement"] = oldChoice;
-            } else if (newChoice == obj.newResponse) {
-                obj["oldResponse"] = oldChoice;
-            }
-            this.presenter.createRule(obj, this.currentObjective, best);
         }
         removeRule(manip){
             let obj = {
                 statement : manip.statements.getSelectedButtonText(),
                 response : manip.responses.getSelectedButtonText(),
                 groupId : manip.groupId,
-                solutionId: manip.solutionId
             }
             this.presenter.removeRule(obj, this.currentObjective);
         }
@@ -1126,7 +1145,7 @@ exports.DollAdminV = function (globalVariables) {
                 }else if(this.selectedElement.type === 'rect'){
                     this.selectedElement.color(this.selectedElement.fillColor, 1, this.selectedElement.strokeColor);
                     this.selectedElement.parentManip.removeEvent('mousedown');
-                }
+                };
             }
 
             if(elem){
@@ -1840,15 +1859,19 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         saveDoll() {
-            let obj = this.objectives.map(elem=>{return {label:elem.label, rules:elem.rules}});
+            let obj = this.objectives.map(elem => {
+                return {label: elem.label, rules: elem.rules}
+            });
             this.presenter.save({
                 label: this.getLabel(),
                 elements: this.elements,
                 objectives: obj,
                 responses: this.responses,
-            }).then(()=>{
+            }).then(() => {
                 popUp.display('Jeu sauvegardé', this.manipulator);
             })
+
+            popUp.display('Des éléments ne sont pas choisis', this.manipulator);
         }
 
         findObjective(objective) {

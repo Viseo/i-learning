@@ -1124,50 +1124,111 @@ exports.Models = function (globalVariables, mockResponses) {
             this.acceptedSolutions = rule.acceptedSolutions || {};
         }
         createRule(conf, best){
-            let obj = best ? this.bestSolutions : this.acceptedSolutions,
-                keyStateAnswer = {}
-            if (obj[conf.groupId]){
-                keyStateAnswer[conf.newStatement] = conf.newResponse;
-                // let solutionToUpdate = obj[conf.groupId].find(elem=>{return elem == conf.response});
-                    // sol[conf.statement].push(conf.response);
-                if (obj[conf.groupId][conf.oldStatement]){
-                    best && this.bestSolutions[conf.groupId][conf.oldStatement];
-                }
-                // if(solutionToUpdate){
-                    // best && this.bestSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                    // !best && this.acceptedSolutions[conf.groupId].splice(obj[conf.groupId].indexOf(solutionToUpdate), 1, {statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                // }else{
-                    best && (this.bestSolutions[conf.groupId][conf.statement] = conf.response);
-                    !best && (this.acceptedSolutions[conf.groupId][conf.statement] = conf.response);
-                    // best && this.bestSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-                    // !best && this.acceptedSolutions[conf.groupId].push({statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId});
-
-                // }
-            }else{
-                keyStateAnswer[conf.newStatement] = conf.newResponse;
-                if(best){
-                    this.bestSolutions[conf.groupId] = [];
-                    this.bestSolutions[conf.groupId].push(keyStateAnswer);
-                    // this.bestSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
+            if (best){
+                if (this.bestSolutions[conf.groupId]) {
+                    let group = this.bestSolutions[conf.groupId];
+                    if(group[conf.oldStatement]){
+                        delete group[conf.oldStatement];
+                        group[conf.newStatement] = conf.newResponse;
+                    }else{
+                        group[conf.newStatement] = conf.newResponse;
+                    }
                 }else{
-                    this.acceptedSolutions[conf.groupId] = [];
-                    this.acceptedSolutions[conf.groupId].push(keyStateAnswer);
-                    // this.acceptedSolutions[conf.groupId] = [{statement: conf.statement, response: conf.response, groupId:conf.groupId, solutionId:conf.solutionId}];
-
+                    this.bestSolutions[conf.groupId] = {};
+                    this.bestSolutions[conf.groupId][conf.newStatement] = conf.newResponse;
+                }
+            }
+            else{
+                if (this.acceptedSolutions[conf.groupId]) {
+                    let group = this.acceptedSolutions[conf.groupId];
+                    if(group[conf.oldStatement]){
+                        delete group[conf.oldStatement];
+                        group[conf.newStatement] = conf.newResponse;
+                    }else{
+                        group[conf.newStatement] = conf.newResponse;
+                    }
+                }else{
+                    this.acceptedSolutions[conf.groupId] = {};
+                    this.acceptedSolutions[conf.groupId][conf.newStatement] = conf.newResponse;
+                }
+            }
+        }
+        statementAlreadyInGroup(conf, best){
+            if(best){
+                if(this.bestSolutions[conf.groupId]){
+                    let group = this.bestSolutions[conf.groupId];
+                    if(group[conf.newStatement]){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
+            }else{
+                if(this.acceptedSolutions[conf.groupId]){
+                    let group = this.acceptedSolutions[conf.groupId];
+                    if(group[conf.newStatement]){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
                 }
             }
         }
         removeRule(conf){
-            let best = conf.solutionId.split('')[0] == 'A' ? false : true;
+            let best = conf.groupId.split('')[0] == 'A' ? false : true;
             if(best){
-                let elem = this.bestSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
-                let index = this.bestSolutions[conf.groupId].indexOf(elem);
-                this.bestSolutions[conf.groupId].splice(index, 1);
+                let elem = this.bestSolutions[conf.groupId].find((resp, stat)=>{return stat == conf.statement && resp == conf.response});
+                if (elem && this.bestSolutions[conf.groupId][conf.statement] && this.bestSolutions[conf.groupId][conf.statement] == conf.response) {
+                    delete this.bestSolutions[conf.groupId][conf.statement];
+                }
             }
             else{
-                let elem = this.acceptedSolutions[conf.groupId].find(elem=>{return elem.solutionId == conf.solutionId});
-                let index = this.acceptedSolutions[conf.groupId].indexOf(elem);
-                this.acceptedSolutions[conf.groupId].splice(index, 1);
+                let elem = this.acceptedSolutions[conf.groupId].find((resp, stat)=>{return stat == conf.statement && resp == conf.response});
+                if (elem && this.acceptedSolutions[conf.groupId][conf.statement] && this.acceptedSolutions[conf.groupId][conf.statement] == conf.response) {
+                    delete this.acceptedSolutions[conf.groupId][conf.statement];
+                }
+            }
+        }
+        findPossibleStatement(arr, best, groupId){
+            function arr_diff (a1, a2) {
+
+                var a = [], diff = [];
+
+                for (var i = 0; i < a1.length; i++) {
+                    a[a1[i]] = true;
+                }
+
+                for (var i = 0; i < a2.length; i++) {
+                    if (a[a2[i]]) {
+                        delete a[a2[i]];
+                    } else {
+                        a[a2[i]] = true;
+                    }
+                }
+
+                for (var k in a) {
+                    diff.push(k);
+                }
+
+                return diff;
+            }
+            if (best){
+                if(this.bestSolutions[groupId]) {
+                    return arr_diff(Object.keys(this.bestSolutions[groupId]), arr);
+                }
+                else{
+                    return arr;
+                }
+            }
+            else{
+                if(this.acceptedSolutions[groupId]) {
+                    return arr_diff(Object.keys(this.acceptedSolutions[groupId]), arr);
+                }
+                else{
+                    return arr;
+                }
             }
         }
 
