@@ -178,19 +178,20 @@ exports.DollCollabV = function(globalVariables) {
             this.responsesList.refreshListView();
         }
 
-
         _displayButtonZone(){
             let buttonSize = {w: this.actionButtonZoneSize.w / 5, h: this.actionButtonZoneSize.h - 2*MARGIN};
             let buttonPrevious = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Précédent");
             let buttonInit = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Réinitialiser");
             let buttonNext = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Suivant");
 
-            buttonPrevious.back.corners(5,5);
-            buttonInit.back.corners(5,5);
-            buttonNext.back.corners(5,5);
+            buttonPrevious.corners(5,5);
+            buttonInit.corners(5,5);
+            buttonNext.corners(5,5);
 
             buttonPrevious.position(-buttonSize.w*2 + MARGIN, 0);
             buttonNext.position(buttonSize.w*2 - MARGIN, 0);
+
+            buttonNext.onClick(()=>this.displayPopup());
 
             this.actionbuttonZoneManip.move(this.sandboxDim.w + this.actionButtonZoneSize.w/2 + 2*MARGIN,
                 (this.objectivesSize.h+this.responseSize.h + buttonSize.h/2) + this.header.height + 3*MARGIN);
@@ -199,6 +200,62 @@ exports.DollCollabV = function(globalVariables) {
                 .add(buttonPrevious.component)
                 .add(buttonInit.component)
                 .add(buttonNext.component);
+        }
+
+        displayPopup(){
+            let _hidePopup = () => {
+                this.manipulator.remove(this.popUpManipulator);
+            }
+            let _initPopUp = () => {
+                this.popUpManipulator = new Manipulator(this);
+                let background = new svg.Rect(drawing.width, drawing.height).color(myColors.black,0, myColors.black).fillOpacity(0.4)
+                let popUpRect = new svg.Rect(popUpDim.w, popUpDim.h).color(myColors.white, 1, myColors.black).corners(2, 2)
+                this.popUpManipulator
+                    .add(background)
+                    .add(popUpRect)
+                this.popUpManipulator.move(drawing.width/2, drawing.height/2)
+                this.manipulator.add(this.popUpManipulator);
+            }
+            let _displayConfirmMessage = () => {
+                let title = new svg.Text('Alerte !')
+                    .font(FONT, 35)
+                    .position(0, -popUpDim.h/2 + MARGIN + 35*2/3)
+                let textInfo = new svg.Text("Voulez-vous vraiment quitter ce test ?")
+                    .font(FONT, 20);
+                let okButton = new gui.Button(popUpDim.w/2, popUpDim.h/4, [myColors.white, 1, myColors.black], 'Oui')
+                    .corners(2, 2)
+                okButton.position(popUpDim.w/2-okButton.width/2, popUpDim.h/2 - okButton.height/2);
+                //TODO onclik okButton => go to next question
+                let notOkButton = new gui.Button(popUpDim.w/2, popUpDim.h/4, [myColors.white, 1, myColors.black], 'Non')
+                    .corners(2, 2)
+                notOkButton.position(-popUpDim.w/2+notOkButton.width/2, popUpDim.h/2 - notOkButton.height/2)
+                notOkButton.onClick(()=>_hidePopup());
+                this.popUpManipulator
+                    .add(title)
+                    .add(textInfo)
+                    .add(okButton.component)
+                    .add(notOkButton.component);
+            }
+            let _displayEndMessage = () => {
+                let textInfo = new svg.Text("Merci d'avoir participé à ce test !").font(FONT, 20);
+                this.popUpManipulator.add(textInfo);
+                setTimeout(()=>{
+                    _hidePopup()
+                    this.returnToOldPage();
+                }, 3000);
+            }
+
+            let popUpDim = {
+                w: Math.max(drawing.width/3, 400),
+                h: Math.max(drawing.height/3, 300),
+            }
+            _initPopUp();
+            if(false){ //TODO ADD CHECK to display correct message
+                _displayConfirmMessage()
+            }else{
+                _displayEndMessage();
+            }
+
         }
 
         getElements(){
