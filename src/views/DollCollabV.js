@@ -354,6 +354,9 @@ exports.DollCollabV = function(globalVariables) {
                         })
                     });
                 }
+                else{
+                    this.objectivesBackground[obj.objective].color(myColors.none, 1, myColors.none);
+                }
             }
         }
 
