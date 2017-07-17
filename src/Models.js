@@ -1030,10 +1030,8 @@ exports.Models = function (globalVariables, mockResponses) {
             let result = []
             for(let obj of this.objectives){
                 let check = obj.rules.checkResponses(array);
-                if(check.best || check.accepted){
-                    check.objective = obj.label;
-                    result.push(check);
-                }
+                check.objective = obj.label;
+                result.push(check);
             }
             return result;
         }
@@ -1255,7 +1253,7 @@ exports.Models = function (globalVariables, mockResponses) {
                         }
                     }
                     if (count == Object.keys(best[group]).length){
-                        return {best: true, accepted:false};
+                        return {best: true, accepted:false, group:group};
                     }
                 }
             }
@@ -1268,7 +1266,7 @@ exports.Models = function (globalVariables, mockResponses) {
                         }
                     }
                     if (count == Object.keys(accepted[group]).length){
-                        return {best: false, accepted: true};
+                        return {best: false, accepted: true, group:group};
                     }
                 }
             }

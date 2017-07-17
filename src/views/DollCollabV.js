@@ -18,6 +18,7 @@ exports.DollCollabV = function(globalVariables) {
             super(presenter);
             this.objectivesBackground = {};
             this.responses = [];
+            this.graphicResponses = [];
         }
 
         display(){
@@ -172,8 +173,18 @@ exports.DollCollabV = function(globalVariables) {
                             let resp = this.responses.find((resp)=>resp.statement===target.statementId);
                             if(resp){
                                 resp.response = ele.label;
+                                target.parentManip.remove(target.parentManip.response);
+                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0, target.height/2 + 2*MARGIN);
+                                target.parentManip.add(txt);
+                                let tmp = this.graphicResponses.find(elem=>{return elem.statement == target.statementId});
+                                this.graphicResponses.remove(tmp);
+                                this.graphicResponses.add({statement: target.statementId, response:ele.label, svg: txt});
                             }else{
                                 this.responses.push({statement:target.statementId, response:ele.label});
+                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0, target.height/2 + 2*MARGIN);
+                                target.parentManip.add(txt);
+                                target.parentManip.response = txt;
+                                this.graphicResponses.push({statement: target.statementId, response:ele.label, svg: txt});
                             }
                             this.checkResponses();
                         }
@@ -295,9 +306,53 @@ exports.DollCollabV = function(globalVariables) {
             for (let obj of checks){
                 if(obj.best){
                     this.objectivesBackground[obj.objective].color(myColors.green, 1, myColors.none);
+                    svg.addEvent(this.objectivesBackground[obj.objective], 'mouseenter', ()=>{
+                        let objectives = this.getObjectives();
+                        let objective = objectives.find(elem=>{return elem.label == obj.objective});
+                        let group = objective.rules.bestSolutions[obj.group];
+                        Object.keys(group).forEach(statement=>{
+                            let responseToColor = this.graphicResponses.find(elem=>{
+                                return elem.statement == statement;
+                            });
+                            responseToColor.svg.color(myColors.green, 1, myColors.none).parentManip.scale(1.25);
+                        })
+                    });
+                    svg.addEvent(this.objectivesBackground[obj.objective], 'mouseleave', ()=>{
+                        let objectives = this.getObjectives();
+                        let objective = objectives.find(elem=>{return elem.label == obj.objective});
+                        let group = objective.rules.bestSolutions[obj.group];
+                        Object.keys(group).forEach(statement=>{
+                            let responseToColor = this.graphicResponses.find(elem=>{
+                                return elem.statement == statement;
+                            });
+                            responseToColor.svg.color(myColors.black, 1, myColors.none).parentManip.scale(1);
+                        })
+                    });
                 }
                 else if (obj.accepted){
                     this.objectivesBackground[obj.objective].color(myColors.orange, 1, myColors.none);
+                    svg.addEvent(this.objectivesBackground[obj.objective], 'mouseenter', ()=>{
+                        let objectives = this.getObjectives();
+                        let objective = objectives.find(elem=>{return elem.label == obj.objective});
+                        let group = objective.rules.acceptedSolutions[obj.group];
+                        Object.keys(group).forEach(statement=>{
+                            let responseToColor = this.graphicResponses.find(elem=>{
+                                return elem.statement == statement;
+                            });
+                            responseToColor.svg.color(myColors.orange, 1, myColors.none).parentManip.scale(1.25);
+                        })
+                    });
+                    svg.addEvent(this.objectivesBackground[obj.objective], 'mouseleave', ()=>{
+                        let objectives = this.getObjectives();
+                        let objective = objectives.find(elem=>{return elem.label == obj.objective});
+                        let group = objective.rules.acceptedSolutions[obj.group];
+                        Object.keys(group).forEach(statement=>{
+                            let responseToColor = this.graphicResponses.find(elem=>{
+                                return elem.statement == statement;
+                            });
+                            responseToColor.svg.color(myColors.black, 1, myColors.none).parentManip.scale(1);
+                        })
+                    });
                 }
             }
         }
