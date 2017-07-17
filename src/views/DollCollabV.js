@@ -96,6 +96,8 @@ exports.DollCollabV = function(globalVariables) {
                     case 'help':
                         elem = new svg.Image('../../images/info.png');
                         elem.dimension(elemDetails.width, elemDetails.height);
+                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-elemDetails.height/2 - MARGIN);
+                        manip.add(txt);
                         manip.add(elem);
                         elem.mark('helpElement');
                         break;
@@ -141,7 +143,6 @@ exports.DollCollabV = function(globalVariables) {
             this.objectivesManip.add(objectivesHeader).add(objectivesTitle).add(objectivesBody).add(this.objectivesList.manipulator);
             this.objectivesManip.move(this.sandboxDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
             this.objectivesList.refreshListView();
-            this.colorObjective([{label: 'o1', best:false, accepted: true}]);
         }
 
         _displayResponses(){
