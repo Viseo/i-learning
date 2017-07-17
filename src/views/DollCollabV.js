@@ -169,12 +169,13 @@ exports.DollCollabV = function(globalVariables) {
                         let point = whatParent.globalPoint(finalX, finalY);
                         let target = this.manipulator.last.getTarget(point.x, point.y);
                         if(target && target.type==='help'){
-                            let resp = this.responses.find((resp)=>resp.statementId===target.statementId);
+                            let resp = this.responses.find((resp)=>resp.statement===target.statementId);
                             if(resp){
-                                resp.answerId = ele.label;
+                                resp.response = ele.label;
                             }else{
-                                this.responses.push({statementId:target.statementId, answerId:ele.label});
+                                this.responses.push({statement:target.statementId, response:ele.label});
                             }
+                            this.checkResponses();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
@@ -293,12 +294,16 @@ exports.DollCollabV = function(globalVariables) {
         colorObjective(checks){
             for (let obj of checks){
                 if(obj.best){
-                    this.objectivesBackground[obj.label].color(myColors.green, 1, myColors.none);
+                    this.objectivesBackground[obj.objective].color(myColors.green, 1, myColors.none);
                 }
                 else if (obj.accepted){
-                    this.objectivesBackground[obj.label].color(myColors.orange, 1, myColors.none);
+                    this.objectivesBackground[obj.objective].color(myColors.orange, 1, myColors.none);
                 }
             }
+        }
+
+        checkResponses(){
+            this.colorObjective(this.presenter.checkResponses(this.responses));
         }
 
         getElements(){

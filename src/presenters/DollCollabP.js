@@ -30,6 +30,10 @@ exports.DollCollabP = function(globalVariables) {
             return this.doll.getResponses();
         }
 
+        checkResponses(array){
+            return this.doll.checkResponses(array);
+        }
+
     }
     return DollCollabP;
 }
