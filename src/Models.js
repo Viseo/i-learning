@@ -1026,6 +1026,17 @@ exports.Models = function (globalVariables, mockResponses) {
                     return {message: errorDollMessage, status: false};
                 });
         }
+        checkResponses(array){
+            let result = []
+            for(let obj of this.objectives){
+                let check = obj.rules.checkResponses(array);
+                if(check.best || check.accepted){
+                    check.objective = obj.label;
+                    result.push(check);
+                }
+            }
+            return result;
+        }
 
         createRule(conf, objective, best){
             objective.rules.createRule(conf, best);
@@ -1230,6 +1241,38 @@ exports.Models = function (globalVariables, mockResponses) {
                     return arr;
                 }
             }
+        }
+
+        checkResponses(array){
+            let best = this.bestSolutions;
+            let accepted = this.acceptedSolutions;
+            for(let group in best){
+                if(best.hasOwnProperty(group)){
+                    let count = 0;
+                    for(let link of array){
+                        if(best[group][link.statement] && best[group][link.statement] == link.response){
+                            count++;
+                        }
+                    }
+                    if (count == Object.keys(best[group]).length){
+                        return {best: true, accepted:false};
+                    }
+                }
+            }
+            for(let group in accepted){
+                if(accepted.hasOwnProperty(group)){
+                    let count = 0;
+                    for(let link of array){
+                        if(accepted[group][link.statement] && accepted[group][link.statement] == link.response){
+                            count++;
+                        }
+                    }
+                    if (count == Object.keys(accepted[group]).length){
+                        return {best: false, accepted: true};
+                    }
+                }
+            }
+            return {best: false, accepted: false};
         }
 
     }
