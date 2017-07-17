@@ -100,6 +100,8 @@ exports.DollAdminV = function (globalVariables) {
                         elem.dimension(elemDetails.width, elemDetails.height);
                         manip.add(elem);
                         manip.childObject = elem;
+                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        manip.add(txt);
                         svg.addEvent(elem, 'click', (event) => {
                             this.selectElement(elem);
                             if (event.which == 3) {
@@ -1747,6 +1749,8 @@ exports.DollAdminV = function (globalVariables) {
                         helpPanelManip.childObject = helpPanel;
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
                         helpPanel.statementId = 'Enoncé' + this.getStatement().length;
+                        let txt = new svg.Text(helpPanel.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        helpPanelManip.add(txt);
                         helpPanel.mark('helpElement');
                         let conf = {
                             drop: (what, whatParent, x, y) => {

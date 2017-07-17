@@ -60,6 +60,8 @@ exports.DollAdminP = function (globalVariables) {
                     case 'picture':
                         options.src = elem.src;
                         break;
+                    case 'help':
+                        options.statementId = elem.statementId;
                 }
                 return Object.assign({
                     type: elem.type,
