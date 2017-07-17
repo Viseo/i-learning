@@ -7,14 +7,17 @@ exports.DollCollabV = function(globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
+        drawings = globalVariables.drawings,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
+        installDnD = globalVariables.gui.installDnD,
         INPUT_SIZE = {w: 400, h: 30};
 
     class DollCollabV extends View{
         constructor(presenter){
             super(presenter);
             this.objectivesBackground = {};
+            this.responses = [];
         }
 
         display(){
@@ -98,6 +101,7 @@ exports.DollCollabV = function(globalVariables) {
                         elem.dimension(elemDetails.width, elemDetails.height);
                         let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-elemDetails.height/2 - MARGIN);
                         manip.add(txt);
+                        elem.statementId = elemDetails.statementId;
                         manip.add(elem);
                         elem.mark('helpElement');
                         break;
@@ -160,9 +164,31 @@ exports.DollCollabV = function(globalVariables) {
                 .corners(2, 2)
             responsesBody.position(0, -this.responseSize.h/2 + responsesHeader.height + responsesBody.height/2);
             let responses = this.getResponses().map((ele)=> {
+                let conf = {
+                    drop: (what, whatParent, finalX, finalY) => {
+                        let point = whatParent.globalPoint(finalX, finalY);
+                        let target = this.manipulator.last.getTarget(point.x, point.y);
+                        if(target && target.type==='help'){
+                            let resp = this.responses.find((resp)=>resp.statementId===target.statementId);
+                            if(resp){
+                                resp.answerId = ele.label;
+                            }else{
+                                this.responses.push({statementId:target.statementId, answerId:ele.label});
+                            }
+                        }
+                        return {x: finalX, y: finalY, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        this.responsesList.resetAllMove();
+                        this.responsesList.refreshListView();
+                        return true;
+                    }
+                }
+
                 let manip = new Manipulator(this);
                 let guiElement = new svg.Text(ele.label).font(FONT, 20);
                 manip.add(guiElement);
+                installDnD(manip, drawings.component.glass.parent.manipulator.last, conf);
                 return manip;
             })
             this.responsesList = new ListManipulatorView(
