@@ -232,15 +232,27 @@ exports.Lists = function (globalVariables) {
                 this.chevronManip.remove(this.chevronsRDManipulator);
             };
 
-            if(this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length){
+            if(this._indexShowIsInTheMiddle()){
                 _showAllChevron();
-            }else if (this.indexShow != 0 && -this.indexShow + this.nbElementToshow >= this.listElements.length){
+            }else if (this._indexShowIsInTheRightOrBottom()){
                 _showOnlyLeftOrTopChevron();
-            }else if (-this.indexShow + (this.nbElementToshow) < this.listElements.length){
+            }else if (this._indexShowIsInTheLeftOrTop()){
                 _showOnlyRightOrDownChevron();
             }else{
                 _hideAllQuestionChevron();
             }
+        }
+
+        _indexShowIsInTheMiddle(){
+            return (this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length);
+        }
+
+        _indexShowIsInTheRightOrBottom(){
+            return (this.indexShow != 0 && -this.indexShow + this.nbElementToshow >= this.listElements.length);
+        }
+
+        _indexShowIsInTheLeftOrTop(){
+            return (-this.indexShow + (this.nbElementToshow) < this.listElements.length);
         }
 
         getListElements(){
@@ -258,9 +270,9 @@ exports.Lists = function (globalVariables) {
     }
 
     class ListManipulatorView extends ListView{
-        addElementInit(array){
+        /*addElementInit(array){
             array.forEach(elem=>this.contentManip.add(elem.component));
-        }
+        }*/
 
         refreshListView(){
             if(this.direction == "V"){
@@ -299,8 +311,7 @@ exports.Lists = function (globalVariables) {
             this.listElements.remove(manip);
             this.contentManip.remove(manip.component);
 
-            if((this.indexShow < 0 && -this.indexShow + (this.nbElementToshow) < this.listElements.length) ||
-                (this.indexShow != 0 && -this.indexShow + this.nbElementToshow >= this.listElements.length)){
+            if(this._indexShowIsInTheMiddle() || this._indexShowIsInTheRightOrBottom()){
                 this.indexShow++;
             }
             this._showActualChevron();
