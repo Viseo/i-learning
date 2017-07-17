@@ -294,7 +294,7 @@ exports.DollCollabV = function(globalVariables) {
                 h: Math.max(drawing.height/3, 300),
             }
             _initPopUp();
-            if(false){ //TODO ADD CHECK to display correct message
+            if(!this.areObjectivesFinished()){
                 _displayConfirmMessage()
             }else{
                 _displayEndMessage();
@@ -306,6 +306,7 @@ exports.DollCollabV = function(globalVariables) {
             for (let obj of checks){
                 if(obj.best){
                     this.objectivesBackground[obj.objective].color(myColors.green, 1, myColors.none);
+                    this.getObjectives().find(elem=>{return elem.label == obj.objective}).status = 'best';
                     svg.addEvent(this.objectivesBackground[obj.objective], 'mouseenter', ()=>{
                         let objectives = this.getObjectives();
                         let objective = objectives.find(elem=>{return elem.label == obj.objective});
@@ -331,6 +332,7 @@ exports.DollCollabV = function(globalVariables) {
                 }
                 else if (obj.accepted){
                     this.objectivesBackground[obj.objective].color(myColors.orange, 1, myColors.none);
+                    this.getObjectives().find(elem=>{return elem.label == obj.objective}).status = 'accepted';
                     svg.addEvent(this.objectivesBackground[obj.objective], 'mouseenter', ()=>{
                         let objectives = this.getObjectives();
                         let objective = objectives.find(elem=>{return elem.label == obj.objective});
@@ -356,12 +358,17 @@ exports.DollCollabV = function(globalVariables) {
                 }
                 else{
                     this.objectivesBackground[obj.objective].color(myColors.none, 1, myColors.none);
+                    this.getObjectives().find(elem=>{return elem.label == obj.objective}).status = 'unreached';
                 }
             }
         }
 
         checkResponses(){
             this.colorObjective(this.presenter.checkResponses(this.responses));
+        }
+
+        areObjectivesFinished(){
+            return this.getObjectives().every(obj=>{return obj.status == 'best'});
         }
 
         getElements(){
