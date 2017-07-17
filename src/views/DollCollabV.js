@@ -14,6 +14,7 @@ exports.DollCollabV = function(globalVariables) {
     class DollCollabV extends View{
         constructor(presenter){
             super(presenter);
+            this.objectivesBackground = {};
         }
 
         display(){
@@ -121,8 +122,11 @@ exports.DollCollabV = function(globalVariables) {
             objectivesBody.position(0, -this.objectivesSize.h/2 + objectivesHeader.height + objectivesBody.height/2);
             let objectives = this.getObjectives().map((ele) => {
                 let manip = new Manipulator(this);
-                let guiElement = new svg.Text(ele.label).font(FONT, 20);
-                manip.add(guiElement);
+                let rect = new svg.Rect(this.objectivesSize.w/2, 27)
+                    .color(myColors.none, 1, myColors.none);
+                let guiElement = new svg.Text(ele.label).font(FONT, 20).position(0,6.66);
+                this.objectivesBackground[ele.label] = rect;
+                manip.add(rect).add(guiElement);
                 return manip;
             });
             this.objectivesList = new ListManipulatorView(
@@ -137,6 +141,7 @@ exports.DollCollabV = function(globalVariables) {
             this.objectivesManip.add(objectivesHeader).add(objectivesTitle).add(objectivesBody).add(this.objectivesList.manipulator);
             this.objectivesManip.move(this.sandboxDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
             this.objectivesList.refreshListView();
+            this.colorObjective([{label: 'o1', best:false, accepted: true}]);
         }
 
         _displayResponses(){
@@ -256,6 +261,17 @@ exports.DollCollabV = function(globalVariables) {
                 _displayEndMessage();
             }
 
+        }
+
+        colorObjective(checks){
+            for (let obj of checks){
+                if(obj.best){
+                    this.objectivesBackground[obj.label].color(myColors.green, 1, myColors.none);
+                }
+                else if (obj.accepted){
+                    this.objectivesBackground[obj.label].color(myColors.orange, 1, myColors.none);
+                }
+            }
         }
 
         getElements(){
