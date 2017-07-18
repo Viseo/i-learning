@@ -212,7 +212,7 @@ exports.ConnectionV = function (globalVariables) {
             this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
                 popUp.display(message,this.manipulator);
-                
+
             });
         }
 
