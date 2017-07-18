@@ -514,8 +514,10 @@ describe('quiz admin', function () {
             do{
                 click(root, 'listQChevronRD');
             }while(retrieve(root, '[listQChevronRD]'))
+            click(root, 'listQChevronLT');
         }).then(() => {
             assertPresent(root, 'listQChevronLT');
+            assertPresent(root, 'listQChevronRD');
         })
     })
 
