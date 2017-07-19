@@ -40,7 +40,8 @@ let mockResponses = {
                 }]
             }
         },
-        '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'}}
+        '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'}},
+        '/formations/doll': {content : {"valid":true}}
     },
     formationMock = {
         links: [],
@@ -683,14 +684,22 @@ describe('Doll admin Page', function(){
 
     it('should add new rule with one best and accepted solution' , function () {
         let {root, state, runtime} = given(() => {
-            return loadPage('GameAdmin', {data: dollData, className: 'Doll',
+            return loadPage('GameAdmin', {mockResponses, data: dollData, className: 'Doll',
                 beforeLoad: (page) => {
                 page.state.formation = page.state.createFormation(formationMock);
             }});
         });
+        let _displaySelectList = () => {
+            let selectItemList = getElement(root, 'objectivesList'),
+                selectItemListButton = selectItemList.handler.parentManip.parentObject.getSelectButton();
+            selectItemListButton.glass.component.listeners['click']();
+        }
         when(() => {
             click(root, 'rules');
             // assertPresent(root, 'objectivesList');
+
+            // click(root, )
+            _displaySelectList();
             click(root, 'newBestSolutionButton');
             click(root, 'newAcceptedSolutionButton');
             click(root, 'saveButtonDoll');

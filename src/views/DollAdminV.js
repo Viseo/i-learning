@@ -925,7 +925,7 @@ exports.DollAdminV = function (globalVariables) {
                     objectives.push('Veuillez ajouter au moins un objectif');
                 }
                 this.objectivesSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
-                // this.objectivesSelectList.mark('objectivesList');
+                this.objectivesSelectList.mark('objectivesList');
                 this.objectivesSelectList.setHandlerChangeValue(_clickListHandler);
                 this.objectivesSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
                 this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectivesSelectList.getSelectedButtonText()});

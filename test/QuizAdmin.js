@@ -35,7 +35,7 @@ describe('quiz admin', function () {
             inputValue(root, 'quizTitle', '@@@@');
             click(root, 'saveNameButton');
         }).then(() => {
-            assertMessage(root, "infoMessage", "Le nom du quiz est incorrect");
+            assertMessage(root, "popUpMessage", "Le nom du quiz est incorrect");
         })
     })
     it('should not rename quiz (not valid quiz)', function () {
@@ -54,7 +54,7 @@ describe('quiz admin', function () {
             inputValue(root, 'quizTitle', 'quizname');
             click(root, 'saveNameButton');
         }).then(() => {
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
         })
     })
     it('should press Enter (empty quiz)', function(){
@@ -78,7 +78,7 @@ describe('quiz admin', function () {
         when(() => {
            runtime.listeners['keydown']({keyCode: 13, preventDefault: () => {}})
         }).then(() => {
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide");
         })
     })
 
@@ -104,7 +104,7 @@ describe('quiz admin', function () {
             inputValue(root, 'quizTitle', 'newQuizName');
             runtime.listeners['keydown']({keyCode: 13, preventDefault: () => {}})
         }).then(() => {
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées");
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées");
         })
     })
 
@@ -292,7 +292,7 @@ describe('quiz admin', function () {
             click(root, "answerCheckbox1");
             click(root, "saveButtonQuiz");
         }).then(()=>{
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide")
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide")
         })
     })
     it('should save quiz', function(){
@@ -324,7 +324,7 @@ describe('quiz admin', function () {
         when(()=>{
             click(root, "saveButtonQuiz");
         }).then(()=>{
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées")
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées")
         })
     })
 
@@ -353,7 +353,7 @@ describe('quiz admin', function () {
             inputValue(root, 'quizTitle', 'quizname');
             click(root, "saveButtonQuiz");
         }).then(()=>{
-            assertMessage(root, "infoMessage", "Les modifications ont bien été enregistrées")
+            assertMessage(root, "popUpMessage", "Les modifications ont bien été enregistrées")
         })
     })
 

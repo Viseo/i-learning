@@ -37,7 +37,8 @@ exports.Popup = function(globalVariables){
                 this.manipulator = new Manipulator(this).addOrdonator(2)
                 parentManipulator.add(this.manipulator);
                 let text = new svg.Text(message)
-                    .font(FONT, FONT_SIZE);
+                    .font(FONT, FONT_SIZE)
+                    .mark('popUpMessage');
                 this.manipulator.set(1, text);
                 this.width = Math.max(drawing.width/8, text.boundingRect().width + 2*MARGIN);
                 this.height = drawing.height/10;

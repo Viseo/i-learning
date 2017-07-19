@@ -104,26 +104,26 @@ describe('dashboard admin page', function () {
             inputValue(root, "addFormationTextInput", "MaFormation");
             clickPos(root, "addFormationButton");
         }).then(() => {
-            assertMissing(root, "formationErrorMessage");
+            assertMissing(root, "popUpMessage");
         });
         when(() => {
             clickPos(root, "addFormationButton");
         }).then(() => {
-            assertMessage(root, "formationErrorMessage", "Veuillez entrer un titre valide.");
+            assertMessage(root, "popUpMessage", "Veuillez entrer un titre valide.");
             runtime.advance();
         });
         when(() => {
             inputValue(root, "addFormationTextInput", "Test[");
             clickPos(root, "addFormationButton");
         }).then(() => {
-            assertMessage(root, "formationErrorMessage", "Caractère(s) non autorisé(s).");
+            assertMessage(root, "popUpMessage", "Caractère(s) non autorisé(s).");
             runtime.advance();
         });
         when(() => {
             inputValue(root, "addFormationTextInput", "Le");
             clickPos(root, "addFormationButton");
         }).then(() => {
-            assertMessage(root, "formationErrorMessage" , "Caractère(s) non autorisé(s).");
+            assertMessage(root, "popUpMessage" , "Caractère(s) non autorisé(s).");
         });
     });
     it('should try create a new formation (Enter keydown)', function(){
@@ -136,7 +136,7 @@ describe('dashboard admin page', function () {
         when(() => {
             runtime.listeners['keydown']({keyCode:13, preventDefault: () => {}})
         }).then(() => {
-            assertMessage(root, "formationErrorMessage", "Veuillez entrer un titre valide.");
+            assertMessage(root, "popUpMessage", "Veuillez entrer un titre valide.");
             runtime.advance();
         });
     });
