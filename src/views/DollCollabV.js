@@ -176,6 +176,7 @@ exports.DollCollabV = function(globalVariables) {
                                 target.parentManip.remove(target.parentManip.response);
                                 let txt = new svg.Text(ele.label).font(FONT, 18).position(0, target.height/2 + 2*MARGIN);
                                 target.parentManip.add(txt);
+                                target.parentManip.response = txt;
                                 let tmp = this.graphicResponses.find(elem=>{return elem.statement == target.statementId});
                                 this.graphicResponses.remove(tmp);
                                 this.graphicResponses.add({statement: target.statementId, response:ele.label, svg: txt});

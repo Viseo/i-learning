@@ -497,6 +497,8 @@ exports.DollAdminV = function (globalVariables) {
                             this.selectCurrentInput.hideControl();
                         };
                     });
+                exerciseTitleInput.mark('titleLabelInput');
+                exerciseTitleInput.glass.mark('titleLabelClick');
                 titleManipulator.add(exerciseTitleInput.component)
                     .add(title);
                 titleManipulator.move(this.returnButton.width / 2 + MARGIN, this.header.height + 2 * INPUT_SIZE.h + MARGIN);
@@ -562,6 +564,7 @@ exports.DollAdminV = function (globalVariables) {
             this.buttonsManipulator = new Manipulator(this);
             let saveButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [[43, 120, 228], 1, myColors.black], 'Sauvegarder');
             saveButton.onClick(this.saveDoll.bind(this));
+            saveButton.glass.mark('saveButtonDoll');
             this.buttonsManipulator.add(saveButton.component);
             this.buttonsManipulator.move(drawing.width / 2, drawing.height - INPUT_SIZE.h / 2 - MARGIN)
             this.manipulator.add(this.buttonsManipulator);
@@ -618,7 +621,7 @@ exports.DollAdminV = function (globalVariables) {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
                     text: new svg.Text(objective.label).font('Arial', 18).position(0, 6),
-                    manip: new Manipulator(this)
+                    manip: new Manipulator(this).mark(objective.label + 'Manip')
                 };
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
@@ -632,7 +635,7 @@ exports.DollAdminV = function (globalVariables) {
                         if (!target || target && target.dropID != 'objectivesDrop' || !target.dropID) {
                             this.objectivesList.removeElementFromList(what);
                             this.removeObjective(what.text.messageText);
-                            this.objectifSelectList && this.objectifSelectList.removeElementByText(what.text.messageText);
+                            this.objectivesSelectList && this.objectivesSelectList.removeElementByText(what.text.messageText);
                             what.flush();
                         }
                         return {x: finalX, y: finalY, parent: whatParent};
@@ -665,7 +668,7 @@ exports.DollAdminV = function (globalVariables) {
                 else {
                     this.objectivesList.add(mini.manip);
                     this.objectivesList.refreshListView();
-                    this.objectifSelectList && this.objectifSelectList.addElementByText(mini.text.messageText);
+                    this.objectivesSelectList && this.objectivesSelectList.addElementByText(mini.text.messageText);
                     this.addObjective(mini.text.messageText);
                     this.objectivesInput.message('');
                 }
@@ -696,6 +699,8 @@ exports.DollAdminV = function (globalVariables) {
             this.objectivesInput.font('Arial', 18);
             this.objectivesInput.position(-RIGHTBOX_SIZE.w / 2 + this.objectivesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.objectivesInput.frame.corners(5, 5);
+            this.objectivesInput.glass.mark('objectivesInputClick');
+            this.objectivesInput.mark('objectivesInput');
             let objectivesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             objectivesAddButton.text
                 .font('Arial', 18)
@@ -734,7 +739,7 @@ exports.DollAdminV = function (globalVariables) {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
                     text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
-                    manip: new Manipulator(this)
+                    manip: new Manipulator(this).mark(response.label + 'Manip')
                 };
                 miniature.manip.text = miniature.text;
                 miniature.manip.add(miniature.text)
@@ -809,6 +814,8 @@ exports.DollAdminV = function (globalVariables) {
                 this.selectCurrentInput = this.responsesInput;
                 this.selectCurrentInputHandler = addResponseHandler;
             });
+            this.responsesInput.glass.mark('responsesInputClick');
+            this.responsesInput.mark('responsesInput');
 
             let responsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             responsesAddButton.text
@@ -917,16 +924,17 @@ exports.DollAdminV = function (globalVariables) {
                 if(objectives.length == 0){
                     objectives.push('Veuillez ajouter au moins un objectif');
                 }
-                this.objectifSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
-                this.objectifSelectList.setHandlerChangeValue(_clickListHandler);
-                this.objectifSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
-                this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectifSelectList.getSelectedButtonText()});
+                this.objectivesSelectList = new SelectItemList2(objectives, 0.6 * PANEL_SIZE.w, INPUT_SIZE.h);
+                // this.objectivesSelectList.mark('objectivesList');
+                this.objectivesSelectList.setHandlerChangeValue(_clickListHandler);
+                this.objectivesSelectList.setManipShowListAndPosition(this.solutionsHeaderManipulator);
+                this.currentObjective = this.objectives.find(elem=>{return elem.label == this.objectivesSelectList.getSelectedButtonText()});
                 this.solutionsHeaderManipulator.add(this.createSolutionsBody());
 
                 this.solutionsHeaderManipulator
                     .add(solutionsHeader)
                     .add(headerTitle)
-                    .add(this.objectifSelectList.manipulator);
+                    .add(this.objectivesSelectList.manipulator);
                 this.solutionsHeaderManipulator.move(0,(solutionsHeader.height - PANEL_SIZE.h)/2);
             };
 
@@ -967,6 +975,11 @@ exports.DollAdminV = function (globalVariables) {
                         .add(solution.spaceManip);
                     solutionBody.listSolution.refreshListView();
                 });
+                if (best) {
+                    addSolutionButton.glass.mark('newBestSolutionButton');
+                } else {
+                    addSolutionButton.glass.mark('newAcceptedSolutionButton');
+                }
                 solutionBody.manipulator
                     .add(addSolutionButton.component)
                     .add(title);
@@ -1019,7 +1032,6 @@ exports.DollAdminV = function (globalVariables) {
             if (best) {
                 selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, true, newChoice, oldChoice);
-                    this.setAllPossibleStatement(newChoice);
                 }
                 selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, true, newChoice, oldChoice);
@@ -1027,7 +1039,6 @@ exports.DollAdminV = function (globalVariables) {
             }else{
                 selectItemStatement.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, false, newChoice, oldChoice);
-                    this.setAllPossibleStatement(newChoice);
                 }
                 selectItemResponse.onClickChangeValueHandler = (newChoice, oldChoice) => {
                     this.createRule(manipSelectItems, false, newChoice, oldChoice);
@@ -1096,9 +1107,6 @@ exports.DollAdminV = function (globalVariables) {
             if(isChecked){
                 icon.activeStatusActionIcon();
             }
-        }
-        setAllPossibleStatement(choice){
-
         }
         createRule(solution, best, newChoice, oldChoice){
             if (solution.statements.defaultLabel != solution.statements.getSelectedButtonText()
@@ -1752,7 +1760,7 @@ exports.DollAdminV = function (globalVariables) {
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
                         let txt = new svg.Text(helpPanel.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
                         helpPanelManip.add(txt);
-                        helpPanel.mark('helpElement');
+                        helpPanel.mark(helpPanel.statementId + 'ImgElement');
                         let conf = {
                             drop: (what, whatParent, x, y) => {
                                 return {x: x, y: y, parent: this.sandboxMain.content};
@@ -1877,10 +1885,6 @@ exports.DollAdminV = function (globalVariables) {
             })
 
             popUp.display('Des éléments ne sont pas choisis', this.manipulator);
-        }
-
-        findObjective(objective) {
-            this.presenter.findObjective(objective);
         }
 
         renameDoll(label) {

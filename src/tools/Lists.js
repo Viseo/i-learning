@@ -453,6 +453,10 @@ exports.Lists = function (globalVariables) {
             manip && this.listView.removeElementFromList(manip);
             this.listView.refreshListView();
         }
+
+        mark(id) {
+            this.manipulator.mark(id);
+        }
     }
 
     return {

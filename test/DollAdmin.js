@@ -8,7 +8,7 @@ const
     models = FModels({}, {}),
     {given, when, loadPage, retrieve, click, assertMessage, assertPresent, onChangeElement, mouseMoveElement,
         mouseUpElement, mouseUpElementOnAnother, mouseDownElement, customClick, enterTextField, rightClick, mouseDown,
-        mouseMove, mouseUpOnAnother, mouseUp} = testutils;
+        mouseDownOnGlassElement, mouseMove, mouseUpOnAnother, mouseUp, mouseUpOnGlassElement, getElement} = testutils;
 
 const ImageRuntime = {
     images: {},
@@ -42,11 +42,60 @@ let mockResponses = {
         },
         '/medias/upload': {content: {ack: 'ok', name: 'bidon.PNG', src: '../resource/0015254c306b9308a4fe0bac8efea0bd'}}
     },
+    formationMock = {
+        links: [],
+        _id: "591ec683aabd34544c5bceda",
+        formationId: "591ec683aabd34544c5bcedb",
+        gamesCounter: {doll: 1, quizz: 0},
+        label: "Agilité",
+        progress: undefined,
+        imageSrc: undefined,
+        note: 0,
+        noteCounter: 0,
+        status: "NotPublished",
+        levelsTab: [{
+            gamesTab: [{
+                formationId: "591ec683aabd34544c5bcedb",
+                gameIndex: 0,
+                id: "doll0",
+                label: "testDoll",
+                lastQuestionIndex: 0,
+                levelIndex: 0,
+                type: 'Doll',
+                elements: [{globalX: 361, globalY: 161.6375, height: 80, layerIndex: 0, type: "help", width: 80},
+                    {globalX: 499, globalY: 154, height: 80, layerIndex: 1, type: "rect", width: 80},
+                    {globalX: 719, globalY: 110, height: 80, layerIndex: 2, type: "text", width: 80},
+                    {globalX: 800, globalY: 140, height: 80, layerIndex: 3, type: "picture", width: 80}],
+                objectives: [{label: "o1", rules: {acceptedSolutions: {}, bestSolutions: {}}},
+                    {label: "o2", rules: {acceptedSolutions: {}, bestSolutions: {}}},
+                    {
+                        label: "o3",
+                        rules: {
+                            acceptedSolutions: {
+                                A01: {"Enoncé0": "r1", "Enoncé1": "r3"},
+                                A02: {"Enoncé0": "r2"},
+                                A03: {"Enoncé2": "r1", "Enoncé1": "r2"}
+                            },
+                            bestSolutions: {
+                                B01: {"Enoncé0": "r1", "Enoncé1": "r3"},
+                                B02: {"Enoncé0": "r2"},
+                                B03: {"Enoncé2": "r1", "Enoncé1": "r2"}
+                            }
+                        }
+                    }],
+                responses: [{label: "r1"}, {label: "r2"}, {label: "r3"}, {label: "r4"}],
+                statements: [{id: "Enoncé0"}, {id: "Enoncé1"}, {id: "Enoncé2"}]
+            }]
+        }]
+    },
     dollData = {
-        type: 'Doll',
-        label: 'testDoll',
-        id: 'testDollId',
+        formationId: "591ec683aabd34544c5bcedb",
         gameIndex: 0,
+        id: "doll0",
+        label: "testDoll",
+        lastQuestionIndex: 0,
+        levelIndex: 0,
+        type: 'Doll',
         elements: [{globalX: 361, globalY: 161.6375, height: 80, layerIndex: 0, type: "help", width: 80},
             {globalX: 499, globalY: 154, height: 80, layerIndex: 1, type: "rect", width: 80},
             {globalX: 719, globalY: 110, height: 80, layerIndex: 2, type: "text", width: 80},
@@ -57,18 +106,14 @@ let mockResponses = {
                 label: "o3",
                 rules: {
                     acceptedSolutions: {
-                        A01: [{groupId: "A01", response: "r1", solutionId: "A001", statement: "Enoncé0"}],
-                        A02: [{groupId: "A02", response: "r1", solutionId: "A002", statement: "Enoncé0"}],
-                        A03: [{groupId: "A03", response: "r1", solutionId: "A003", statement: "Enoncé0"},
-                            {groupId: "A03", response: "r1", solutionId: "A0031", statement: "Enoncé0"}
-                        ]
+                        A01: {"Enoncé0": "r1", "Enoncé1": "r3"},
+                        A02: {"Enoncé0": "r2"},
+                        A03: {"Enoncé2": "r1", "Enoncé1": "r2"}
                     },
                     bestSolutions: {
-                        B01: [{groupId: "B01", response: "r1", solutionId: "B001", statement: "Enoncé0"}],
-                        B02: [{groupId: "B02", response: "r1", solutionId: "B002", statement: "Enoncé0"}],
-                        B03: [{groupId: "B03", response: "r1", solutionId: "B003", statement: "Enoncé0"},
-                            {groupId: "B03", response: "r1", solutionId: "B0031", statement: "Enoncé0"}
-                        ]
+                        B01: {"Enoncé0": "r1", "Enoncé1": "r3"},
+                        B02: {"Enoncé0": "r2"},
+                        B03: {"Enoncé2": "r1", "Enoncé1": "r2"}
                     }
                 }
             }],
@@ -316,9 +361,6 @@ describe('Doll admin Page', function(){
             });
         });
         when(()=>{
-            // mouseDownElement(root, 'helpTab', {pageX: 0, pageY:0, preventDefault: () => {
-            // }});
-            // mouseUpElementOnAnother(root, 'helpTabCopy', 'mainPanel')
             mouseDown(root, 'helpTab', {pageX: 0, pageY:0, preventDefault: () => {
             }});
             mouseDown(root, 'helpTabCopy', {pageX: 0, pageY:0, preventDefault: () => {
@@ -328,7 +370,7 @@ describe('Doll admin Page', function(){
 
             mouseUpOnAnother(root, 'helpTabCopy', 'mainPanel');
         }).then(()=>{
-            assertPresent(root, 'helpElement');
+            assertPresent(root, 'Enoncé0ImgElement');
         })
     })
     it('should test right menu for a rect', function() {
@@ -544,6 +586,123 @@ describe('Doll admin Page', function(){
         }).then(()=>{
             let button = retrieve(root, '[headerTitle]');
             assert(button);
+        })
+    })
+
+    it('should add objectives and responses', function () {
+        let {root, state, runtime} = given(()=>{
+            return loadPage('GameAdmin', {
+                data: {type: 'Doll', label: 'testDoll', id: 'testDollId'},
+                className: 'Doll'
+            });
+        });
+        when(() => {
+            customClick(root, 'objectivesInputClick', {
+                which: 1, preventDefault: () => {
+                }
+            });
+            enterTextField(root, 'objectivesInput', 'o1');
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: () => {
+                }
+            });
+            enterTextField(root, 'objectivesInput', 'o2');
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: () => {
+                }
+            });
+            customClick(root, 'responsesInputClick', {
+                which: 1, preventDefault: () => {
+                }
+            });
+            enterTextField(root, 'responsesInput', 'r1');
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: () => {
+                }
+            });
+            enterTextField(root, 'responsesInput', 'r2');
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: () => {
+                }
+            });
+            mouseDown(root, 'helpTab', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseDown(root, 'helpTabCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseMove(root, 'helpTabCopy', {pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseUpOnAnother(root, 'helpTabCopy', 'mainPanel');
+            mouseDownOnGlassElement(root, 'Enoncé0ImgElement');
+            mouseUpOnGlassElement(root, 'Enoncé0ImgElement');
+        }).then(() => {
+        })
+    })
+
+    it ('should rename the doll game', function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {data: dollData, className: 'Doll'});
+        });
+        when(() => {
+            customClick(root, 'titleLabelClick', {
+                which: 1, preventDefault: () => {
+                }
+            });
+            enterTextField(root, 'titleLabelInput', 'Faire chier Minh');
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: () => {
+                }
+            });
+        }).then(() => {
+        })
+    })
+
+    it('should remove all objectives and responses from the doll' , function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {data: dollData, className: 'Doll'});
+        });
+        let _removeItemDollDnD = (root,label) => {
+            let id = label+'Manip';
+            assertPresent(root, id);
+            mouseDown(root,id,{pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseMove(root,id,{pageX: 0, pageY:0, preventDefault: () => {
+            }});
+            mouseUp(root, id, {pageX: 0, pageY:10000, preventDefault: () => {
+            }});
+        }
+        when(() => {
+            _removeItemDollDnD(root, 'o1');
+            _removeItemDollDnD(root, 'o2');
+            _removeItemDollDnD(root, 'o3');
+            _removeItemDollDnD(root, 'r1');
+            _removeItemDollDnD(root, 'r2');
+            _removeItemDollDnD(root, 'r3');
+        }).then(() => {
+        });
+    })
+
+    it('should add new rule with one best and accepted solution' , function () {
+        let {root, state, runtime} = given(() => {
+            return loadPage('GameAdmin', {data: dollData, className: 'Doll',
+                beforeLoad: (page) => {
+                page.state.formation = page.state.createFormation(formationMock);
+            }});
+        });
+        when(() => {
+            click(root, 'rules');
+            // assertPresent(root, 'objectivesList');
+            click(root, 'newBestSolutionButton');
+            click(root, 'newAcceptedSolutionButton');
+            click(root, 'saveButtonDoll');
+            // let objectives = getElement(root, 'objectivesList'),
+                // displayedObjective = objectives.handler.parentManip.parentObject.getSelectedButtonText();
+            // if (displayedObjective) {
+            //     let currentObjective = getElement(root, 'currentObjective')
+            //     if (displayedObjective == currentObjective){
+            //
+            //     }
+            // }
+        }).then(() => {
         })
     })
 })

@@ -37,9 +37,9 @@ exports.DollAdminP = function (globalVariables) {
             return this.mediaLibrary.getImages();
         }
 
-        getVideos() {
-            return this.mediaLibrary.getVideos();
-        }
+        // getVideos() {
+        //     return this.mediaLibrary.getVideos();
+        // }
 
         uploadImageByFile(file, progressDisplay) {
             return this.state.uploadImage(file, progressDisplay);
@@ -90,9 +90,6 @@ exports.DollAdminP = function (globalVariables) {
         }
         removeObjective(obj){
             this.doll.removeObjective(obj);
-        }
-        findObjective(obj) {
-            this.doll.findObjective(obj);
         }
         renameDoll(label) {
             this.doll.renameDoll(label);
