@@ -1318,6 +1318,11 @@ exports.DollAdminV = function (globalVariables) {
                         this.textRightClick(text, manip, event);
                         this.selectElement(text);
                     })
+                    text.onInput((old, newm, valid)=>{
+                        text.message(newm);
+                        resizeStringForText(text.text, text.width, text.height);
+
+                    })
                     this.elements.push(text);
                     text.glass.mark('textElement' + this.elements.length + 'click');
                     text.mark('textElement' + this.elements.length);
