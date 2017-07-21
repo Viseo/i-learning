@@ -1195,6 +1195,10 @@ exports.DollAdminV = function (globalVariables) {
                     }
                     updateCorners();
                     elem.refresh && elem.refresh();
+                    if (elem instanceof gui.TextField){
+                        elem.message(elem.textMessage);
+                        resizeStringForText(elem.text, elem.width, elem.height);
+                    }
                     return true;
                 }
                 return false;
@@ -1272,7 +1276,6 @@ exports.DollAdminV = function (globalVariables) {
                     },
                     moved: (what) => {
 
-                        //return false;
                     },
                     revert: (item) => {
                         item.move(point.getX(), point.getY());

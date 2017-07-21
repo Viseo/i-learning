@@ -19,6 +19,7 @@ exports.DollCollabV = function(globalVariables) {
             this.objectivesBackground = {};
             this.responses = [];
             this.graphicResponses = [];
+            this.textItem = [];
         }
 
         display(){
@@ -89,6 +90,7 @@ exports.DollCollabV = function(globalVariables) {
                             .anchor('left')
                         let border = new svg.Rect(elemDetails.width, elemDetails.height)
                             .color(elemDetails.fillColor, 1, myColors.black)
+                        this.textItem.push(elem);
                         manip.add(border).add(elem);
                         break;
                     case 'picture':
@@ -110,6 +112,9 @@ exports.DollCollabV = function(globalVariables) {
                 elem.type = elemDetails.type;
                 manip.move(elemDetails.globalX, elemDetails.globalY);
                 this.sandboxMain.content.add(manip.component);
+                this.textItem.forEach(elem=>{
+                    resizeStringForText(elem, elem.width, elem.height);
+                })
             });
         }
 
