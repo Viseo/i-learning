@@ -48,7 +48,7 @@ describe('connection page', function () {
             enterTextField(root, "password", "password");
             click(root, "connectionButton");
         }).then(()=>{
-            assertMissing(root, "msgFieldError");
+            assertMissing(root, "popUpMessage");
         });
     })
 
@@ -59,7 +59,7 @@ describe('connection page', function () {
         when(()=>{
             click(root, "connectionButton");
         }).then(()=>{
-            assertMessage(root, "msgFieldError", "Veuillez remplir correctement tous les champs");
+            assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         });
     });
 
@@ -72,7 +72,7 @@ describe('connection page', function () {
             enterTextField(root, "password", "azertyuiop");
             click(root, "connectionButton");
         }).then(()=>{
-            assertMessage(root, "msgFieldError", "Veuillez remplir correctement tous les champs");
+            assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         })
     });
 
@@ -85,7 +85,7 @@ describe('connection page', function () {
             enterTextField(root, "password", "aa");
             click(root, "connectionButton");
         }).then(()=>{
-            assertMessage(root, "msgFieldError", "Veuillez remplir correctement tous les champs");
+            assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         })
     });
 

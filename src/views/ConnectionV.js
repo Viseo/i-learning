@@ -10,6 +10,7 @@ exports.ConnectionV = function (globalVariables) {
         gui = globalVariables.gui,
         IconCreator = globalVariables.Icons.IconCreator,
         drawCheck = globalVariables.Helpers.drawCheck,
+        popUp = globalVariables.popUp,
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         BUTTON_MARGIN = 80,
@@ -152,7 +153,8 @@ exports.ConnectionV = function (globalVariables) {
                             .color(myColors.greyerBlue)
                             .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                             .mark("forgottenPassText");
-                        this.newPasswordManipulator.set(0, forgotttenPassText);
+
+                       this.newPasswordManipulator.set(0, forgotttenPassText);
                         svg.timeout(() => {
                             this.newPasswordManipulator.set(0, fieldTitle);
                         }, 5000);
@@ -209,16 +211,7 @@ exports.ConnectionV = function (globalVariables) {
         tryLogin() {
             this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
-                let error = new svg.Text(message)
-                    .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
-                    .position(0, -(INPUT_SIZE.h + MARGIN))
-                    .color(myColors.red)
-                    .font(FONT, FONT_SIZE_INPUT)
-                    .mark("msgFieldError");
-                this.connectionButtonManipulator.add(error);
-                svg.timeout(() => {
-                    this.connectionButtonManipulator.remove(error);
-                }, 5000);
+                popUp.display(message,this.manipulator);
             });
         }
 

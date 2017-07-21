@@ -88,7 +88,7 @@ describe('register page', function(){
         });
 
     });
-    it('should find new focused field, ', function(){
+    it('should find new focused field ', function(){
         let {root, state, runtime} = given(()=>{
             return loadPage("Register");
         })

@@ -9,6 +9,7 @@ exports.QuizAdminV = function (globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
+        popUp = globalVariables.popUp,
         IconCreator = globalVariables.Icons.IconCreator,
         ListManipulatorView = globalVariables.Lists.ListManipulatorView,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
@@ -455,13 +456,8 @@ exports.QuizAdminV = function (globalVariables) {
         }
 
         displayMessage(message) {
-            let messageText = new svg.Text(message).font('Arial', 20);
-            messageText.position(drawing.width / 2, this.header.height + 20);
-            messageText.mark('infoMessage');
-            this.manipulator.add(messageText);
-            svg.timeout(() => {
-                this.manipulator.remove(messageText);
-            }, 3000);
+            popUp.display(message,this.manipulator);
+           
         }
 
 
@@ -1048,7 +1044,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
             }).catch(error => {
                 console.log(error);
-                this.displayMessage(error);
+                this.displayMessage(error );
             });
         }
 

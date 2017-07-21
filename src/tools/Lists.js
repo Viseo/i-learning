@@ -392,9 +392,9 @@ exports.Lists = function (globalVariables) {
         getButtonGlobalPoint(x, y){
             return this.selectButton.component.globalPoint(x, y);
         }
-        getSelectedManipulator(){
-            return this.selectedManipulator;
-        }
+        // getSelectedManipulator(){
+        //     return this.selectedManipulator;
+        // }
         getSelectedElement(label) {
             return this.listElements.find((elem) => {return elem == label;})
         }
@@ -407,6 +407,10 @@ exports.Lists = function (globalVariables) {
             this.manipulator.move(x, y);
             return this;
         };
+
+        getSelectButton() {     // test id marking
+            return this.selectButton;
+        }
 
         getSelectedButtonText() {
             return this.selectButton.text.getMessageText();
@@ -435,7 +439,7 @@ exports.Lists = function (globalVariables) {
             choice.onClick(() => {
                 let selectedChoice = this.getSelectedElement(this.getSelectedButtonText());
                 this.setSelectButtonText(ele);
-                this.selectedManipulator = manip;
+                // this.selectedManipulator = manip;
                 this.hideListView();
                 this.onClickChangeValueHandler && this.onClickChangeValueHandler(this.getSelectedButtonText(), selectedChoice);
             });
@@ -452,6 +456,10 @@ exports.Lists = function (globalVariables) {
             let manip = this.mapElements[ele];
             manip && this.listView.removeElementFromList(manip);
             this.listView.refreshListView();
+        }
+
+        mark(id) {
+            this.manipulator.mark(id);
         }
     }
 
