@@ -610,6 +610,9 @@ exports.DollAdminV = function (globalVariables) {
             actionList.refreshListView();
             this.elements.forEach((elem) => {
                 this.sandboxMain.content.add(elem.parentManip.component);
+                if (elem instanceof gui.TextField){
+                    resizeStringForText(elem.text, elem.width, elem.height);
+                }
             })
             this.displayObjectives();
             this.displayResponses();
