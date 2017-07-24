@@ -86,7 +86,10 @@ exports.DashboardAdmin = function (globalVariables) {
                 addFormationTextArea.control.placeHolder('Ajouter une formation');
                 addFormationTextArea.mark('addFormationTextInput');
                 addFormationTextArea.onInput((oldMessage, message, valid) => {
-                    if (!message || !oldMessage) {
+
+                    if(message.length > 50){
+                        addFormationTextArea.message(oldMessage);
+                    }else if (!message || !oldMessage) {
                         addFormationTextArea.text.message('Ajouter une formation');
                     }
                 });
@@ -297,7 +300,7 @@ exports.DashboardAdmin = function (globalVariables) {
         }
 
         displayErrorMessage(message) {
-            popUp.display(message, this.manipulator);
+            popUp.displayWarningMessage(message, this.manipulator);
         }
 
         getFormations() {

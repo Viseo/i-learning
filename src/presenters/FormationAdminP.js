@@ -57,30 +57,6 @@ exports.FormationAdminP = function(globalVariables){
                 this.view.displayMessage(check.error);
                 return Promise.resolve(false);
             }
-
-            /*
-            const messageError = "Vous devez remplir correctement le nom de la formation.";
-            if (label && label !== this.formation.labelDefault && label.match(this.regex)) {
-                const getObjectToSave = () => {
-                    return {label: this.formation.label};
-                };
-                if (this.formation.getId()){
-                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
-                        this.view.displayMessage(data.message);
-                        return data.status;
-                    });
-                }
-                else{
-                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
-                        this.view.displayMessage(data.message);
-                        return data.status;
-                    })
-                }
-            } else {
-                this.view.displayMessage(messageError);
-                return Promise.resolve(false);
-            }*/
-
         }
         getGameById(id){
             return this.formation.getGameById(id);

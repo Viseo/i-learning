@@ -59,7 +59,9 @@ exports.FormationAdminV = function (globalVariables) {
                 nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
                 nameFieldFormation.control.placeHolder('Titre de la formation');
                 nameFieldFormation.onInput((oldMessage, message, valid) => {
-                    if (!message || !oldMessage) {
+                    if(message.length > 50){
+                        nameFieldFormation.message(oldMessage);
+                    }else if (!message || !oldMessage) {
                         nameFieldFormation.text.message('Titre de la formation');
                     }
                 });
