@@ -7,6 +7,7 @@ exports.FormationAdminV = function (globalVariables) {
         drawings = globalVariables.drawings,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         IconCreator = globalVariables.Icons.IconCreator,
+        popUp = globalVariables.popUp,
         installDnD = globalVariables.gui.installDnD,
         Helpers = globalVariables.Helpers,
         View = globalVariables.View;
@@ -16,9 +17,10 @@ exports.FormationAdminV = function (globalVariables) {
         MINIATURE_SIZE = {w:200, h:75},
         PLUS_SIZE = {w: 40, h: 30},
         BUTTON_SIZE = {w: 150, h: 50},
-        INPUT_SIZE = {w: 300, h: 30},
+        INPUT_SIZE = {w: 350, h: 30},
         IMAGES_PER_LINE = 3,
-        MINIATURE_FONT_SIZE = 15,
+        MINIATURE_FONT_SIZE = 18,
+        HEADER_SIZE = {w:drawing.width, h:150},
         IMAGE_MINIATURE = 50;
 
 
@@ -34,18 +36,16 @@ exports.FormationAdminV = function (globalVariables) {
         display() {
             this.librarySize = {
                 width: INPUT_SIZE.w,
-                height: Math.max(drawing.height - this.header.height - 7 * MARGIN - 2 * BUTTON_SIZE.h, 500)
+                height: Math.max(drawing.height - this.header.height - HEADER_SIZE.h, 500)
             };
             this.graphSize = {
-                width: Math.max(drawing.width - INPUT_SIZE.w - 3 * MARGIN, 2*this.librarySize.width),
-                height: Math.max(drawing.height - this.header.height - 4 * MARGIN - BUTTON_SIZE.h, this.librarySize.height)
+                width: Math.max(drawing.width - INPUT_SIZE.w, 2*this.librarySize.width),
+                height: this.librarySize.height
             };
             let _initManips = () => {
-                this.nameFieldManipulator = new Manipulator(this).addOrdonator(4);
-                this.messageManipulator = new Manipulator(this).addOrdonator(1);
-                this.messageManipulator.move(drawing.width/2, this.header.height + 20);
-                this.manipulator.add(this.messageManipulator);
-                this.manipulator.add(this.nameFieldManipulator)
+                this.headerManipulator = new Manipulator(this);
+                this.headerManipulator.move(drawing.width/2, this.header.height + HEADER_SIZE.h/2);
+                this.manipulator.add(this.headerManipulator);
             }
             let _createNameFieldFormation = () => {
                 var _renameWhenEnter = (event) => {
@@ -54,10 +54,14 @@ exports.FormationAdminV = function (globalVariables) {
                         nameFieldFormation.hideControl();
                     }
                 }
-                let nameFieldFormation = new gui.TextField(0, 0, INPUT_SIZE.w - 25 - MARGIN, INPUT_SIZE.h, this.label)
-                nameFieldFormation.font(FONT, 15);
+                let header = new svg.Rect(HEADER_SIZE.w, HEADER_SIZE.h).color([0, 57, 114], 0, []);
+                this.headerManipulator.add(header);
+                let nameFieldFormation = new gui.TextField(-drawing.width/2 + 2*INPUT_SIZE.w + 2*MARGIN, 0, 2*INPUT_SIZE.w, 1.5*INPUT_SIZE.h, this.label)
+                nameFieldFormation.font(FONT, 36);
+                nameFieldFormation.editColor([[0, 47, 104], 0, myColors.none])
                 nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
                 nameFieldFormation.control.placeHolder('Titre de la formation');
+                nameFieldFormation.control.fontColor(myColors.white)
                 nameFieldFormation.onInput((oldMessage, message, valid) => {
                     if (!message || !oldMessage) {
                         nameFieldFormation.text.message('Titre de la formation');
@@ -66,50 +70,54 @@ exports.FormationAdminV = function (globalVariables) {
                 nameFieldFormation.onBlur(()=>{
                     nameFieldFormation.text.position(-nameFieldFormation.width / 2 + MARGIN, 7.5);
                 })
-                nameFieldFormation.color([myColors.lightgrey, 1, myColors.black]);
+                nameFieldFormation.color([[20, 77, 134], 1, myColors.none]);
+                nameFieldFormation.text.color(myColors.white);
                 nameFieldFormation.mark('formationTitle');
-                this.nameFieldManipulator.set(0, nameFieldFormation.component);
-
-                this.nameFieldManipulator.move(MARGIN + nameFieldFormation.width / 2, this.header.height + MARGIN + INPUT_SIZE.h * 2);
-                let saveIcon = new svg.Image('../../images/save.png');
+                let saveManip = new Manipulator(this);
+                let saveIcon = new svg.Image('../../images/saveWhite.png');
                 saveIcon
-                    .position(nameFieldFormation.width / 2 + 12.5 + MARGIN, 0)
-                    .dimension(25, 25)
+                    .dimension(30, 30)
                     .mark('saveNameButton');
-                this.nameFieldManipulator.set(3, saveIcon);
-                svg.addEvent(saveIcon, 'click', this.renameFormation.bind(this));
+                let saveText = new svg.Text('Modifier le titre')
+                    .font(FONT, 18)
+                    .color(myColors.white)
+                    .anchor('end')
+                    .position (-30,6);
+                let saveBorder = new svg.Rect(200, 75)
+                    .color([0, 57, 114], 1, myColors.white)
+                    .position(-67, 0)
+                    .corners(3,3);
+                saveManip.add(saveBorder).add(saveIcon).add(saveText);
+                saveManip.addEvent('click',()=>{this.renameFormation()})
+                this.headerManipulator.add(saveManip);
+                saveManip.move(drawing.width/2 - 6*MARGIN, 0);
+                svg.addEvent(saveIcon, 'click', this.renameFormation.bind(this))
+                this.headerManipulator.add(nameFieldFormation.component);
                 svg.addGlobalEvent('keydown', _renameWhenEnter);
                 this.nameFormationField = nameFieldFormation;
             }
             let _createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
-                this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton = new gui.Button(INPUT_SIZE.w, HEADER_SIZE.h, [[98, 221, 204], 1, myColors.none], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
-                this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font(FONT, 20).position(0, 6.6);
+                this.returnButton.text.font(FONT, 20).position(0, 6.6).color(myColors.white);
                 this.returnButtonManipulator.add(this.returnButton.component)
-                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
-                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
+                    .move(this.returnButton.width/2 - drawing.width/2, 0);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.white);
                 chevron.position(-130, 0);
                 this.returnButtonManipulator.add(chevron).mark('return');
                 this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
-                this.manipulator.add(this.returnButtonManipulator);
+                this.headerManipulator.add(this.returnButtonManipulator);
             }
             let createGraphPanel = () => {
-                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height, myColors.white);
+                this.graphPanel = new gui.Panel(this.graphSize.width, this.graphSize.height, myColors.lightgrey);
                 this.graphPanel.setScroll();
                 this.graphManipulator = new Manipulator(this).addOrdonator(3);
                 this.graphManipulator.set(0, this.graphPanel.component);
                 this.manipulator.add(this.graphManipulator);
-                this.graphManipulator.move(this.librarySize.width + this.graphSize.width / 2 + 2 * MARGIN,
-                    this.header.height + 2 * MARGIN + this.graphSize.height / 2);
-                this.graphPanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
-                this.titleGraph = new svg.Text('Formation : ' + this.label).font(FONT, 25).color(myColors.grey).anchor('left');
-                this.titleGraph.position(-0.85 * this.graphSize.width / 2, -this.graphSize.height / 2 + 8.3);
-                this.graphManipulator.set(2, this.titleGraph);
-                this.titleGraphBack = new svg.Rect(this.titleGraph.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-                this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
-                this.graphManipulator.set(1, this.titleGraphBack);
+                this.graphManipulator.move(this.librarySize.width + this.graphSize.width / 2,
+                    this.header.height + HEADER_SIZE.h + this.graphSize.height/2);
+                this.graphPanel.border.color(myColors.none, 1, myColors.none);
 
 
                 this.graphMiniatureManipulator = new Manipulator(this).addOrdonator(2);
@@ -149,18 +157,14 @@ exports.FormationAdminV = function (globalVariables) {
             };
             let createGameLibrary = () => {
                 this.gamePanel = new gui.Panel(this.librarySize.width, this.librarySize.height);
-                this.gamePanel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
+                this.gamePanel.border.color(myColors.none, 1, myColors.none);
                 this.gameLibraryManipulator = new Manipulator(this).addOrdonator(3);
                 this.gameLibraryManipulator.set(0, this.gamePanel.component);
-                this.gameLibraryManipulator.move(INPUT_SIZE.w / 2 + MARGIN, this.gamePanel.height / 2 + this.header.height + 2 * INPUT_SIZE.h + 4 * MARGIN);
+                this.gameLibraryManipulator.move(INPUT_SIZE.w / 2, HEADER_SIZE.h + this.header.height + this.gamePanel.height/2);
                 this.manipulator.add(this.gameLibraryManipulator);
-                this.titleLibrary = new svg.Text('Jeux').color(myColors.grey).font(FONT, 25).anchor('left');
-                this.titleLibrary.position(-0.85 * this.gamePanel.width / 2, -this.gamePanel.height / 2 + 8.33);
+                this.titleLibrary = new svg.Text('Jeux').color(myColors.black).font(FONT, 25);
+                this.titleLibrary.position(0,-this.gamePanel.height/2 + 3*MARGIN);
                 this.gameLibraryManipulator.set(2, this.titleLibrary);
-                this.titleLibraryBack = new svg.Rect(this.titleLibrary.boundingRect().width + 2 * MARGIN, 3).color(myColors.white);
-                this.titleLibraryBack.position(-0.85 * this.gamePanel.width / 2 + this.titleLibrary.boundingRect().width / 2,
-                    -this.gamePanel.height / 2);
-                this.gameLibraryManipulator.set(1, this.titleLibraryBack);
                 let createArrowMode = () => {
                     let arrowRect = {
                         border: new svg.Line(-this.librarySize.width / 2, 0, this.librarySize.width / 2, 1).color(myColors.grey, 1, myColors.grey),
@@ -190,7 +194,7 @@ exports.FormationAdminV = function (globalVariables) {
             this.getGamesLibrary().list.forEach((game, count) => {
                 let createMiniature = () => {
                     let miniature = {
-                        border: new svg.Rect(MINIATURE_SIZE.w, MINIATURE_SIZE.h).color(myColors.white, 1, myColors.grey).corners(10, 10),
+                        border: new svg.Rect(MINIATURE_SIZE.w, MINIATURE_SIZE.h).color(myColors.white, 1, [0, 155, 220]).corners(10, 10),
                         content: new svg.Text(game.type).font(FONT, MINIATURE_FONT_SIZE),
                         manipulator: new Manipulator(this).mark(game.type + "LibManip")
                     };
@@ -198,7 +202,7 @@ exports.FormationAdminV = function (globalVariables) {
                 };
 
                 let miniature = createMiniature();
-                miniature.manipulator.move(0, (2 * MARGIN + MINIATURE_SIZE.h / 2) + count * (MINIATURE_SIZE.h + 2 * MARGIN) - this.librarySize.height / 2);
+                miniature.manipulator.move(0, (6 * MARGIN + MINIATURE_SIZE.h / 2) + count * (MINIATURE_SIZE.h + 2 * MARGIN) - this.librarySize.height / 2);
                 miniature.manipulator.add(miniature.border).add(miniature.content);
                 this.gameLibraryManipulator.add(miniature.manipulator);
                 let createDraggableCopy = event => {
@@ -234,7 +238,7 @@ exports.FormationAdminV = function (globalVariables) {
                 this.buttonsManipulator.add(this.saveButton.component);
                 this.manipulator.add(this.buttonsManipulator);
                 this.buttonsManipulator.move(this.gamePanel.width + MARGIN * 2,
-                    BUTTON_SIZE.h / 2 + this.graphPanel.height + this.header.height + 3 * MARGIN);
+                    BUTTON_SIZE.h / 2 + this.graphPanel.height + this.header.height + 7 * MARGIN);
                 this.publishButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.white, 1, myColors.grey], 'Publier');
                 this.publishButton.glass.mark('publishFormation');
                 this.publishButton.position(0.4 * this.graphPanel.width + 1.5*BUTTON_SIZE.w, 0);
@@ -243,7 +247,6 @@ exports.FormationAdminV = function (globalVariables) {
                 this.buttonsManipulator.add(this.publishButton.component);
                 this.manipulator.add(this.buttonsManipulator);
             }
-            //flushGraph();
             createButtons();
             let formation = this.getFormation();
             formation.levelsTab.forEach(level => {
@@ -349,30 +352,53 @@ exports.FormationAdminV = function (globalVariables) {
 
         displayLevel(level) {
             let miniatureSelection = (miniature) => {
-                if (!this.arrowMode) {
-                    this.unselectMiniature();
+                if (!this.arrowMode && this.selectedMiniature && this.selectedMiniature.miniature != miniature){
+                    this.unselectMiniature()
+                }
+                if (!this.arrowMode && !this.selectedMiniature) {
                     miniature.border.color(myColors.white, 2, myColors.darkBlue);
-                    miniature.manipulator.set(3, miniature.redCrossManipulator);
-                    this.miniatureSelected = miniature;
+                    let trash = new svg.Image('../../images/trash.png').dimension(25,25).position(MINIATURE_SIZE.w/2 + 20, 0);
+                    svg.addEvent(trash, 'click', ()=>{
+                        this.removeGame(miniature.manipulator.  game);
+                    })
+                    miniature.manipulator.set(3, trash);
+                    miniature.manipulator.set(2, miniature.iconImage.manipulator);
+                    let index = miniature.manipulator.game.gameIndex;
+                    for (let i = index + 1; i < levelMinaturesManipulators.length; i++) {
+                        let tmp = levelMinaturesManipulators[i];
+                        tmp.move(tmp.x + 100, tmp.y);
+                    }
+                    this.updateAllLinks();
+                    let reset = ()=>{
+                        for (let i = index + 1; i < levelMinaturesManipulators.length; i++) {
+                            let tmp = levelMinaturesManipulators[i];
+                            tmp.move(tmp.x - 100, tmp.y);
+                        }
+                        this.updateAllLinks();
+                    };
+                    this.selectedMiniature = {miniature:miniature, resetFunct: reset};
                 }
             }
             let createGameMiniature = (game) => {
                 let miniature = {
-                    border: new svg.Rect(MINIATURE_SIZE.w, MINIATURE_SIZE.h).corners(10, 10).color(myColors.white, 1, myColors.grey),
-                    content: new svg.Text(game.label).font(FONT, 15).position(0, 5),
+                    border: new svg.Rect(MINIATURE_SIZE.w, MINIATURE_SIZE.h).corners(10, 10).color(myColors.lightgrey, 1,[0, 155, 220]),
+                    content: new svg.Text(game.label).font(FONT, 15).anchor('left').position(-MINIATURE_SIZE.w/2 + MARGIN, 5),
                     manipulator: new Manipulator(this).addOrdonator(4).mark('miniatureGameManip' + game.id),
                 }
-                let iconAddImage = IconCreator.createAddImage(miniature.manipulator);
-                iconAddImage.position(MINIATURE_SIZE.w / 2 - 2 * MARGIN, -MINIATURE_SIZE.h / 2 + 2 * MARGIN);
+                let iconAddImage = IconCreator.createAddImage(miniature.manipulator, 2);
+                iconAddImage.position(MINIATURE_SIZE.w / 2 + 6 * MARGIN, 0);
                 iconAddImage.manipulator.mark("popUpImg" + game.id);
                 iconAddImage.addEvent('click', () => {
                     this.displayPopUpImage(miniature)
                 });
+                miniature.manipulator.unset(2);
+                miniature.iconImage = iconAddImage;
+
 
                 if (game.imageSrc) {
                     miniature.picture = new svg.Image(game.imageSrc);
                     miniature.picture.dimension(IMAGE_MINIATURE, IMAGE_MINIATURE);
-                    miniature.picture.position(-MINIATURE_SIZE.w / 2 + IMAGE_MINIATURE / 2 + MARGIN, 0);
+                    miniature.picture.position(MINIATURE_SIZE.w / 2 - IMAGE_MINIATURE / 2 - 2*MARGIN, 0);
                     miniature.manipulator.add(miniature.picture);
                 }
                 miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
@@ -442,36 +468,27 @@ exports.FormationAdminV = function (globalVariables) {
             let levelIndex = level.index;
 
             let levelMiniature = {
-                line: new svg.Line(0, 5, 150, 5).color(myColors.black, 1, myColors.black),
-                text: new svg.Text('Level : ' + (levelIndex + 1)).font(FONT, MINIATURE_FONT_SIZE).anchor('left'),
-
-                icon: {
-                    rect: new svg.Rect(20, 100).color(myColors.white, 1, myColors.black).position(150, 5).corners(10, 10),
-                    whiteRect: new svg.Rect(10, 110).color(myColors.white, 0, myColors.none).position(158, 5)
-                }
+                text: new svg.Text('Level : ' + (levelIndex + 1)).font(FONT, MINIATURE_FONT_SIZE)
+                    .anchor('left')
+                    .color([0, 155, 220])
+                    .position(MARGIN, MINIATURE_FONT_SIZE/3),
+                trash: new svg.Image('../../images/trash.png').dimension(25,25).position(100,0)
             }
+            svg.addEvent(levelMiniature.trash, 'click', ()=>{this.removeLevel(level)});
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width / 2 + MARGIN, (levelIndex) * LEVEL_HEIGHT - this.graphSize.height / 2 + LEVEL_HEIGHT / 2);
-            let levelRedCrossManipulator = new Manipulator(this);
-            let levelRedCross = IconCreator.createRedCrossIcon(levelRedCrossManipulator);
-            levelRedCross.mark('redCrossLevel' + levelIndex);
-            levelManipulator.add(levelRedCrossManipulator);
-            levelRedCross.addEvent('click', () => {
-                this.removeLevel(level)
-            });
 
-            levelManipulator.set(0, levelMiniature.line)
+            levelManipulator.set(0, levelMiniature.trash)
                 .set(1, levelMiniature.text)
-                .set(2, levelMiniature.icon.rect)
-                .set(3, levelMiniature.icon.whiteRect);
-
+            let levelMinaturesManipulators = [];
             level.getGamesTab().forEach(game => {
                 let gameMiniature = createGameMiniature(game);
                 this.mapGameAndGui[game.id] = gameMiniature;
                 gameMiniature.manipulator.set(0, gameMiniature.border)
                     .set(1, gameMiniature.content);
                 levelManipulator.add(gameMiniature.manipulator);
-                resizeStringForText(gameMiniature.content,MINIATURE_SIZE.w,MINIATURE_SIZE.h);
+                levelMinaturesManipulators.push(gameMiniature.manipulator);
+                resizeStringForText(gameMiniature.content,MINIATURE_SIZE.w*2/3,MINIATURE_SIZE.h);
                 gameMiniature.manipulator.move(160 + game.gameIndex * (MINIATURE_SIZE.w + MARGIN) + MINIATURE_SIZE.w / 2, 5);
             });
 
@@ -543,10 +560,13 @@ exports.FormationAdminV = function (globalVariables) {
         }
 
         unselectMiniature() {
-            if (this.miniatureSelected) {
-                this.miniatureSelected.border.color(myColors.white, 1, myColors.grey);
-                this.miniatureSelected.manipulator.unset(3);
+            if (this.selectedMiniature) {
+                this.selectedMiniature.miniature.border.color(myColors.lightgrey, 1, [0, 155, 220]);
+                this.selectedMiniature.miniature.manipulator.unset(3);
+                this.selectedMiniature.miniature.manipulator.unset(2);
             }
+            this.selectedMiniature && this.selectedMiniature.resetFunct();
+            this.selectedMiniature = null;
         }
 
         dropAction(x, y, item) {
@@ -581,12 +601,7 @@ exports.FormationAdminV = function (globalVariables) {
         }
 
         displayMessage(message) {
-            let messageText = new svg.Text(message).font(FONT, 20);
-            messageText.mark('infoMessage');
-            this.messageManipulator.set(0,messageText);
-            svg.timeout(() => {
-                this.messageManipulator.remove(messageText);
-            }, 3000);
+            popUp.display(message, this.manipulator);
         }
 
         getGamesLibrary() {

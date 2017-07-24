@@ -6,24 +6,29 @@ exports.DashboardCollabV = function (globalVariables) {
         drawing = globalVariables.drawing,
         PopOut = globalVariables.Icons.PopOut,
         IconCreator = globalVariables.Icons.IconCreator,
+        drawCheck = globalVariables.Helpers.drawCheck,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         View = globalVariables.View,
+        popUp = globalVariables.popUp,
         ClipPath = globalVariables.clipPath;
 
-    const TILE_SIZE = {w: 490, h: 100, rect: {w: 400, h: 100}},
-        SPACE_BETWEEN = 20,
+    const TILE_SIZE = {w: 300, h: 450},
+        SPACE_BETWEEN = 70,
         CLIP_SIZE = 45,
-        IMAGE_SIZE = 150;
+        INPUT_SIZE = {w: 400, h: 30},
+        IMAGE_SIZE = {w:300, h:300};
 
     class DashboardCollabV extends View {
         constructor(presenter) {
             super(presenter);
+            this.headerDim = {w:drawing.width, h:300};
         }
 
         display() {
             let _initManips = () => {
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
                 this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
+                this.headerManip = new Manipulator(this);
                 this.manipulator
                     .add(this.toggleFormationsManipulator);
             };
@@ -77,93 +82,220 @@ exports.DashboardCollabV = function (globalVariables) {
 
                     this.toggleFormationsManipulator.move(positionCaption.x, positionCaption.y);
                 }
-
                 _createIcon();
                 _createFilter();
                 _placeIcons();
             };
             let _createBack = () => {
                 let headHeight = this.header.height + MARGIN;
-                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, drawing.height - headHeight - TILE_SIZE.h + 2 * MARGIN, myColors.none);
-                this.panel.position(this.panel.width / 2 + MARGIN,
-                    this.panel.height / 2 + headHeight + 2 * MARGIN + 2 * this.doneIcon.getSize());
-                this.backRect = new svg.Rect(5000, 5000) //TODO
-                    .position(this.panel.width / 2, this.panel.height / 2)
-                    .color(myColors.white, 0, myColors.none);
-                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5, 5);
-                this.title = new svg.Text('Formations :').font(FONT, 25).color(myColors.grey);
-                this.title.position(200, headHeight + 2 * MARGIN + 8.3 + 2 * this.doneIcon.getSize())
-                this.titleBack = new svg.Rect(200, 3).color(myColors.white, 0, myColors.none);
-                this.titleBack.position(200, headHeight + 2 * MARGIN + 2 * this.doneIcon.getSize());
+                this.panel = new gui.Panel(drawing.width, drawing.height - this.headerDim.h, myColors.lightgrey)
+                this.panel.position(this.panel.width / 2 , this.panel.height / 2 + this.headerDim.h);
+                this.panel.border.color(myColors.none, 1, myColors.none).corners(5, 5);
+                let hideElementBeforeEndOfPanel = new svg.Rect(this.panel.width, 20)
+                    .color(myColors.lightgrey, 0, myColors.none)
+                    .position(this.panel.component.x, this.panel.component.y-this.panel.height/2+ 10);
+                this.panel.setScroll();
+                let title = new svg.Text('FORMATIONS')
+                    .font(FONT, 28).color([30,192,161])
+                    .position(drawing.width/2, this.panel.component.y-this.panel.height/2+ 10)
                 this.manipulator.add(this.panel.component)
-                    .add(this.titleBack)
-                    .add(this.title)
-                this.panel.content.add(this.backRect);
+                    .add(hideElementBeforeEndOfPanel)
+                    .add(title)
                 this.panel.content.add(this.miniaturesManipulator.first);
+            }
+            let displayHeader = ()=>{
+                let _addSearchBar = (width, y)=>{
+                    let manip = new Manipulator(this);
+                    let searchZone = new svg.Rect(width, INPUT_SIZE.h + 1/2*MARGIN);
+                    searchZone.corners(10,10).color(myColors.white, 2, [30,192,161])
+                    manip.add(searchZone);
+                    manip.move(drawing.width/2, y);
+                    let searchIcon = new svg.Image('../../images/search.png').dimension(20,20)
+                        .position(-width/2 + 2*MARGIN, 0);
+                    let textArea = new gui.TextField(MARGIN,0, width-5*MARGIN, INPUT_SIZE.h-2, '');
+                    textArea.control.placeHolder('Rechercher une formation')
+                    textArea.color([myColors.white, 0, myColors.none]);
+                    textArea.editColor([myColors.white, 0, myColors.none]);
+                    textArea.font(FONT, 18);
+                    textArea.text.font(FONT,18).position(textArea.text.x,6);
+                    textArea.onInput((old,newm, valid)=>{
+                        let regex = new RegExp(newm);
+                        this.displayFormations(regex);
+                    });
+                    this.doneIconFilter = this.createIcon('done');
+                    this.doneIconFilter.move(drawing.width/2,this.headerDim.h/2 - 3*MARGIN)
+                    this.inProgressIconFilter = this.createIcon('inProgress');
+                    this.inProgressIconFilter.move(drawing.width/2 - 100,this.headerDim.h/2 - 3*MARGIN)
+                    this.undoneIconFilter = this.createIcon('undone');
+                    this.undoneIconFilter.move(drawing.width/2 - 230,this.headerDim.h/2 - 3*MARGIN)
+                    this.doneIconFilter.addEvent('click', ()=>{
+                        this.toggleFilter('done')
+                    })
+                    this.undoneIconFilter.addEvent('click', ()=>{
+                        this.toggleFilter('undone')
+                    })
+                    this.inProgressIconFilter.addEvent('click', ()=>{
+                        this.toggleFilter('inProgress')
+                    })
+                    manip.add(this.doneIconFilter).add(this.undoneIconFilter).add(this.inProgressIconFilter);
+                    manip.add(textArea.component)
+                    manip.add(searchIcon)
+                    return manip;
+                }
+
+                this.manipulator.add(this.headerManip.component);
+                let backgroundPic = new svg.Image('../../images/german.png').dimension(drawing.width, drawing.width).position(drawing.width/2,0);
+                this.headerManip.add(backgroundPic);
+                let searchBar = _addSearchBar(2*INPUT_SIZE.w, this.headerDim.h/2);
+                this.headerManip.add(searchBar);
             }
 
             super.display()
             _initManips();
-            this.displayHeader("Dashboard");
             _displayIcons();
+            displayHeader();
             _createBack();
+            this.displayHeader("Dashboard");
             this.displayFormations();
         }
 
+        toggleFilter(type){
+            this.inProgressIconFilter.background.color([], 0, []);
+            this.undoneIconFilter.background.color([], 0, []);
+            this.doneIconFilter.background.color([], 0, []);
+            if(this.activeFilter == type){
+                this.activeFilter = '';
+            }else{
+                this.activeFilter = type;
+            }
+            switch(type){
+                case'done':
+                    this.doneIconFilter.background.color([], 2, [30,192,161]);
+                    break;
+                case'undone':
+                    this.undoneIconFilter.background.color([], 2, [0,108,216]);
+                    break;
+                case'inProgress':
+                    this.inProgressIconFilter.background.color([], 2, myColors.orange);
+                    break;
+                default:
+                    this.inProgressIconFilter.background.color([], 0, []);
+                    this.undoneIconFilter.background.color([], 0, []);
+                    this.doneIconFilter.background.color([], 0, []);
+                    this.activeFilter = '';
+            }
+            this.displayFormations();
+        }
 
-        displayFormations() {
+        createIcon(type){
+            let manip = new Manipulator(this);
+            if (type == 'undone'){
+                let pic = new svg.Image('../../images/play-button2.png').dimension(25,25).position(-100,0);
+                let text = new svg.Text('Démarrer').font(FONT, 18).color([0,108,216]).position(-85,6).anchor('left');
+                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
+                manip.add(background);
+                manip.background = background;
+                manip.add(pic).add(text);
+                return manip;
+            }
+            else if (type == 'done'){
+                var _getPathCheckContent = (size) => {
+                    let path = [{x: -.3 * size, y: -.1 * size}, {x: -.1 * size, y: .2 * size},
+                        {x: +.3 * size, y: -.3 * size}];
+                    return path;
+                };
+                let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161]);
+                let check = drawCheck(-70,0,15).color([], 2, [30,192,161]);
+                let text = new svg.Text('Faite').font(FONT, 18).color([30,192,161]).position(-50,6).anchor('left');
+                let background = new svg.Rect(100, 50).color([], 0, []).position(-50, 0);
+                manip.add(background);
+                manip.background = background;
+                rect.position(-70, 0);
+                manip.add(rect).add(check).add(text);
+                return manip;
+            }else if (type == 'inProgress'){
+                let pic = new svg.Image('../../images/time-left.png').dimension(25,25).position(-100,0);
+                let text = new svg.Text('En cours').font(FONT, 18).color(myColors.orange).position(-80,6).anchor('left');
+                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
+                manip.add(background);
+                manip.background = background;
+                manip.add(pic).add(text);
+                return manip;
+            }
+        }
+
+        displayFormations(searchRegex) {
             var _displayMiniature = (formation, i, note) => {
                 let _createMiniature = () => {
-                    let manipulator = new Manipulator(this).addOrdonator(4).mark('miniature' + formation._id);
-                    let border = new svg.Rect(TILE_SIZE.w - 2 * CLIP_SIZE, TILE_SIZE.h)
+                    border = new svg.Rect(TILE_SIZE.w, TILE_SIZE.h)
                         .corners(2, 2)
-                        .color(myColors.lightgrey, 0.5, myColors.grey)
-                        .position(2 * CLIP_SIZE / 2, 0);
-                    let clip = new ClipPath('image' + formation._id);
-                    clip.add(new svg.Circle(CLIP_SIZE).position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0))
+                        .color(myColors.white, 0.5, myColors.grey)
+                        .mark("miniatureBorder" + formation.label);
+                    shadow = new svg.Rect(TILE_SIZE.w, TILE_SIZE.h)
+                        .corners(2, 2)
+                        .color(myColors.halfGrey, 0, myColors.none)
+                        .position(3, 3)
+                        .mark("miniatureBorder" + formation.label);
+                    let statusIcon = this.createIcon(formation.progress);
+                    if (statusIcon) {
+                        statusIcon.move(TILE_SIZE.w / 2, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 3 * MARGIN);
+                        manipulator.add(statusIcon);
+                    }
+                    // let statusIcon = new IconCreator().createIconByName(formation.status, manipulator, 3);
+                    // statusIcon && statusIcon.position(TILE_SIZE.w / 2 - 3*MARGIN, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
-                        .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0).dimension(IMAGE_SIZE, 2 * CLIP_SIZE)
-                        .attr('clip-path', 'url(#image' + formation._id + ')');
-                    let backCircle = new svg.Circle(CLIP_SIZE + 5)
-                        .color(myColors.lightgrey, 0.5, myColors.grey)
-                        .position(-TILE_SIZE.w / 2 + 2 * CLIP_SIZE, 0);
+                        .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h) / 2)
+                        .dimension(IMAGE_SIZE.w, IMAGE_SIZE.h)
                     let content = new svg.Text(formation.label)
-                        .position(CLIP_SIZE, -TILE_SIZE.h / 4)
-                        .font(FONT, 20)
-                        .mark('textMiniature' + formation._id);
-                    resizeStringForText(content, TILE_SIZE.rect.w - 8 * MARGIN, TILE_SIZE.rect.h)
-                    let icon = new IconCreator().createIconByName((formation.progress) ? formation.progress : "undone",
-                        manipulator, 2);
-                    icon.position(TILE_SIZE.w / 2, -TILE_SIZE.h / 2 - icon.getSize() / 2);
-                    manipulator.set(0, border).set(1, backCircle).set(3, picture).add(clip).add(content);
-                    return {
-                        border: border,
-                        clip: clip,
-                        manipulator: manipulator,
-                        backCircle: backCircle,
-                        content: content
-                    };
+                        .position(-TILE_SIZE.w / 2 + MARGIN, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 3 * MARGIN + 7.3)
+                        .font(FONT, 22)
+                        .anchor('left');
+                    let description = new svg.Text('Description')
+                        .position(-TILE_SIZE.w / 2 + MARGIN, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 6 * MARGIN + 5.3)
+                        .font(FONT, 16)
+                        .anchor('left');
+                    manipulator.add(content)//.add(clip);
+                    manipulator.add(description)
+                    manipulator.set(0, shadow)
+                    manipulator.set(1, border)
+                    //manipulator.set(1, backCircle)
+                    manipulator.set(2, picture);
+                    this.miniaturesManipulator.add(manipulator);
+                    resizeStringForText(content, TILE_SIZE.w - 100, TILE_SIZE.h);
+
+                    if (formation.status === 'Published') {
+                        let displayNotationManip = new Manipulator(this);
+                        let textNotation = new svg.Text('Moyenne : '
+                            + formation.note
+                            + '/5 (' + formation.noteCounter
+                            + ' votes)')
+                            .font(FONT, 14, 15).anchor('end');
+                        resizeStringForText(textNotation, 120, 10);
+                        displayNotationManip.add(textNotation);
+                        displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
+                        manipulator.add(displayNotationManip);
+                    }
                 };
-                let _placeMiniature = (miniature, i) => {
-                    let elementPerLine = Math.floor((drawing.width - 2 * MARGIN) / (TILE_SIZE.w + SPACE_BETWEEN));
+                let _placeMiniature = (manip, i) => {
+                    let elementPerLine = Math.floor((drawing.width - 2 * MARGIN) / (TILE_SIZE.w + SPACE_BETWEEN/2));
                     elementPerLine = elementPerLine ? elementPerLine : 1;
                     let line = Math.floor(i / elementPerLine)
-                    let y = line * (TILE_SIZE.h * 1.5);
+                    let y = line * (TILE_SIZE.h * 1.1);
                     let x = (i - line * elementPerLine) * (TILE_SIZE.w + SPACE_BETWEEN)
-                    miniature.manipulator.move(x, y);
+                    manip.move(x, y);
                 };
                 let _colorWhenHover = () => {
                     let onMouseOverSelect = miniature => {
-                        miniature.border.color([130, 180, 255], 1, myColors.black);
-                        miniature.backCircle.color([130, 180, 255], 1, myColors.black);
-                        miniature.manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature));
+                        border.color([130, 180, 255], 1, myColors.black);
+                        shadow.position(6,6);
+                        manipulator.addEvent("mouseleave", () => onMouseOutSelect(miniature));
                     };
                     let onMouseOutSelect = miniature => {
-                        miniature.backCircle.color(myColors.lightgrey, 0.5, myColors.grey);
-                        miniature.border.color(myColors.lightgrey, 0.5, myColors.grey);
+                        border.color(myColors.white, 0.5, myColors.grey);
+                        shadow.position(3,3);
                     };
-                    miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
+                    manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
                 }
                 let _createStars = () => {
                     let _displayNotation = () => {
@@ -175,11 +307,11 @@ exports.DashboardCollabV = function (globalVariables) {
                         resizeStringForText(textNotation, 120, 10);
                         displayNotationManip.add(textNotation);
                         displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
-                        miniature.manipulator.add(displayNotationManip);
+                        manipulator.add(displayNotationManip);
                         return textNotation;
                     };
 
-                    let factor = 8;
+                    let factor = 7;
                     let onStarClick = (starObject, textNotation) => {
                         starMiniatures.showActualStarColor();
                         this.updateSingleFormationStars(formation.formationId, starObject.id, formation._id).then((data) => {
@@ -196,7 +328,7 @@ exports.DashboardCollabV = function (globalVariables) {
                             starMiniatures[i].color(myColors.orange, 0.2, myColors.orange);
                             id = starMiniatures[i].id;
                         }
-                        miniature.manipulator.event('mouseenter');
+                        manipulator.event('mouseenter');
                     };
 
                     let onStarLeave = () => {
@@ -205,7 +337,7 @@ exports.DashboardCollabV = function (globalVariables) {
                     };
 
                     let textNotation = _displayNotation();
-                    let starMiniatures = this.createRating(miniature.manipulator);
+                    let starMiniatures = this.createRating(manipulator);
                     starMiniatures.forEach(
                         star => {
                             svg.addEvent(star, "click", () => onStarClick(star, textNotation));
@@ -215,40 +347,44 @@ exports.DashboardCollabV = function (globalVariables) {
                     );
                     starMiniatures.popMark(formation.label);
                     starMiniatures.scaleStar(factor);
-                    starMiniatures.starPosition(-TILE_SIZE.rect.w / 2 + CLIP_SIZE * 2 + MARGIN, TILE_SIZE.h / 2 - starMiniatures.getHeight() - MARGIN);
+                    starMiniatures.starPosition(-TILE_SIZE.w / 2 + MARGIN, TILE_SIZE.h / 2 - starMiniatures.getHeight() - MARGIN);
 
                     let notationText = new svg.Text('Notez cette formation :')
-                        .position(-TILE_SIZE.rect.w / 2 + CLIP_SIZE * 2 + MARGIN, TILE_SIZE.h / 2 - starMiniatures.getHeight() - MARGIN - 14 / 3)
+                        .position(-TILE_SIZE.w / 2 + MARGIN, TILE_SIZE.h / 2 - starMiniatures.getHeight() - MARGIN - 14 / 3)
                         .font(FONT, 14, 15)
                         .anchor('left');
-                    miniature.manipulator.add(notationText);
+                    manipulator.add(notationText);
 
                     note && starMiniatures.defineNote(note.note);
                 };
-
+                let border, shadow;
+                let manipulator = new Manipulator(this).addOrdonator(4).mark("miniatureManip" + formation.label);
                 let miniature = _createMiniature();
-                this.miniaturesManipulator.add(miniature.manipulator);
-                _placeMiniature(miniature, i);
-                miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
+                this.miniaturesManipulator.add(manipulator);
+                _placeMiniature(manipulator, i);
+                manipulator.addEvent("click", () => this.clickOnFormation(formation));
                 _colorWhenHover();
                 if (formation.progress === 'done') _createStars();
             };
-
+            this.miniaturesManipulator.flush();
             this.getNotes().then((data) => {
                 let notes = data;
 
                 let indexShow = 0;
                 this.getFormations().forEach((formation, i) => {
-                    if (this.inProgressIcon.isInAction() && formation.progress !== 'inProgress') return;
-                    if (this.doneIcon.isInAction() && formation.progress !== 'done') return;
-                    if (this.undoneIcon.isInAction() && formation.progress !== 'undone') return;
+                    if (this.activeFilter && this.activeFilter == 'inProgress' && formation.progress !== 'inProgress') return;
+                    if (this.activeFilter && this.activeFilter == 'done' && formation.progress !== 'done') return;
+                    if (this.activeFilter && this.activeFilter == 'undone' && formation.progress !== 'undone') return;
+                    if(searchRegex && !formation.label.match(searchRegex)) return;
                     let note = notes.filter(function (el) {
                         return (el.formationId === formation.formationId)
                     });
                     _displayMiniature(formation, indexShow++, note.length > 0 ? note[0] : null);
                 });
-                this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
+                let x = this.miniaturesManipulator.component.boundingRect();
+                this.miniaturesManipulator.move(TILE_SIZE.w/2 + this.panel.width/2 - x.width/2, TILE_SIZE.h / 2 + 3 * MARGIN);
             });
+
         }
 
         createRating(manipulator, layer) {
