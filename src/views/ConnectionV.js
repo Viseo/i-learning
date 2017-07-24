@@ -10,15 +10,17 @@ exports.ConnectionV = function (globalVariables) {
         gui = globalVariables.gui,
         IconCreator = globalVariables.Icons.IconCreator,
         drawCheck = globalVariables.Helpers.drawCheck,
-        popUp = globalVariables.popUp,
-        FONT_SIZE_INPUT = 20,
-        FONT_SIZE_TITLE = 25,
-        BUTTON_MARGIN = 80,
-        CHECKBOX_SIZE = 15,
-        EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
-        COLORS = [myColors.white, 1, myColors.black],
+        popUp = globalVariables.popUp;
+
+    const
+        FONT_SIZE_INPUT = 18,
+        FONT_SIZE_TEXT = 15,
+        CHECKBOX_SIZE = 20,
+        BUTTON_WIDTH = 230,
+        FIELDS_COLORS = [myColors.white, 1, myColors.turquoise],
         TITLE_COLOR = [myColors.white, 0, myColors.white];
-        var INPUT_SIZE, BUTTON_HEIGHT;
+
+    var FORM_POS_X, ELEMENTS_MARGIN, BIG_ICON_MARGIN, INPUT_SIZE, BUTTON_HEIGHT, BIG_ICON_HEIGHT;
 
     class ConnectionV extends View {
         constructor(presenter) {
@@ -26,28 +28,100 @@ exports.ConnectionV = function (globalVariables) {
             this.inputs = [];
         }
 
+        displayHeader(){
+            var _displayConnection = () => {
+                let messageText = new svg.Text('CONNEXION')
+                    .dimension(BUTTON_WIDTH, this.height)
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .fontWeight('bold')
+                    .color(myColors.black)
+                    .mark("headerMessage");
+                this.manipulator.add(messageText);
+                messageText.position(this.header.width - BUTTON_WIDTH - BUTTON_WIDTH/2 - 2*MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
+                let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], "Créer un compte")
+                    .corners(25, 25)
+                    .onClick(this.switchPage.bind(this))
+                button.text.font(FONT)
+                button.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height/2 + MARGIN)
+                this.manipulator.add(button.component)
+            }
+            var _displayRegister = () => {
+                let messageText = new svg.Text('CREER UN COMPTE')
+                    .dimension(BUTTON_WIDTH, this.height)
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .fontWeight('bold')
+                    .color(myColors.black)
+                    .mark("headerMessage");
+                this.manipulator.add(messageText);
+                messageText.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
+                let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], "Connexion")
+                    .corners(25, 25)
+                    .onClick(this.switchPage.bind(this))
+                button.text.font(FONT)
+                button.position(this.header.width - button.width/2 - 2*MARGIN - BUTTON_WIDTH, this.header.height/2 + MARGIN)
+                this.manipulator.add(button.component)
+            }
+
+            super.displayHeader();
+            if(this.isConnectionPage()){
+                _displayConnection();
+            }else {
+                _displayRegister();
+            }
+        }
+
         display() {
             var _calcSizes = () => {
-                INPUT_SIZE = {w:Math.max(400, drawing.width/3), h: 30};
+                FORM_POS_X = drawing.width*3/4;
+                ELEMENTS_MARGIN = drawing.height*4/100;
+                BIG_ICON_MARGIN = ELEMENTS_MARGIN*3;
+                INPUT_SIZE = {w: drawing.width / 4, h: ELEMENTS_MARGIN*5/4};
                 BUTTON_HEIGHT = INPUT_SIZE.h * 5 / 4;
             }
+            var _displayBackground = () => {
+                let offsetX = (drawing.width - drawing.height * (16 / 9)) / 2;
+                let offsetY = (drawing.height - drawing.width / (16 / 9)) / 2;
+                if (offsetX < 0) offsetX = 0;
+                if (offsetY < 0) offsetY = 0;
+
+                let background = new svg.Image('../images/login_back.png')
+                    .dimension(drawing.width, drawing.height)
+                    .position(drawing.width / 2 - offsetX, drawing.height / 2 + offsetY)
+                this.manipulator.add(background);
+            }
             var _initManips = () => {
-                this.fieldsManip = new Manipulator(this);
-                this.cookieManipulator = new Manipulator(this);
-                this.cookieManipulator.component.mark("cookieManipulator");
-                this.newPasswordManipulator = new Manipulator(this).addOrdonator(1);
-                this.newPasswordManipulator.component.mark("newPasswordManipulator");
+                this.bigIconManipulator = new Manipulator(this);
+                this.fieldsManipulator = new Manipulator(this);
+                this.cookieManipulator = new Manipulator(this).mark("cookieManipulator")
+                this.newPasswordManipulator = new Manipulator(this).addOrdonator(1).mark("newPasswordManipulator");
                 this.connectionButtonManipulator = new Manipulator(this);
                 this.registerTextManipulator = new Manipulator(this);
                 this.manipulator
-                    .add(this.fieldsManip)
+                    .add(this.bigIconManipulator)
+                    .add(this.fieldsManipulator)
                     .add(this.cookieManipulator)
                     .add(this.newPasswordManipulator)
                     .add(this.connectionButtonManipulator)
                     .add(this.registerTextManipulator);
             }
+            var _displayBigIcon = () => {
+                let body_r = 40, head_r = body_r/2;
+                BIG_ICON_HEIGHT = head_r*2 + body_r*2 + MARGIN;
+                let headCircle = new svg.Circle(head_r).color(myColors.white, 8, myColors.turquoise)
+                let bodyCircle = new svg.Circle(body_r)
+                    .color(myColors.white, 8, myColors.turquoise)
+                bodyCircle.position(0, headCircle.r*2 + bodyCircle.r/2 + MARGIN)
+                let maskRect = new svg.Rect(body_r*2+8, body_r+8).color(myColors.white, 0, myColors.black);
+                maskRect.position(0, bodyCircle.y+maskRect.height/2+5)
+
+                this.bigIconManipulator
+                    .add(headCircle)
+                    .add(bodyCircle)
+                    .add(maskRect)
+                    .move(FORM_POS_X, this.header.height + BIG_ICON_MARGIN + headCircle.r)
+            }
             var _displayFields = () => {
-                var _displayField = (field) => {
+                var _displayField = (field, index) => {
                     var _updatePresenter = (oldMessage, newMessage, valid) => {
                         this.setValid(field, valid);
                         if (valid) this.setFieldText(field, newMessage);
@@ -61,63 +135,53 @@ exports.ConnectionV = function (globalVariables) {
                         }
 
                         let src = isPasswordShown ? '../images/hide.png' : '../images/view.png';
-                        let icon = IconCreator.createImageIcon(src, fieldManip);
+                        let icon = IconCreator.createImageIcon(src, fieldManip, 2);
                         icon.position(INPUT_SIZE.w / 2 + MARGIN + icon.getContentSize() / 2, 0);
                         icon.addEvent('click', _toggleIcon);
                         fieldArea.type(isPasswordShown ? 'text' : 'password');
                     }
 
-                    let fieldManip = new Manipulator(this).addOrdonator(2);
-                    let manipHeight = (INPUT_SIZE.h + FONT_SIZE_TITLE);
-
+                    let fieldManip = new Manipulator(this).addOrdonator(3);
                     let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
-                    icon.position(-INPUT_SIZE.w / 2 + icon.getContentSize() / 2 + MARGIN, 0);
-                    let fieldTitle = new svg.Text(field.title);
-                    fieldTitle
-                        .dimension(INPUT_SIZE.w, FONT_SIZE_TITLE)
-                        .font(FONT, FONT_SIZE_TITLE)
-                        .color(TITLE_COLOR)
-                        .anchor("start")
-                        .position(-INPUT_SIZE.w / 2, -INPUT_SIZE.h);
-
-                    let fieldArea = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, "");
-                    fieldArea.font(FONT, FONT_SIZE_INPUT)
-                        .color(COLORS)
-                        .editColor(EDIT_COLORS)
-                        .pattern(field.pattern)
+                    icon.position(-INPUT_SIZE.w / 2 - icon.getContentSize() / 2 - MARGIN, 0);
+                    let fieldArea = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, '')
                         .type(field.type)
-                        .anchor("center")
-                        .mark(field.id);
-                    fieldArea.onInput(_updatePresenter);
-                    fieldArea.onClick(_selectInput);
-                    fieldManip.add(fieldTitle);
+                        .font(FONT, FONT_SIZE_INPUT)
+                        .placeHolder(field.title)
+                        .color(FIELDS_COLORS)
+                        .editColor(FIELDS_COLORS)
+                        .pattern(field.pattern)
+                        .anchor("left")
+                        .mark(field.id)
+                        .onInput(_updatePresenter)
+                        .onClick(_selectInput);
                     fieldManip.set(0, fieldArea.component);
-                    fieldManip.move(0, manipHeight / 2 + field.index * (manipHeight + 2 * MARGIN));
+                    fieldManip.move(0, index * (INPUT_SIZE.h + ELEMENTS_MARGIN));
 
                     this.inputs.push(fieldArea);
-
                     if (field.type === "password") {
                         _displayPwdIcon(false);
                     }
-
                     return fieldManip;
                 };
 
                 let fields = this.getFields();
-                this.fieldsManip.move(drawing.width / 2, this.header.height + 2 * MARGIN);
-                fields.forEach(field => {
-                    let fieldManip = _displayField(field);
-                    this.fieldsManip.add(fieldManip);
+                this.fieldsManipulator.move(FORM_POS_X, this.header.height + BIG_ICON_MARGIN + BIG_ICON_HEIGHT + ELEMENTS_MARGIN);
+                fields.forEach((field, index) => {
+                    let fieldManip = _displayField(field, index);
+                    this.fieldsManipulator.add(fieldManip);
                 });
 
             };
-            var _displayCookieCheckbox = () => {
+            var _displayRememberMe = () => {
                 var _displayTitle = () => {
-                    let fieldTitle = new svg.Text("Se souvenir de moi");
-                    fieldTitle.dimension(INPUT_SIZE.w / 2, FONT_SIZE_TITLE);
-                    fieldTitle.font("Arial", FONT_SIZE_TITLE * 3 / 4).anchor("start");
-                    fieldTitle.color(TITLE_COLOR);
-                    fieldTitle.position(CHECKBOX_SIZE, (CHECKBOX_SIZE) / 2);
+                    let fieldTitle = new svg.Text("se souvenir de moi")
+                        .fontStyle('italic')
+                        .dimension(INPUT_SIZE.w / 2, FONT_SIZE_TEXT)
+                        .font("Arial", FONT_SIZE_TEXT)
+                        .anchor("start")
+                        .color(TITLE_COLOR)
+                        .position(CHECKBOX_SIZE, 0);
                     this.cookieManipulator.add(fieldTitle)
                 }
                 var _displayCheckBox = () => {
@@ -135,7 +199,7 @@ exports.ConnectionV = function (globalVariables) {
                         this.cookieManipulator.addEvent('click', _toggleChecked);
                     }
 
-                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 2, myColors.black);
+                    let checkbox = new svg.Rect(CHECKBOX_SIZE, CHECKBOX_SIZE).color(myColors.white, 1.5, myColors.turquoise);
                     let checked = drawCheck(checkbox.x, checkbox.y, CHECKBOX_SIZE);
                     this.cookieManipulator.add(checkbox);
                     _displayChecked(true);
@@ -143,7 +207,7 @@ exports.ConnectionV = function (globalVariables) {
 
                 _displayTitle();
                 _displayCheckBox();
-                this.cookieManipulator.move(drawing.width / 2 - INPUT_SIZE.w / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                this.cookieManipulator.move(FORM_POS_X - INPUT_SIZE.w / 2 + CHECKBOX_SIZE / 2, this.header.height + BIG_ICON_MARGIN + BIG_ICON_HEIGHT + MARGIN + (INPUT_SIZE.h + ELEMENTS_MARGIN) * this.getFields().length);
             };
             var _displayForgotPWD = () => {
                 var _forgotHandler = () => {
@@ -151,59 +215,50 @@ exports.ConnectionV = function (globalVariables) {
                         let forgotttenPassText = new svg.Text('Un mail a été envoyé pour réinitialiser votre mot de passe.')
                             .dimension(INPUT_SIZE.w / 2, INPUT_SIZE.h / 2)
                             .color(myColors.greyerBlue)
-                            .font(FONT, FONT_SIZE_TITLE * 2 / 3)
+                            .font(FONT, FONT_SIZE_TEXT)
                             .mark("forgottenPassText");
 
-                       this.newPasswordManipulator.set(0, forgotttenPassText);
+                        this.newPasswordManipulator.set(0, forgotttenPassText);
                         svg.timeout(() => {
                             this.newPasswordManipulator.set(0, fieldTitle);
                         }, 5000);
                     })
                 }
                 let fieldTitle = new svg.Text("Mot de passe oublié ?")
+                    .fontStyle('italic')
                     .color(myColors.greyerBlue)
                     .dimension(INPUT_SIZE.w / 2, INPUT_SIZE.h / 2)
                     .anchor('end')
                     .position(0, 0)
-                    .font(FONT, FONT_SIZE_TITLE * 3 / 4);
+                    .font(FONT, FONT_SIZE_TEXT);
                 this.newPasswordManipulator.set(0, fieldTitle)
-                    .move(drawing.width / 2 + INPUT_SIZE.w / 2, this.header.height + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                    .move(FORM_POS_X + INPUT_SIZE.w / 2, this.header.height + BIG_ICON_MARGIN + BIG_ICON_HEIGHT + MARGIN + (INPUT_SIZE.h + ELEMENTS_MARGIN) * this.getFields().length)
                 this.newPasswordManipulator.addEvent('click', _forgotHandler);
             };
             var _displayButton = () => {
-                var _displayButton = () => {
-                    let button = new gui.Button(INPUT_SIZE.w, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Connexion');
-                    button.text.color(myColors.lightgrey, 0, myColors.white);
-                    button.activeShadow();
-                    this.connectionButtonManipulator
-                        .add(button.component)
-                        .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_SIZE.h + FONT_SIZE_TITLE + 2 * MARGIN) * 5)
-                        .mark('connectionButton');
-                    this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
-                }
-                var _displayRegisterText = () => {
-                    let registerText = new svg.Text("Vous venez d'arriver ? Créer un compte")
-                        .dimension(INPUT_SIZE.w, INPUT_SIZE.h)
-                        .color(myColors.greyerBlue)
-                        .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-                    this.registerTextManipulator
-                        .add(registerText)
-                        .move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN)
-                        .addEvent('click', () => this.goToRegister.call(this))
-                        .mark('createAccount');
-                }
-
-                _displayButton();
-                _displayRegisterText();
+                let buttonText = this.isConnectionPage() ? 'Se Connecter' : "S'inscrire";
+                let button = new gui.Button(INPUT_SIZE.w / 2, BUTTON_HEIGHT, [myColors.turquoise, 0, myColors.black], buttonText);
+                button.text.color(myColors.white, 0, myColors.white);
+                button.corners(25, 25);
+                console.log(this.getFields().length);
+                this.connectionButtonManipulator
+                    .add(button.component)
+                    .move(FORM_POS_X, this.header.height + BIG_ICON_MARGIN + BIG_ICON_HEIGHT + ELEMENTS_MARGIN + (INPUT_SIZE.h + ELEMENTS_MARGIN) * (this.getFields().length + (this.isConnectionPage() ? 1 : 0)))
+                    .mark('connectionButton');
+                this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
             };
 
             super.display();
             _calcSizes();
+            _displayBackground();
             _initManips();
-            this.displayHeader("Connexion");
+            this.displayHeader();
+            _displayBigIcon();
             _displayFields();
-            _displayCookieCheckbox();
-            _displayForgotPWD();
+            if(this.isConnectionPage()){
+                _displayRememberMe();
+                _displayForgotPWD();
+            }
             _displayButton();
             svg.addGlobalEvent("keydown", (event) => this.keyDown.call(this, event));
         }
@@ -211,7 +266,7 @@ exports.ConnectionV = function (globalVariables) {
         tryLogin() {
             this.selectedInput && this.selectedInput.hideControl();
             this.logIn().catch((message) => {
-                popUp.display(message,this.manipulator);
+                popUp.display(message, this.manipulator);
             });
         }
 
@@ -261,8 +316,12 @@ exports.ConnectionV = function (globalVariables) {
             return this.presenter.logIn();
         }
 
-        goToRegister() {
-            this.presenter.goToRegister();
+        isConnectionPage(){
+            return this.presenter.isConnectionPage();
+        }
+
+        switchPage() {
+            this.presenter.switchPage();
         }
 
         forgotPWD() {
@@ -285,5 +344,6 @@ exports.ConnectionV = function (globalVariables) {
             this.presenter.setStayConnected(isStay);
         }
     }
+
     return ConnectionV;
 };

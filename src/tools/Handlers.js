@@ -2,6 +2,7 @@ FONT = 'Arial';
 MARGIN = 10;
 STAR_SPACE = 4;
 myColors = {
+    turquoise: [0,206,181],
     ultraLightGrey: [184, 187, 196],
     customBlue: [43, 120, 228],
     darkBlue: [25, 25, 112],

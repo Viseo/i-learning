@@ -2,7 +2,7 @@
  * Created by TBE3610 on 31/05/2017.
  */
 
-exports.HeaderV = function(globalVariables){
+exports.HeaderV = function (globalVariables) {
     const
         svg = globalVariables.svg,
         gui = globalVariables.gui,
@@ -11,9 +11,11 @@ exports.HeaderV = function(globalVariables){
         Manipulator = globalVariables.Handlers.Manipulator;
 
     const
-        HEADER_SIZE = 50,
-        FONT_SIZE = 20,
-        BUTTON_WIDTH = 150;
+        HEADER_SIZE = 70,
+        FONT_SIZE = 18,
+        HOME_TEXT_SIZE = 30;
+
+    var HEADER_MARGIN, BUTTON_WIDTH, ELEMENTS_MARGIN;
 
     class HeaderVue {
         constructor(presenter) {
@@ -23,102 +25,112 @@ exports.HeaderV = function(globalVariables){
         }
 
         display(parentManipulator, message) {
+            var _calcSizes = () => {
+                this.width = drawing.width;
+                this.height = HEADER_SIZE;
+                HEADER_MARGIN = {top:this.height/2 + FONT_SIZE/4 + MARGIN, left:2*MARGIN, right:2*MARGIN};
+                ELEMENTS_MARGIN = 4*MARGIN;
+                BUTTON_WIDTH = this.width/8;
+            }
             var _resetManips = () => {
-                if(this.manipulator) parentManipulator.remove(this.manipulator);
+                if (this.manipulator) parentManipulator.remove(this.manipulator);
                 this.manipulator = new Manipulator(this).addOrdonator(3);
+                this.buttonManipulator = new Manipulator(this);
                 this.userManipulator = new Manipulator(this);
-                this.userIconManipulator = new Manipulator(this).addOrdonator(2)
-                this.manipulator.add(this.userManipulator);
-                this.userManipulator.add(this.userIconManipulator);
-                this.userManipulator.move(Math.max(this.width - MARGIN, 900), this.height/2);
+                this.userIconManipulator = new Manipulator(this)
+                this.manipulator
+                    .add(this.userManipulator)
+                    .add(this.userIconManipulator)
+                    .add(this.buttonManipulator);
                 parentManipulator.add(this.manipulator);
             }
             var _displayHeaderRect = () => {
                 let rect = new svg.Rect(this.width, this.height)
-                    .color(myColors.customBlue, 0.5, myColors.black)
-                    .position(this.width/2, this.height/2);
+                    .color(myColors.white, 0, myColors.black)
+                    .position(this.width / 2, this.height / 2);
                 this.manipulator.set(0, rect);
             }
-            var _displayHomeText = ()=> {
+            var _displayHomeText = () => {
                 let text = new svg.Text("I-learning")
-                    .position(MARGIN, this.height/2 + FONT_SIZE/4)
-                    .font('Arial', FONT_SIZE)
+                    .position(HEADER_MARGIN.left, HEADER_MARGIN.top - FONT_SIZE/2)
+                    .font('Arial', HOME_TEXT_SIZE)
                     .anchor('start')
-                    .color(myColors.white)
+                    .color(myColors.turquoise)
                     .mark('homeText');
                 text.onClick(this.gotToDashboard.bind(this));
                 this.manipulator.set(1, text);
             }
-            var _displayMessage = () => {
-                if (message) {
-                    let messageText = new svg.Text(message)
-                        .dimension(this.width * 0.3, this.height)
-                        .font('Arial', 32)
-                        .position(Math.max(this.width / 2, 400), this.height / 2 + MARGIN)
-                        .color(myColors.white)
-                        .mark("headerMessage");
-                    this.manipulator.set(2, messageText);
-                } else {
-                    this.manipulator.unset(2);
-                }
-            }
-            var _displayUser = () => {
-                let userText = new svg.Text(drawing.username)
-                    .font('Arial', 20)
-                    .anchor('end')
-                    .position(-BUTTON_WIDTH - 2*MARGIN, this.height/2 - FONT_SIZE/2)
-                    .color(myColors.white);
-
-                let ratio = 0.65;
-                let body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.white),
-                    head = new svg.Circle(12 * ratio).color(myColors.white, 1, myColors.customBlue);
-                body.position(0, -5 * ratio);
-                head.position(0, -20 * ratio);
-
-                this.userManipulator.add(userText);
-                textWidth = userText.boundingRect().width;
-                userText.dimension(textWidth, this.height)
-                this.userIconManipulator.set(0, body);
-                this.userIconManipulator.set(1, head);
-                this.userIconManipulator.move(
-                    -BUTTON_WIDTH - MARGIN - textWidth - body.width/2 - 2*MARGIN,
-                    this.height/2 - (body.height+head.r*2)/2
-                );
-            }
-            var _displayDeconnectionButton = () => {
+            var _displayRightHeader = () => {
                 var disconnect = () => {
                     runtime.setCookie("token=; path=/; max-age=0;");
                     drawing.username = null;
                     this.disconnect();
                 };
-                let button = new gui.Button(BUTTON_WIDTH, this.height*2/3, [myColors.none, 1, myColors.white], "Déconnexion");
-                button.text.color(myColors.white);
-                button.back.corners(5, 5);
-                button.position(-BUTTON_WIDTH/2, 0);
+
+                let button = new gui.Button(BUTTON_WIDTH, this.height/2, [myColors.turquoise, 0, myColors.black], "Déconnexion");
+                button.text.color(myColors.white).font(FONT, FONT_SIZE)
+                button.back.corners(25, 25);
                 button.glass.mark('deconnection');
                 button.onClick(disconnect);
-                this.userManipulator.add(button.component);
+                this.buttonManipulator
+                    .add(button.component)
+                    .move(this.width - button.width/2 - 2*MARGIN, HEADER_MARGIN.top - button.height/2);
+
+                let userText = new svg.Text(drawing.username)
+                    .font('Arial', FONT_SIZE)
+                    .anchor('end')
+                    .color(myColors.black);
+                this.userManipulator
+                    .add(userText)
+                    .move(this.width - BUTTON_WIDTH - HEADER_MARGIN.right - ELEMENTS_MARGIN, HEADER_MARGIN.top - FONT_SIZE/2);
+
+                let bodyR = 15, headR = bodyR/2
+                let body = new svg.Circle(bodyR).color(myColors.white, 2, myColors.turquoise),
+                    rectMask = new svg.Rect(bodyR*2+2, bodyR+2).color(myColors.white, 0, myColors.black),
+                    head = new svg.Circle(headR).color(myColors.white, 2, myColors.turquoise);
+                body.position(0, headR*2 + MARGIN);
+                rectMask.position(0, headR*2 + bodyR/2 + MARGIN + 2)
+                this.userIconManipulator
+                    .add(head)
+                    .add(body)
+                    .add(rectMask)
+                    .move(
+                        this.width -BUTTON_WIDTH - 2*ELEMENTS_MARGIN - userText.boundingRect().width - body.r,
+                        HEADER_MARGIN.top - (headR*2 + bodyR*2+2+MARGIN)/2
+                    );
+
+                if (message) {
+                    let messageText = new svg.Text(message)
+                        .font('Arial', FONT_SIZE)
+                        .fontWeight('bold')
+                        .color(myColors.black)
+                        .mark("headerMessage");
+                    this.manipulator.set(2, messageText);
+                    messageText.position(
+                        this.width -BUTTON_WIDTH - 2*ELEMENTS_MARGIN - userText.boundingRect().width - body.r*2 - ELEMENTS_MARGIN - messageText.boundingRect().width/2,
+                        HEADER_MARGIN.top - FONT_SIZE/2
+                    )
+                } else {
+                    this.manipulator.unset(2);
+                }
             }
 
-            this.width = drawing.width;
-            let textWidth = this.width * 0.23;
+            _calcSizes();
             _resetManips();
             _displayHeaderRect();
             _displayHomeText();
-            _displayMessage();
             if(drawing.username){
-                _displayUser();
-                _displayDeconnectionButton();
+                _displayRightHeader();
             }
 
             return this.manipulator;
         }
 
-        gotToDashboard(){
+        gotToDashboard() {
             this.presenter.clearOldPageStackAndLoadPresenterDashboard();
         }
 
-        disconnect(){
+        disconnect() {
             this.presenter.clearOldPageStackAndLoadPresenterConnection();
         }
     }

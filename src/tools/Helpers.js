@@ -63,7 +63,7 @@ exports.Helpers = function(globalVariables){
     var drawCheck = function (x, y, size) {
         return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
             .line(x - .1 * size, y + .2 * size).line(x + .3 * size, y - .3 * size)
-            .color(myColors.none, 3, myColors.black);
+            .color(myColors.none, 3, myColors.turquoise);
     };
 
     let drawHexagon = (w, h, orientation, ratio) => {
