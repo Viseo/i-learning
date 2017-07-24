@@ -12,6 +12,7 @@ const
     FHelpers = require('./tools/Helpers').Helpers,
     FPopup = require('./tools/Popup').Popup,
     FLists = require('./tools/Lists').Lists,
+    FValidator = require('./tools/Validator').Validator,
     FModels = require('./Models').Models,
     presenterFactory = require('./presenters/PresenterFactory').PresenterFactory;
 
@@ -45,6 +46,7 @@ function main(mockResponses) {
     globalVariables.Icons = FIcons(globalVariables);
     globalVariables.Lists = FLists(globalVariables);
     globalVariables.Helpers = FHelpers(globalVariables);
+    globalVariables.Validator = FValidator(globalVariables);
 
     let Popup = FPopup(globalVariables);
     globalVariables.popUp = new Popup();

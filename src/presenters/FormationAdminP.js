@@ -3,15 +3,18 @@ const FormationAdmin = require('../views/FormationAdminV').FormationAdminV;
 exports.FormationAdminP = function(globalVariables){
     const FormationAdminV = FormationAdmin(globalVariables),
     TITLE_FORMATION_REGEX = /^([\sA-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g,
-        Presenter = globalVariables.Presenter;
+        Presenter = globalVariables.Presenter,
+        Validator = globalVariables.Validator;
+
     class FormationAdminP extends Presenter{
-        constructor(state, formation){
+        constructor(state, formation, formations){
             super(state);
             this.formation = formation;
             this.mediaLibrary = state.getMediasLibrary();
             this.view = new FormationAdminV(this);
             this.regex = TITLE_FORMATION_REGEX;
             this.levelsTab = formation.getLevelsTab();
+            this.formationsList = formations.getFormations();
         }
 
         getLabel(){
@@ -33,7 +36,29 @@ exports.FormationAdminP = function(globalVariables){
 
 
         renameFormation(label){
-            this.formation.setLabel(label);
+            let check = Validator.FormationValidator.checkNameFormation(label, this.formationsList);
+            if (check.status) {
+                this.formation.setLabel(label);
+                const getObjectToSave = () => {
+                    return {label: this.formation.label};
+                };
+                if (this.formation.getId()){
+                    return this.formation.replaceFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
+                    });
+                } else{
+                    return this.formation.addNewFormation(getObjectToSave()).then(data => {
+                        this.view.displayMessage(data.message);
+                        return data.status;
+                    })
+                }
+            } else {
+                this.view.displayMessage(check.error);
+                return Promise.resolve(false);
+            }
+
+            /*
             const messageError = "Vous devez remplir correctement le nom de la formation.";
             if (label && label !== this.formation.labelDefault && label.match(this.regex)) {
                 const getObjectToSave = () => {
@@ -54,7 +79,7 @@ exports.FormationAdminP = function(globalVariables){
             } else {
                 this.view.displayMessage(messageError);
                 return Promise.resolve(false);
-            }
+            }*/
 
         }
         getGameById(id){

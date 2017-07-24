@@ -160,7 +160,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.formation = formation;
             this._loadFormation(formation);
             this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.FormationAdminP(this, formation);
+            this.currentPresenter = new globalVariables.FormationAdminP(this, formation, this.formations);
             this.currentPresenter.displayView();
         }
 
