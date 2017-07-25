@@ -428,7 +428,7 @@ exports.DollAdminV = function (globalVariables) {
             this.listViewPicture.refreshListView();
         };
 
-        displayPictureResponse(responsesManip) {
+        displayPictureResponse(responsesManip, responses) {
             let _createPopUpPicture = () => {
                 const onChangeFileExplorerHandler = () => {
                     let files = this.fileExplorer.component.files;
@@ -475,17 +475,24 @@ exports.DollAdminV = function (globalVariables) {
                 fileExplorerHandler();
 
             };  // TODO uniformiser pour this.listViewPicture & this.listViewPictureResponse
-            let createMiniature = (response)=>{
+            let createMiniature = (response) => {
                 let miniature = {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
                     text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
                     manip: new Manipulator(this).mark(response.label + 'Manip'),
-                    image: response.selected
+                    image: response.selectedSrc
                 };
                 miniature.manip.text = miniature.text;
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
+                if (miniature.image) {
+                    let picImage = new svg.Image(miniature.image).dimension(27, 20),
+                        picImageManip = new Manipulator(this);
+                    picImageManip.add(picImage);
+                    picImageManip.move(-LIST_SIZE.w/2 + picImage.width,0);
+                    miniature.manip.add(picImageManip);
+                }
                 miniature.text.markDropID('responsesDrop');
                 miniature.border.markDropID('responsesDrop');
                 let conf = {
@@ -509,28 +516,30 @@ exports.DollAdminV = function (globalVariables) {
                 return miniature;
             }
             let addResponsePictureHandler = () => {
-                let newResponse = {label: this.responsesPictureInput.textMessage, selected: this.selectedElement};
-                if (newResponse.label == undefined) {
-                    popUp.display('Veuiller entrer un texte ', this.manipulator);
-                } else if (newResponse.selected.type != 'picture' || newResponse.selected.response != true) {
-                    popUp.display('Veuiller sélectionner une image de la liste des réponses ', this.manipulator);
-                } else {
-                    let mini = createMiniature(newResponse);
-                    this.responsesList.add(mini.manip);
-                    this.responsesList.refreshListView();
-                    this.responsesInput.message('');
-                    this.addResponse(newResponse);
+                let newResponse = {label: this.responsesPictureInput.textMessage};
+                if (this.selectedElement) {
+                    newResponse.selectedSrc = this.selectedElement.src;
                 }
-
+                if (newResponse.label == '') {
+                    popUp.display('Veuiller entrer un texte ', this.manipulator);
+                } else if (newResponse.selectedSrc && this.selectedElement.response) {
+                        let mini = createMiniature(newResponse);
+                        this.responsesList.add(mini.manip);
+                        this.responsesList.refreshListView();
+                        this.responsesPictureInput.message('');
+                        this.addResponse(newResponse);
+                        this.selectElement(null);
+                } else {
+                    popUp.display('Veuiller sélectionner une image de la liste des réponses ', this.manipulator);
+                }
             }
             let pictureResponseSize = 0.8 * RIGHTBOX_SIZE.header.h;
-            this.listViewPictureResponse = new ListManipulatorView([], 'H', RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h,
-                25, 50, pictureResponseSize, pictureResponseSize, 8, undefined, MARGIN + 25);
-            this.listViewPictureResponse.manipulator.move(0, RIGHTBOX_SIZE.header.h);
             let picAddImageManip = new Manipulator(this);
             let picAddImage = new svg.Image('../../images/ajoutImage.png')
                 .dimension(pictureResponseSize, pictureResponseSize);
-
+            this.listViewPictureResponse = new ListManipulatorView([], 'H', RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h,
+                25, 50, pictureResponseSize, pictureResponseSize, 8, undefined, MARGIN + 25);
+            this.listViewPictureResponse.position(0, RIGHTBOX_SIZE.header.h);
             picAddImageManip.add(picAddImage);
             picAddImageManip.addEvent('click', _createPopUpPicture);
             picAddImageManip.mark('picAddImageResponseManip');
@@ -576,14 +585,18 @@ exports.DollAdminV = function (globalVariables) {
             this.imageResponsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - this.imageResponsesAddButton.width / 2,
                 this.listViewPictureResponse.height + RIGHTBOX_SIZE.header.h);
             this.imageResponsesAddButton.onClick(addResponsePictureHandler);
+            this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w,
+                0.4 * RIGHTBOX_SIZE.h,
+                75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+            this.responsesList.position(0,
+                this.responsesList.height + this.listViewPictureResponse.height + this.responsesPictureInput.height);
+            this.responsesList.refreshListView();
 
             responsesManip
                 .add(this.listViewPictureResponse.manipulator)
                 .add(this.responsesPictureInput.component)
                 .add(this.imageResponsesAddButton.component)
-
-            // return pictureResponseManip;
-
+                .add(this.responsesList.manipulator)
         }
 
         display() {
@@ -900,11 +913,19 @@ exports.DollAdminV = function (globalVariables) {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
                     text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
-                    manip: new Manipulator(this).mark(response.label + 'Manip')
+                    manip: new Manipulator(this).mark(response.label + 'Manip'),
+                    image: response.selectedSrc
                 };
                 miniature.manip.text = miniature.text;
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
+                if (miniature.image) {
+                    let picImage = new svg.Image(miniature.image).dimension(27, 20),
+                        picImageManip = new Manipulator(this);
+                    picImageManip.add(picImage);
+                    picImageManip.move(-LIST_SIZE.w/2 + picImage.width,0);
+                    miniature.manip.add(picImageManip);
+                }
                 miniature.text.markDropID('responsesDrop');
                 miniature.border.markDropID('responsesDrop');
                 let conf = {
@@ -948,15 +969,15 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
                     this.addResponse(newResponse);
+                    responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
                 }
-
             }
             let _removeImgTab = () => {
-                // let pictureResponseManip = this.displayPictureResponse();
                 responsesManip
                     .remove(this.listViewPictureResponse.manipulator)
                     .remove(this.responsesPictureInput.component)
                     .remove(this.imageResponsesAddButton.component)
+                    .remove(this.responsesList.manipulator);
             }
             let _removeTextTab = () => {
                 responsesManip
@@ -965,16 +986,18 @@ exports.DollAdminV = function (globalVariables) {
                     .remove(this.responsesList.manipulator);
             }
             let _addTextTab = () => {
+                responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
+                this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+                this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
+                this.responsesList.markDropID('responsesDrop');
                 responsesManip
                     .add(responsesAddButton.component)
                     .add(this.responsesInput.component)
                     .add(this.responsesList.manipulator);
+                this.responsesList.refreshListView();
             }
             let _addImgTab = () => {
-                this.displayPictureResponse(responsesManip);
-                // let pictureResponseManip = this.displayPictureResponse();
-                // responsesManip
-                //     .add(pictureResponseManip);
+                this.displayPictureResponse(responsesManip, responses);
             }
 
             let responsesManip = new Manipulator(this);
@@ -1030,7 +1053,7 @@ exports.DollAdminV = function (globalVariables) {
             let responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
             this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
-            this.responsesList.markDropID('responsesDrop')
+            this.responsesList.markDropID('responsesDrop');
             responsesManip.add(responsesHeader)
                 .add(responsesTitle)
                 .add(textResponseTab.component)
