@@ -165,20 +165,24 @@ exports.DashboardCollabV = function (globalVariables) {
                     };
                     miniature.manipulator.addEvent("mouseenter", () => onMouseOverSelect(miniature));
                 }
-                let _createStars = () => {
-                    let _displayNotation = () => {
-                        let displayNotationManip = new Manipulator(this);
-                        let textNotation = new svg.Text(formation.note.toString().split('').slice(0, 4).join('')
-                            + '/5 (' + formation.noteCounter
-                            + ' votes)')
-                            .font(FONT, 14, 15).anchor('end');
-                        resizeStringForText(textNotation, 120, 10);
-                        displayNotationManip.add(textNotation);
-                        displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
-                        miniature.manipulator.add(displayNotationManip);
-                        return textNotation;
-                    };
 
+                let _displayNotation = () => {
+                    let displayNotationManip = new Manipulator(this);
+                    let text = new svg.Text("Moyenne :").position(-3*MARGIN,-TILE_SIZE.h/3 + MARGIN);
+                    let textNotation = new svg.Text(formation.note.toString().split('').slice(0, 4).join('')
+                        + '/5 (' + formation.noteCounter
+                        + ' votes)')
+                        .font(FONT, 14, 15).anchor('end');
+                    resizeStringForText(textNotation, 120, 10);
+                    displayNotationManip.add(textNotation)
+                    displayNotationManip.add(text);
+                    displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
+                    miniature.manipulator.add(displayNotationManip);
+                    return textNotation;
+                };
+
+
+                let _createStars = () => {
                     let factor = 8;
                     let onStarClick = (starObject, textNotation) => {
                         starMiniatures.showActualStarColor();
@@ -204,7 +208,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         starMiniatures.showActualStarColor();
                     };
 
-                    let textNotation = _displayNotation();
+                 //   let textNotation = _displayNotation();
                     let starMiniatures = this.createRating(miniature.manipulator);
                     starMiniatures.forEach(
                         star => {
@@ -232,6 +236,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 miniature.manipulator.addEvent("click", () => this.clickOnFormation(formation));
                 _colorWhenHover();
                 if (formation.progress === 'done') _createStars();
+                _displayNotation();
             };
 
             this.getNotes().then((data) => {
