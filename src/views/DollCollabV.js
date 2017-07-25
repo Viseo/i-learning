@@ -258,8 +258,12 @@ exports.DollCollabV = function(globalVariables) {
             }
             let _initPopUp = () => {
                 this.popUpManipulator = new Manipulator(this);
-                let background = new svg.Rect(drawing.width, drawing.height).color(myColors.black,0, myColors.black).fillOpacity(0.4)
-                let popUpRect = new svg.Rect(popUpDim.w, popUpDim.h).color(myColors.white, 1, myColors.black).corners(2, 2)
+                let background = new svg.Rect(drawing.width, drawing.height)
+                    .color(myColors.black,0, myColors.black)
+                    .fillOpacity(0.4)
+                let popUpRect = new svg.Rect(popUpDim.w, popUpDim.h)
+                    .color(myColors.white, 1, myColors.grey)
+                    .corners(8, 8)
                 this.popUpManipulator
                     .add(background)
                     .add(popUpRect)
@@ -267,24 +271,34 @@ exports.DollCollabV = function(globalVariables) {
                 this.manipulator.add(this.popUpManipulator);
             }
             let _displayConfirmMessage = () => {
-                let title = new svg.Text('Alerte !')
-                    .font(FONT, 35)
-                    .position(0, -popUpDim.h/2 + MARGIN + 35*2/3)
+                let title = new svg.Text('Êtes-vous sûr ?')
+                    .font(FONT, 35);
                 let textInfo = new svg.Text("Voulez-vous vraiment quitter ce test ?")
-                    .font(FONT, 20);
-                let okButton = new gui.Button(popUpDim.w/2, popUpDim.h/4, [myColors.white, 1, myColors.black], 'Oui')
-                    .corners(2, 2)
-                okButton.position(popUpDim.w/2-okButton.width/2, popUpDim.h/2 - okButton.height/2);
+                    .font(FONT, 18).color(myColors.grey, 0, myColors.none)
+                    .position(0, MARGIN *2 + title.fontSize*2/3);
+                let picture = new svg.Image('../../images/popup/warning.png')
+                    .dimension(popUpDim.h/3, popUpDim.h/3);
+                picture.position(0, -popUpDim.h/2 + picture.height/2 + MARGIN*2);
+
+                let dimButton = {w: popUpDim.w/3, h: popUpDim.h/6}
+                let okButton = new gui.Button(dimButton.w, dimButton.h, [myColors.lightorange, 0.5, myColors.orange], 'Oui')
+                    .corners(5, 5)
+                okButton.text.color(myColors.white, 0, myColors.none);
+                okButton.position(popUpDim.w/2 - okButton.width/2 - (popUpDim.w-dimButton.w*2)/2 + MARGIN,
+                    popUpDim.h/2 - okButton.height/2 - MARGIN *2);
                 //TODO onclik okButton => go to next question
-                let notOkButton = new gui.Button(popUpDim.w/2, popUpDim.h/4, [myColors.white, 1, myColors.black], 'Non')
-                    .corners(2, 2)
-                notOkButton.position(-popUpDim.w/2+notOkButton.width/2, popUpDim.h/2 - notOkButton.height/2)
+                let notOkButton = new gui.Button(dimButton.w, dimButton.h, [myColors.lightgrey, 0.5, myColors.grey], 'Non')
+                    .corners(5, 5)
+                notOkButton.text.color(myColors.white, 0, myColors.none);
+                notOkButton.position(-popUpDim.w/2 + notOkButton.width/2 + (popUpDim.w-dimButton.w*2)/2 - MARGIN,
+                    popUpDim.h/2 - notOkButton.height/2 - MARGIN *2);
                 notOkButton.onClick(()=>_hidePopup());
                 this.popUpManipulator
                     .add(title)
                     .add(textInfo)
                     .add(okButton.component)
-                    .add(notOkButton.component);
+                    .add(notOkButton.component)
+                    .add(picture);
             }
             let _displayEndMessage = () => {
                 let textInfo = new svg.Text("Merci d'avoir participé à ce test !").font(FONT, 20);
