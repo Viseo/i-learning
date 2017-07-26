@@ -63,7 +63,9 @@ exports.FormationAdminV = function (globalVariables) {
                 nameFieldFormation.control.placeHolder('Titre de la formation');
                 nameFieldFormation.control.fontColor(myColors.white)
                 nameFieldFormation.onInput((oldMessage, message, valid) => {
-                    if (!message || !oldMessage) {
+                    if(message.length > 50){
+                        nameFieldFormation.message(oldMessage);
+                    }else if (!message || !oldMessage) {
                         nameFieldFormation.text.message('Titre de la formation');
                     }
                 });

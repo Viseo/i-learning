@@ -221,16 +221,16 @@ describe('formation admin page', function () {
             return loadPage("FormationAdmin", {mockResponses, data: formationMock, className: "Formation"});
         });
         when(() => {
-            inputValue(root, 'formationTitle', 'AAAAAAA-_-56+626fa0&ér');
+            inputValue(root, 'formationTitle', '  AAAAAAA-_-56+626fa0&ér');
             click(root, 'saveNameButton');
         }).then(() => {
-            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            assertMessage(root, "infoMessage", "Caractère(s) non autorisé(s).");
             runtime.advance();
             click(root, "saveFormation");
-            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            assertMessage(root, "infoMessage", "Caractère(s) non autorisé(s).");
             runtime.advance();
             click(root, "publishFormation");
-            assertMessage(root, "infoMessage", "Vous devez remplir correctement le nom de la formation.");
+            assertMessage(root, "infoMessage", "Il y a des jeux non valides.");
             runtime.advance();
         })
     });

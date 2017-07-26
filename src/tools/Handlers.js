@@ -14,6 +14,7 @@ myColors = {
     lightgrey: [232, 232, 238],
     lightwhite: [250, 250, 250],
     orange: [230, 122, 25],
+    lightorange: [222, 170, 100],
     purple: [170, 100, 170],
     green: [155, 222, 17],
     raspberry: [194, 46, 83],
