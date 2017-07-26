@@ -20,6 +20,7 @@ exports.DollCollabV = function(globalVariables) {
             this.responses = [];
             this.graphicResponses = [];
             this.textItem = [];
+            this.graphicStatement =  [];
         }
 
         display(){
@@ -107,6 +108,7 @@ exports.DollCollabV = function(globalVariables) {
                         elem.statementId = elemDetails.statementId;
                         manip.add(elem);
                         elem.mark('helpElement');
+                        this.graphicStatement.push(elem);
                         break;
                 }
                 elem.type = elemDetails.type;
@@ -242,6 +244,17 @@ exports.DollCollabV = function(globalVariables) {
             buttonNext.position(buttonSize.w*2 - MARGIN, 0);
 
             buttonNext.onClick(()=>this.displayPopup());
+
+            buttonInit.onClick(()=>{
+                this.graphicStatement.forEach((elem)=>{
+                   if(elem.type == 'help'){
+                       elem.parentManip.remove(elem.parentManip.response);
+                   }
+                });
+                this.graphicResponses = [];
+                this.responses = [];
+                this.checkResponses();
+            })
 
             this.actionbuttonZoneManip.move(this.sandboxDim.w + this.actionButtonZoneSize.w/2 + 2*MARGIN,
                 (this.objectivesSize.h+this.responseSize.h + buttonSize.h/2) + this.header.height + 3*MARGIN);
