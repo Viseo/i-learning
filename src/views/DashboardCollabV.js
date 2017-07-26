@@ -208,7 +208,7 @@ exports.DashboardCollabV = function (globalVariables) {
                         starMiniatures.showActualStarColor();
                     };
 
-                 //   let textNotation = _displayNotation();
+                   let textNotation = _displayNotation();
                     let starMiniatures = this.createRating(miniature.manipulator);
                     starMiniatures.forEach(
                         star => {
