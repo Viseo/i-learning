@@ -68,7 +68,7 @@ exports.HeaderV = function (globalVariables) {
                 };
 
                 let button = new gui.Button(BUTTON_WIDTH, this.height/2, [myColors.turquoise, 0, myColors.black], "Déconnexion");
-                button.text.color(myColors.white).font(FONT, FONT_SIZE)
+                button.text.color(myColors.white).font(FONT, FONT_SIZE).position(0,FONT_SIZE/3);
                 button.back.corners(25, 25);
                 button.glass.mark('deconnection');
                 button.onClick(disconnect);
