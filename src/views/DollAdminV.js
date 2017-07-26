@@ -445,6 +445,179 @@ exports.DollAdminV = function (globalVariables) {
             this.listViewPicture.refreshListView();
         };
 
+        displayPictureResponse(responsesManip, responses) {
+            let _createPopUpPicture = () => {
+                const onChangeFileExplorerHandler = () => {
+                    let files = this.fileExplorer.component.files;
+                    if (files && files[0]) {
+                        this.uploadImageByFile(files[0], () => {
+                        }).then((data) => {
+                            let pictureAddManip = new Manipulator(this);
+                            let pic = new svg.Image(data.src)
+                                .dimension(pictureResponseSize, pictureResponseSize);
+                            pictureAddManip.add(pic);
+
+                            pic.onMouseDown(() => {
+                                this.selectElement(pic);
+                                this.selectedElement.response = true;
+                            });
+                            this.listViewPictureResponse.addManipInIndex(pictureAddManip, 1);
+                            this.listViewPictureResponse.refreshListView();
+                        });
+                    }
+                };
+                const fileExplorerHandler = () => {
+                    if (!this.fileExplorer) {
+                        let globalPointCenter = {x: drawing.w / 2, y: drawing.h / 2};
+                        var fileExplorerStyle = {
+                            leftpx: globalPointCenter.x,
+                            toppx: globalPointCenter.y,
+                            width: this.width / 5,
+                            height: this.height / 2
+                        };
+                        this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                        this.fileExplorer.type("file");
+                        svg.addEvent(this.fileExplorer, "change", onChangeFileExplorerHandler);
+                        svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
+                        svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
+                        svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
+                        drawings.component.add(this.fileExplorer);
+                        this.fileExplorer.fileClick = function () {
+                            svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+                        }
+                    }
+                    this.fileExplorer.fileClick();
+                };
+
+                fileExplorerHandler();
+
+            };  // TODO uniformiser pour this.listViewPicture & this.listViewPictureResponse
+            let createMiniature = (response) => {
+                let miniature = {
+                    border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
+                        .color(myColors.black, 1, myColors.grey),
+                    text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
+                    manip: new Manipulator(this).mark(response.label + 'Manip'),
+                    image: response.selectedSrc
+                };
+                miniature.manip.text = miniature.text;
+                miniature.manip.add(miniature.text)
+                    .add(miniature.border);
+                if (miniature.image) {
+                    let picImage = new svg.Image(miniature.image).dimension(27, 20),
+                        picImageManip = new Manipulator(this);
+                    picImageManip.add(picImage);
+                    picImageManip.move(-LIST_SIZE.w/2 + picImage.width,0);
+                    miniature.manip.add(picImageManip);
+                }
+                miniature.text.markDropID('responsesDrop');
+                miniature.border.markDropID('responsesDrop');
+                let conf = {
+                    drop: (what, whatParent, finalX, finalY) => {
+                        let point = whatParent.globalPoint(finalX, finalY);
+                        let target = this.manipulator.last.getTarget(point.x, point.y);
+                        if (!target || target && target.dropID != 'responsesDrop' || !target.dropID) {
+                            this.responsesList.removeElementFromList(what);
+                            this.removeResponse(what.text.messageText);
+                            what.flush();
+                        }
+                        return {x: finalX, y: finalY, parent: whatParent};
+                    },
+                    moved: (what) => {
+                        this.responsesList.resetAllMove();
+                        this.responsesList.refreshListView();
+                        return true;
+                    }
+                }
+                installDnD(miniature.manip, drawings.component.glass.parent.manipulator.last, conf);
+                return miniature;
+            }
+            let addResponsePictureHandler = () => {
+                let newResponse = {label: this.responsesPictureInput.textMessage};
+                if (this.selectedElement) {
+                    newResponse.selectedSrc = this.selectedElement.src;
+                }
+                if (newResponse.label == '') {
+                    popUp.display('Veuiller entrer un texte ', this.manipulator);
+                } else if (newResponse.selectedSrc && this.selectedElement.response) {
+                        let mini = createMiniature(newResponse);
+                        this.responsesList.add(mini.manip);
+                        this.responsesList.refreshListView();
+                        this.responsesPictureInput.message('');
+                        this.addResponse(newResponse);
+                        this.selectElement(null);
+                } else {
+                    popUp.display('Veuiller sélectionner une image de la liste des réponses ', this.manipulator);
+                }
+            }
+            let pictureResponseSize = 0.8 * RIGHTBOX_SIZE.header.h;
+            let picAddImageManip = new Manipulator(this);
+            let picAddImage = new svg.Image('../../images/ajoutImage.png')
+                .dimension(pictureResponseSize, pictureResponseSize);
+            this.listViewPictureResponse = new ListManipulatorView([], 'H', RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h,
+                25, 50, pictureResponseSize, pictureResponseSize, 8, undefined, MARGIN + 25);
+
+            this.picResponses = true;
+            this.listViewPictureResponse.position(0, RIGHTBOX_SIZE.header.h);
+            picAddImageManip.add(picAddImage);
+            picAddImageManip.addEvent('click', _createPopUpPicture);
+            picAddImageManip.mark('picAddImageResponseManip');
+            this.listViewPictureResponse.add(picAddImageManip);
+            this.getImages().then((images) => {
+                images.images.forEach(ele => {
+                    let picManip = new Manipulator(this);
+                    let pic = new svg.Image(ele.imgSrc)
+                        .dimension(pictureResponseSize, pictureResponseSize);
+                    pic.type = 'picture';
+                    picManip.add(pic);
+                    pic.onMouseDown(() => {
+                        this.selectElement(pic);
+                        this.selectedElement.response = true;
+                    });
+                    this.listViewPictureResponse.add(picManip);
+
+                    // pic.onMouseDown(() => createDraggableCopy(pic));
+                    pic.mark('img_' + ele._id);
+                });
+                this.listViewPictureResponse.refreshListView();
+            });
+
+            this.responsesPictureInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
+                .color([myColors.white, 1, myColors.black])
+            this.responsesPictureInput.font('Arial', 18);
+            this.responsesPictureInput.position(-RIGHTBOX_SIZE.w / 2 + this.responsesPictureInput.width / 2 + MARGIN,
+                this.listViewPictureResponse.height + RIGHTBOX_SIZE.header.h)
+            this.responsesPictureInput.frame.corners(5, 5);
+
+            this.responsesPictureInput.onClick(() => {
+                this.selectCurrentInput = this.responsesPictureInput;
+                this.selectCurrentInputHandler = addResponsePictureHandler;
+            });
+            // responsesPictureInput.glass.mark('responsesInputClick');
+            // responsesPictureInput.mark('responsesInput');
+            this.imageResponsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h,
+                [myColors.customBlue, 1, myColors.grey], 'Ajouter');
+            this.imageResponsesAddButton.text
+                .font('Arial', 18)
+                .position(0, 6);
+            this.imageResponsesAddButton.back.corners(5, 5);
+            this.imageResponsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - this.imageResponsesAddButton.width / 2,
+                this.listViewPictureResponse.height + RIGHTBOX_SIZE.header.h);
+            this.imageResponsesAddButton.onClick(addResponsePictureHandler);
+            this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w,
+                0.4 * RIGHTBOX_SIZE.h,
+                75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+            this.responsesList.position(0,
+                this.responsesList.height + this.listViewPictureResponse.height + this.responsesPictureInput.height);
+            this.responsesList.refreshListView();
+
+            responsesManip
+                .add(this.listViewPictureResponse.manipulator)
+                .add(this.responsesPictureInput.component)
+                .add(this.imageResponsesAddButton.component)
+                .add(this.responsesList.manipulator)
+        }
+
         display() {
             let _updateConsts = () => {
                 PANEL_SIZE = {w: drawing.width - 2 * MARGIN, h: drawing.height * 0.7};
@@ -759,11 +932,19 @@ exports.DollAdminV = function (globalVariables) {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
                     text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
-                    manip: new Manipulator(this).mark(response.label + 'Manip')
+                    manip: new Manipulator(this).mark(response.label + 'Manip'),
+                    image: response.selectedSrc
                 };
                 miniature.manip.text = miniature.text;
                 miniature.manip.add(miniature.text)
                     .add(miniature.border);
+                if (miniature.image) {
+                    let picImage = new svg.Image(miniature.image).dimension(27, 20),
+                        picImageManip = new Manipulator(this);
+                    picImageManip.add(picImage);
+                    picImageManip.move(-LIST_SIZE.w/2 + picImage.width,0);
+                    miniature.manip.add(picImageManip);
+                }
                 miniature.text.markDropID('responsesDrop');
                 miniature.border.markDropID('responsesDrop');
                 let conf = {
@@ -807,8 +988,40 @@ exports.DollAdminV = function (globalVariables) {
                     this.responsesList.refreshListView();
                     this.responsesInput.message('');
                     this.addResponse(newResponse);
+                    responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
                 }
-
+            }
+            let _removeImgTab = () => {
+                if (this.picResponses) {
+                    responsesManip
+                        .remove(this.listViewPictureResponse.manipulator)
+                        .remove(this.responsesPictureInput.component)
+                        .remove(this.imageResponsesAddButton.component)
+                        .remove(this.responsesList.manipulator);
+                } else {
+                    responsesManip
+                        .remove(this.responsesList.manipulator);
+                }
+            }
+            let _removeTextTab = () => {
+                responsesManip
+                    .remove(responsesAddButton.component)
+                    .remove(this.responsesInput.component)
+                    .remove(this.responsesList.manipulator);
+            }
+            let _addTextTab = () => {
+                responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
+                this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
+                this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
+                this.responsesList.markDropID('responsesDrop');
+                responsesManip
+                    .add(responsesAddButton.component)
+                    .add(this.responsesInput.component)
+                    .add(this.responsesList.manipulator);
+                this.responsesList.refreshListView();
+            }
+            let _addImgTab = () => {
+                this.displayPictureResponse(responsesManip, responses);
             }
 
             let responsesManip = new Manipulator(this);
@@ -820,6 +1033,22 @@ exports.DollAdminV = function (globalVariables) {
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, 8.33);
             resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3 * MARGIN, 15);
+            let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse textuelle');
+            textResponseTab.position(0.1 * RIGHTBOX_SIZE.w,0);
+            textResponseTab.corners(2,2);
+            textResponseTab.text.font('Arial', 18);
+            textResponseTab.onClick(() => {
+                _removeImgTab();
+                _addTextTab();
+            })
+            let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse image');
+            pictureResponseTab.position(0.35 * RIGHTBOX_SIZE.w,0);
+            pictureResponseTab.corners(2,2);
+            pictureResponseTab.text.font('Arial', 18);
+            pictureResponseTab.onClick(() => {
+                _removeTextTab();
+                _addImgTab();
+            })
             let responsesBody = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h)
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2, 2);
@@ -848,9 +1077,11 @@ exports.DollAdminV = function (globalVariables) {
             let responses = this.getResponses().map(elem=>{return createMiniature(elem).manip});
             this.responsesList = new ListManipulatorView(responses, 'V', LIST_SIZE.w, LIST_SIZE.h, 75, 25, RIGHTBOX_SIZE.w - 2 * MARGIN, 27, 5);
             this.responsesList.position(0, this.responsesList.height / 2 + responsesHeader.height / 2 + responsesAddButton.height + 2 * MARGIN);
-            this.responsesList.markDropID('responsesDrop')
+            this.responsesList.markDropID('responsesDrop');
             responsesManip.add(responsesHeader)
                 .add(responsesTitle)
+                .add(textResponseTab.component)
+                .add(pictureResponseTab.component)
                 .add(responsesBody)
                 .add(responsesAddButton.component)
                 .add(this.responsesInput.component)
@@ -1171,6 +1402,7 @@ exports.DollAdminV = function (globalVariables) {
                 });
                 if(this.selectedElement.type === "picture" || this.selectedElement.type === "help"){
                     this.selectedElement.parentManip.remove(this.selectedElement.rectSelection);
+                    this.selectedElement.response = false;
                 }else if(this.selectedElement.type === 'text'){
                     this.selectedElement.color([this.selectedElement._colors[0], 1, myColors.grey]);
                 }else if(this.selectedElement.type === 'rect'){
