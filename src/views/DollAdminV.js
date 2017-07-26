@@ -1190,7 +1190,18 @@ exports.DollAdminV = function (globalVariables) {
                 } else if(elem.type === 'rect') {
                     elem.color(elem.fillColor, 4, elem.strokeColor);
                     this.resizeElement(elem,elem.parentManip);
-                    installDnD(elem.parentManip, this.sandboxMain.content, {});
+                    let conf = {
+                        drag:(what,x,y)=>{
+                            if(this.inModification && this.elementModified == elem){
+                                this.rightMenu.posX.message(Math.round(elem.parentManip.x));
+                                this.rightMenu.posY.message(Math.round(elem.parentManip.y));
+                                this.rightMenu.sizeW.message(Math.round(elem.width));
+                                this.rightMenu.sizeH.message(Math.round(elem.height));
+                            }
+                            return {x:x,y:y};
+                        }
+                    }
+                    installDnD(elem.parentManip, this.sandboxMain.content, conf);
                 }
             }
             this.selectedElement = elem;
@@ -1202,6 +1213,7 @@ exports.DollAdminV = function (globalVariables) {
             }
             let initW = elem.width, initH = elem.height;
             let manipInitx = manipulator.x, manipInity = manipulator.y;
+            let self = this;
             manipulator.corners = [];
             let br = function (x, y, Xcoeff, Ycoeff) {
                 let delta = {x: x - this.x, y: y - this.y};
@@ -1212,6 +1224,13 @@ exports.DollAdminV = function (globalVariables) {
                         manipulator.corners.forEach(corner => {
                             corner.move(corner.point.getX() + delta.x / 2, corner.point.getY() + delta.y / 2);
                         });
+                    }
+                    if(self.inModification && elem == self.elementModified) {
+                        self.rightMenu.posX.message(Math.round(elem.parentManip.x));
+                        self.rightMenu.posY.message(Math.round(elem.parentManip.y));
+                        self.rightMenu.sizeW.message(Math.round(elem.width));
+                        self.rightMenu.sizeH.message(Math.round(elem.height));
+
                     }
                     updateCorners();
                     elem.refresh && elem.refresh();
@@ -1384,12 +1403,10 @@ exports.DollAdminV = function (globalVariables) {
                 this.resizeElement(text, manipulator);
                 this.removeContextMenu();
             });
-
             color.mark('colorOption');
             resize.mark('resizeOption');
             arr.push(color, resize);
             arr = arr.concat(this._createDeepnessElement(manipulator));
-
             this.contextMenu && this.manipulator.remove(this.contextMenu.manipulator);
             this.contextMenu = new ListManipulatorView(arr, 'V', 150, NB_ELEMENT_RIGHT_CLICK * CONTEXT_TILE_SIZE.h + CHEVRON_RCLICK_SIZE.h*2,
                 CHEVRON_RCLICK_SIZE.w, CHEVRON_RCLICK_SIZE.h, CONTEXT_TILE_SIZE.w, CONTEXT_TILE_SIZE.h, 5, undefined, 0);
@@ -1485,6 +1502,7 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         _rightMenuForRect(rect, manipulator) {
+            this.rightMenu = {};
             let makeColors = (handler) => {
                 let colors = [[43, 120, 228],
                     [125, 122, 117],
@@ -1509,6 +1527,7 @@ exports.DollAdminV = function (globalVariables) {
                 return colors;
             }
             this.inModification = true;
+            this.elementModified = rect;
             let propertiesToSave = {
                 position: {x: rect.x, y: rect.y},
                 size: rect.boundingRect(),
@@ -1624,6 +1643,11 @@ exports.DollAdminV = function (globalVariables) {
                     newMessage && displayErrorInput();
                 }
             })
+            this.rightMenu.posX = inputPosX;
+            this.rightMenu.posY = inputPosY;
+            this.rightMenu.sizeW = inputSizeW;
+            this.rightMenu.sizeH = inputSizeH;
+
 
             let keepProportionButton = new svg.Rect(20, 20).color(myColors.white, 1, myColors.black).mark('keepProportionButton');
             keepProportionButton.position(posX.x + keepProportionButton.width / 2, posX.y + 50);
@@ -1712,6 +1736,9 @@ exports.DollAdminV = function (globalVariables) {
             redCross.position(rMenu.width / 2 - redCross.getSize() - MARGIN, -rMenu.height / 2 + redCross.getSize() + MARGIN);
             redCross.addEvent('click', () => {
                 this.manipulator.remove(this.rightMenuManipulator);
+                this.rightMenu = {};
+                this.inModification = false;
+                this.elementModified = null;
             });
 
             this.rightMenuManipulator.add(title)
