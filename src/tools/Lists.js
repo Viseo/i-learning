@@ -6,6 +6,7 @@ exports.Lists = function (globalVariables) {
     let
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        Helpers = globalVariables.Helpers,
         Manipulator = globalVariables.Handlers.Manipulator;
 
     class ListView {
@@ -426,6 +427,7 @@ exports.Lists = function (globalVariables) {
 
         setSelectButtonText(label) {
             this.selectButton.text.message(label);
+            Helpers.resizeStringForText(this.selectButton.text, this.width, this.height);
         }
 
         setHandlerChangeValue(handler) {
@@ -434,6 +436,7 @@ exports.Lists = function (globalVariables) {
 
         addElementByText(ele){
             let manip = new Manipulator(this);
+
             let choice = new gui.Button(this.width, this.height, [myColors.none, 1, myColors.black], ele);
             choice.back.corners(5, 5);
             choice.onClick(() => {

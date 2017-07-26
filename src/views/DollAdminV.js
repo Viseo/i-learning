@@ -1191,7 +1191,7 @@ exports.DollAdminV = function (globalVariables) {
 
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
             this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
-
+            //this.solutionsHeaderManipulator && this.objectivesSelectList.resizeAllText();
         }
 
 
