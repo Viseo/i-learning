@@ -1,4 +1,4 @@
-FONT = 'Arial';
+FONT = 'Roboto';
 MARGIN = 10;
 STAR_SPACE = 4;
 myColors = {
