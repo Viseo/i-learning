@@ -93,7 +93,15 @@ exports.DollAdminV = function (globalVariables) {
                         })
                         elem.mark('picElement');
                         manip.childObject = elem;
-
+                        let conf2 = {
+                            drop: (what, whatParent, x, y) => {
+                                return {x: x, y: y, parent: this.sandboxMain.content};
+                            },
+                            moved: () => {
+                                return true;
+                            }
+                        };
+                        installDnD(manip, drawings.component.glass.parent.manipulator.last, conf2);
                         break;
                     case 'help':
                         elem = new svg.Image('../../images/info.png');
@@ -314,6 +322,15 @@ exports.DollAdminV = function (globalVariables) {
                         this.sandboxMain.content.add(picInPanelManip.component);
                         picInPanelManip.childObject = picInPanel;
                         picInPanel.mark('picElement');
+                        let conf = {
+                            drop: (what, whatParent, x, y) => {
+                                return {x: x, y: y, parent: this.sandboxMain.content};
+                            },
+                            moved: () => {
+                                return true;
+                            }
+                        };
+                        installDnD(picInPanelManip, drawings.component.glass.parent.manipulator.last, conf);
                     }
                     return {x: what.x, y: what.y, parent: whatParent};
                 },
