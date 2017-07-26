@@ -539,6 +539,8 @@ exports.DollAdminV = function (globalVariables) {
                 .dimension(pictureResponseSize, pictureResponseSize);
             this.listViewPictureResponse = new ListManipulatorView([], 'H', RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h,
                 25, 50, pictureResponseSize, pictureResponseSize, 8, undefined, MARGIN + 25);
+
+            this.picResponses = true;
             this.listViewPictureResponse.position(0, RIGHTBOX_SIZE.header.h);
             picAddImageManip.add(picAddImage);
             picAddImageManip.addEvent('click', _createPopUpPicture);
@@ -973,11 +975,16 @@ exports.DollAdminV = function (globalVariables) {
                 }
             }
             let _removeImgTab = () => {
-                responsesManip
-                    .remove(this.listViewPictureResponse.manipulator)
-                    .remove(this.responsesPictureInput.component)
-                    .remove(this.imageResponsesAddButton.component)
-                    .remove(this.responsesList.manipulator);
+                if (this.picResponses) {
+                    responsesManip
+                        .remove(this.listViewPictureResponse.manipulator)
+                        .remove(this.responsesPictureInput.component)
+                        .remove(this.imageResponsesAddButton.component)
+                        .remove(this.responsesList.manipulator);
+                } else {
+                    responsesManip
+                        .remove(this.responsesList.manipulator);
+                }
             }
             let _removeTextTab = () => {
                 responsesManip
