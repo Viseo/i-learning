@@ -94,10 +94,15 @@ exports.DollAdminV = function (globalVariables) {
                         elem.mark('picElement');
                         manip.childObject = elem;
                         let conf2 = {
+                            drag: (what, x, y) => {
+                                svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
+                                return {x: x, y: y};
+                            },
                             drop: (what, whatParent, x, y) => {
                                 return {x: x, y: y, parent: this.sandboxMain.content};
                             },
                             moved: () => {
+                                svgr.attr(drawing.component, 'style', 'cursor:auto');
                                 return true;
                             }
                         };
@@ -119,10 +124,15 @@ exports.DollAdminV = function (globalVariables) {
                         });
                         elem.mark('helpElement');
                         let conf = {
+                            drag: (what, x, y) => {
+                                svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
+                                return {x: x, y: y};
+                            },
                             drop: (what, whatParent, x, y) => {
                                 return {x: x, y: y, parent: this.sandboxMain.content};
                             },
                             moved: () => {
+                                svgr.attr(drawing.component, 'style', 'cursor:auto');
                                 return true;
                             }
                         };
@@ -323,14 +333,19 @@ exports.DollAdminV = function (globalVariables) {
                         picInPanelManip.childObject = picInPanel;
                         picInPanel.mark('picElement');
                         let conf = {
+                            drag: (what, x, y) => {
+                                svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
+                                return {x: x, y: y};
+                            },
                             drop: (what, whatParent, x, y) => {
                                 return {x: x, y: y, parent: this.sandboxMain.content};
                             },
                             moved: () => {
+                                svgr.attr(drawing.component, 'style', 'cursor:auto');
                                 return true;
                             }
                         };
-                        installDnD(picInPanelManip, drawings.component.glass.parent.manipulator.last, conf);
+                        installDnD(picInPanelManip, this.sandboxMain.content, conf);
                     }
                     return {x: what.x, y: what.y, parent: whatParent};
                 },
@@ -1191,7 +1206,7 @@ exports.DollAdminV = function (globalVariables) {
 
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
             this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
-
+            //this.solutionsHeaderManipulator && this.objectivesSelectList.resizeAllText();
         }
 
 
@@ -1424,6 +1439,7 @@ exports.DollAdminV = function (globalVariables) {
                     this.resizeElement(elem,elem.parentManip);
                     let conf = {
                         drag:(what,x,y)=>{
+                            svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
                             if(this.inModification && this.elementModified == elem){
                                 this.rightMenu.posX.message(Math.round(elem.parentManip.x));
                                 this.rightMenu.posY.message(Math.round(elem.parentManip.y));
@@ -1431,6 +1447,9 @@ exports.DollAdminV = function (globalVariables) {
                                 this.rightMenu.sizeH.message(Math.round(elem.height));
                             }
                             return {x:x,y:y};
+                        },
+                        moved: () => {
+                            svgr.attr(drawing.component, 'style', 'cursor:auto')
                         }
                     }
                     installDnD(elem.parentManip, this.sandboxMain.content, conf);
@@ -2049,10 +2068,15 @@ exports.DollAdminV = function (globalVariables) {
                         helpPanelManip.add(txt);
                         helpPanel.mark(helpPanel.statementId + 'ImgElement');
                         let conf = {
+                            drag: (what, x ,y) => {
+                                svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
+                                return {x: x, y: y};
+                            },
                             drop: (what, whatParent, x, y) => {
                                 return {x: x, y: y, parent: this.sandboxMain.content};
                             },
                             moved: () => {
+                                svgr.attr(drawing.component, 'style', 'cursor:auto');
                                 return true;
                             }
                         };

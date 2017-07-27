@@ -44,8 +44,8 @@ function main(mockResponses) {
 
     globalVariables.HeaderVue = FHeaderV(globalVariables);
     globalVariables.Icons = FIcons(globalVariables);
-    globalVariables.Lists = FLists(globalVariables);
     globalVariables.Helpers = FHelpers(globalVariables);
+    globalVariables.Lists = FLists(globalVariables);
     globalVariables.Validator = FValidator(globalVariables);
 
     let Popup = FPopup(globalVariables);
