@@ -54,7 +54,7 @@ exports.FormationAdminV = function (globalVariables) {
                         nameFieldFormation.hideControl();
                     }
                 }
-                let header = new svg.Rect(HEADER_SIZE.w, HEADER_SIZE.h).color([0, 57, 114], 0, []);
+                let header = new svg.Rect(drawing.width, HEADER_SIZE.h).color([0, 57, 114], 0, []);
                 this.headerManipulator.add(header);
                 let nameFieldFormation = new gui.TextField(-drawing.width/2 + 2*INPUT_SIZE.w + 2*MARGIN, 0, 2*INPUT_SIZE.w, 1.5*INPUT_SIZE.h, this.label)
                 nameFieldFormation.font(FONT, 36);
