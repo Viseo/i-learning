@@ -435,7 +435,7 @@ exports.Icons = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 1, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, -ICON_SIZE/2, ICON_SIZE, "...", 20, "Arial", myColors.white);
+                .setTextContent(0, -ICON_SIZE/2, ICON_SIZE, "...", 20, FONT, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
@@ -459,7 +459,7 @@ exports.Icons = function (globalVariables) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 0, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, 0, ICON_SIZE, "!", 23, "Arial", myColors.white);
+                .setTextContent(0, 0, ICON_SIZE, "!", 23, FONT, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }

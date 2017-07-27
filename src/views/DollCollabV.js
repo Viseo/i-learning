@@ -41,7 +41,7 @@ exports.DollCollabV = function(globalVariables) {
                 this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font('Arial', 20).position(0, 6.6);
+                this.returnButton.text.font(FONT, 20).position(0, 6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);

@@ -178,7 +178,7 @@ exports.ConnectionV = function (globalVariables) {
                     let fieldTitle = new svg.Text("se souvenir de moi")
                         .fontStyle('italic')
                         .dimension(INPUT_SIZE.w / 2, FONT_SIZE_TEXT)
-                        .font("Arial", FONT_SIZE_TEXT)
+                        .font(FONT, FONT_SIZE_TEXT)
                         .anchor("start")
                         .color(TITLE_COLOR)
                         .position(CHECKBOX_SIZE, 0);

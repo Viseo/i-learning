@@ -63,7 +63,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font('Arial', 20).position(0, 6.6);
+                this.returnButton.text.font(FONT, 20).position(0, 6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
@@ -84,7 +84,7 @@ exports.QuizAdminV = function (globalVariables) {
                     h: BUTTON_HEIGHT
                 };
                 let titleTextArea = new gui.TextField(0, 0, quizTitleDim.w, quizTitleDim.h, this.label);
-                titleTextArea.font('Arial', 15);
+                titleTextArea.font(FONT, 15);
                 titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
                 titleTextArea.control.placeHolder('Titre du quiz');
                 titleTextArea.onInput((oldMessage, message, valid) => {
@@ -178,9 +178,9 @@ exports.QuizAdminV = function (globalVariables) {
                     .mark('imageTab');
                 let videoTabs = new svg.Rect(tabsDim.w, tabsDim.h).corners(2, 2).color(myColors.white, 1, myColors.grey)
                     .position(tabsDim.w, 0).mark('videoTab');
-                let imageText = new svg.Text('Image').font('Arial', 18)
+                let imageText = new svg.Text('Image').font(FONT, 18)
                     .position(0, 6).mark('imageTabText');
-                let videoText = new svg.Text('Video').font('Arial', 18)
+                let videoText = new svg.Text('Video').font(FONT, 18)
                     .position(tabsDim.w, 6).mark('videoTabText');
                 let tabsManipulator = new Manipulator(this);
                 tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
@@ -244,7 +244,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                //  let addPictureButton = new gui.Button(BUTTON2_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Ajouter une image')
                //      .position(0, videosPanel.height / 2 + BUTTON_HEIGHT - MARGIN)
-               // addPictureButton.text.font('Arial',15).color(myColors.black).position(0, 4.33);
+               // addPictureButton.text.font(FONT,15).color(myColors.black).position(0, 4.33);
                //  resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
                //  addPictureButton.component.add(addPictureButton.text);
                 videosPanel.add(rectWhite);
@@ -295,7 +295,7 @@ exports.QuizAdminV = function (globalVariables) {
                     let indexX = Math.floor(index % 1);
                     let indexY = Math.floor(index / 1);
                     let video = new svg.Image('../../images/play-button.png').mark('video'+index);
-                    let videoTitle = new svg.Text(videoElem.name).font('Arial', 12).anchor('left').position(30, 4);
+                    let videoTitle = new svg.Text(videoElem.name).font(FONT, 12).anchor('left').position(30, 4);
                     video.dimension(30, 30);
                     let vidManip = new Manipulator(this);
                     vidManip.move(indexX * (30 + MARGIN / 2) + 30 / 2 + MARGIN, 30 + indexY * (30 + 2 * MARGIN))
@@ -646,7 +646,7 @@ exports.QuizAdminV = function (globalVariables) {
                     .position(-questionGui.textArea.width / 2 - (titleArea.width - questionGui.textArea.width) / 4, 0);
 
                 questionGui.textAreaManipulator.add(questionGui.textAreaPicture);
-                questionGui.textArea.font('Arial', 15);
+                questionGui.textArea.font(FONT, 15);
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
                 questionGui.textArea.onInput(_setQuestionBlockTitle);
@@ -748,7 +748,7 @@ exports.QuizAdminV = function (globalVariables) {
                                     };
 
                                     let titleManip = new Manipulator(popUpExplanation).addOrdonator(1);
-                                    popUpExplanation.textTitle = new svg.Text("Explication de la réponse : Réponse").font('Arial', 25).color(myColors.grey);
+                                    popUpExplanation.textTitle = new svg.Text("Explication de la réponse : Réponse").font(FONT, 25).color(myColors.grey);
                                     titleManip.add(popUpExplanation.textTitle).move(0, -dimExplanation.h / 2 + 50);
                                     popUpExplanation.manipulator.add(titleManip);
                                 };
@@ -762,7 +762,7 @@ exports.QuizAdminV = function (globalVariables) {
                                         let explanationLabel = (answerGui.explanation && answerGui.explanation.label) ? answerGui.explanation.label : EXPLANATION_DEFAULT_TEXT;
                                         popUpExplanation.textExplanation = new gui.TextArea(0, 0, dimensionContent.w * 2 / 3 - MARGIN,
                                             dimensionContent.h - MARGIN, explanationLabel);
-                                        popUpExplanation.textExplanation.font('Arial', 20)
+                                        popUpExplanation.textExplanation.font(FONT, 20)
                                             .frame.color(myColors.white, 0, myColors.black);
                                         popUpExplanation.textExplanation.position(dimensionContent.w / 6 - MARGIN, 0);
                                         popUpExplanation.textExplanation.mark('explanationText');
@@ -855,7 +855,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                         answerGui.textArea = new gui.TextArea(0, 0, answerTextDim.w, answerTextDim.h, answerLabel || "Réponse");
                         answerGui.manipulator.set(0, answerGui.textArea.component);
-                        answerGui.textArea.font('Arial', 15).anchor('center');
+                        answerGui.textArea.font(FONT, 15).anchor('center');
                         answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
                         let pos = _calculatePositionAnswer(questionGui, index);
                         answerGui.manipulator.move(pos.x, pos.y);

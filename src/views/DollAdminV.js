@@ -156,7 +156,7 @@ exports.DollAdminV = function (globalVariables) {
 
             this.actions = [];
             this.actionTabs = [];
-            let textA = new svg.Text('T').font('Arial', HEADER_TILE).position(0, HEADER_TILE / 3).mark('textTab');
+            let textA = new svg.Text('T').font(FONT, HEADER_TILE).position(0, HEADER_TILE / 3).mark('textTab');
             let rectA = new svg.Rect(HEADER_TILE, HEADER_TILE).color(myColors.blue).mark('rectTab');
             let pictureA = new svg.Image('../../images/ajoutImage.png').dimension(HEADER_TILE, HEADER_TILE).mark('pictureTab');
             let helpA = new svg.Image('../../images/info.png').dimension(HEADER_TILE, HEADER_TILE).mark('helpTab');
@@ -511,7 +511,7 @@ exports.DollAdminV = function (globalVariables) {
                 let miniature = {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
-                    text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
+                    text: new svg.Text(response.label).font(FONT, 18).position(0, 6),
                     manip: new Manipulator(this).mark(response.label + 'Manip'),
                     image: response.selectedSrc
                 };
@@ -599,7 +599,7 @@ exports.DollAdminV = function (globalVariables) {
 
             this.responsesPictureInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black])
-            this.responsesPictureInput.font('Arial', 18);
+            this.responsesPictureInput.font(FONT, 18);
             this.responsesPictureInput.position(-RIGHTBOX_SIZE.w / 2 + this.responsesPictureInput.width / 2 + MARGIN,
                 this.listViewPictureResponse.height + RIGHTBOX_SIZE.header.h)
             this.responsesPictureInput.frame.corners(5, 5);
@@ -613,7 +613,7 @@ exports.DollAdminV = function (globalVariables) {
             this.imageResponsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h,
                 [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             this.imageResponsesAddButton.text
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(0, 6);
             this.imageResponsesAddButton.back.corners(5, 5);
             this.imageResponsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - this.imageResponsesAddButton.width / 2,
@@ -669,7 +669,7 @@ exports.DollAdminV = function (globalVariables) {
                 this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font('Arial', 20).position(0, 6.6);
+                this.returnButton.text.font(FONT, 20).position(0, 6.6);
                 this.returnButtonManipulator.add(this.returnButton.component)
                     .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
                 let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
@@ -680,10 +680,10 @@ exports.DollAdminV = function (globalVariables) {
             let createTitle = () => {
                 let titleManipulator = new Manipulator(this);
                 let title = new svg.Text('Creer un exercice : ')
-                    .font('Arial', 25).anchor('left')
+                    .font(FONT, 25).anchor('left')
                     .position(-INPUT_SIZE.w / 2, 0);
                 let exerciseTitleInput = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, this.getLabel())
-                exerciseTitleInput.font('Arial', 15).color(myColors.grey);
+                exerciseTitleInput.font(FONT, 15).color(myColors.grey);
                 exerciseTitleInput.text.position(-INPUT_SIZE.w / 2 + MARGIN, 7.5);
                 exerciseTitleInput.control.placeHolder(this.getLabel());
 
@@ -729,7 +729,7 @@ exports.DollAdminV = function (globalVariables) {
                 .corners(2, 2)
                 .position(-TAB_SIZE.w, 0);
             let statementText = new svg.Text('Enoncé')
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(-TAB_SIZE.w, 6);
             statement.mark('statement');
 
@@ -737,7 +737,7 @@ exports.DollAdminV = function (globalVariables) {
                 .color(myColors.white, 1, myColors.grey)
                 .corners(2, 2);
             let rulesText = new svg.Text('Règles')
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(0, 6);
             rules.mark('rules');
 
@@ -828,7 +828,7 @@ exports.DollAdminV = function (globalVariables) {
                 let miniature = {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
-                    text: new svg.Text(objective.label).font('Arial', 18).position(0, 6),
+                    text: new svg.Text(objective.label).font(FONT, 18).position(0, 6),
                     manip: new Manipulator(this).mark(objective.label + 'Manip')
                 };
                 miniature.manip.add(miniature.text)
@@ -864,7 +864,7 @@ exports.DollAdminV = function (globalVariables) {
                     let errorMsg = new svg.Text('Veuiller entrer un texte');
                     errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
                         .anchor('left')
-                        .font('Arial', 18)
+                        .font(FONT, 18)
                         .color(myColors.red);
                     resizeStringForText(errorMsg, this.objectivesInput.width, this.objectivesInput.height);
                     objectivesManip.add(errorMsg);
@@ -888,7 +888,7 @@ exports.DollAdminV = function (globalVariables) {
                 .color(myColors.lightgrey, 1, myColors.grey)
                 .corners(2, 2);
             let objectivesTitle = new svg.Text('Définissez les objectifs : ')
-                .font('Arial', 20)
+                .font(FONT, 20)
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, 8.33);
             resizeStringForText(objectivesTitle, RIGHTBOX_SIZE.w - 3 * MARGIN, 15);
@@ -904,14 +904,14 @@ exports.DollAdminV = function (globalVariables) {
                 this.selectCurrentInputHandler = addObjectiveHandler;
             });
 
-            this.objectivesInput.font('Arial', 18);
+            this.objectivesInput.font(FONT, 18);
             this.objectivesInput.position(-RIGHTBOX_SIZE.w / 2 + this.objectivesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.objectivesInput.frame.corners(5, 5);
             this.objectivesInput.glass.mark('objectivesInputClick');
             this.objectivesInput.mark('objectivesInput');
             let objectivesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             objectivesAddButton.text
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(0, 6);
             objectivesAddButton.back.corners(5, 5);
             objectivesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - objectivesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
@@ -946,7 +946,7 @@ exports.DollAdminV = function (globalVariables) {
                 let miniature = {
                     border: new svg.Line(-LIST_SIZE.w / 2 + 2 * MARGIN, 15, LIST_SIZE.w / 2 - 2 * MARGIN, 15)
                         .color(myColors.black, 1, myColors.grey),
-                    text: new svg.Text(response.label).font('Arial', 18).position(0, 6),
+                    text: new svg.Text(response.label).font(FONT, 18).position(0, 6),
                     manip: new Manipulator(this).mark(response.label + 'Manip'),
                     image: response.selectedSrc
                 };
@@ -989,7 +989,7 @@ exports.DollAdminV = function (globalVariables) {
                     let errorMsg = new svg.Text('Veuiller entrer un texte');
                     errorMsg.position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, RIGHTBOX_SIZE.header.h + 6)
                         .anchor('left')
-                        .font('Arial', 18)
+                        .font(FONT, 18)
                         .color(myColors.red);
                     resizeStringForText(errorMsg, this.responsesInput.width, this.responsesInput.height);
                     responsesManip.add(errorMsg);
@@ -1044,14 +1044,14 @@ exports.DollAdminV = function (globalVariables) {
                 .color(myColors.lightgrey, 1, myColors.grey)
                 .corners(2, 2);
             let responsesTitle = new svg.Text('Définissez les réponses : ')
-                .font('Arial', 20)
+                .font(FONT, 20)
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, 8.33);
             resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3 * MARGIN, 15);
             let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse textuelle');
             textResponseTab.position(0.1 * RIGHTBOX_SIZE.w,0);
             textResponseTab.corners(2,2);
-            textResponseTab.text.font('Arial', 18);
+            textResponseTab.text.font(FONT, 18);
             textResponseTab.onClick(() => {
                 _removeImgTab();
                 _addTextTab();
@@ -1059,7 +1059,7 @@ exports.DollAdminV = function (globalVariables) {
             let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse image');
             pictureResponseTab.position(0.35 * RIGHTBOX_SIZE.w,0);
             pictureResponseTab.corners(2,2);
-            pictureResponseTab.text.font('Arial', 18);
+            pictureResponseTab.text.font(FONT, 18);
             pictureResponseTab.onClick(() => {
                 _removeTextTab();
                 _addImgTab();
@@ -1070,7 +1070,7 @@ exports.DollAdminV = function (globalVariables) {
             responsesBody.position(0, responsesHeader.height / 2 + responsesBody.height / 2);
             this.responsesInput = new gui.TextField(0, 0, 2 / 3 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h)
                 .color([myColors.white, 1, myColors.black])
-            this.responsesInput.font('Arial', 18);
+            this.responsesInput.font(FONT, 18);
             this.responsesInput.position(-RIGHTBOX_SIZE.w / 2 + this.responsesInput.width / 2 + MARGIN, RIGHTBOX_SIZE.header.h)
             this.responsesInput.frame.corners(5, 5);
 
@@ -1083,7 +1083,7 @@ exports.DollAdminV = function (globalVariables) {
 
             let responsesAddButton = new gui.Button(0.25 * RIGHTBOX_SIZE.w, 0.8 * INPUT_SIZE.h, [myColors.customBlue, 1, myColors.grey], 'Ajouter');
             responsesAddButton.text
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(0, 6);
             responsesAddButton.back.corners(5, 5);
             responsesAddButton.position(RIGHTBOX_SIZE.w / 2 - MARGIN - responsesAddButton.width / 2, RIGHTBOX_SIZE.header.h);
@@ -1181,7 +1181,7 @@ exports.DollAdminV = function (globalVariables) {
                     .color(myColors.white, 1, myColors.grey)
                     .corners(2, 2);
                 let headerTitle = new svg.Text('Pour chaque objectif créé, définir les règles associées : ')
-                    .font('Arial', 18)
+                    .font(FONT, 18)
                     .anchor('left')
                     .position(-PANEL_SIZE.w / 2 + MARGIN, -solutionsHeader.height / 5)
                     .mark('headerTitle');
@@ -1228,7 +1228,7 @@ exports.DollAdminV = function (globalVariables) {
                 let solutionBody = createSolutionsList();
                 let title = new svg.Text(best ? "Solution optimale" : "Solution accepter")
                     .position(x, y - sizeBody.h/2)
-                    .font('Arial', 20);
+                    .font(FONT, 20);
                 let addSolutionButton = new gui.Button(INPUT_SIZE.w/1.5, INPUT_SIZE.h,
                     [myColors.white, 1, myColors.black], "Ajouter une solution");
                 addSolutionButton.position(x, y - sizeBody.h/2 + addSolutionButton.height);
@@ -1801,13 +1801,13 @@ exports.DollAdminV = function (globalVariables) {
             let pos = {x: rMenu.width / 15, y: rMenu.height / 8};
 
             let title = new svg.Text("Modifier Rectangle");
-            title.position(0, -rMenu.height / 2 + pos.y).font('Arial', 30);
+            title.position(0, -rMenu.height / 2 + pos.y).font(FONT, 30);
 
             let arrayText = ['Position', 'Taille', 'Bordure', 'Fond', 'Opacité'];
             arrayText.forEach((ele, index) => {
                 let text = new svg.Text(ele);
                 text.position(-rMenu.width / 2 + pos.x, -rMenu.height / 2 + pos.y * (index + 2))
-                    .anchor('left').font('Arial', textSize);
+                    .anchor('left').font(FONT, textSize);
                 this.rightMenuManipulator.add(text);
             });
 
@@ -1815,7 +1815,7 @@ exports.DollAdminV = function (globalVariables) {
             let dimInput = {w: pos.x * 3, h: 40};
             let displayErrorInput = () => {
                 let text = new svg.Text('Veuillez entrer une valeur correcte (numérique)')
-                    .font('Arial', 18)
+                    .font(FONT, 18)
                     .color(myColors.red)
                     .mark('errorInputMessage');
                 text.position(title.x, title.y + 30);
@@ -1826,7 +1826,7 @@ exports.DollAdminV = function (globalVariables) {
                 }, 3000);
             }
             let posX = new svg.Text("X");
-            posX.position(-rMenu.width / 2 + pos.x * 5, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
+            posX.position(-rMenu.width / 2 + pos.x * 5, -rMenu.height / 2 + pos.y * (2)).anchor('left').font(FONT, textSize);
             let inputPosX = new gui.TextField(-rMenu.width / 2 + pos.x * 5 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
                 dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
             inputPosX.message(manipulator.x);
@@ -1841,7 +1841,7 @@ exports.DollAdminV = function (globalVariables) {
             inputPosX.mark('inputPosX')
 
             let posY = new svg.Text("Y");
-            posY.position(-rMenu.width / 2 + pos.x * 10, -rMenu.height / 2 + pos.y * (2)).anchor('left').font('Arial', textSize);
+            posY.position(-rMenu.width / 2 + pos.x * 10, -rMenu.height / 2 + pos.y * (2)).anchor('left').font(FONT, textSize);
             let inputPosY = new gui.TextField(-rMenu.width / 2 + pos.x * 10 + textSize / 3 * 2 + dimInput.w / 2 + MARGIN, -rMenu.height / 2 + pos.y * (2) - textSize / 3,
                 dimInput.w, dimInput.h).color([myColors.lightgrey, 1, myColors.black]);
             inputPosY.message(manipulator.y);
@@ -1924,7 +1924,7 @@ exports.DollAdminV = function (globalVariables) {
             })
 
             let keepProportionText = new svg.Text('Garder les proportions')
-                .font('Arial', 18)
+                .font(FONT, 18)
                 .position(keepProportionButton.x + 20, keepProportionButton.y + 6)
                 .anchor('left');
 
@@ -2106,7 +2106,7 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         _makeClickableItem(message, handler) {
-            let txt = new svg.Text(message).font('Arial', 18).position(0, 6);
+            let txt = new svg.Text(message).font(FONT, 18).position(0, 6);
             let rect = new svg.Rect(CONTEXT_TILE_SIZE.w + MARGIN, CONTEXT_TILE_SIZE.h).color(myColors.white, 0.5, myColors.none);
             let manip = new Manipulator(this);
             manip.add(rect).add(txt);

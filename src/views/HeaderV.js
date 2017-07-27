@@ -53,7 +53,7 @@ exports.HeaderV = function (globalVariables) {
             var _displayHomeText = () => {
                 let text = new svg.Text("I-learning")
                     .position(HEADER_MARGIN.left, HEADER_MARGIN.top - FONT_SIZE/2)
-                    .font('Arial', HOME_TEXT_SIZE)
+                    .font(FONT, HOME_TEXT_SIZE)
                     .anchor('start')
                     .color(myColors.turquoise)
                     .mark('homeText');
@@ -77,7 +77,7 @@ exports.HeaderV = function (globalVariables) {
                     .move(this.width - button.width/2 - 2*MARGIN, HEADER_MARGIN.top - button.height/2);
 
                 let userText = new svg.Text(drawing.username)
-                    .font('Arial', FONT_SIZE)
+                    .font(FONT, FONT_SIZE)
                     .anchor('end')
                     .color(myColors.black);
                 this.userManipulator
@@ -101,7 +101,7 @@ exports.HeaderV = function (globalVariables) {
 
                 if (message) {
                     let messageText = new svg.Text(message)
-                        .font('Arial', FONT_SIZE)
+                        .font(FONT, FONT_SIZE)
                         .fontWeight('bold')
                         .color(myColors.black)
                         .mark("headerMessage");
