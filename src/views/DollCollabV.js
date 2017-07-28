@@ -101,12 +101,11 @@ exports.DollCollabV = function(globalVariables) {
                         elem.mark('picElement');
                         break;
                     case 'help':
-                        elem = new svg.Image('../../images/info.png');
-                        elem.dimension(elemDetails.width, elemDetails.height);
+                        elem = new svg.Rect(elemDetails.width, elemDetails.height).color(myColors.white, 1, myColors.black);
                         let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-elemDetails.height/2 - MARGIN);
+                        manip.add(elem);
                         manip.add(txt);
                         elem.statementId = elemDetails.statementId;
-                        manip.add(elem);
                         elem.mark('helpElement');
                         this.graphicStatement.push(elem);
                         break;
@@ -181,7 +180,7 @@ exports.DollCollabV = function(globalVariables) {
                             if(resp){
                                 resp.response = ele.label;
                                 target.parentManip.remove(target.parentManip.response);
-                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0, target.height/2 + 2*MARGIN);
+                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0, 6);
                                 target.parentManip.add(txt);
                                 target.parentManip.response = txt;
                                 let tmp = this.graphicResponses.find(elem=>{return elem.statement == target.statementId});
@@ -189,7 +188,9 @@ exports.DollCollabV = function(globalVariables) {
                                 this.graphicResponses.add({statement: target.statementId, response:ele.label, svg: txt});
                             }else{
                                 this.responses.push({statement:target.statementId, response:ele.label});
-                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0, target.height/2 + 2*MARGIN);
+                                let txt = new svg.Text(ele.label).font(FONT, 18).position(0,6);
+                                txt.type = 'help';
+                                txt.statementId = target.statementId;
                                 target.parentManip.add(txt);
                                 target.parentManip.response = txt;
                                 this.graphicResponses.push({statement: target.statementId, response:ele.label, svg: txt});
