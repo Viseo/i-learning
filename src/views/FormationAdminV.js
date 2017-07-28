@@ -361,7 +361,7 @@ exports.FormationAdminV = function (globalVariables) {
                     miniature.border.color(myColors.white, 2, myColors.darkBlue);
                     let trash = new svg.Image('../../images/trash.png').dimension(25,25).position(MINIATURE_SIZE.w/2 + 20, 0);
                     svg.addEvent(trash, 'click', ()=>{
-                        this.removeGame(miniature.manipulator.  game);
+                        this.removeGame(miniature.manipulator.game);
                     })
                     miniature.manipulator.set(3, trash);
                     miniature.manipulator.set(2, miniature.iconImage.manipulator);
@@ -403,12 +403,12 @@ exports.FormationAdminV = function (globalVariables) {
                     miniature.picture.position(MINIATURE_SIZE.w / 2 - IMAGE_MINIATURE / 2 - 2*MARGIN, 0);
                     miniature.manipulator.add(miniature.picture);
                 }
-                miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
-                miniature.redCrossManipulator.move(MINIATURE_SIZE.w/ 2, -MINIATURE_SIZE.h / 2);
-                IconCreator.createRedCrossIcon(miniature.redCrossManipulator, 0);
-                miniature.redCrossManipulator.addEvent('click', () => {
-                    this.removeGame(miniature.manipulator.game);
-                });
+                // miniature.redCrossManipulator = new Manipulator(this).addOrdonator(1);
+                // miniature.redCrossManipulator.move(MINIATURE_SIZE.w/ 2, -MINIATURE_SIZE.h / 2);
+                // IconCreator.createRedCrossIcon(miniature.redCrossManipulator, 0);
+                // miniature.redCrossManipulator.addEvent('click', () => {
+                //     this.removeGame(miniature.manipulator.game);
+                // });
                 miniature.manipulator.game = game;
                 miniature.manipulator.miniatureGame = miniature;
                 miniature.conf = {
@@ -477,6 +477,7 @@ exports.FormationAdminV = function (globalVariables) {
                 trash: new svg.Image('../../images/trash.png').dimension(25,25).position(100,0)
             }
             svg.addEvent(levelMiniature.trash, 'click', ()=>{this.removeLevel(level)});
+            levelMiniature.trash.mark('trashLevel'+levelIndex)
             this.graphMiniatureManipulator.add(levelManipulator);
             levelManipulator.move(-this.graphSize.width / 2 + MARGIN, (levelIndex) * LEVEL_HEIGHT - this.graphSize.height / 2 + LEVEL_HEIGHT / 2);
 

@@ -27,9 +27,14 @@ describe('Formation Collab', function () {
         })
     })
 
-    it('should enter a game and return to FormationCollabV', function(){
+    it('should enter a game and return to FormationCollabV', function () {
         let {root, state} = given(() => {
-            return loadPage("FormationCollab", {data:doneFormationJson, className: "Formation"});
+            return loadPage("FormationCollab", {
+                data: doneFormationJson, className: "Formation",
+                beforeLoad: function (page) {
+                    page.state.username = "Collaborateur 0";
+                }
+            });
         })
         when(() => {
             click(root, 'miniatureQuiz 0');
