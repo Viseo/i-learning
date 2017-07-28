@@ -167,6 +167,13 @@ exports.ConnectionP = function(globalVariables) {
             this._stayConnected = !!isStay;
         }
 
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     }
     return ConnectionP;
 }

@@ -134,7 +134,7 @@ exports.Models = function (globalVariables, mockResponses) {
 
             if (user) {
                 this.user = new User(user);
-                drawing.username = `${user.firstName} ${user.lastName}`;
+                this.username = `${user.firstName} ${user.lastName}`;
             }
             this.formations.sync().then(() => {
                 this.currentPresenter && this.currentPresenter.flushView();
@@ -271,6 +271,13 @@ exports.Models = function (globalVariables, mockResponses) {
             return new MediasLibrary();
         }
 
+        getUsername() {
+            return this.username;
+        }
+
+        setUsername(username) {
+            this.username = username;
+        }
     }
 
     class Formations {

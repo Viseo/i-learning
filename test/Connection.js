@@ -117,7 +117,7 @@ describe('connection page', function () {
         when(()=>{
             click(root, "deconnection");
         }).then(()=>{
-            assertMessage(root, "headerMessage", "Connexion");
+            assertMessage(root, "headerMessage", "CONNEXION");
         });
     });
 

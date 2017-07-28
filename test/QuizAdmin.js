@@ -22,14 +22,15 @@ describe('quiz admin', function () {
                 "/formations/update": {content: {saved: true}},
                 "/formations/quiz": {code: 200, content: {valid: false}},
                 "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
-                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}            }
+                    src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
+            };
             return loadPage('GameAdmin', {
                 mockResponses,
                 className: "Quiz",
                 beforeLoad: (page) => {
                     page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
                 }
-            })
+            });
         })
         when(() => {
             inputValue(root, 'quizTitle', '@@@@');
@@ -40,12 +41,18 @@ describe('quiz admin', function () {
     })
     it('should not rename quiz (not valid quiz)', function () {
         let {root, state} = given(() => {
+            mockResponses = {
+                "/medias/images": {code: 200, content: {images: []}},
+                "/formations/update": {content: {saved: true}},
+                "/formations/quiz": {code: 200, content: {valid: false}}
+            };
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {label: "quiz"},
                 className: "Quiz",
                 beforeLoad: (page) => {
                     page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                    page.state.username = "DMA";
                 }
             })
         })
@@ -330,6 +337,13 @@ describe('quiz admin', function () {
 
     it('should rename saved quiz', function(){
         let {root, state} = given(() => {
+            // mockResponses = {
+            //     "/medias/images": {code: 200, content: {images: []}},
+            //     "/formations/update": {content: {saved: true}},
+            //     "/formations/quiz": {code: 200, content: {valid: true}},
+            //     "/medias/videos": {code:200, content: [{name: "deepchord-presents-echospace-ghost-theory.mp4",
+            //         src: "../resource/63b48e1176c52e478812bc684af407c9", _id:"58ff20e27f3e802c0c7ffa29"}]}
+            // };
             return loadPage('GameAdmin', {
                 mockResponses,
                 data: {
@@ -345,6 +359,7 @@ describe('quiz admin', function () {
                 className: "Quiz",
                 beforeLoad: (page) => {
                     page.state.formation = page.state.createFormation({_id: "1", formationId: "2", label: "formation"});
+                    page.state.username = "DMA";
                 }
             })
         })

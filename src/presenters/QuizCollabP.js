@@ -197,6 +197,14 @@ exports.QuizCollabP = function (globalVariables) {
             }
             return {message, color, emojiSrc};
         }
+
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     }
 
     return QuizCollabP;

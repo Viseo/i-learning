@@ -63,7 +63,7 @@ exports.HeaderV = function (globalVariables) {
             var _displayRightHeader = () => {
                 var disconnect = () => {
                     runtime.setCookie("token=; path=/; max-age=0;");
-                    drawing.username = null;
+                    this.setUsername(null);
                     this.disconnect();
                 };
 
@@ -76,7 +76,7 @@ exports.HeaderV = function (globalVariables) {
                     .add(button.component)
                     .move(this.width - button.width/2 - 2*MARGIN, HEADER_MARGIN.top - button.height/2);
 
-                let userText = new svg.Text(drawing.username)
+                let userText = new svg.Text(this.getUsername())
                     .font(FONT, FONT_SIZE)
                     .anchor('end')
                     .color(myColors.black);
@@ -119,7 +119,7 @@ exports.HeaderV = function (globalVariables) {
             _resetManips();
             _displayHeaderRect();
             _displayHomeText();
-            if(drawing.username){
+            if(this.getUsername()){
                 _displayRightHeader();
             }
 
@@ -132,6 +132,14 @@ exports.HeaderV = function (globalVariables) {
 
         disconnect() {
             this.presenter.clearOldPageStackAndLoadPresenterConnection();
+        }
+
+        getUsername() {
+            return this.presenter.getUsername();
+        }
+
+        setUsername(username) {
+            return this.presenter.setUsername();
         }
     }
 

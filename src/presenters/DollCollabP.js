@@ -34,6 +34,13 @@ exports.DollCollabP = function(globalVariables) {
             return this.doll.checkResponses(array);
         }
 
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     }
     return DollCollabP;
 }

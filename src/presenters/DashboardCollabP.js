@@ -27,6 +27,14 @@ exports.DashboardCollabP = function(globalVariables) {
         getNotes(){
             return this.user.getNotes();
         }
+
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            this.state.setUsername(username);
+        }
     }
     return DashboardCollabP;
 }

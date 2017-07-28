@@ -259,7 +259,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 });
             }
             let x = this.miniaturesManipulator.component.boundingRect();
-            this.miniaturesManipulator.move(TILE_SIZE.w/2 + this.panel.width/2 - x.width/2, TILE_SIZE.h / 2 + 3 * MARGIN);
+            x && this.miniaturesManipulator.move(TILE_SIZE.w/2 + this.panel.width/2 - x.width/2, TILE_SIZE.h / 2 + 3 * MARGIN);
         }
 
 
