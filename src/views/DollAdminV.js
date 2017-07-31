@@ -109,12 +109,11 @@ exports.DollAdminV = function (globalVariables) {
                         installDnD(manip, drawings.component.glass.parent.manipulator.last, conf2);
                         break;
                     case 'help':
-                        elem = new svg.Image('../../images/info.png');
-                        elem.dimension(elemDetails.width, elemDetails.height);
-                        manip.add(elem);
-                        manip.childObject = elem;
+                        elem = new svg.Circle(elemDetails.width/2).color(myColors.white, 1, myColors.black);
+                        let elemText = new svg.Text("?").font(FONT, 12);
                         let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
-                        manip.add(txt);
+                        manip.add(elem).add(elemText).add(txt);
+                        manip.childObject = elem;
                         elem.statementId = elemDetails.statementId;
                         svg.addEvent(elem, 'click', (event) => {
                             this.selectElement(elem);
@@ -122,7 +121,7 @@ exports.DollAdminV = function (globalVariables) {
                                 this.imageRightClick(elem, manip, event);
                             }
                         });
-                        elem.mark('helpElement');
+                        manip.mark('helpElement');
                         let conf = {
                             drag: (what, x, y) => {
                                 svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
@@ -1560,8 +1559,6 @@ exports.DollAdminV = function (globalVariables) {
                             }
                         });
                         updatePoints();
-                        initW = elem.width;
-                        initH = elem.height;
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
                     moved: (what) => {
@@ -2045,28 +2042,29 @@ exports.DollAdminV = function (globalVariables) {
 
                     if (target && target == this.sandboxMain.back) {
                         let helpPanelManip = new Manipulator(this);
-                        let helpPanel = new svg.Image(what.components[0].src);
-                        helpPanel.dimension(HEADER_TILE, HEADER_TILE);
-                        helpPanel.type = 'help';
-                        helpPanelManip.add(helpPanel);
+                        let helpCircle = new svg.Circle(40).color(myColors.white, 2, myColors.black);
+                        let helpText = new svg.Text("?").font(FONT, 80).position(0, 28)
+                        helpCircle.type = 'help';
+                        helpText.type = 'help';
+                        helpPanelManip.add(helpCircle).add(helpText);
 
                         let localPoints = this.sandboxMain.content.localPoint(x, y);
                         helpPanelManip.move(localPoints.x, localPoints.y);
 
-                        svg.addEvent(helpPanel, 'click', (event) => {
-                            this.selectElement(helpPanel);
+                        helpPanelManip.addEvent('click', (event) => {
+                            this.selectElement(helpCircle);
                             if (event.which == 3) {
-                                this.imageRightClick(helpPanel, helpPanelManip, event);
+                                this.rectRightClick(helpCircle, helpPanelManip, event);
                             }
                         });
-                        this.elements.push(helpPanel);
+                        this.elements.push(helpCircle);
                         this.sandboxMain.content.add(helpPanelManip.first);
-                        helpPanelManip.childObject = helpPanel;
-                        helpPanel.statementId = 'Enoncé' + this.getStatement().length;
+                        helpPanelManip.childObject = helpCircle;
+                        helpCircle.statementId = 'Enoncé' + this.getStatement().length;
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
-                        let txt = new svg.Text(helpPanel.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        let txt = new svg.Text(helpCircle.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
                         helpPanelManip.add(txt);
-                        helpPanel.mark(helpPanel.statementId + 'ImgElement');
+                        helpCircle.mark(helpCircle.statementId + 'ImgElement');
                         let conf = {
                             drag: (what, x ,y) => {
                                 svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
@@ -2121,8 +2119,6 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         keyDown(event) {
-
-
             if ((event.keyCode == 46) && !this.inModification) {
                 if (this.selectedElement) {
                     if(this.selectedElement.type === 'text') this.selectedElement.hideControl();
@@ -2201,9 +2197,6 @@ exports.DollAdminV = function (globalVariables) {
         renameDoll(label) {
             this.presenter.renameDoll(label);
         }
-
-
-
     }
 
     return DollAdminV;
