@@ -89,6 +89,14 @@ exports.ConnectionP = function(globalVariables) {
             this.view = new connectionView(this);
         }
 
+        tryLoginOrRegister(){
+            if(this.isConnectionPage()){
+                return this.logIn();
+            }else {
+                return this.registerNewUser();
+            }
+        }
+
         _connectWith(login, pwd, stayConnected){
             return this.state.tryConnectForPresenterDashboard(login, pwd, stayConnected);
         }
@@ -136,9 +144,11 @@ exports.ConnectionP = function(globalVariables) {
                     mailAddress: this._fields[2].text,
                     password: runtime.twinBcrypt(this._fields[3].text)
                 };
-                return this.state.registerNewUser(userInfos);
+                return this.state.registerNewUser(userInfos)
+                    .then(()=>"Le compte a bien été crée")
+                    .catch((err)=>{throw JSON.parse(err).reason})
             } else {
-                return Promise.reject(JSON.stringify({reason:error}));
+                return Promise.reject("Veuillez remplir correctement tous les champs");
             }
         }
 
