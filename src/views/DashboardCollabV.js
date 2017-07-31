@@ -5,17 +5,15 @@ exports.DashboardCollabV = function (globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         PopOut = globalVariables.Icons.PopOut,
-        IconCreator = globalVariables.Icons.IconCreator,
         drawCheck = globalVariables.Helpers.drawCheck,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
-        View = globalVariables.View,
-        ClipPath = globalVariables.clipPath;
+        View = globalVariables.View;
 
     const TILE_SIZE = {w: 300, h: 450},
         SPACE_BETWEEN = 70,
-        CLIP_SIZE = 45,
         INPUT_SIZE = {w: 400, h: 30},
-        IMAGE_SIZE = {w:300, h:300};
+        IMAGE_SIZE = {w:300, h:300},
+        FILTER_ICON = {w: 120, h: 50}
 
     class DashboardCollabV extends View {
         constructor(presenter) {
@@ -66,12 +64,13 @@ exports.DashboardCollabV = function (globalVariables) {
                         let regex = new RegExp(newm);
                         this.displayFormations(regex);
                     });
+                    let posIconFilter = {x : drawing.width/2 - MARGIN, y : this.headerDim.h/2 - 3*MARGIN}
                     this.doneIconFilter = this.createIcon('done');
-                    this.doneIconFilter.move(drawing.width/2,this.headerDim.h/2 - 3*MARGIN)
+                    this.doneIconFilter.move(posIconFilter.x, posIconFilter.y)
                     this.inProgressIconFilter = this.createIcon('inProgress');
-                    this.inProgressIconFilter.move(drawing.width/2 - 100,this.headerDim.h/2 - 3*MARGIN)
+                    this.inProgressIconFilter.move(posIconFilter.x - (FILTER_ICON.w+MARGIN), posIconFilter.y)
                     this.undoneIconFilter = this.createIcon('undone');
-                    this.undoneIconFilter.move(drawing.width/2 - 230,this.headerDim.h/2 - 3*MARGIN)
+                    this.undoneIconFilter.move(posIconFilter.x - (FILTER_ICON.w+MARGIN)*2, posIconFilter.y)
                     this.doneIconFilter.addEvent('click', ()=>{
                         this.toggleFilter('done')
                     })
@@ -111,7 +110,7 @@ exports.DashboardCollabV = function (globalVariables) {
             }else{
                 this.activeFilter = type;
             }
-            switch(type){
+            switch(this.activeFilter){
                 case'done':
                     this.doneIconFilter.background.color([], 2, [30,192,161]);
                     break;
@@ -132,33 +131,33 @@ exports.DashboardCollabV = function (globalVariables) {
 
         createIcon(type){
             let manip = new Manipulator(this);
+
+            let background = new svg.Rect(FILTER_ICON.w, FILTER_ICON.h);
+            background.color([], 0, []).position(-background.width/2, 0);
+            let backForClick = new svg.Rect(FILTER_ICON.w, FILTER_ICON.h);
+            backForClick.color(myColors.white, 0, []).position(-backForClick.width/2, 0).opacity(0.01);
+
+            manip.add(backForClick).add(background);
+            manip.background = background;
             if (type == 'undone'){
-                let pic = new svg.Image('../../images/play-button2.png').dimension(25,25).position(-100,0);
+                let pic = new svg.Image('../../images/play-button2.png').dimension(25,25).position(-FILTER_ICON.w + 20,0);
                 let text = new svg.Text('Démarrer').font(FONT, 18).color([0,108,216]).position(-85,6).anchor('left');
-                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
-                manip.add(background);
-                manip.background = background;
                 manip.add(pic).add(text)
                     .mark("unDoneIcon");
                 return manip;
             }
             else if (type == 'done'){
-                let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161]);
-                let check = drawCheck(-70,0,15).color([], 2, [30,192,161]);
-                let text = new svg.Text('Faite').font(FONT, 18).color([30,192,161]).position(-50,6).anchor('left');
-                let background = new svg.Rect(100, 50).color([], 0, []).position(-50, 0);
-                manip.add(background);
-                manip.background = background;
-                rect.position(-70, 0);
+                let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161])
+                    .position(-FILTER_ICON.w*4/6, 0);
+                let check = drawCheck(-FILTER_ICON.w*4/6, 0, 15).color([], 2, [30,192,161]);
+                let text = new svg.Text('Faite').font(FONT, 18).color([30,192,161])
+                    .position(-FILTER_ICON.w*3/6,6).anchor('left');
                 manip.add(rect).add(check).add(text)
                     .mark("doneIcon");
                 return manip;
             }else if (type == 'inProgress'){
-                let pic = new svg.Image('../../images/time-left.png').dimension(25,25).position(-100,0);
+                let pic = new svg.Image('../../images/time-left.png').dimension(25,25).position(-FILTER_ICON.w + 20,0);
                 let text = new svg.Text('En cours').font(FONT, 18).color(myColors.orange).position(-80,6).anchor('left');
-                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
-                manip.add(background);
-                manip.background = background;
                 manip.add(pic).add(text)
                     .mark("inProgressIcon");
                 return manip;
