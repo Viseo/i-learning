@@ -684,6 +684,14 @@ exports.FormationAdminV = function (globalVariables) {
                 }
             });
         }
+
+        displayMessage(message) {
+            popUp.displayValidMessage(message, this.manipulator);
+        }
+
+        displayWarningMessage(message) {
+            popUp.displayWarningMessage(message, this.manipulator);
+        }
     }
 
     return FormationAdminV;

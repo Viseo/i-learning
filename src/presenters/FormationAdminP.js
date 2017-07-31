@@ -136,7 +136,7 @@ exports.FormationAdminP = function(globalVariables){
                 this.formation.status = 'Published'
                 this.saveFormation();
             } else {
-                this.view.displayMessage(messageErrorNotValidFormation);
+                this.view.displayWarningMessage(messageErrorNotValidFormation)
             }
         }
 

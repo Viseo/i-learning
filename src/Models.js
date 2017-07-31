@@ -1009,7 +1009,7 @@ exports.Models = function (globalVariables, mockResponses) {
             this.objectives = game.objectives || [];
             this.responses = game.responses || [];
             this.statements = game.statements || [];
-            this.valid = true //TODO changer en this.valid = game.valid
+            this.valid = game.valid || false; //TODO changer en this.valid = game.valid
         }
 
         save(formationId, infos={}){
@@ -1017,17 +1017,18 @@ exports.Models = function (globalVariables, mockResponses) {
             this.elements = infos.elements || [];
             this.objectives = infos.objectives || [];
             this.responses = infos.responses || [];
-            // this.rules = infos.rules || [];
+            this.isValid();
             const completeDollMessage = "Les modifications ont bien été enregistrées",
+                incompleteDollMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorDollMessage = "Erreur";
-            return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex)
+            return apiRequester.updateDoll(this,formationId, this.levelIndex, this.gameIndex, this.valid)
                 .then((data) => {
                     let answer = JSON.parse(data);
                     if (answer.valid) {
                         return {message: completeDollMessage, status: true};
-                    }// } else {
-                    //     return {message: incompleteQuizMessage, status: false};
-                    // }
+                    } else {
+                        return {message: incompleteDollMessage, status: false};
+                    }
                 }).catch(error => {
                     console.log(error);
                     return {message: errorDollMessage, status: false};
@@ -1099,6 +1100,37 @@ exports.Models = function (globalVariables, mockResponses) {
 
         renameDoll(label) {
             this.label = label;
+        }
+
+        isValid() {
+            let _checkStatementElement = (element) => {
+                    return element.statementId;
+                },
+                _checkRules = (objective) => {
+                    let _checkBestSolution = (bestSolutions) => {
+                            let bestSolutionsGroupId = Object.keys(bestSolutions).length;
+                            return bestSolutionsGroupId > 0;
+                        },
+                        _checkAcceptedSolution = (acceptedSolutions) => {
+                            let acceptedSolutionsGroupId = Object.keys(acceptedSolutions).length;
+                            return acceptedSolutionsGroupId > 0;
+                        };
+                    let rules = objective.rules,
+                        atLeastOneSolution = _checkBestSolution(rules.bestSolutions)
+                            || _checkAcceptedSolution(rules.acceptedSolutions);
+                    return atLeastOneSolution;
+                }
+            if (this.objectives && this.objectives.length > 0) {
+                if (this.responses && this.responses.length > 0) {
+                    if (this.elements && this.elements.length > 0) {
+                        if (this.elements.some(_checkStatementElement)) {
+                            if (this.objectives.some(_checkRules)) {
+                                this.valid = true;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

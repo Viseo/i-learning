@@ -150,9 +150,9 @@ class APIRequester {
         return this.httpRequests.post('/formations/quiz', {newQuiz:newQuiz, formationId:formationId,
             levelIndex:levelIndex, gameIndex:gameIndex, valid:valid} );
     }
-    updateDoll(newDoll, formationId, levelIndex, gameIndex){
+    updateDoll(newDoll, formationId, levelIndex, gameIndex, valid){
         return this.httpRequests.post('/formations/doll', {newDoll:newDoll, formationId:formationId,
-            levelIndex:levelIndex, gameIndex:gameIndex});
+            levelIndex:levelIndex, gameIndex:gameIndex, valid:valid});
     }
 
     upload(file, onProgress) {
