@@ -109,11 +109,13 @@ exports.DollAdminV = function (globalVariables) {
                         installDnD(manip, drawings.component.glass.parent.manipulator.last, conf2);
                         break;
                     case 'help':
-                        elem = new svg.Circle(elemDetails.width/2).color(myColors.white, 1, myColors.black);
-                        let elemText = new svg.Text("?").font(FONT, 12);
-                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        elem = new svg.Rect(elemDetails.width, elemDetails.height).color(myColors.white, 1, myColors.black);
+                        let elemText = new svg.Text("?").font(FONT, 45).position(0,15);
+                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-elemDetails.height/2 - 1.5*MARGIN);
                         manip.add(elem).add(elemText).add(txt);
                         manip.childObject = elem;
+                        elem.statementText = txt;
+                        elem.questionMark = elemText;
                         elem.statementId = elemDetails.statementId;
                         svg.addEvent(elem, 'click', (event) => {
                             this.selectElement(elem);
@@ -1470,6 +1472,11 @@ exports.DollAdminV = function (globalVariables) {
                 if((initW + Xcoeff * delta.x) > 0 && (initH + Ycoeff * delta.y) > 0) {
                     elem.dimension(initW + Xcoeff * delta.x, initH + Ycoeff * delta.y)
                     elem.position(+delta.x / 2, +delta.y / 2);
+                    if(elem.questionMark && elem.statementText){
+                        elem.questionMark.position(+delta.x / 2, +delta.y / 2 + 1/3*elem.questionMark.fontSize);
+                        elem.height<elem.width ? elem.questionMark.font(FONT, 0.75*elem.height) :  elem.questionMark.font(FONT, 0.75*elem.width);
+                        elem.statementText.position(+delta.x / 2, +delta.y / 2 -elem.height/2 - 1.5*MARGIN)
+                    }
                     let updateCorners = () => {
                         manipulator.corners.forEach(corner => {
                             corner.move(corner.point.getX() + delta.x / 2, corner.point.getY() + delta.y / 2);
@@ -1552,6 +1559,10 @@ exports.DollAdminV = function (globalVariables) {
                         manipInitx = manipulator.x;
                         manipInity = manipulator.y;
                         elem.position(0, 0);
+                        if(elem.questionMark && elem.statementText){
+                            elem.questionMark.position(0,1/3*elem.questionMark.fontSize);
+                            elem.statementText.position(0,-elem.height/2 - 1.5*MARGIN)
+                        }
                         manipulator.move(manipInitx - (point.x - finalX) / 2, manipInity - (point.y - finalY) / 2);
                         manipulator.corners.forEach(corner => {
                             if (point.x != corner.point.x || point.y != corner.point.y) {
@@ -2042,29 +2053,31 @@ exports.DollAdminV = function (globalVariables) {
 
                     if (target && target == this.sandboxMain.back) {
                         let helpPanelManip = new Manipulator(this);
-                        let helpCircle = new svg.Circle(40).color(myColors.white, 2, myColors.black);
-                        let helpText = new svg.Text("?").font(FONT, 80).position(0, 28)
-                        helpCircle.type = 'help';
+                        let helpRect = new svg.Rect(80,80).color(myColors.white, 2, myColors.black);
+                        let helpText = new svg.Text("?").font(FONT, 45).position(0, 15)
+                        helpRect.type = 'help';
                         helpText.type = 'help';
-                        helpPanelManip.add(helpCircle).add(helpText);
+                        helpPanelManip.add(helpRect).add(helpText);
 
                         let localPoints = this.sandboxMain.content.localPoint(x, y);
                         helpPanelManip.move(localPoints.x, localPoints.y);
 
                         helpPanelManip.addEvent('click', (event) => {
-                            this.selectElement(helpCircle);
+                            this.selectElement(helpRect);
                             if (event.which == 3) {
-                                this.rectRightClick(helpCircle, helpPanelManip, event);
+                                this.rectRightClick(helpRect, helpPanelManip, event);
                             }
                         });
-                        this.elements.push(helpCircle);
+                        this.elements.push(helpRect);
                         this.sandboxMain.content.add(helpPanelManip.first);
-                        helpPanelManip.childObject = helpCircle;
-                        helpCircle.statementId = 'Enoncé' + this.getStatement().length;
+                        helpPanelManip.childObject = helpRect;
+                        helpRect.statementId = 'Enoncé' + this.getStatement().length;
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
-                        let txt = new svg.Text(helpCircle.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        let txt = new svg.Text(helpRect.statementId).font(FONT, 20).position(0,-helpRect.height/2 - 1.5*MARGIN);
                         helpPanelManip.add(txt);
-                        helpCircle.mark(helpCircle.statementId + 'ImgElement');
+                        helpRect.statementText = txt;
+                        helpRect.questionMark = helpText;
+                        helpRect.mark(helpRect.statementId + 'ImgElement');
                         let conf = {
                             drag: (what, x ,y) => {
                                 svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
