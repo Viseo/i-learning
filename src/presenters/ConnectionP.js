@@ -3,12 +3,12 @@
  */
 const ConnectionV = require('../views/ConnectionV').ConnectionV;
 
-exports.ConnectionP = function(globalVariables) {
+exports.ConnectionP = function (globalVariables) {
     const connectionView = ConnectionV(globalVariables),
         Presenter = globalVariables.Presenter,
         runtime = globalVariables.runtime;
 
-    class ConnectionP extends Presenter{
+    class ConnectionP extends Presenter {
         constructor(state) {
             const _initFields = () => {
                 this._connectFields = [
@@ -89,49 +89,52 @@ exports.ConnectionP = function(globalVariables) {
             this.view = new connectionView(this);
         }
 
-        tryLoginOrRegister(){
-            if(this.isConnectionPage()){
+        tryLoginOrRegister() {
+            if (this.isConnectionPage()) {
                 return this.logIn();
-            }else {
+            } else {
                 return this.registerNewUser();
             }
         }
 
-        _connectWith(login, pwd, stayConnected){
+        _connectWith(login, pwd, stayConnected) {
             return this.state.tryConnectForPresenterDashboard(login, pwd, stayConnected);
         }
 
-        logIn(){
+        logIn() {
             var _checkInputs = () => {
                 return this._fields.reduce((o, n) => o && n.valid, true);
             };
 
-            if(_checkInputs()){
+            if (_checkInputs()) {
                 return this._connectWith(this._fields[0].text, this._fields[1].text, this._stayConnected);
-            }else {
+            } else {
                 return Promise.reject("Veuillez remplir correctement tous les champs");
             }
         }
 
-        isConnectionPage(){
+        isConnectionPage() {
             return this._fields === this._connectFields;
         }
 
-        switchPage(){
-            if(this._fields === this._registerFields){
+        switchPage() {
+            if (this._fields === this._registerFields) {
                 this._fields = this._connectFields;
-            }else {
+            } else {
                 this._fields = this._registerFields;
             }
             this.displayView();
         }
 
         registerNewUser() {
-            let error;
+            let error = "Veuillez remplir correctement tous les champs";
             var _checkInputs = () => {
                 let isPasswordConfirmed = this._fields[3].text === this._fields[4].text;
                 let allValid = this._fields.reduce((o, n) => o && n.valid, true);
-                if(!allValid){
+                if (!isPasswordConfirmed) {
+                    error = "La vérification du mot de passe ne correspond pas";
+                }
+                if (!allValid) {
                     error = this._fields.find(f => f.valid === false).errorMessage;
                 }
                 return isPasswordConfirmed && allValid;
@@ -144,36 +147,40 @@ exports.ConnectionP = function(globalVariables) {
                     mailAddress: this._fields[2].text,
                     password: runtime.twinBcrypt(this._fields[3].text)
                 };
-                return this.state.registerNewUser(userInfos)
-                    .then(()=>"Le compte a bien été crée")
-                    .catch((err)=>{throw JSON.parse(err).reason})
+                return this.state.registerNewUser(userInfos).then(() => {
+                    setTimeout(() => this.switchPage(), 3000);
+                    return "Votre compte a bien été créé !"
+                }).catch((err) => {
+                    throw JSON.parse(err).reason
+                })
             } else {
-                return Promise.reject("Veuillez remplir correctement tous les champs");
+                return Promise.reject(error);
             }
         }
 
-        forgotPWD(){
+        forgotPWD() {
             return this.state.resetPassword({mailAddress: this._fields[0].text});
         }
 
-        getFields () {
+        getFields() {
             return this._fields;
         }
 
-        setValid(field, valid){
+        setValid(field, valid) {
             let index = this._fields.indexOf(field);
-            if(index != -1){
+            if (index != -1) {
                 this._fields[index].valid = valid;
             }
         }
-        setFieldText(field, text){
+
+        setFieldText(field, text) {
             let index = this._fields.indexOf(field);
-            if(index != -1){
+            if (index != -1) {
                 this._fields[index].text = text;
             }
         }
 
-        setStayConnected(isStay){
+        setStayConnected(isStay) {
             this._stayConnected = !!isStay;
         }
 
@@ -185,5 +192,6 @@ exports.ConnectionP = function(globalVariables) {
             return this.state.setUsername(username);
         }
     }
+
     return ConnectionP;
 }
