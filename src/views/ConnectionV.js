@@ -43,6 +43,7 @@ exports.ConnectionV = function (globalVariables) {
                     .onClick(this.switchPage.bind(this))
                 button.text.font(FONT)
                 button.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height/2 + MARGIN)
+                button.glass.mark('toRegister')
                 this.manipulator.add(button.component)
             }
             var _displayRegister = () => {
@@ -51,7 +52,7 @@ exports.ConnectionV = function (globalVariables) {
                     .font(FONT, FONT_SIZE_INPUT)
                     .fontWeight('bold')
                     .color(myColors.black)
-                    .mark("headerMessage");
+                    .mark("registerHeader");
                 this.manipulator.add(messageText);
                 messageText.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
                 let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], "Connexion")
@@ -240,12 +241,11 @@ exports.ConnectionV = function (globalVariables) {
                 let button = new gui.Button(INPUT_SIZE.w / 2, BUTTON_HEIGHT, [myColors.turquoise, 0, myColors.black], buttonText);
                 button.text.color(myColors.white, 0, myColors.white);
                 button.corners(25, 25);
-                console.log(this.getFields().length);
                 this.connectionButtonManipulator
                     .add(button.component)
                     .move(FORM_POS_X, this.header.height + BIG_ICON_MARGIN + BIG_ICON_HEIGHT + ELEMENTS_MARGIN + (INPUT_SIZE.h + ELEMENTS_MARGIN) * (this.getFields().length + (this.isConnectionPage() ? 1 : 0)))
-                    .mark('connectionButton');
-                this.connectionButtonManipulator.addEvent('click', () => this.tryLogin.call(this));
+                    .mark('saveButton');
+                this.connectionButtonManipulator.addEvent('click', () => this.tryLoginOrRegister.call(this));
             };
 
             super.display();
@@ -263,10 +263,12 @@ exports.ConnectionV = function (globalVariables) {
             svg.addGlobalEvent("keydown", (event) => this.keyDown.call(this, event));
         }
 
-        tryLogin() {
+        tryLoginOrRegister() {
             this.selectedInput && this.selectedInput.hideControl();
-            this.logIn().catch((message) => {
-                popUp.display(message, this.manipulator);
+            this.presenter.tryLoginOrRegister().then((message) => {
+                message && popUp.displayValidMessage(message, this.manipulator)
+            }).catch((message) => {
+                message && popUp.displayWarningMessage(message, this.manipulator);
             });
         }
 
@@ -308,12 +310,8 @@ exports.ConnectionV = function (globalVariables) {
                 _focusField(isPrevious);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                this.tryLogin();
+                this.tryLoginOrRegister();
             }
-        }
-
-        logIn() {
-            return this.presenter.logIn();
         }
 
         isConnectionPage(){
