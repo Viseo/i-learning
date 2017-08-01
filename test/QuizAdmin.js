@@ -498,7 +498,6 @@ describe('quiz admin', function () {
             mouseDown(root, 'video0');
         })
     })
-    it('should finish above test');
 
     it('should scroll through questions', function(){
         let questions = [];

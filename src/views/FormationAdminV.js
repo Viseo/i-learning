@@ -678,9 +678,6 @@ exports.FormationAdminV = function (globalVariables) {
             this.presenter.renameFormation(this.nameFormationField.textMessage).then(status => {
                 if (status) {
                     this.displayHeader(this.nameFormationField.textMessage);
-                    this.titleGraph.message('Formation : ' + this.nameFormationField.textMessage);
-                    this.titleGraphBack.dimension(this.titleGraph.boundingRect().width + 2 * MARGIN, 3);
-                    this.titleGraphBack.position(-0.85 * this.graphSize.width / 2 + this.titleGraph.boundingRect().width / 2, -this.graphSize.height / 2);
                 }
             });
         }
