@@ -1049,7 +1049,7 @@ exports.DollAdminV = function (globalVariables) {
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, 8.33);
             resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3 * MARGIN, 15);
-            let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse textuelle');
+            let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Texte');
             textResponseTab.position(0.1 * RIGHTBOX_SIZE.w,0);
             textResponseTab.corners(2,2);
             textResponseTab.text.font(FONT, 18);
@@ -1057,7 +1057,7 @@ exports.DollAdminV = function (globalVariables) {
                 _removeImgTab();
                 _addTextTab();
             })
-            let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse image');
+            let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Image');
             pictureResponseTab.position(0.35 * RIGHTBOX_SIZE.w,0);
             pictureResponseTab.corners(2,2);
             pictureResponseTab.text.font(FONT, 18);
