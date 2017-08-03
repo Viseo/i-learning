@@ -1055,6 +1055,7 @@ exports.DollAdminV = function (globalVariables) {
             textResponseTab.text.font(FONT, 18);
             textResponseTab.onClick(() => {
                 _removeImgTab();
+                _removeTextTab();
                 _addTextTab();
             })
             let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Image');
@@ -1063,6 +1064,7 @@ exports.DollAdminV = function (globalVariables) {
             pictureResponseTab.text.font(FONT, 18);
             pictureResponseTab.onClick(() => {
                 _removeTextTab();
+                _removeImgTab();
                 _addImgTab();
             })
             let responsesBody = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h)
