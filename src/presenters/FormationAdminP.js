@@ -136,14 +136,9 @@ exports.FormationAdminP = function(globalVariables){
                 this.formation.status = 'Published'
                 this.saveFormation();
             } else {
-                this.view.displayMessage(messageErrorNotValidFormation);
+                this.view.displayWarningMessage(messageErrorNotValidFormation)
             }
         }
-
-        // loadQuiz(quiz) {
-        //     // this.quizz.loadQuiz(quizz);
-        //     this.state.loadPresenterQuizAdmin(quiz);
-        // }
 
         getGamesLibrary(){
             return this.state.getGamesLibrary();
@@ -153,7 +148,13 @@ exports.FormationAdminP = function(globalVariables){
             return this.state.uploadImage(file, progressDisplay);
         }
 
+        getUsername() {
+            return this.state.getUsername();
+        }
 
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     }
 
     return FormationAdminP;

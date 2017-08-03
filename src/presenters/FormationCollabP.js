@@ -30,6 +30,14 @@ exports.FormationCollabP = function(globalVariables){
         requirementsForThis(gameId){
             return this.formation.requirementsForThis(gameId);
         }
+
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     };
 
     return FormationCollabP;

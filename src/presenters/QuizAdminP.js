@@ -170,6 +170,14 @@ exports.QuizAdminP = function (globalVariables) {
         getCurrentQuestion(){
             return this.quiz.getQuestion(this.currentQuestionIndex);
         }
+
+        getUsername() {
+            return this.state.getUsername();
+        }
+
+        setUsername(username) {
+            return this.state.setUsername(username);
+        }
     }
 
     return QuizAdminP;

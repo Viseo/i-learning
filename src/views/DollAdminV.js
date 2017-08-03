@@ -2202,16 +2202,26 @@ exports.DollAdminV = function (globalVariables) {
                 elements: this.elements,
                 objectives: obj,
                 responses: this.responses,
-            }).then(() => {
-                popUp.display('Jeu sauvegardé', this.manipulator);
-            })
-
-            popUp.display('Des éléments ne sont pas choisis', this.manipulator);
+            }).then((data) => {
+                data.message && this.displayMessage(data.message);
+            }).catch((error) => {
+                this.displayWarningMessage(error);
+            });
+            // popUp.display('Des éléments ne sont pas choisis', this.manipulator);
         }
 
         renameDoll(label) {
             this.presenter.renameDoll(label);
         }
+
+        displayMessage(message) {
+            popUp.displayValidMessage(message, this.manipulator);
+        }
+
+        displayWarningMessage(message) {
+            popUp.displayWarningMessage(message, this.manipulator);
+        }
+
     }
 
     return DollAdminV;

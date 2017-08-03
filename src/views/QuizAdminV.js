@@ -459,7 +459,7 @@ exports.QuizAdminV = function (globalVariables) {
             popUp.displayValidMessage(message, this.manipulator);
         }
 
-        displayWarnignMessage(message) {
+        displayWarningMessage(message) {
             popUp.displayWarningMessage(message, this.manipulator);
         }
 
@@ -1047,7 +1047,7 @@ exports.QuizAdminV = function (globalVariables) {
                 }
             }).catch(error => {
                 console.log(error);
-                this.displayWarnignMessage(error );
+                this.displayWarningMessage(error );
             });
         }
 
@@ -1073,7 +1073,7 @@ exports.QuizAdminV = function (globalVariables) {
                 data.message && this.displayMessage(data.message);
             }).catch((error) => {
                 console.log(error);
-                this.displayWarnignMessage(error);
+                this.displayWarningMessage(error);
             })
         }
 

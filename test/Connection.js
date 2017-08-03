@@ -46,7 +46,7 @@ describe('connection page', function () {
         when(()=>{
             enterTextField(root, "login", "admin@test.com");
             enterTextField(root, "password", "password");
-            click(root, "connectionButton");
+            click(root, "saveButton");
         }).then(()=>{
             assertMissing(root, "popUpMessage");
         });
@@ -57,7 +57,7 @@ describe('connection page', function () {
             return loadPage("Connection");
         });
         when(()=>{
-            click(root, "connectionButton");
+            click(root, "saveButton");
         }).then(()=>{
             assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         });
@@ -70,7 +70,7 @@ describe('connection page', function () {
         when(()=>{
             enterTextField(root, "login", "aaaa");
             enterTextField(root, "password", "azertyuiop");
-            click(root, "connectionButton");
+            click(root, "saveButton");
         }).then(()=>{
             assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         })
@@ -83,7 +83,7 @@ describe('connection page', function () {
         when(()=>{
             enterTextField(root, "login", "user@test.com");
             enterTextField(root, "password", "aa");
-            click(root, "connectionButton");
+            click(root, "saveButton");
         }).then(()=>{
             assertMessage(root, "popUpMessage", "Veuillez remplir correctement tous les champs");
         })
@@ -117,22 +117,7 @@ describe('connection page', function () {
         when(()=>{
             click(root, "deconnection");
         }).then(()=>{
-            assertMessage(root, "headerMessage", "Connexion");
+            assertMessage(root, "headerMessage", "CONNEXION");
         });
     });
-
-
-    it('should load RegisterV and return to ConnectionV', function () {
-        let {root, state} = given(()=>{
-            return loadPage("Connection")
-        })
-        when(()=>{
-            click(root, "createAccount");
-            assertMessage(root, "headerMessage", "Inscription");
-            click(root, "connexionText");
-        }).then(()=>{
-            assertMessage(root, "headerMessage", "Connexion");
-        });
-    });
-
 });

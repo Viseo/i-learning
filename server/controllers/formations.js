@@ -57,10 +57,12 @@ module.exports = function (app) {
         formations.getFormationById(req.body.formationId).then(formation => {
             return formations.replaceGame({
                 level: req.body.levelIndex,
-                game: req.body.gameIndex
+                game: req.body.gameIndex,
+                valid: req.body.valid
             }, req.body.newDoll, formation)
                 .then(data => {
-                    res.send({valid: true});
+                    req.body.valid && res.send({valid: true});
+                    !req.body.valid && res.send({valid: false});
                 })
         }).catch(err => {
             console.log(err);

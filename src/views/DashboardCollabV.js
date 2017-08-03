@@ -5,17 +5,15 @@ exports.DashboardCollabV = function (globalVariables) {
         gui = globalVariables.gui,
         drawing = globalVariables.drawing,
         PopOut = globalVariables.Icons.PopOut,
-        IconCreator = globalVariables.Icons.IconCreator,
         drawCheck = globalVariables.Helpers.drawCheck,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
-        View = globalVariables.View,
-        ClipPath = globalVariables.clipPath;
+        View = globalVariables.View;
 
     const TILE_SIZE = {w: 300, h: 450},
         SPACE_BETWEEN = 70,
-        CLIP_SIZE = 45,
         INPUT_SIZE = {w: 400, h: 30},
-        IMAGE_SIZE = {w:300, h:300};
+        IMAGE_SIZE = {w:300, h:300},
+        FILTER_ICON = {w: 120, h: 50}
 
     class DashboardCollabV extends View {
         constructor(presenter) {
@@ -31,62 +29,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.manipulator
                     .add(this.toggleFormationsManipulator);
             };
-            var _displayIcons = () => {
-                var _createIcon = () => {
-                    let iconCreator = new IconCreator();
-                    let paddingIconX = (IconCreator.getRadiusContent() * 2 + MARGIN);
-                    this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
-                    this.undoneIcon.mark("unDoneIcon");
-                    this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
-                    this.inProgressIcon.position(paddingIconX, 0).mark('inProgressIcon');
-                    this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
-                    this.doneIcon.position(2 * paddingIconX, 0).mark("doneIcon");
-                }
-                var _createFilter = () => {
-                    var _drawBorderFilter = () => {
-                        this.undoneIcon.showActualBorder();
-                        this.doneIcon.showActualBorder();
-                        this.inProgressIcon.showActualBorder();
-                    };
-                    var _setIconClickEvent = () => {
-                        var _toggleFilter = (iconActionReverse, iconCancelAction1, iconCancelAction2) => {
-                            iconActionReverse.changeStatusActionIcon();
-                            iconCancelAction1.cancelActionIcon();
-                            iconCancelAction2.cancelActionIcon();
-                            this.miniaturesManipulator.flush();
-                            this.displayFormations();
-                            _drawBorderFilter();
-                        };
-                        this.inProgressIcon.addEvent('click',
-                            () => {
-                                _toggleFilter(this.inProgressIcon, this.undoneIcon, this.doneIcon)
-                            });
-                        this.undoneIcon.addEvent('click',
-                            () => {
-                                _toggleFilter(this.undoneIcon, this.inProgressIcon, this.doneIcon)
-                            });
-                        this.doneIcon.addEvent('click',
-                            () => {
-                                _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)
-                            });
-                    };
-
-                    _setIconClickEvent();
-                };
-                let _placeIcons = () => {
-                    let positionCaption = {
-                        x: drawing.width - 4 * (IconCreator.getRadiusContent() + MARGIN) - MARGIN,
-                        y: this.header.height + MARGIN + IconCreator.getRadiusContent()
-                    };
-
-                    this.toggleFormationsManipulator.move(positionCaption.x, positionCaption.y);
-                }
-                _createIcon();
-                _createFilter();
-                _placeIcons();
-            };
             let _createBack = () => {
-                let headHeight = this.header.height + MARGIN;
                 this.panel = new gui.Panel(drawing.width, drawing.height - this.headerDim.h, myColors.lightgrey)
                 this.panel.position(this.panel.width / 2 , this.panel.height / 2 + this.headerDim.h);
                 this.panel.border.color(myColors.none, 1, myColors.none).corners(5, 5);
@@ -121,12 +64,13 @@ exports.DashboardCollabV = function (globalVariables) {
                         let regex = new RegExp(newm);
                         this.displayFormations(regex);
                     });
+                    let posIconFilter = {x : drawing.width/2 - MARGIN, y : this.headerDim.h/2 - 3*MARGIN}
                     this.doneIconFilter = this.createIcon('done');
-                    this.doneIconFilter.move(drawing.width/2,this.headerDim.h/2 - 3*MARGIN)
+                    this.doneIconFilter.move(posIconFilter.x, posIconFilter.y)
                     this.inProgressIconFilter = this.createIcon('inProgress');
-                    this.inProgressIconFilter.move(drawing.width/2 - 100,this.headerDim.h/2 - 3*MARGIN)
+                    this.inProgressIconFilter.move(posIconFilter.x - (FILTER_ICON.w+MARGIN), posIconFilter.y)
                     this.undoneIconFilter = this.createIcon('undone');
-                    this.undoneIconFilter.move(drawing.width/2 - 230,this.headerDim.h/2 - 3*MARGIN)
+                    this.undoneIconFilter.move(posIconFilter.x - (FILTER_ICON.w+MARGIN)*2, posIconFilter.y)
                     this.doneIconFilter.addEvent('click', ()=>{
                         this.toggleFilter('done')
                     })
@@ -151,7 +95,6 @@ exports.DashboardCollabV = function (globalVariables) {
 
             super.display()
             _initManips();
-            _displayIcons();
             displayHeader();
             _createBack();
             this.displayHeader("Dashboard");
@@ -167,7 +110,7 @@ exports.DashboardCollabV = function (globalVariables) {
             }else{
                 this.activeFilter = type;
             }
-            switch(type){
+            switch(this.activeFilter){
                 case'done':
                     this.doneIconFilter.background.color([], 2, [30,192,161]);
                     break;
@@ -188,37 +131,35 @@ exports.DashboardCollabV = function (globalVariables) {
 
         createIcon(type){
             let manip = new Manipulator(this);
+
+            let background = new svg.Rect(FILTER_ICON.w, FILTER_ICON.h);
+            background.color([], 0, []).position(-background.width/2, 0);
+            let backForClick = new svg.Rect(FILTER_ICON.w, FILTER_ICON.h);
+            backForClick.color(myColors.white, 0, []).position(-backForClick.width/2, 0).opacity(0.01);
+
+            manip.add(backForClick).add(background);
+            manip.background = background;
             if (type == 'undone'){
-                let pic = new svg.Image('../../images/play-button2.png').dimension(25,25).position(-100,0);
+                let pic = new svg.Image('../../images/play-button2.png').dimension(25,25).position(-FILTER_ICON.w + 20,0);
                 let text = new svg.Text('Démarrer').font(FONT, 18).color([0,108,216]).position(-85,6).anchor('left');
-                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
-                manip.add(background);
-                manip.background = background;
-                manip.add(pic).add(text);
+                manip.add(pic).add(text)
+                    .mark("unDoneIcon");
                 return manip;
             }
             else if (type == 'done'){
-                var _getPathCheckContent = (size) => {
-                    let path = [{x: -.3 * size, y: -.1 * size}, {x: -.1 * size, y: .2 * size},
-                        {x: +.3 * size, y: -.3 * size}];
-                    return path;
-                };
-                let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161]);
-                let check = drawCheck(-70,0,15).color([], 2, [30,192,161]);
-                let text = new svg.Text('Faite').font(FONT, 18).color([30,192,161]).position(-50,6).anchor('left');
-                let background = new svg.Rect(100, 50).color([], 0, []).position(-50, 0);
-                manip.add(background);
-                manip.background = background;
-                rect.position(-70, 0);
-                manip.add(rect).add(check).add(text);
+                let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161])
+                    .position(-FILTER_ICON.w*4/6, 0);
+                let check = drawCheck(-FILTER_ICON.w*4/6, 0, 15).color([], 2, [30,192,161]);
+                let text = new svg.Text('Faite').font(FONT, 18).color([30,192,161])
+                    .position(-FILTER_ICON.w*3/6,6).anchor('left');
+                manip.add(rect).add(check).add(text)
+                    .mark("doneIcon");
                 return manip;
             }else if (type == 'inProgress'){
-                let pic = new svg.Image('../../images/time-left.png').dimension(25,25).position(-100,0);
+                let pic = new svg.Image('../../images/time-left.png').dimension(25,25).position(-FILTER_ICON.w + 20,0);
                 let text = new svg.Text('En cours').font(FONT, 18).color(myColors.orange).position(-80,6).anchor('left');
-                let background = new svg.Rect(120, 50).color([], 0, []).position(-60, 0);
-                manip.add(background);
-                manip.background = background;
-                manip.add(pic).add(text);
+                manip.add(pic).add(text)
+                    .mark("inProgressIcon");
                 return manip;
             }
         }
@@ -241,8 +182,6 @@ exports.DashboardCollabV = function (globalVariables) {
                         statusIcon.move(TILE_SIZE.w / 2, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 3 * MARGIN);
                         manipulator.add(statusIcon);
                     }
-                    // let statusIcon = new IconCreator().createIconByName(formation.status, manipulator, 3);
-                    // statusIcon && statusIcon.position(TILE_SIZE.w / 2 - 3*MARGIN, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h) / 2)
@@ -250,17 +189,16 @@ exports.DashboardCollabV = function (globalVariables) {
                     let content = new svg.Text(formation.label)
                         .position(-TILE_SIZE.w / 2 + MARGIN, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 3 * MARGIN + 7.3)
                         .font(FONT, 22)
-                        .anchor('left');
+                        .anchor('left').mark("textMiniature" + formation._id);
                     let description = new svg.Text('Description')
                         .position(-TILE_SIZE.w / 2 + MARGIN, (-TILE_SIZE.h / 2 + IMAGE_SIZE.h) + 6 * MARGIN + 5.3)
                         .font(FONT, 16)
                         .anchor('left');
-                    manipulator.add(content)//.add(clip);
-                    manipulator.add(description)
-                    manipulator.set(0, shadow)
-                    manipulator.set(1, border)
-                    //manipulator.set(1, backCircle)
-                    manipulator.set(2, picture);
+                    manipulator.add(content)
+                        .add(description)
+                        .set(0, shadow)
+                        .set(1, border)
+                        .set(2, picture);
                     this.miniaturesManipulator.add(manipulator);
                     resizeStringForText(content, TILE_SIZE.w - 100, TILE_SIZE.h);
                     if (formation.status === 'Published') {
@@ -350,6 +288,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 this.miniaturesManipulator.add(manipulator);
                 _placeMiniature(manipulator, i);
                 manipulator.addEvent("click", () => this.clickOnFormation(formation));
+                manipulator.mark("miniature" + formation._id);
                 _colorWhenHover();
                 if (formation.progress === 'done') _createStars();
 
@@ -370,7 +309,9 @@ exports.DashboardCollabV = function (globalVariables) {
                     _displayMiniature(formation, indexShow++, note.length > 0 ? note[0] : null);
                 });
                 let x = this.miniaturesManipulator.component.boundingRect();
-                this.miniaturesManipulator.move(TILE_SIZE.w/2 + this.panel.width/2 - x.width/2, TILE_SIZE.h / 2 + 3 * MARGIN);
+                let posX = TILE_SIZE.w/2 + this.panel.width/2;
+                (x) && (posX += - x.width/2);
+                this.miniaturesManipulator.move(posX, TILE_SIZE.h / 2 + 3 * MARGIN);
             });
 
         }

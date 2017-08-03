@@ -4,22 +4,33 @@ exports.DashboardAdmin = function (globalVariables) {
         View = globalVariables.View,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        drawings = globalVariables.drawings,
         drawing = globalVariables.drawing,
         IconCreator = globalVariables.Icons.IconCreator,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
         drawCheck = globalVariables.Helpers.drawCheck,
         Helpers = globalVariables.Helpers,
-        popUp = globalVariables.popUp,
-        ClipPath = globalVariables.clipPath;
+        popUp = globalVariables.popUp;
 
     const TILE_SIZE = {w: 300, h: 450},
         INPUT_SIZE = {w: 400, h: 30},
         BUTTON_SIZE = {w: 40, h: 30},
         IMAGES_PER_LINE = 3,
-        CLIP_SIZE = 45,
         SPACE_BETWEEN_ELEMENTS = 70,
         IMAGE_SIZE = {w:300, h:300};
+
+    const
+        PANEL = {
+            title : "FORMATIONS",
+            titleFontSize : 28,
+            titleColor : [30,192,161],
+            bgColor : myColors.lightgrey,
+            corner : 5,
+        },
+        ADD_FORMATION_AREA = {
+            fontSize : 15,
+            placeHolder : "Ajouter une formation",
+            bgColor : [myColors.white, 0, myColors.none]
+        };
 
     class DashboardAdminV extends View {
         constructor(presenter) {
@@ -31,30 +42,27 @@ exports.DashboardAdmin = function (globalVariables) {
             let _initManips = () => {
                 this.mediasManipulator = new Manipulator(this);
                 this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
-                this.addFormationManipulator = new Manipulator(this).addOrdonator(3);
                 this.headerManip = new Manipulator(this);
             }
 
             let _displayBack = () => {
-                let headHeight = this.header.height + MARGIN;
-                let titlePos = {
-                    x: INPUT_SIZE.w / 2 + MARGIN,
-                    y: headHeight + INPUT_SIZE.h + 2 * MARGIN
-                }
+                this.panel = new gui.Panel(drawing.width, drawing.height - this.headerDim.h, PANEL.bgColor)
+                let posPanel = {x : this.panel.width / 2, y : this.panel.height / 2 + this.headerDim.h};
 
-                this.panel = new gui.Panel(drawing.width, drawing.height - this.headerDim.h, myColors.lightgrey)
-                this.panel.position(this.panel.width / 2 , this.panel.height / 2 + this.headerDim.h);
-                this.panel.border.color(myColors.none, 1, myColors.none).corners(5, 5);
+                this.panel.position(posPanel.x, posPanel.y);
+                this.panel.border.color(myColors.none, 1, myColors.none).corners(PANEL.corner, PANEL.corner);
                 let hideElementBeforeEndOfPanel = new svg.Rect(this.panel.width, 20)
-                    .color(myColors.lightgrey, 0, myColors.none)
-                    .position(this.panel.component.x, this.panel.component.y-this.panel.height/2+ 10);
+                    .color(PANEL.bgColor, 0, myColors.none)
+                    .position(posPanel.x, posPanel.y - this.panel.height/2 + 10);
                 this.panel.setScroll();
-                let title = new svg.Text('FORMATIONS')
-                    .font(FONT, 28).color([30,192,161])
-                    .position(drawing.width/2, this.panel.component.y-this.panel.height/2+ 10)
+                let title = new svg.Text(PANEL.title)
+                    .font(FONT, PANEL.titleFontSize).color(PANEL.titleColor)
+                    .position(posPanel.x, hideElementBeforeEndOfPanel.y)
 
-                this.manipulator.add(this.panel.component);
-                this.manipulator.add(hideElementBeforeEndOfPanel).add(title);
+                this.manipulator
+                    .add(this.panel.component)
+                    .add(hideElementBeforeEndOfPanel)
+                    .add(title);
             }
             let displayHeader = ()=>{
                 let _addNewFormationInput = (y) => {
@@ -65,19 +73,21 @@ exports.DashboardAdmin = function (globalVariables) {
                         }
                     }
 
-                    let addFormationTextArea = new gui.TextField(0, 0, 2*INPUT_SIZE.w - MARGIN, INPUT_SIZE.h, 'Ajouter une formation')
-                    addFormationTextArea.font(FONT, 15).color(myColors.grey);
-                    addFormationTextArea.position(drawing.width/2-2*MARGIN, y);
-                    addFormationTextArea.control.placeHolder('Ajouter une formation');
-                    addFormationTextArea.mark('addFormationTextInput');
+                    let addFormationTextArea = new gui.TextField(0, 0, 2*INPUT_SIZE.w - MARGIN, INPUT_SIZE.h,
+                        ADD_FORMATION_AREA.placeHolder)
+                    addFormationTextArea.font(FONT, 15)
+                        .color(ADD_FORMATION_AREA.bgColor)
+                        .editColor(ADD_FORMATION_AREA.bgColor)
+                        .position(drawing.width/2-2*MARGIN, y)
+                        .mark('addFormationTextInput');
+                    addFormationTextArea.control.placeHolder(ADD_FORMATION_AREA.placeHolder);
                     addFormationTextArea.onInput((oldMessage, message, valid) => {
                         if(message.length > 50){
                             addFormationTextArea.message(oldMessage);
                         }else if (!message || !oldMessage) {
-                            addFormationTextArea.text.message('Ajouter une formation');
+                            addFormationTextArea.text.message(ADD_FORMATION_AREA.placeHolder);
                         }
                     });
-                    addFormationTextArea.color([myColors.white, 0, myColors.black]);
 
                     let addButton = new gui.Button(BUTTON_SIZE.w, BUTTON_SIZE.h, [[30,192,161], 0, myColors.none], '+');
                     addButton.component.mark('addFormationButton');
@@ -98,8 +108,9 @@ exports.DashboardAdmin = function (globalVariables) {
                         .position(-width/2 + 2*MARGIN, 0);
                     let textArea = new gui.TextField(MARGIN,0, width-5*MARGIN, INPUT_SIZE.h-2, '');
                     textArea.control.placeHolder('Rechercher une formation')
-                    textArea.color([myColors.white, 0, myColors.none]);
-                    textArea.editColor([myColors.white, 0, myColors.none]);
+                    textArea
+                        .color([myColors.white, 0, myColors.none])
+                        .editColor([myColors.white, 0, myColors.none]);
                     textArea.font(FONT, 18);
                     textArea.text.font(FONT,18).position(textArea.text.x,6);
                     textArea.onInput((old,newm, valid)=>{
@@ -107,11 +118,13 @@ exports.DashboardAdmin = function (globalVariables) {
                         this.displayMiniatures(regex);
                     })
                     manip.add(textArea.component)
-                    manip.add(searchIcon)
+                        .add(searchIcon)
                     return manip;
                 }
                 this.manipulator.add(this.headerManip.component);
-                let backgroundPic = new svg.Image('../../images/german.png').dimension(drawing.width, drawing.width).position(drawing.width/2,0);
+                let backgroundPic = new svg.Image('../../images/german.png')
+                    .dimension(drawing.width, drawing.width)
+                    .position(drawing.width/2,0);
                 this.headerManip.add(backgroundPic);
                 let addZone = new svg.Rect(2*INPUT_SIZE.w + 6*MARGIN, INPUT_SIZE.h + 20)
                     .color([48,40,78], 0, myColors.none)
@@ -141,11 +154,6 @@ exports.DashboardAdmin = function (globalVariables) {
             }
             else if (type == 'Published'){
                 let manip = new Manipulator(this);
-                var _getPathCheckContent = (size) => {
-                    let path = [{x: -.3 * size, y: -.1 * size}, {x: -.1 * size, y: .2 * size},
-                        {x: +.3 * size, y: -.3 * size}];
-                    return path;
-                };
                 let rect = new svg.Rect(50,50).color(myColors.none, 2, [30,192,161]);
                 let check = drawCheck(-40,10,40).color([], 2, [30,192,161]);
                 rect.position(-40, 10);
@@ -174,8 +182,7 @@ exports.DashboardAdmin = function (globalVariables) {
                         statusIcon.move(TILE_SIZE.w/2, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
                         manipulator.add(statusIcon);
                     }
-                    // let statusIcon = new IconCreator().createIconByName(formation.status, manipulator, 3);
-                    // statusIcon && statusIcon.position(TILE_SIZE.w / 2 - 3*MARGIN, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
+
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h)/2)
@@ -194,12 +201,11 @@ exports.DashboardAdmin = function (globalVariables) {
                     iconAddPicture.addEvent('click', () => {
                         this.displayPopUpImage(formation)
                     });
-                    manipulator.add(content)//.add(clip);
-                    manipulator.add(description)
-                    manipulator.set(0,shadow)
-                    manipulator.set(1, border)
-                    //manipulator.set(1, backCircle)
-                    manipulator.set(2, picture);
+                    manipulator.add(content)
+                        .add(description)
+                        .set(0,shadow)
+                        .set(1, border)
+                        .set(2, picture);
                     this.miniaturesManipulator.add(manipulator);
                     resizeStringForText(content, TILE_SIZE.w - 6*MARGIN, TILE_SIZE.h);
                     
@@ -211,8 +217,8 @@ exports.DashboardAdmin = function (globalVariables) {
                             + ' votes)')
                             .font(FONT, 14, 15).anchor('end');
                         resizeStringForText(textNotation, 120, 10);
-                        displayNotationManip.add(textNotation);
-                        displayNotationManip.move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
+                        displayNotationManip.add(textNotation)
+                            .move(TILE_SIZE.w / 2 - MARGIN, TILE_SIZE.h / 2 - MARGIN);
                         manipulator.add(displayNotationManip);
                     }
                 }
@@ -259,7 +265,9 @@ exports.DashboardAdmin = function (globalVariables) {
                 });
             }
             let x = this.miniaturesManipulator.component.boundingRect();
-            this.miniaturesManipulator.move(TILE_SIZE.w/2 + this.panel.width/2 - x.width/2, TILE_SIZE.h / 2 + 3 * MARGIN);
+            let posX = TILE_SIZE.w/2 + this.panel.width/2;
+            x && (posX += - x.width/2);
+            this.miniaturesManipulator.move( posX, TILE_SIZE.h / 2 + 3 * MARGIN);
         }
 
 
