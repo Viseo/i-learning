@@ -109,12 +109,13 @@ exports.DollAdminV = function (globalVariables) {
                         installDnD(manip, drawings.component.glass.parent.manipulator.last, conf2);
                         break;
                     case 'help':
-                        elem = new svg.Image('../../images/info.png');
-                        elem.dimension(elemDetails.width, elemDetails.height);
-                        manip.add(elem);
+                        elem = new svg.Rect(elemDetails.width, elemDetails.height).color(myColors.white, 1, myColors.black);
+                        let elemText = new svg.Text("?").font(FONT, 45).position(0,15);
+                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-elemDetails.height/2 - 1.5*MARGIN);
+                        manip.add(elem).add(elemText).add(txt);
                         manip.childObject = elem;
-                        let txt = new svg.Text(elemDetails.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
-                        manip.add(txt);
+                        elem.statementText = txt;
+                        elem.questionMark = elemText;
                         elem.statementId = elemDetails.statementId;
                         svg.addEvent(elem, 'click', (event) => {
                             this.selectElement(elem);
@@ -122,7 +123,7 @@ exports.DollAdminV = function (globalVariables) {
                                 this.imageRightClick(elem, manip, event);
                             }
                         });
-                        elem.mark('helpElement');
+                        manip.mark('helpElement');
                         let conf = {
                             drag: (what, x, y) => {
                                 svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
@@ -1048,20 +1049,22 @@ exports.DollAdminV = function (globalVariables) {
                 .anchor('left')
                 .position(-RIGHTBOX_SIZE.w / 2 + 2 * MARGIN, 8.33);
             resizeStringForText(responsesTitle, RIGHTBOX_SIZE.w - 3 * MARGIN, 15);
-            let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse textuelle');
+            let textResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Texte');
             textResponseTab.position(0.1 * RIGHTBOX_SIZE.w,0);
             textResponseTab.corners(2,2);
             textResponseTab.text.font(FONT, 18);
             textResponseTab.onClick(() => {
                 _removeImgTab();
+                _removeTextTab();
                 _addTextTab();
             })
-            let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Réponse image');
+            let pictureResponseTab = new gui.Button(0.25*RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.header.h, [myColors.white, 1, myColors.grey], 'Image');
             pictureResponseTab.position(0.35 * RIGHTBOX_SIZE.w,0);
             pictureResponseTab.corners(2,2);
             pictureResponseTab.text.font(FONT, 18);
             pictureResponseTab.onClick(() => {
                 _removeTextTab();
+                _removeImgTab();
                 _addImgTab();
             })
             let responsesBody = new svg.Rect(RIGHTBOX_SIZE.w, RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h)
@@ -1471,6 +1474,11 @@ exports.DollAdminV = function (globalVariables) {
                 if((initW + Xcoeff * delta.x) > 0 && (initH + Ycoeff * delta.y) > 0) {
                     elem.dimension(initW + Xcoeff * delta.x, initH + Ycoeff * delta.y)
                     elem.position(+delta.x / 2, +delta.y / 2);
+                    if(elem.questionMark && elem.statementText){
+                        elem.questionMark.position(+delta.x / 2, +delta.y / 2 + 1/3*elem.questionMark.fontSize);
+                        elem.height<elem.width ? elem.questionMark.font(FONT, 0.75*elem.height) :  elem.questionMark.font(FONT, 0.75*elem.width);
+                        elem.statementText.position(+delta.x / 2, +delta.y / 2 -elem.height/2 - 1.5*MARGIN)
+                    }
                     let updateCorners = () => {
                         manipulator.corners.forEach(corner => {
                             corner.move(corner.point.getX() + delta.x / 2, corner.point.getY() + delta.y / 2);
@@ -1553,6 +1561,10 @@ exports.DollAdminV = function (globalVariables) {
                         manipInitx = manipulator.x;
                         manipInity = manipulator.y;
                         elem.position(0, 0);
+                        if(elem.questionMark && elem.statementText){
+                            elem.questionMark.position(0,1/3*elem.questionMark.fontSize);
+                            elem.statementText.position(0,-elem.height/2 - 1.5*MARGIN)
+                        }
                         manipulator.move(manipInitx - (point.x - finalX) / 2, manipInity - (point.y - finalY) / 2);
                         manipulator.corners.forEach(corner => {
                             if (point.x != corner.point.x || point.y != corner.point.y) {
@@ -1560,8 +1572,6 @@ exports.DollAdminV = function (globalVariables) {
                             }
                         });
                         updatePoints();
-                        initW = elem.width;
-                        initH = elem.height;
                         return {x: finalX, y: finalY, parent: whatParent};
                     },
                     moved: (what) => {
@@ -2045,28 +2055,31 @@ exports.DollAdminV = function (globalVariables) {
 
                     if (target && target == this.sandboxMain.back) {
                         let helpPanelManip = new Manipulator(this);
-                        let helpPanel = new svg.Image(what.components[0].src);
-                        helpPanel.dimension(HEADER_TILE, HEADER_TILE);
-                        helpPanel.type = 'help';
-                        helpPanelManip.add(helpPanel);
+                        let helpRect = new svg.Rect(80,80).color(myColors.white, 2, myColors.black);
+                        let helpText = new svg.Text("?").font(FONT, 45).position(0, 15)
+                        helpRect.type = 'help';
+                        helpText.type = 'help';
+                        helpPanelManip.add(helpRect).add(helpText);
 
                         let localPoints = this.sandboxMain.content.localPoint(x, y);
                         helpPanelManip.move(localPoints.x, localPoints.y);
 
-                        svg.addEvent(helpPanel, 'click', (event) => {
-                            this.selectElement(helpPanel);
+                        helpPanelManip.addEvent('click', (event) => {
+                            this.selectElement(helpRect);
                             if (event.which == 3) {
-                                this.imageRightClick(helpPanel, helpPanelManip, event);
+                                this.rectRightClick(helpRect, helpPanelManip, event);
                             }
                         });
-                        this.elements.push(helpPanel);
+                        this.elements.push(helpRect);
                         this.sandboxMain.content.add(helpPanelManip.first);
-                        helpPanelManip.childObject = helpPanel;
-                        helpPanel.statementId = 'Enoncé' + this.getStatement().length;
+                        helpPanelManip.childObject = helpRect;
+                        helpRect.statementId = 'Enoncé' + this.getStatement().length;
                         this.addStatement({id:'Enoncé' + this.getStatement().length})
-                        let txt = new svg.Text(helpPanel.statementId).font(FONT, 20).position(0,-HEADER_TILE/2 - MARGIN);
+                        let txt = new svg.Text(helpRect.statementId).font(FONT, 20).position(0,-helpRect.height/2 - 1.5*MARGIN);
                         helpPanelManip.add(txt);
-                        helpPanel.mark(helpPanel.statementId + 'ImgElement');
+                        helpRect.statementText = txt;
+                        helpRect.questionMark = helpText;
+                        helpRect.mark(helpRect.statementId + 'ImgElement');
                         let conf = {
                             drag: (what, x ,y) => {
                                 svgr.attr(drawing.component, 'style', 'cursor:all-scroll');
@@ -2121,8 +2134,6 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         keyDown(event) {
-
-
             if ((event.keyCode == 46) && !this.inModification) {
                 if (this.selectedElement) {
                     if(this.selectedElement.type === 'text') this.selectedElement.hideControl();
@@ -2201,9 +2212,6 @@ exports.DollAdminV = function (globalVariables) {
         renameDoll(label) {
             this.presenter.renameDoll(label);
         }
-
-
-
     }
 
     return DollAdminV;
