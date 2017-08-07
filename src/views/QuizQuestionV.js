@@ -10,17 +10,18 @@ exports.QuizQuestionV = function (globalVariables) {
         Manipulator = globalVariables.Handlers.Manipulator,
         IconCreator = globalVariables.Icons.IconCreator,
         resizeStringForText = globalVariables.Helpers.resizeStringForText,
-        drawHexagon = globalVariables.Helpers.drawHexagon,
         drawing = globalVariables.drawing,
         View = globalVariables.View;
 
     const
-        FONT_SIZE = 20,
-        HEXAGON_HEIGHT_RATIO = 1 / 6,
+        FONT_SIZE = 15,
         INPUT_SIZE = {w: 300, h: 30},
         CHEVRON_SIZE = {w:50, h:75, stroke:10},
         ANSWERS_PER_LINE = 2,
         EXPLANATION_HEIGHT = 200,
+        QUESTION_TITLE = {w: 950, h: 80,
+                corner : 40
+            },
         BUTTON_SIZE = {w:200, h:40};
 
     class QuizQuestionV  extends View{
@@ -35,13 +36,18 @@ exports.QuizQuestionV = function (globalVariables) {
                 this.leftChevronManipulator = new Manipulator(this).mark('leftChevron');
                 this.rightChevronManipulator = new Manipulator(this).mark('rightChevron');
                 this.answersManipulator = new Manipulator(this);
-                this.manipulator
+                this.manipulator.addOrdonator(1)
                     .add(this.questionManipulator)
                     .add(this.returnButtonManipulator)
                     .add(this.leftChevronManipulator)
                     .add(this.rightChevronManipulator)
                     .add(this.answersManipulator);
             }
+            var _displayBackGround = () => {
+                let bg = new svg.Rect(drawing.width, drawing.width).color(myColors.lightgrey);
+                bg.position(bg.width/2, bg.height/2);
+                this.manipulator.set(0, bg);
+            };
             var _displayReturnButton = () => {
                 this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner à la formation');
                 this.returnButton.back.corners(5, 5);
@@ -60,11 +66,12 @@ exports.QuizQuestionV = function (globalVariables) {
                 currentY += FONT_SIZE + MARGIN;
             }
             var _displayQuestionTitle = () => {
-                let line = new svg.Line(-drawing.width / 2 + MARGIN, 0, drawing.width / 2 - MARGIN, 0)
-                    .color(myColors.grey, 1, myColors.grey);
-                this.questionManipulator.set(0, line);
-                let border = drawHexagon(drawing.width / 2, HEXAGON_HEIGHT_RATIO * drawing.height, 'H', 0.65)
-                this.questionManipulator.set(1, border);
+                let border = new gui.Button(QUESTION_TITLE.w, QUESTION_TITLE.h,
+                    [myColors.white, 1, myColors.grey], this.getCurrentQuestion().label);
+                border.corners(QUESTION_TITLE.corner, QUESTION_TITLE.corner)
+                    .mark('questionTitle'+this.getId());
+
+                this.questionManipulator.set(1, border.component);
                 let question = this.getCurrentQuestion();
                 if(question.imageSrc){
                     let questionImage = new svg.Image(question.imageSrc)
@@ -79,10 +86,7 @@ exports.QuizQuestionV = function (globalVariables) {
                     questionVideo.show();
                     this.videos.push(questionVideo);
                 }
-                let questionTitle = new svg.Text(this.getCurrentQuestion().label)
-                    .font(FONT, FONT_SIZE)
-                    .mark('questionTitle'+this.getId());
-                this.questionManipulator.set(3, questionTitle);
+
                 let voiceIcon = IconCreator.createVoiceIcon(this.questionManipulator);
                 voiceIcon.position(drawing.width / 4 + MARGIN, 0);
                 voiceIcon.addEvent( 'click', () => {
@@ -93,7 +97,8 @@ exports.QuizQuestionV = function (globalVariables) {
             }
             var _displayChevrons = () => {
                 var _displayLeftChevron = () => {
-                    let glass = new svg.Rect(chevronDim.width, chevronDim.height).color(myColors.white, 0, myColors.white);
+                    let glass = new svg.Rect(chevronDim.width, chevronDim.height)
+                        .color(myColors.white, 0, myColors.white).opacity(0.01);
                     let leftChevron = new svg.Chevron(chevronDim.width, chevronDim.height, chevronDim.stroke, "W");
                     if (this.isFirstQuestion()) {
                         leftChevron.color(myColors.grey, 1, myColors.grey);
@@ -105,7 +110,8 @@ exports.QuizQuestionV = function (globalVariables) {
                     this.leftChevronManipulator.move(MARGIN + chevronDim.width / 2, (drawing.height + currentY) / 2);
                 }
                 var _displayRightChevron = () => {
-                    let glass = new svg.Rect(chevronDim.width, chevronDim.height).color(myColors.white, 0, myColors.white);
+                    let glass = new svg.Rect(chevronDim.width, chevronDim.height)
+                        .color(myColors.white, 0, myColors.white).opacity(0.01);
                     let rightChevron = new svg.Chevron(chevronDim.width, chevronDim.height, chevronDim.stroke, "E");
                     if (this.isLastAnsweredQuestion()) {
                         rightChevron.color(myColors.grey, 1, myColors.grey);
@@ -175,7 +181,10 @@ exports.QuizQuestionV = function (globalVariables) {
                         runtime.speechSynthesisSpeak(answer.label) ;
                     });
                 });
-                this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2, currentY + this.answerHeight / 2);
+               let answerY = this.questionManipulator.y + this.answerHeight/2 + QUESTION_TITLE.h/2 + MARGIN;
+                (!this.isMultipleChoice()) && (answerY += FONT_SIZE + MARGIN*2);
+
+                this.answersManipulator.move(drawing.width / 5 + this.answerWidth / 2, answerY);
             }
             var _displayMultipleChoiceButtons = () => {
                 var _displayValidateButton = () => {
@@ -206,17 +215,18 @@ exports.QuizQuestionV = function (globalVariables) {
             }
             var _displayHelpText = () => {
                 this.helpManipulator = new Manipulator(this);
-                let helpText = new svg.Text("cliquez sur une réponse pour passer à la question suivante").font(FONT, FONT_SIZE);
+                let helpText = new svg.Text("cliquez une réponse pour passer à la question suivante").font(FONT, FONT_SIZE);
                 this.helpManipulator.add(helpText);
-                this.helpManipulator.move(drawing.width / 2, drawing.height - FONT_SIZE - MARGIN);
+                this.helpManipulator.move(drawing.width / 2, this.questionManipulator.y + QUESTION_TITLE.h - FONT_SIZE);
                 this.manipulator.add(this.helpManipulator);
-            }
+            };
 
             super.display();
             this.answers = [];
             this.videos = [];
             var currentY = this.header.height + MARGIN;
             _initManips();
+            _displayBackGround();
             this.displayHeader(this.getLabel());
             _displayReturnButton();
             _addMarginForScoreText();
