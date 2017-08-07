@@ -13,7 +13,20 @@ exports.DashboardCollabV = function (globalVariables) {
         SPACE_BETWEEN = 70,
         INPUT_SIZE = {w: 400, h: 30},
         IMAGE_SIZE = {w:300, h:300},
-        FILTER_ICON = {w: 120, h: 50}
+        FILTER_ICON = {w: 120, h: 50},
+        RATING = {
+            defaultColor : {
+                fillColor: myColors.ultraLightGrey,
+                strokeWidth: 0.1,
+                strokeColor: myColors.brown
+            },
+            activeColor : {
+                fillColor: myColors.yellow,
+                strokeWidth: 0.2,
+                strokeColor: myColors.yellow
+            }
+        }
+
 
     class DashboardCollabV extends View {
         constructor(presenter) {
@@ -50,15 +63,14 @@ exports.DashboardCollabV = function (globalVariables) {
                     let manip = new Manipulator(this);
                     let searchZone = new svg.Rect(width, INPUT_SIZE.h + 1/2*MARGIN);
                     searchZone.corners(10,10).color(myColors.white, 2, [30,192,161])
-                    manip.add(searchZone);
-                    manip.move(drawing.width/2, y);
+                    manip.add(searchZone).move(drawing.width/2, y);
                     let searchIcon = new svg.Image('../../images/search.png').dimension(20,20)
                         .position(-width/2 + 2*MARGIN, 0);
                     let textArea = new gui.TextField(MARGIN,0, width-5*MARGIN, INPUT_SIZE.h-2, '');
                     textArea.control.placeHolder('Rechercher une formation')
-                    textArea.color([myColors.white, 0, myColors.none]);
-                    textArea.editColor([myColors.white, 0, myColors.none]);
-                    textArea.font(FONT, 18);
+                    textArea.color([myColors.white, 0, myColors.none])
+                        .editColor([myColors.white, 0, myColors.none])
+                        .font(FONT, 18);
                     textArea.text.font(FONT,18).position(textArea.text.x,6);
                     textArea.onInput((old,newm, valid)=>{
                         let regex = new RegExp(newm);
@@ -87,7 +99,8 @@ exports.DashboardCollabV = function (globalVariables) {
                 }
 
                 this.manipulator.add(this.headerManip.component);
-                let backgroundPic = new svg.Image('../../images/german.png').dimension(drawing.width, drawing.width).position(drawing.width/2,0);
+                let backgroundPic = new svg.Image('../../images/german.png')
+                    .dimension(drawing.width, drawing.width).position(drawing.width/2,0);
                 this.headerManip.add(backgroundPic);
                 let searchBar = _addSearchBar(2*INPUT_SIZE.w, this.headerDim.h/2);
                 this.headerManip.add(searchBar);
@@ -110,6 +123,7 @@ exports.DashboardCollabV = function (globalVariables) {
             }else{
                 this.activeFilter = type;
             }
+
             switch(this.activeFilter){
                 case'done':
                     this.doneIconFilter.background.color([], 2, [30,192,161]);
@@ -120,11 +134,6 @@ exports.DashboardCollabV = function (globalVariables) {
                 case'inProgress':
                     this.inProgressIconFilter.background.color([], 2, myColors.orange);
                     break;
-                default:
-                    this.inProgressIconFilter.background.color([], 0, []);
-                    this.undoneIconFilter.background.color([], 0, []);
-                    this.doneIconFilter.background.color([], 0, []);
-                    this.activeFilter = '';
             }
             this.displayFormations();
         }
@@ -145,8 +154,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 manip.add(pic).add(text)
                     .mark("unDoneIcon");
                 return manip;
-            }
-            else if (type == 'done'){
+            } else if (type == 'done'){
                 let rect = new svg.Rect(20,20).color(myColors.none, 2, [30,192,161])
                     .position(-FILTER_ICON.w*4/6, 0);
                 let check = drawCheck(-FILTER_ICON.w*4/6, 0, 15).color([], 2, [30,192,161]);
@@ -318,17 +326,6 @@ exports.DashboardCollabV = function (globalVariables) {
 
         createRating(manipulator, layer) {
             const STAR_SPACE = 1;
-            const defaultColor = {
-                fillColor: myColors.ultraLightGrey,
-                strokeWidth: 0.1,
-                strokeColor: myColors.brown
-            };
-
-            const ratingColor = {
-                fillColor: myColors.yellow,
-                strokeWidth: 0.2,
-                strokeColor: myColors.yellow
-            };
 
             const starsNoteEnum = {
                 'star1': 'Pas Terrible',
@@ -363,7 +360,7 @@ exports.DashboardCollabV = function (globalVariables) {
                 star.starsManipulator = new Manipulator(this).addOrdonator(5);
                 for (var i = 0; i < 5; i++) {
                     star[i] = new svg.Polygon().add(starPoints).position((star.width + STAR_SPACE) * i, 0)
-                        .color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
+                        .color(RATING.defaultColor.fillColor, RATING.defaultColor.strokeWidth, RATING.defaultColor.strokeColor)
                         .mark("star" + (i + 1));
                     star.starsManipulator.add(star[i]);
                 }
@@ -402,9 +399,9 @@ exports.DashboardCollabV = function (globalVariables) {
             star.showActualStarColor = function () {
                 this.forEach((elem, index) => {
                     if (this.note && this.note > 0 && index < this.note) {
-                        elem.color(ratingColor.fillColor, ratingColor.strokeWidth, ratingColor.strokeColor);
+                        elem.color(RATING.activeColor.fillColor, RATING.activeColor.strokeWidth, RATING.activeColor.strokeColor);
                     } else {
-                        elem.color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
+                        elem.color(RATING.defaultColor.fillColor, RATING.defaultColor.strokeWidth, RATING.defaultColor.strokeColor)
                     }
                 });
             };
