@@ -106,7 +106,7 @@ exports.DollCollabV = function(globalVariables) {
                         manip.add(elem);
                         manip.add(txt);
                         elem.statementId = elemDetails.statementId;
-                        elem.mark('helpElement');
+                        elem.mark('helpElement' + elemDetails.statementId);
                         this.graphicStatement.push(elem);
                         break;
                 }
@@ -151,8 +151,11 @@ exports.DollCollabV = function(globalVariables) {
                 5
             )
             this.objectivesList.position(0, objectivesBody.y )
-            this.objectivesManip.add(objectivesHeader).add(objectivesTitle).add(objectivesBody).add(this.objectivesList.manipulator);
-            this.objectivesManip.move(this.sandboxDim.w + this.objectivesSize.w/2 + 2*MARGIN, this.objectivesSize.h/2 + this.header.height + MARGIN);
+            this.objectivesManip
+                .add(objectivesHeader).add(objectivesTitle)
+                .add(objectivesBody).add(this.objectivesList.manipulator);
+            this.objectivesManip.move(this.sandboxDim.w + this.objectivesSize.w/2 + 2*MARGIN,
+                this.objectivesSize.h/2 + this.header.height + MARGIN);
             this.objectivesList.refreshListView();
         }
 
