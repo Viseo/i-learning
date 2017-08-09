@@ -24,6 +24,8 @@ exports.QuizAdminV = function (globalVariables) {
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
         QUESTION_BUTTON_SIZE = {w: 200, h: 90},
+        INPUT_SIZE = {w: 350, h: 30},
+        HEADER_SIZE = {w:drawing.width, h:150},
         EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte",
         EXPLANATION_DEFAULT_IMAGESRC = "../images/quiz/newImage.png";
 
@@ -41,6 +43,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.mediasLibraryManipulator = new Manipulator(this).addOrdonator(3);
                 this.previewButtonManipulator = new Manipulator(this).addOrdonator(1);
                 this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(1);
+                this.headerManipulator = new Manipulator(this),
                 this.returnButtonManipulator = new Manipulator(this);
                 this.manipulator
                     .add(this.questionsBlockManipulator)
@@ -48,7 +51,9 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.titleManipulator)
                     .add(this.mediasLibraryManipulator)
                     .add(this.saveQuizButtonManipulator)
+                    .add(this.headerManipulator)
                     .add(this.returnButtonManipulator)
+
                     .add(this.previewButtonManipulator);
             };
             var _resetDrawings = () => {
@@ -60,17 +65,20 @@ exports.QuizAdminV = function (globalVariables) {
                 this.displayHeader(formationLabel + " - " + this.label);
             }
             var _displayReturnButton = () => {
-                this.returnButton = new gui.Button(BUTTON_WIDTH + 2 * MARGIN, BUTTON_HEIGHT - 5, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
+                this.returnButton = new gui.Button(INPUT_SIZE.w, HEADER_SIZE.h, [[98, 221, 204], 1, myColors.none], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
-                this.returnButton.back.corners(5, 5);
-                this.returnButton.text.font(FONT, 20).position(0, 6.6);
+                this.returnButton.text.font(FONT, 20).position(0,6.6).color(myColors.white);
                 this.returnButtonManipulator.add(this.returnButton.component)
-                    .move(this.returnButton.width / 2 + MARGIN, this.header.height + this.returnButton.height / 2 + MARGIN);
-                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.grey);
+                    .move(this.returnButton.width / 2 , this.header.height + this.returnButton.height / 2);
+                let chevron = new svg.Chevron(10, 20, 3, 'W').color(myColors.white);
                 chevron.position(-BUTTON_WIDTH / 2, 0);
                 this.returnButtonManipulator.add(chevron).mark('return');
                 this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
+
             }
+
+
+
             var _displayTitleArea = () => {
                 var _renameWhenEnter = (event) => {
                     if (event.keyCode === 13) {
@@ -79,37 +87,65 @@ exports.QuizAdminV = function (globalVariables) {
                     }
                 }
 
+                this.headerManipulator.move(drawing.width/2, this.header.height + HEADER_SIZE.h/2);
+                let header = new svg.Rect(drawing.width, HEADER_SIZE.h).color([0, 57, 114], 0, []);
+                this.headerManipulator.add(header);
                 let quizTitleDim = {
                     w: Math.max(this.width * 1 / 4, 300),
                     h: BUTTON_HEIGHT
                 };
-                let titleTextArea = new gui.TextField(0, 0, quizTitleDim.w, quizTitleDim.h, this.label);
-                titleTextArea.font(FONT, 15);
+                let titleTextArea =  new gui.TextField(-drawing.width/2 + 2*INPUT_SIZE.w + 2*MARGIN, 0, 2*INPUT_SIZE.w, 1.5*INPUT_SIZE.h, this.label);
+                titleTextArea.font(FONT, 36);
+                titleTextArea.editColor([[0, 47, 104], 0, myColors.none])
                 titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
                 titleTextArea.control.placeHolder('Titre du quiz');
+                titleTextArea.control.fontColor(myColors.white)
                 titleTextArea.onInput((oldMessage, message, valid) => {
-                    if (!message || !oldMessage) {
-                        titleTextArea.text.message('Titre du quiz');
+                    if(message.length > 50){
+                        titleTextArea.message(oldMessage);
+                    }else if (!message || !oldMessage) {
+                        titleTextArea.text.message('Titre de la formation');
                     }
                 });
                 titleTextArea.onBlur(() => {
                     titleTextArea.text.position(-titleTextArea.width / 2 + MARGIN, 7.5);
                 })
-                titleTextArea.color([myColors.lightgrey, 1, myColors.black]);
+                titleTextArea.color([[20, 77, 134], 1, myColors.none]);
+                titleTextArea.text.color(myColors.white);
                 titleTextArea.mark('quizTitle');
-                this.titleManipulator.set(0, titleTextArea.component);
-                this.titleManipulator.move(MARGIN + titleTextArea.width / 2,
-                    this.header.height + this.returnButton.height + titleTextArea.height);
-                this.quizTitleField = titleTextArea;
+              this.titleManipulator.set(0, titleTextArea.component);
+            this.titleManipulator.move(MARGIN + titleTextArea.width / 2,
+                   this.header.height + this.returnButton.height + titleTextArea.height);
+             this.quizTitleField = titleTextArea;
 
-                let saveIcon = new svg.Image('../../images/save.png');
-                this.titleManipulator.add(saveIcon);
+                let saveIcon = new svg.Image('../../images/saveWhite.png');
                 saveIcon
-                    .dimension(25, 25)
-                    .position(titleTextArea.width / 2 + 12.5 + MARGIN, 0)
+                    .dimension(30, 30)
                     .mark('saveNameButton');
-                svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
+                let saveText = new svg.Text('Modifier le titre')
+                    .font(FONT, 18)
+                    .color(myColors.white)
+                    .anchor('end')
+                    .position (-30,6);
+                let saveBorder = new svg.Rect(200, 75)
+                    .color([0, 57, 114], 1, myColors.white)
+                    .position(-67, 0)
+                    .corners(3,3);
+                this.titleManipulator.add(saveBorder).add(saveIcon).add(saveText);
+                this.titleManipulator.addEvent('click',()=>{this.renameQuiz()})
+                this.headerManipulator.add( this.titleManipulator);
+                this.titleManipulator.move(drawing.width/2 - 6*MARGIN, 0);
+                svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this))
+                this.headerManipulator.add(titleTextArea.component);
                 svg.addGlobalEvent('keydown', _renameWhenEnter);
+                this.nameFormationField = titleTextArea;
+                // saveIcon
+                //     .dimension(25, 25)
+                //     .position(titleTextArea.width / 2 + 12.5 + MARGIN, 0)
+                //     .mark('saveNameButton');
+               // svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
+               //  this.titleManipulator.addEvent('click',()=>{this.renameQuiz.bind(this)})
+               //  svg.addGlobalEvent('keydown', _renameWhenEnter);
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
