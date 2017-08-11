@@ -383,7 +383,8 @@ exports.Lists = function (globalVariables) {
             this.handlerBeforeClick = handler;
         }
         setDefaultLabel(label){
-            this.setSelectButtonText(label);
+            this.selectButton.text.message(label);
+            Helpers.resizeStringForText(this.selectButton.text, this.width, this.height, false);
             this.defaultLabel = label;
         }
         setToDefault(){
@@ -427,7 +428,7 @@ exports.Lists = function (globalVariables) {
 
         setSelectButtonText(label) {
             this.selectButton.text.message(label);
-            Helpers.resizeStringForText(this.selectButton.text, this.width, this.height);
+            Helpers.resizeStringForText(this.selectButton.text, this.width, this.height, true);
         }
 
         setHandlerChangeValue(handler) {

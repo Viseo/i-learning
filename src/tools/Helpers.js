@@ -8,9 +8,12 @@ exports.Helpers = function(globalVariables){
         installDnD = globalVariables.gui.installDnD,
         Manipulator = globalVariables.Handlers.Manipulator;
 
-    function resizeStringForText(text, width, height) {
+    function resizeStringForText(text, width, height, originalToSave) {
 
         let pointToSave = {x:text.x, y:text.y};
+        if(originalToSave){
+            text.originalText = text.messageText;
+        }
 
 
         if (text.boundingRect().width > width) {
