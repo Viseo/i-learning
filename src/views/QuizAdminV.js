@@ -23,7 +23,7 @@ exports.QuizAdminV = function (globalVariables) {
         ANSWERS_PER_LINE = 4,
         CHECKBOX_SIZE = 15,
         IMAGES_PER_LINE = 3,
-        QUESTION_BUTTON_SIZE = {w: 200, h: 90},
+        QUESTION_BUTTON_SIZE = {w: 150, h: 45},
         INPUT_SIZE = {w: 350, h: 30},
         HEADER_SIZE = {w:drawing.width, h:150},
         EXPLANATION_DEFAULT_TEXT = "Cliquer ici pour ajouter du texte",
@@ -46,6 +46,7 @@ exports.QuizAdminV = function (globalVariables) {
                 this.headerManipulator = new Manipulator(this),
                 this.returnButtonManipulator = new Manipulator(this);
                 this.manipulator
+                    .add(background)
                     .add(this.questionsBlockManipulator)
                     .add(this.questionDetailsManipulator)
                     .add(this.titleManipulator)
@@ -53,13 +54,15 @@ exports.QuizAdminV = function (globalVariables) {
                     .add(this.saveQuizButtonManipulator)
                     .add(this.headerManipulator)
                     .add(this.returnButtonManipulator)
-
                     .add(this.previewButtonManipulator);
             };
+            let background= new svg.Rect(drawing.width, drawing.width).position(drawing.width/2,0)
+                .color(myColors.lightgrey, 1,myColors.lightgrey);
             var _resetDrawings = () => {
                 this.width = drawing.width - 2 * MARGIN;
                 this.height = drawing.height - this.header.height;
             }
+
             var _updateHeader = () => {
                 let formationLabel = this.getFormationLabel();
                 this.displayHeader(formationLabel + " - " + this.label);
@@ -74,19 +77,15 @@ exports.QuizAdminV = function (globalVariables) {
                 chevron.position(-BUTTON_WIDTH / 2, 0);
                 this.returnButtonManipulator.add(chevron).mark('return');
                 this.returnButtonManipulator.addEvent('click', this.returnToOldPage.bind(this));
-
             }
-
-
-
             var _displayTitleArea = () => {
+
                 var _renameWhenEnter = (event) => {
                     if (event.keyCode === 13) {
                         this.renameQuiz();
                         titleTextArea.hideControl();
                     }
                 }
-
                 this.headerManipulator.move(drawing.width/2, this.header.height + HEADER_SIZE.h/2);
                 let header = new svg.Rect(drawing.width, HEADER_SIZE.h).color([0, 57, 114], 0, []);
                 this.headerManipulator.add(header);
@@ -118,39 +117,20 @@ exports.QuizAdminV = function (globalVariables) {
                    this.header.height + this.returnButton.height + titleTextArea.height);
              this.quizTitleField = titleTextArea;
 
-                let saveIcon = new svg.Image('../../images/saveWhite.png');
-                saveIcon
-                    .dimension(30, 30)
-                    .mark('saveNameButton');
-                let saveText = new svg.Text('Modifier le titre')
-                    .font(FONT, 18)
-                    .color(myColors.white)
-                    .anchor('end')
-                    .position (-30,6);
-                let saveBorder = new svg.Rect(200, 75)
-                    .color([0, 57, 114], 1, myColors.white)
-                    .position(-67, 0)
-                    .corners(3,3);
-                this.titleManipulator.add(saveBorder).add(saveIcon).add(saveText);
+
                 this.titleManipulator.addEvent('click',()=>{this.renameQuiz()})
                 this.headerManipulator.add( this.titleManipulator);
                 this.titleManipulator.move(drawing.width/2 - 6*MARGIN, 0);
-                svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this))
+               // svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this))
                 this.headerManipulator.add(titleTextArea.component);
                 svg.addGlobalEvent('keydown', _renameWhenEnter);
                 this.nameFormationField = titleTextArea;
-                // saveIcon
-                //     .dimension(25, 25)
-                //     .position(titleTextArea.width / 2 + 12.5 + MARGIN, 0)
-                //     .mark('saveNameButton');
-               // svg.addEvent(saveIcon, 'click', this.renameQuiz.bind(this));
-               //  this.titleManipulator.addEvent('click',()=>{this.renameQuiz.bind(this)})
-               //  svg.addGlobalEvent('keydown', _renameWhenEnter);
+
             }
             var _displayQuestionsHeader = () => {
                 let questionListDim = {
                     w: Math.max(this.width, 1260 ),
-                    h: Math.max(this.height * 1 / 6, 100)
+                    h: Math.max(this.height * 1 / 10, 100)
                 };
                 this.questionsBlockListView = new ListManipulatorView([],'H',
                     questionListDim.w, questionListDim.h, 50, 80,
@@ -159,7 +139,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                 this.questionsBlockManipulator.set(0, this.questionsBlockListView.manipulator);
                 this.questionsBlockManipulator.move(MARGIN + questionListDim.w / 2,
-                    this.header.height + this.returnButton.height + this.quizTitleField.height + questionListDim.h / 2 + 3 * MARGIN);
+                    this.header.height + this.returnButton.height + this.quizTitleField.height + questionListDim.h /2 );
                 return questionListDim;
             };
 
@@ -173,10 +153,8 @@ exports.QuizAdminV = function (globalVariables) {
                 let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.black).corners(5, 5);
                 this.questionDetailsManipulator.set(0, border);
                 this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w/2 + 2 * MARGIN,
-                    questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
-
+                    questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + 3* MARGIN);
             }
-
             let _createBottomButton = () => {
                 let calculateButtonBottomDim = () =>{
                     let dim = {
@@ -189,7 +167,7 @@ exports.QuizAdminV = function (globalVariables) {
                     return dim;
                 }
                 let _createButton = (dim, labelButton, markId, clickHandler) => {
-                    let button = new gui.Button(dim.w, dim.h, [[43, 120, 228], 1, myColors.black], labelButton);
+                    let button = new gui.Button(dim.w, dim.h, [[0, 57, 114], 1, myColors.none], labelButton);
                     button.glass.mark(markId);
                     button.onClick(clickHandler);
                     return button;
@@ -198,11 +176,12 @@ exports.QuizAdminV = function (globalVariables) {
                 let dim = calculateButtonBottomDim();
                 let previewButton = _createButton(dim, "Aperçu", "previewButton", this.previewQuiz.bind(this));
                 this.previewButtonManipulator.set(0, previewButton.component);
-                this.previewButtonManipulator.move(dim.x, dim.y);
+                this.previewButtonManipulator.move(drawing.width/3 + 5* MARGIN, 0);
 
                 let saveButton = _createButton(dim, "Sauvegarder", "saveButtonQuiz", this.updateQuiz.bind(this));
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
-                this.saveQuizButtonManipulator.move(dim.x+dim.w+ MARGIN , dim.y);
+               this.saveQuizButtonManipulator.move(drawing.width/2 - 10* MARGIN, 0);
+                this.headerManipulator.add( this.previewButtonManipulator).add(this.saveQuizButtonManipulator);
             };
 
             var _displayToggleMedias = () => {
@@ -221,7 +200,7 @@ exports.QuizAdminV = function (globalVariables) {
                 let tabsManipulator = new Manipulator(this);
                 tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
                 tabsManipulator.move(tabsDim.w / 2 + MARGIN,
-                    this.questionsBlockManipulator.y + this.questionsBlockListView.height / 2 + tabsDim.h / 2 + MARGIN);
+                    this.questionsBlockManipulator.y + this.questionsBlockListView.height / 2 + tabsDim.h / 2 + 3* MARGIN);
                 svg.addEvent(imageTabs, 'click', () => {
                     this.toggleMediaPanel(true)
                 });
@@ -365,7 +344,7 @@ exports.QuizAdminV = function (globalVariables) {
             mediasPanel.add(rectWhite);
             this.mediasLibraryManipulator.set(0, mediasPanel.component);
             this.mediasLibraryManipulator.move(mediasPanel.width / 2 + MARGIN,
-                mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + MARGIN);
+                mediaLibDim.h/2 +BUTTON_HEIGHT+ this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + 3* MARGIN);
 
 
             this.imageWidth = -MARGIN + mediaLibDim.w / IMAGES_PER_LINE;
@@ -625,34 +604,6 @@ exports.QuizAdminV = function (globalVariables) {
                     .set(1, questionGui.textAreaManipulator)
                     .set(2, questionGui.answersManipulator)
                     .set(3, questionGui.explanationManipulator)
-            };
-            var _displayToggleTypeResponse = (questionGui, question) => {
-                let toggleButtonDim = {
-                    w: BUTTON_WIDTH,
-                    h: BUTTON_HEIGHT
-                }
-                questionGui.uniqueButton = new gui.Button(toggleButtonDim.w, toggleButtonDim.h, [myColors.white, 1, myColors.black], "Réponse unique");
-                questionGui.multipleButton = new gui.Button(toggleButtonDim.w, toggleButtonDim.h, [myColors.white, 1, myColors.black], 'Réponses multiples');
-                questionGui.uniqueButton.position(-(toggleButtonDim.w / 2 + MARGIN), MARGIN - this.questionDetailsDim.h / 2 + toggleButtonDim.h / 2);
-                questionGui.multipleButton.position(toggleButtonDim.w / 2 + MARGIN, MARGIN - this.questionDetailsDim.h / 2 + toggleButtonDim.h / 2);
-
-                questionGui.setMultipleChoice = (isMultiple) => {
-                    if (isMultiple) {
-                        questionGui.uniqueButton.color([myColors.white, 1, myColors.black]);
-                        questionGui.multipleButton.color([[43, 120, 228], 1, myColors.black])
-                    } else {
-                        questionGui.uniqueButton.color([[43, 120, 228], 1, myColors.black]);
-                        questionGui.multipleButton.color([myColors.white, 1, myColors.black]);
-                    }
-                    questionGui.multipleChoice = !!isMultiple; //convert to Boolean
-                };
-
-                questionGui.uniqueButton.onClick(() => questionGui.setMultipleChoice(false));
-                questionGui.multipleButton.onClick(() => questionGui.setMultipleChoice(true));
-                questionGui.setMultipleChoice(question.multipleChoice);
-                /** TODO récupérer multipleChoice du modèle Question **/
-                questionGui.typeManipulator.add(questionGui.uniqueButton.component).add(questionGui.multipleButton.component);
-                questionGui.answersDimension.height -= toggleButtonDim.h;
             };
             var _displayTextArea = (questionGui, index, question) => {
                 var _setQuestionBlockTitle = (oldMessage, newMessage) => {
@@ -968,7 +919,7 @@ exports.QuizAdminV = function (globalVariables) {
             };
 
             _declareManipulatorQuestionDetail(questionDetail);
-            _displayToggleTypeResponse(questionDetail, question);
+           // _displayToggleTypeResponse(questionDetail, question);
             _displayTextArea(questionDetail, index, question);
             _loadAnswerBlockForOneQuestion(questionDetail, index, question);
 
@@ -1032,7 +983,7 @@ exports.QuizAdminV = function (globalVariables) {
 
                 let question = {
                     label: questionElementVue.textArea.textMessage,
-                    multipleChoice: questionElementVue.multipleChoice,
+                   // multipleChoice: questionElementVue,
                     answers: questionElementVue.answers
                 };
 
