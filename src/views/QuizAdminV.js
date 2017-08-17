@@ -178,21 +178,7 @@ exports.QuizAdminV = function (globalVariables) {
                     button.onClick(clickHandler);
                     return button;
                 };
-
                 let dim = calculateButtonBottomDim();
-                let previewButton = _createButton(dim, "Aperçu", "previewButton", this.previewQuiz.bind(this));
-                previewButton.text.font(FONT, 15).color(myColors.black);
-                previewButton.color([myColors.none, 1, myColors.none]);
-                this.previewButtonManipulator.set(0, previewButton.component);
-                this.previewButtonManipulator.move(drawing.width/2 - 10* MARGIN
-                    , drawing.height/3 - 5*MARGIN);
-                let viewIcon = new svg.Image('../../images/view.png');
-                viewIcon
-                    .dimension(30, 30)
-                    .position(- previewButton.text.boundingRect().width,0)
-                    .mark('viewButton');
-                this.previewButtonManipulator.add(viewIcon);
-
                 let saveButton = _createButton(dim, "Sauvegarder", "saveButtonQuiz", this.updateQuiz.bind(this));
                 saveButton.text.color(myColors.white);
                 this.saveQuizButtonManipulator.set(0, saveButton.component);
@@ -217,17 +203,26 @@ exports.QuizAdminV = function (globalVariables) {
                 tabsManipulator.add(imageTabs).add(videoTabs).add(imageText).add(videoText);
                 tabsManipulator.move(tabsDim.w / 2 + 2*MARGIN,
                     this.questionsBlockManipulator.y + this.questionsBlockListView.height/2 + 2*MARGIN +BUTTON_HEIGHT/2);
+
                 svg.addEvent(imageTabs, 'click', () => {
                     this.toggleMediaPanel(true)
+                    imageTabs.color(myColors.customBlue, 0, myColors.grey);
+                    videoTabs.color(myColors.white, 0, myColors.grey);
                 });
                 svg.addEvent(videoTabs, 'click', () => {
                     this.toggleMediaPanel(false)
+                    imageTabs.color(myColors.white, 0, myColors.grey);
+                    videoTabs.color(myColors.customBlue, 0, myColors.grey);
                 });
                 svg.addEvent(imageText, 'click', () => {
                     this.toggleMediaPanel(true)
+                    imageTabs.color(myColors.customBlue, 0, myColors.grey);
+                    videoTabs.color(myColors.white, 0, myColors.grey);
                 });
                 svg.addEvent(videoText, 'click', () => {
                     this.toggleMediaPanel(false)
+                    videoTabs.color(myColors.customBlue, 0, myColors.grey);
+                    imageTabs.color(myColors.white, 0, myColors.grey);
                 });
                 this.manipulator.add(tabsManipulator);
             }
@@ -403,7 +398,8 @@ exports.QuizAdminV = function (globalVariables) {
             fileExplorer.acceptImageAndVideoMP4()
                 .handlerOnValide(onChangeFileExplorerHandler);
 
-            let addPictureButton = new gui.Button(tabsDim.w, BUTTON_HEIGHT,  [[43, 120, 228], 1, myColors.black], '+');
+            let addPictureButton = new gui.Button(tabsDim.w, BUTTON_HEIGHT,  [myColors.white, 0, myColors.black], '+ AJOUTER UN MEDIA');
+            addPictureButton.text.color([244, 102, 27]).font(FONT,14);
             resizeStringForText(addPictureButton.text, BUTTON_WIDTH - MARGIN, BUTTON_HEIGHT);
             addPictureButton.component.add(addPictureButton.text);
             addPictureButton.onClick(fileExplorer.display);
@@ -531,7 +527,7 @@ exports.QuizAdminV = function (globalVariables) {
                         QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h,
                         [myColors.white, 1, [0, 57, 114]], question.label
                     );
-                    questionButton.text.color([98, 221, 204]);
+                    questionButton.text.color([98, 221, 204]).font(FONT,15);
 
                     questionManip.index = lastQuestionIndex;
                     questionManip.unselect = () => {
@@ -555,7 +551,7 @@ exports.QuizAdminV = function (globalVariables) {
                     questionManip.add(questionButton.component);
 
                     IconCreator.createRedCrossIcon(questionManip)
-                        .position(QUESTION_BUTTON_SIZE.w / 2, -QUESTION_BUTTON_SIZE.h / 2)
+                        .position(QUESTION_BUTTON_SIZE.w /2- 2* MARGIN, -QUESTION_BUTTON_SIZE.h /4 + MARGIN )
                         .mark('questionRedCross' + lastQuestionIndex)
                         .addEvent('click', () => _deleteQuestion());
                 };
@@ -590,6 +586,7 @@ exports.QuizAdminV = function (globalVariables) {
                 addNewQuestionManip.set(0, questionButton.component);
 
                 let iconAddNewQuestion = IconCreator.createPlusIcon(addNewQuestionManip, 1);
+                iconAddNewQuestion.content.color([98, 221, 204]);
                 iconAddNewQuestion.addEvent('click', () => onClickOnAddNewQuestion());
                 questionButton.onClick(() => onClickOnAddNewQuestion());
                 questionButton.glass.mark('newQuestionButton');
@@ -645,23 +642,37 @@ exports.QuizAdminV = function (globalVariables) {
 
                 let titleArea = new svg.Rect(questionTextAreaDim.w, questionTextAreaDim.h).color(myColors.white, 1, myColors.lightgrey);
                 questionGui.textAreaManipulator.set(0, titleArea);
-
                 let questionTitle = new svg.Rect(questionTextAreaDim.w, questionTextAreaDim.h/2).color(myColors.white, 1,[98, 221, 204])
-                    .position(0,-questionTextAreaDim.h+ 2*MARGIN);
+                    .position(0,-questionTextAreaDim.h+ MARGIN);
                 ;
-                questionGui.textAreaManipulator.set(2, questionTitle);
-
-
                 questionGui.textArea = new gui.TextArea(0, 0, questionTextAreaDim.w * 6 / 8, questionTextAreaDim.h - MARGIN, question.label);
                 questionGui.textAreaManipulator.set(1, questionGui.textArea.component);
+                let questionTtileheader = new svg.Text(question.label)
+                    .font(FONT, 15)
+                    .color(myColors.black)
+                    .position (-questionTitle.width/2,6);
+
+                let viewManip = new Manipulator(this);
+                let viewIcon = new svg.Image('../../images/view.png');
+                let viewText = new svg.Text('Aperçu')
+                    .font(FONT, 15)
+                    .color(myColors.black)
+                    .position (-15,6);
+                viewIcon
+                    .dimension(30, 30)
+                    .mark('viewNameButton')
+                    .position(-60,0);
+
+                viewManip.add(viewIcon).add(viewText).add(questionTtileheader);
+                viewManip.move(questionTitle.width/2-2* MARGIN ,-titleArea.height/2-questionTitle.height/2- MARGIN);
+                viewManip.addEvent('click',()=>{this.previewQuiz()})
 
                 let sizePicture = questionTextAreaDim.h - MARGIN;
-
                 questionGui.textAreaPicture = new svg.Image((question.imageSrc) ? question.imageSrc : "../images/quiz/newImage.png");
                 questionGui.textAreaPicture.dimension(sizePicture, sizePicture)
                     .position(-questionGui.textArea.width / 2 - (titleArea.width - questionGui.textArea.width) / 4, 0);
 
-                questionGui.textAreaManipulator.add(questionGui.textAreaPicture);
+                questionGui.textAreaManipulator.add(questionGui.textAreaPicture).add( questionTitle).add(viewManip);
                 questionGui.textArea.font(FONT, 15);
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
@@ -910,11 +921,12 @@ exports.QuizAdminV = function (globalVariables) {
                     let pos = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
 
                     let addNewResponseButton
-                        = new gui.Button(answerTextDim.w, answerTextDim.h, [myColors.white, 1, myColors.black], "");
+                        = new gui.Button(answerTextDim.w, answerTextDim.h, [myColors.white, 1, myColors.black], "")
                     questionGui.addNewResponseManip.set(0, addNewResponseButton.component);
 
                     questionGui.addNewResponseManip.move(pos.x, pos.y);
                     IconCreator.createPlusIcon(questionGui.addNewResponseManip, 1);
+                  //  iconAddNewReponse.content.color([98, 221, 204]);
 
                     questionGui.answersManipulator.add(questionGui.addNewResponseManip);
                     questionGui.addNewResponseManip.addEvent('click', () => clickOnAddNewResponse());
