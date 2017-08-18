@@ -529,14 +529,20 @@ exports.QuizAdminV = function (globalVariables) {
                         QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h,
                         [myColors.white, 1, [0, 57, 114]], question.label
                     );
-                    questionButton.text.color([98, 221, 204]).font(FONT,15);
 
+
+                    questionButton.text.color([98, 221, 204]).font(FONT,15).position(0,questionButton.text.fontSize/3);
+
+
+                    let closeCross =   IconCreator.createXClose(questionButton.text.fontSize,questionButton.text.fontSize,_deleteQuestion);
+                    closeCross.manipulator.move(questionButton.width/2 -  closeCross.text.fontSize/2,0);
 
                     questionManip.index = lastQuestionIndex;
                     questionManip.unselect = () => {
                         if (questionButton.selected) {
                             questionButton.selected = false;
                             questionButton.color([myColors.white, 1, [0, 57, 114]]);
+                            closeCross.text.color([0, 57, 114]);
                         }
                     };
                     questionManip.select = () => {
@@ -544,19 +550,17 @@ exports.QuizAdminV = function (globalVariables) {
                             questionButton.selected = true;
                             questionButton.color([[0, 57, 114], 1,[0, 57, 114]]);
                             this.selectQuestion(questionManip.index);
+                            closeCross.text.color(myColors.lightgrey);
                         }
                     };
-                    questionManip.buttonText = questionButton.text;
 
+                    questionManip.buttonText = questionButton.text;
                     questionButton.back.corners(5, 5);
                     questionButton.onClick(() => questionManip.select());
-                    questionButton.glass.mark('selectQuestionBlock' + lastQuestionIndex);
-                    questionManip.add(questionButton.component);
 
-                    IconCreator.createXClose(questionButton.text.fontSize,questionButton.text.fontSize,_deleteQuestion)
-                        .position(QUESTION_BUTTON_SIZE.w /2- 2* MARGIN, -QUESTION_BUTTON_SIZE.h /4 + MARGIN )
-                        .mark('questionRedCross' + lastQuestionIndex)
-                        .addEvent('click', () => _deleteQuestion());
+                    questionButton.glass.mark('selectQuestionBlock' + lastQuestionIndex);
+                    questionManip.add(questionButton.component).add(closeCross.manipulator);
+
                 };
                 var _displayBlock = () => {
                     this.questionsBlockListView.addManipInIndex(questionManip, lastQuestionIndex);
@@ -620,8 +624,8 @@ exports.QuizAdminV = function (globalVariables) {
                 let questionTitle = new svg.Rect(this.questionDetailsDim.w, this.questionDetailsDim.h / 6).color(myColors.white, 1, [98, 221, 204])
                 ;
                 let questionTitleheader = new svg.Text(question.label)
-                    .font(FONT, 15)
-                    .color(myColors.black)
+                    .font(FONT, 22)
+                    .color([98, 221, 204])
                     .position(-this.questionDetailsDim.w / 2 + MARGIN, 6).anchor('left');
 
                 let viewmanip = new Manipulator(this);
@@ -698,13 +702,13 @@ exports.QuizAdminV = function (globalVariables) {
                         height: 70,
                         indexX: Math.floor(indexReponse % ANSWERS_PER_LINE),
                         indexY: Math.floor(indexReponse / ANSWERS_PER_LINE),
-                        y: 70 / 2,
+                        y: 70 / 2 ,
                         x: MARGIN / 2 + (questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN) / 2
                         - questionGui.answersDimension.width / 2
                     }
                     let realPos = {
                         x: pos.x + pos.indexX * (pos.width + MARGIN),
-                        y: pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY
+                        y: pos.y * pos.indexY + (pos.height + MARGIN) * pos.indexY +MARGIN
                     }
                     return realPos;
                 }
@@ -722,26 +726,25 @@ exports.QuizAdminV = function (globalVariables) {
                         _initInfos();
                     };
                     var _initAnswerTextArea = (answerGui, answerLabel, index) => {
+
+                        let font_reponses = 15;
                         let answerTextDim = {
                             w: questionGui.answersDimension.width / ANSWERS_PER_LINE - MARGIN,
                             h: 70
                         };
                         var _initRedCross = (answerGui) => {
-                            answerGui.iconRedCross = IconCreator.createRedCrossIcon(answerGui.manipulator, 3);
-                            answerGui.iconRedCross.mark('answerRedCross' + answerGui.index);
-                            answerGui.iconRedCross.position(answerTextDim.w / 2, -answerTextDim.h / 2);
-                            answerGui.iconRedCross.onClickRedCross = () => {
+                            let deleteResponse  = () => {
                                 let indexAnswer = answerGui.index;
                                 questionGui.answersManipulator.remove(answerGui.manipulator);
                                 questionGui.answersGui.splice(indexAnswer, 1);
                                 for (var i = indexAnswer; i < questionGui.answersGui.length; i++) {
                                     questionGui.answersGui[i].index = i;
                                 }
-
                                 questionGui.answersGui.forEach((ele, index) => {
                                     let pos = _calculatePositionAnswer(questionGui, index);
                                     ele.manipulator.move(pos.x, pos.y);
                                 });
+
                                 let posAddNewReponse = _calculatePositionAnswer(questionGui, questionGui.answersGui.length);
                                 questionGui.addNewResponseManip.move(posAddNewReponse.x, posAddNewReponse.y);
                                 _attachRedCrossForAnswer(questionGui.answersGui);
@@ -751,6 +754,9 @@ exports.QuizAdminV = function (globalVariables) {
                                     questionGui.addNewResponseManip.move(pos.x, pos.y);
                                 }
                             };
+                            let closeCross =   IconCreator.createXClose(font_reponses,font_reponses,deleteResponse);
+                            closeCross.manipulator.move(answerTextDim.w /2 -  closeCross.text.fontSize/2,- answerTextDim.h/2+ closeCross.rect.height/2 );
+                            answerGui.iconRedCross= closeCross;
                         };
                         var _addExplanationPen = (answerGui) => {
                             var _toggleIconColor = (icon) => {
@@ -891,9 +897,10 @@ exports.QuizAdminV = function (globalVariables) {
                             answerGui.manipulator.set(2, answerGui.checkBoxManipulator);
                         };
 
+
                         answerGui.textArea = new gui.TextArea(0, 0, answerTextDim.w, answerTextDim.h, answerLabel || "Réponse");
                         answerGui.manipulator.set(0, answerGui.textArea.component);
-                        answerGui.textArea.font(FONT, 15).anchor('center');
+                        answerGui.textArea.font(FONT, font_reponses).anchor('center');
                         answerGui.textArea.frame.color(myColors.white, 1, myColors.black).fillOpacity(0.001);
                         let pos = _calculatePositionAnswer(questionGui, index);
                         answerGui.manipulator.move(pos.x, pos.y);
@@ -945,7 +952,6 @@ exports.QuizAdminV = function (globalVariables) {
                 var _attachRedCrossForAnswer = (answersGui) => {
                     if (answersGui.length >= 3) {
                         answersGui.forEach(ele => {
-                            ele.iconRedCross.addEvent('click', ele.iconRedCross.onClickRedCross);
                             ele.manipulator.set(3, ele.iconRedCross.manipulator);
                         });
                     } else {

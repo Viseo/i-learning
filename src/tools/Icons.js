@@ -495,11 +495,12 @@ exports.Icons = function (globalVariables) {
 
         static createXClose(fontSize,buttonSize, clickHandler){
 
-            let textX = new svg.Text("X").font(FONT,fontSize );
+            let textX = new svg.Text("x").font(FONT,fontSize );
             let rectX = new svg.Rect(buttonSize,buttonSize ).opacity(1/1000);
             let manipX = new Manipulator(this);
             manipX.add(textX).add(rectX);
             manipX.addEvent( 'click' ,clickHandler)
+            textX.position(0,fontSize/3);
 
             let resultX = {
 
