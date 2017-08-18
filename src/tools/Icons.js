@@ -493,6 +493,27 @@ exports.Icons = function (globalVariables) {
             return icon;
         }
 
+        static createXClose(fontSize,buttonSize, clickHandler){
+
+            let textX = new svg.Text("X").font(FONT,fontSize );
+            let rectX = new svg.Rect(buttonSize,buttonSize ).opacity(1/1000);
+            let manipX = new Manipulator(this);
+            manipX.add(textX).add(rectX);
+            manipX.addEvent( 'click' ,clickHandler)
+
+            let resultX = {
+
+                text :  textX ,
+                rect : rectX,
+                manipulator : manipX
+
+            }
+
+
+           return resultX ;
+
+        }
+
         /*createSettingIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)

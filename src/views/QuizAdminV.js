@@ -157,6 +157,8 @@ exports.QuizAdminV = function (globalVariables) {
                 this.questionDetailsDim = questionDetailsDim;
                 let border = new svg.Rect(questionDetailsDim.w, questionDetailsDim.h).color(myColors.white, 1, myColors.white);
 
+
+
                 this.questionDetailsManipulator.set(0, border);
                 this.questionDetailsManipulator.move(this.mediaLibrary.width + questionDetailsDim.w/2 + 4 * MARGIN,
                     questionDetailsDim.h/2 + this.questionsBlockManipulator.y + this.questionsBlockListView.getListDim().h/2 + 2* MARGIN);
@@ -529,6 +531,7 @@ exports.QuizAdminV = function (globalVariables) {
                     );
                     questionButton.text.color([98, 221, 204]).font(FONT,15);
 
+
                     questionManip.index = lastQuestionIndex;
                     questionManip.unselect = () => {
                         if (questionButton.selected) {
@@ -550,7 +553,7 @@ exports.QuizAdminV = function (globalVariables) {
                     questionButton.glass.mark('selectQuestionBlock' + lastQuestionIndex);
                     questionManip.add(questionButton.component);
 
-                    IconCreator.createRedCrossIcon(questionManip)
+                    IconCreator.createXClose(questionButton.text.fontSize,questionButton.text.fontSize,_deleteQuestion)
                         .position(QUESTION_BUTTON_SIZE.w /2- 2* MARGIN, -QUESTION_BUTTON_SIZE.h /4 + MARGIN )
                         .mark('questionRedCross' + lastQuestionIndex)
                         .addEvent('click', () => _deleteQuestion());
@@ -613,17 +616,46 @@ exports.QuizAdminV = function (globalVariables) {
                 height: this.questionDetailsDim.h - 2 * MARGIN
             };
 
+            let _displayHeader = (questionGui) =>{
+                let questionTitle = new svg.Rect(this.questionDetailsDim.w, this.questionDetailsDim.h / 6).color(myColors.white, 1, [98, 221, 204])
+                ;
+                let questionTitleheader = new svg.Text(question.label)
+                    .font(FONT, 15)
+                    .color(myColors.black)
+                    .position(-this.questionDetailsDim.w / 2 + MARGIN, 6).anchor('left');
+
+                let viewmanip = new Manipulator(this);
+                let viewIcon = new svg.Image('../../images/view.png');
+                viewIcon
+                    .dimension(30, 30)
+                    .mark('viewNameButton')
+                    .position(-viewIcon.width / 2 - MARGIN, 0);
+                let viewText = new svg.Text('Aperçu')
+                    .font(FONT, 15)
+                    .color(myColors.black)
+                    .position(-viewIcon.width - 2 * MARGIN, 6).anchor('end');
+                viewmanip.add(viewIcon).add(viewText).move(this.questionDetailsDim.w/2, 0);
+                questionGui.headerManipulator.title = questionTitleheader;
+                questionGui.headerManipulator.add(questionTitle).add(questionTitleheader).add(viewmanip);
+                questionGui.headerManipulator.move(0, -this.questionDetailsDim.h / 2 + questionTitle.height / 2);
+                viewmanip.addEvent('click', () => {
+                    this.previewQuiz()
+                })
+            }
+
             var _declareManipulatorQuestionDetail = (questionGui) => {
                 questionGui.typeManipulator = new Manipulator(this).addOrdonator(2);
                 questionGui.textAreaManipulator = new Manipulator(this).addOrdonator(3);
                 questionGui.answersManipulator = new Manipulator(this).addOrdonator(1);
                 questionGui.explanationManipulator = new Manipulator(this);
+                questionGui.headerManipulator = new Manipulator(this);
 
-                questionGui.guiManipulator = new Manipulator(this).addOrdonator(4)
+                questionGui.guiManipulator = new Manipulator(this).addOrdonator(5)
                     .set(0, questionGui.typeManipulator)
                     .set(1, questionGui.textAreaManipulator)
                     .set(2, questionGui.answersManipulator)
                     .set(3, questionGui.explanationManipulator)
+                    .set(4, questionGui.headerManipulator);
             };
             var _displayTextArea = (questionGui, index, question) => {
                 var _setQuestionBlockTitle = (oldMessage, newMessage) => {
@@ -631,7 +663,7 @@ exports.QuizAdminV = function (globalVariables) {
                     questionManip.buttonText.message(newMessage);
                     let tmpText = questionManip.buttonText;
                     resizeStringForText(tmpText,QUESTION_BUTTON_SIZE.w, QUESTION_BUTTON_SIZE.h/2);
-                    //questionManip.add(tmpText)
+                    questionGui.headerManipulator.title.message(newMessage)
                 }
 
 
@@ -642,37 +674,16 @@ exports.QuizAdminV = function (globalVariables) {
 
                 let titleArea = new svg.Rect(questionTextAreaDim.w, questionTextAreaDim.h).color(myColors.white, 1, myColors.lightgrey);
                 questionGui.textAreaManipulator.set(0, titleArea);
-                let questionTitle = new svg.Rect(questionTextAreaDim.w, questionTextAreaDim.h/2).color(myColors.white, 1,[98, 221, 204])
-                    .position(0,-questionTextAreaDim.h+ MARGIN);
-                ;
+
                 questionGui.textArea = new gui.TextArea(0, 0, questionTextAreaDim.w * 6 / 8, questionTextAreaDim.h - MARGIN, question.label);
                 questionGui.textAreaManipulator.set(1, questionGui.textArea.component);
-                let questionTtileheader = new svg.Text(question.label)
-                    .font(FONT, 15)
-                    .color(myColors.black)
-                    .position (-questionTitle.width/2,6);
-
-                let viewManip = new Manipulator(this);
-                let viewIcon = new svg.Image('../../images/view.png');
-                let viewText = new svg.Text('Aperçu')
-                    .font(FONT, 15)
-                    .color(myColors.black)
-                    .position (-15,6);
-                viewIcon
-                    .dimension(30, 30)
-                    .mark('viewNameButton')
-                    .position(-60,0);
-
-                viewManip.add(viewIcon).add(viewText).add(questionTtileheader);
-                viewManip.move(questionTitle.width/2-2* MARGIN ,-titleArea.height/2-questionTitle.height/2- MARGIN);
-                viewManip.addEvent('click',()=>{this.previewQuiz()})
 
                 let sizePicture = questionTextAreaDim.h - MARGIN;
                 questionGui.textAreaPicture = new svg.Image((question.imageSrc) ? question.imageSrc : "../images/quiz/newImage.png");
                 questionGui.textAreaPicture.dimension(sizePicture, sizePicture)
                     .position(-questionGui.textArea.width / 2 - (titleArea.width - questionGui.textArea.width) / 4, 0);
 
-                questionGui.textAreaManipulator.add(questionGui.textAreaPicture).add( questionTitle).add(viewManip);
+                questionGui.textAreaManipulator.add(questionGui.textAreaPicture);
                 questionGui.textArea.font(FONT, 15);
                 questionGui.textArea.anchor('center');
                 questionGui.textArea.frame.color(myColors.none, 0, myColors.none).fillOpacity(1);
@@ -961,6 +972,7 @@ exports.QuizAdminV = function (globalVariables) {
 
             _declareManipulatorQuestionDetail(questionDetail);
            // _displayToggleTypeResponse(questionDetail, question);
+            _displayHeader(questionDetail)
             _displayTextArea(questionDetail, index, question);
             _loadAnswerBlockForOneQuestion(questionDetail, index, question);
 
