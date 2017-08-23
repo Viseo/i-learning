@@ -41,6 +41,7 @@ function main(mockResponses) {
     drawings = new Handlers.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
     globalVariables.drawing = drawings.drawing;
+    runtime.drawing = globalVariables.drawing;
 
     globalVariables.HeaderVue = FHeaderV(globalVariables);
     globalVariables.Icons = FIcons(globalVariables);
