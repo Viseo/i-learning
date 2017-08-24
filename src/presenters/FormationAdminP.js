@@ -17,6 +17,8 @@ exports.FormationAdminP = function(globalVariables){
             this.formationsList = formations.getFormations();
         }
 
+
+
         getLabel(){
             return this.formation.label;
         }
@@ -121,7 +123,11 @@ exports.FormationAdminP = function(globalVariables){
         publishFormation(){
             const messageErrorNoNameFormation = "Vous devez remplir correctement le nom de la formation.",
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
+                messageErrorPublishedDoll = "Veuillez définir les règles.",
                 messageErrorNotValidFormation = "Il y a des jeux non valides."
+
+
+
 
             if (this.formation.levelsTab.length === 0) {
                 this.view.displayMessage(messageErrorNoGame);
@@ -136,6 +142,7 @@ exports.FormationAdminP = function(globalVariables){
                 this.formation.status = 'Published'
                 this.saveFormation();
             } else {
+
                 this.view.displayWarningMessage(messageErrorNotValidFormation)
             }
         }
@@ -143,6 +150,7 @@ exports.FormationAdminP = function(globalVariables){
         getGamesLibrary(){
             return this.state.getGamesLibrary();
         }
+
 
         uploadImage(file, progressDisplay){
             return this.state.uploadImage(file, progressDisplay);
