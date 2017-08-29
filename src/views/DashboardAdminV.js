@@ -187,7 +187,8 @@ exports.DashboardAdmin = function (globalVariables) {
                         statusIcon.move(TILE_SIZE.w/2, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
                         manipulator.add(statusIcon);
                     }
-
+                    let rect = new svg.Rect(IMAGE_SIZE.w , IMAGE_SIZE.h)
+                        .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h)/2).color(myColors.white,1,myColors.black);
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h)/2)
@@ -210,7 +211,8 @@ exports.DashboardAdmin = function (globalVariables) {
                         .add(description)
                         .set(0,shadow)
                         .set(1, border)
-                        .set(2, picture);
+                        .set(2, rect)
+                        .set(3,picture);
                     this.miniaturesManipulator.add(manipulator);
                     resizeStringForText(content, TILE_SIZE.w - 6*MARGIN, TILE_SIZE.h);
                     
