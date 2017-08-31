@@ -10,7 +10,7 @@ exports.Icons = function (globalVariables) {
         Manipulator = globalVariables.Handlers.Manipulator;
 
     const
-        ICON_SIZE = 15
+        ICON_SIZE = 10
 
     class PopOut {
         constructor(width, height, classToDisplay, parentManipulator, isOnlyText){
@@ -480,7 +480,7 @@ exports.Icons = function (globalVariables) {
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.blue, 2, myColors.black);
+                .setPolygonContent(_getPathPlus(ICON_SIZE),[98, 221, 204], 1,[98, 221, 204]);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
@@ -488,9 +488,31 @@ exports.Icons = function (globalVariables) {
 
         static createRedCrossIcon(manipulator, layer) {
             let icon = this.createPlusIcon(manipulator, layer);
-            icon.changeContentPollygonColor(myColors.red, 1, myColors.black);
+            icon.changeContentPollygonColor(myColors.lightgrey, 1, myColors.black);
             icon.rotate(45);
             return icon;
+        }
+
+        static createXClose(fontSize,buttonSize, clickHandler){
+
+            let textX = new svg.Text("x").font(FONT,fontSize );
+            let rectX = new svg.Rect(buttonSize,buttonSize ).opacity(1/1000);
+            let manipX = new Manipulator(this);
+            manipX.add(textX).add(rectX);
+            manipX.addEvent( 'click' ,clickHandler)
+            textX.position(0,fontSize/3);
+
+            let resultX = {
+
+                text :  textX ,
+                rect : rectX,
+                manipulator : manipX
+
+            }
+
+
+           return resultX ;
+
         }
 
         /*createSettingIcon(manipulator, layer) {
@@ -503,11 +525,11 @@ exports.Icons = function (globalVariables) {
         }*/
 
         static createExplanationIcon(manipulator, layer) {
-            let radiusSize = 25;
+            let radiusSize = 15;
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(radiusSize)
                 .setBorderDefaultColor(myColors.none, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 0, myColors.none)
-                .setPictureContent((radiusSize*2)*0.8, "../images/quiz/explanation.png");
+                .setPictureContent((radiusSize*2)*0.8, "../images/info.png");
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;

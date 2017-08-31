@@ -232,7 +232,7 @@ exports.DollCollabV = function(globalVariables) {
         }
 
         _displayButtonZone(){
-            let buttonSize = {w: this.actionButtonZoneSize.w / 5, h: this.actionButtonZoneSize.h - 2*MARGIN};
+            let buttonSize = {w: this.actionButtonZoneSize.w /4 , h: this.actionButtonZoneSize.h - 2*MARGIN};
             let buttonPrevious = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Précédent");
             let buttonInit = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Réinitialiser");
             let buttonNext = new gui.Button(buttonSize.w, buttonSize.h, [myColors.white, 1, myColors.grey], "Suivant");
@@ -241,8 +241,8 @@ exports.DollCollabV = function(globalVariables) {
             buttonInit.corners(5,5);
             buttonNext.corners(5,5);
 
-            buttonPrevious.position(-buttonSize.w*2 + MARGIN, 0);
-            buttonNext.position(buttonSize.w*2 - MARGIN, 0);
+            buttonPrevious.position(-buttonSize.w *3/2, 0);
+            buttonNext.position(buttonSize.w * 3/2 - MARGIN, 0);
 
             buttonNext.onClick(()=>this.displayPopup());
 
