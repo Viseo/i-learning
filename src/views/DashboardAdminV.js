@@ -30,6 +30,11 @@ exports.DashboardAdmin = function (globalVariables) {
             fontSize : 15,
             placeHolder : "Ajouter une formation",
             bgColor : [myColors.white, 0, myColors.none]
+        },
+        SEARCH_BAR = {
+            placeHolder : "Rechercher une formation",
+            searchIcon : '../../images/search.png',
+            sizeIcon : 20,
         };
 
     class DashboardAdminV extends View {
@@ -102,12 +107,13 @@ exports.DashboardAdmin = function (globalVariables) {
                     let manip = new Manipulator(this);
                     let searchZone = new svg.Rect(width, INPUT_SIZE.h + 1/2*MARGIN);
                     searchZone.corners(10,10).color(myColors.white, 2, [30,192,161])
-                    manip.add(searchZone);
-                    manip.move(drawing.width/2, y);
-                    let searchIcon = new svg.Image('../../images/search.png').dimension(20,20)
+                    manip.add(searchZone)
+                        .move(drawing.width/2, y);
+                    let searchIcon = new svg.Image(SEARCH_BAR.searchIcon)
+                        .dimension(SEARCH_BAR.sizeIcon, SEARCH_BAR.sizeIcon)
                         .position(-width/2 + 2*MARGIN, 0);
                     let textArea = new gui.TextField(MARGIN,0, width-5*MARGIN, INPUT_SIZE.h-2, '');
-                    textArea.control.placeHolder('Rechercher une formation')
+                    textArea.control.placeHolder(SEARCH_BAR.placeHolder)
                     textArea
                         .color([myColors.white, 0, myColors.none])
                         .editColor([myColors.white, 0, myColors.none]);
@@ -151,8 +157,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 let text = new svg.Text('Editée').font(FONT, 18).color(myColors.orange).position(-65,6).anchor('left');
                 manip.add(pic).add(text);
                 return manip;
-            }
-            else if (type == 'Published'){
+            } else if (type == 'Published'){
                 let manip = new Manipulator(this);
                 let rect = new svg.Rect(50,50).color(myColors.none, 2, [30,192,161]);
                 let check = drawCheck(-40,10,40).color([], 2, [30,192,161]);
@@ -163,8 +168,8 @@ exports.DashboardAdmin = function (globalVariables) {
         }
 
         displayMiniatures(regexSearch) {
-            this.miniaturesManipulator.flush();
-            this.miniaturesManipulator.move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
+            this.miniaturesManipulator.flush()
+                .move(2 * MARGIN + TILE_SIZE.w / 2, TILE_SIZE.h / 2 + 3 * MARGIN);
             this.panel.content.add(this.miniaturesManipulator.first);
             let _displayMiniature = (formation, i) => {
                 let _createMiniature = () => {
@@ -182,7 +187,8 @@ exports.DashboardAdmin = function (globalVariables) {
                         statusIcon.move(TILE_SIZE.w/2, (-TILE_SIZE.h/2 + IMAGE_SIZE.h)+3*MARGIN);
                         manipulator.add(statusIcon);
                     }
-
+                    let rect = new svg.Rect(IMAGE_SIZE.w , IMAGE_SIZE.h)
+                        .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h)/2).color(myColors.white,1,myColors.black);
                     let picture = new svg.Image(formation.imageSrc ? formation.imageSrc : '../../images/viseo.png');
                     picture
                         .position(0, -(TILE_SIZE.h - IMAGE_SIZE.h)/2)
@@ -205,7 +211,8 @@ exports.DashboardAdmin = function (globalVariables) {
                         .add(description)
                         .set(0,shadow)
                         .set(1, border)
-                        .set(2, picture);
+                        .set(2, rect)
+                        .set(3,picture);
                     this.miniaturesManipulator.add(manipulator);
                     resizeStringForText(content, TILE_SIZE.w - 6*MARGIN, TILE_SIZE.h);
                     
@@ -259,8 +266,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 let i = 0;
                 this.getFormations().forEach((formation) => {
                     if(formation.label.match(regexSearch)){
-                        _displayMiniature(formation, i);
-                        i++;
+                        _displayMiniature(formation, i++);
                     }
                 });
             }
@@ -276,19 +282,20 @@ exports.DashboardAdmin = function (globalVariables) {
                 this.mediasManipulator.flush()
             };
             let _displayRedCross = () => {
-                let redCross = IconCreator.createRedCrossIcon(this.mediasManipulator).position(dimensions.width / 2, -dimensions.height / 2);
+                let redCross = IconCreator.createRedCrossIcon(this.mediasManipulator)
+                    .position(dimLibImg.width / 2, -dimLibImg.height / 2);
                 redCross.addEvent('click', _hideMediaPopup)
             }
             let pictureClickHandler = (picture) => {
                 this.presenter.setImageOnFormation(formation, picture.src);
             };
-            let _createOnePicture = (src, imageWidth, index, pictureClickHandler) => {
+            let _createOnePicture = (src, imgWidth, index, pictureClickHandler) => {
                 let indexX = Math.floor(index % IMAGES_PER_LINE);
                 let indexY = Math.floor(index / IMAGES_PER_LINE);
                 let picture = new svg.Image(src);
                 picture
-                    .dimension(imageWidth, imageWidth)
-                    .position(indexX * (imageWidth + MARGIN), indexY * (imageWidth + MARGIN))
+                    .dimension(imgWidth, imgWidth)
+                    .position(indexX * (imgWidth + MARGIN), indexY * (imgWidth + MARGIN))
                     .mark('image' + indexX + '-' + indexY);
                 this.imagesManipulator.add(picture);
                 svg.addEvent(picture, 'click', () => {
@@ -298,7 +305,7 @@ exports.DashboardAdmin = function (globalVariables) {
 
             };
             let _displayPictures = () => {
-                let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
+                let imageWidth = (dimLibImg.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
                 this.imagesManipulator = new Manipulator(this);
 
                 mediaPanel.content.add(this.imagesManipulator.first);
@@ -313,7 +320,7 @@ exports.DashboardAdmin = function (globalVariables) {
                 let onChangeFileExplorerHandler = () => {
                     for (let file of fileExplorer.getFilesSelected()) {
                         this.presenter.uploadImage(file).then((data) => {
-                            let imageWidth = (dimensions.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
+                            let imageWidth = (dimLibImg.width - 2 * MARGIN) / IMAGES_PER_LINE - (IMAGES_PER_LINE - 1) / IMAGES_PER_LINE * MARGIN * 2;
                             _createOnePicture(data.src, imageWidth, this.imagesManipulator.components.length, pictureClickHandler);
                         });
                     }
@@ -325,22 +332,22 @@ exports.DashboardAdmin = function (globalVariables) {
                 addPictureButton.onClick(fileExplorer.display);
             };
 
-            let dimensions = {
-                width: drawing.width * 1 / 2 - MARGIN,
+            let dimLibImg = {
+                width: drawing.width / 2 - MARGIN,
                 height: drawing.height * 0.7 - (2 * MARGIN + BUTTON_SIZE.h)
             };
 
             this.manipulator.add(this.mediasManipulator);
-            let borderLibrary = new svg.Rect(dimensions.width, dimensions.height);
-            borderLibrary.color(myColors.white, 1, myColors.grey).corners(5, 5);
-            let mediaPanel = new gui.Panel(dimensions.width - 2 * MARGIN, dimensions.height - BUTTON_SIZE.h - 4 * MARGIN);
+            let borderLibrary = new svg.Rect(dimLibImg.width, dimLibImg.height)
+                .color(myColors.white, 1, myColors.grey).corners(5, 5);
+            let mediaPanel = new gui.Panel(dimLibImg.width - 2 * MARGIN, dimLibImg.height - BUTTON_SIZE.h - 4 * MARGIN);
             mediaPanel.position(0, (borderLibrary.height - mediaPanel.height) / 2 - 2 * MARGIN - BUTTON_SIZE.h);
             mediaPanel.border.color(myColors.none, 1, myColors.grey);
 
             let titleLibrary = new svg.Text('Library :').color(myColors.grey).font(FONT, 25);
             let titleLibraryBack = new svg.Rect(100, 3).color(myColors.white);
             titleLibraryBack.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2,
-                -borderLibrary.height / 2 + 2 * MARGIN);
+                    -borderLibrary.height / 2 + 2 * MARGIN);
             titleLibrary.position(-borderLibrary.width / 2 + 2 * MARGIN + titleLibraryBack.width / 2, -borderLibrary.height / 2 + 2 * MARGIN + 8.33);
             let addPictureButton = new gui.Button(3 * BUTTON_SIZE.w, BUTTON_SIZE.h, [myColors.customBlue, 0, myColors.none], 'Ajouter une image')
                 .position(borderLibrary.width / 2 - BUTTON_SIZE.w * 3 / 2 - 2 * MARGIN, borderLibrary.height / 2 - BUTTON_SIZE.h / 2 - MARGIN);

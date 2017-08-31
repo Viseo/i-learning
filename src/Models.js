@@ -23,15 +23,12 @@ exports.Models = function (globalVariables, mockResponses) {
         }
 
         createQuiz(data) {
-            if (typeof data == 'string') data = JSON.parse(data);
             return new Quiz(data);
         }
         createDoll(data){
-            if (typeof data == 'string') data = JSON.parse(data);
             return new Doll(data);
         }
-        createUser(data){
-            if(typeof data == 'string') data = JSON.parse(data);
+            createUser(data){
             return new User(data);
         }
         uploadImage(file, progressDisplay) {
@@ -50,9 +47,6 @@ exports.Models = function (globalVariables, mockResponses) {
                     break;
                 case "DashboardCollabP":
                     this.loadPresenterDashboard();
-                    break;
-                case "ConnectionP":
-                    this.loadPresenterConnection();
                     break;
                 case'FormationCollabP':
                     this.loadPresenterFormationCollab(this.formation, this.user);
@@ -189,14 +183,6 @@ exports.Models = function (globalVariables, mockResponses) {
                 default:
                     console.error('wrong type of game', game.type);break;
             }
-            this.currentPresenter.displayView();
-        }
-
-        loadPresenterRegister() {
-            this._addPageToStack();
-
-            this.currentPresenter && this.currentPresenter.flushView();
-            this.currentPresenter = new globalVariables.RegisterP(this);
             this.currentPresenter.displayView();
         }
 
@@ -627,14 +613,14 @@ exports.Models = function (globalVariables, mockResponses) {
             this.updateLinks();
         }
 
-        updateGamesCounter(game) {
-            let inc = 1;
-            switch (game.type) {
-                case GameType.QUIZ:
-                    this.gamesCounter.quizz += inc;
-                    break;
-            }
-        }
+        // updateGamesCounter(game) {
+        //     let inc = 1;
+        //     switch (game.type) {
+        //         case GameType.QUIZ:
+        //             this.gamesCounter.quizz += inc;
+        //             break;
+        //     }
+        // }
 
         checkLink(parent, child) {
             if (parent.levelIndex >= child.levelIndex) {
@@ -696,7 +682,8 @@ exports.Models = function (globalVariables, mockResponses) {
                     result.push(game.getProgress());
                 });
             });
-            if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done') && result.some(res => res == 'undone'))) {
+            if (result.some(res => res == 'inProgress') || (result.some(res => res == 'done')
+                && result.some(res => res == 'undone'))) {
                 return 'inProgress';
             }
             else if (result.every(res => res == 'done')) {

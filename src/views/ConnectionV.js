@@ -29,45 +29,38 @@ exports.ConnectionV = function (globalVariables) {
         }
 
         displayHeader(){
-            var _displayConnection = () => {
-                let messageText = new svg.Text('CONNEXION')
+            var createButtonAndText = (buttonText, textLabel) => {
+                let messageText = new svg.Text(textLabel)
                     .dimension(BUTTON_WIDTH, this.height)
                     .font(FONT, FONT_SIZE_INPUT)
                     .fontWeight('bold')
-                    .color(myColors.black)
-                    .mark("headerMessage");
+                    .color(myColors.black);
                 this.manipulator.add(messageText);
-                messageText.position(this.header.width - BUTTON_WIDTH - BUTTON_WIDTH/2 - 2*MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
-                let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], "Créer un compte")
+                let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], buttonText)
                     .corners(25, 25)
                     .onClick(this.switchPage.bind(this))
                 button.text.font(FONT)
                 button.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height/2 + MARGIN)
-                button.glass.mark('toRegister')
                 this.manipulator.add(button.component)
-            }
-            var _displayRegister = () => {
-                let messageText = new svg.Text('CREER UN COMPTE')
-                    .dimension(BUTTON_WIDTH, this.height)
-                    .font(FONT, FONT_SIZE_INPUT)
-                    .fontWeight('bold')
-                    .color(myColors.black)
-                    .mark("registerHeader");
-                this.manipulator.add(messageText);
-                messageText.position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
-                let button = new gui.Button(BUTTON_WIDTH, this.header.height/2, [myColors.white, 1.5, myColors.turquoise], "Connexion")
-                    .corners(25, 25)
-                    .onClick(this.switchPage.bind(this))
-                button.text.font(FONT)
-                button.position(this.header.width - button.width/2 - 2*MARGIN - BUTTON_WIDTH, this.header.height/2 + MARGIN)
-                this.manipulator.add(button.component)
-            }
 
+                return {button, messageText};
+            };
             super.displayHeader();
             if(this.isConnectionPage()){
-                _displayConnection();
+                let myObjects = createButtonAndText("Créer un compte", "CONNEXION");
+                myObjects.button
+                    .position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height/2 + MARGIN);
+                myObjects.button.glass.mark('toRegister');
+                myObjects.messageText
+                    .position(this.header.width - BUTTON_WIDTH*1.5 - 2*MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
+                    .mark("headerMessage");
             }else {
-                _displayRegister();
+                let myObjects = createButtonAndText("Connexion", "CREER UN COMPTE");
+                myObjects.messageText
+                    .position(this.header.width - BUTTON_WIDTH/2 - MARGIN, this.header.height / 2 + FONT_SIZE_INPUT/4 + MARGIN)
+                    .mark("registerHeader");
+                myObjects.button
+                    .position(this.header.width - BUTTON_WIDTH*1.5 - 2*MARGIN, this.header.height/2 + MARGIN)
             }
         }
 
