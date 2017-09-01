@@ -17,7 +17,6 @@ exports.DollAdminV = function (globalVariables) {
     var
         INPUT_SIZE = {w: 400, h: 30},
         PANEL_SIZE = {w: drawing.width - 2 * MARGIN, h: drawing.height * 0.7},
-        LEFT_PANEL_SIZE = 400,
         SANDBOX_SIZE = {
             w: PANEL_SIZE.w * 6 / 9,
             h: PANEL_SIZE.h - 4 * MARGIN,
@@ -32,7 +31,7 @@ exports.DollAdminV = function (globalVariables) {
             h: RIGHTBOX_SIZE.h - RIGHTBOX_SIZE.header.h - 0.8 * INPUT_SIZE.h - MARGIN * 4
         },
         TAB_SIZE = {w: 0.1 * PANEL_SIZE.w, h: 0.1 * PANEL_SIZE.h},
-        HEADER_TILE = INPUT_SIZE.h*2 - 2 * MARGIN,
+        HEADER_TILE = SANDBOX_SIZE.header.h - 2 * MARGIN,
         CONTEXT_TILE_SIZE = {w: 150 - 2 * MARGIN, h: 27},
         NB_ELEMENT_RIGHT_CLICK = 3,
         CHEVRON_RCLICK_SIZE =  {w: 75, h: 20};
@@ -657,29 +656,18 @@ exports.DollAdminV = function (globalVariables) {
 
             _updateConsts();
             super.display();
-            this.displayBackGround();
             this.displayHeader(this.getLabel());
             this.displayTitle();
+            this.displayMainPanel();
             this.displayTabs();
-            this.displayLeftMainPanel();
-            this.displaySandBoxZone();
             this.displayButtons();
             svg.addGlobalEvent('keydown', (event) => this.keyDown.call(this, event));
-        }
-
-        displayBackGround(){
-            let bgManip = new Manipulator();
-            let bg = new svg.Rect(drawing.width, drawing.height).color(myColors.lightgrey);
-            bgManip.add(bg)
-                .move(drawing.width/2, drawing.height/2);
-            this.manipulator.add(bgManip);
         }
 
         displayTitle() {
             let createReturnButton = () => {
                 this.returnButtonManipulator = new Manipulator(this);
-                this.returnButton = new gui.Button(INPUT_SIZE.w*2/3, INPUT_SIZE.h, [myColors.white, 1, myColors.grey],
-                    'Retourner aux formations');
+                this.returnButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [myColors.white, 1, myColors.grey], 'Retourner aux formations');
                 this.returnButton.onClick(this.returnToOldPage.bind(this));
                 this.returnButton.back.corners(5, 5);
                 this.returnButton.text.font(FONT, 20).position(0, 6.6);
@@ -694,7 +682,7 @@ exports.DollAdminV = function (globalVariables) {
                 let titleManipulator = new Manipulator(this);
                 let title = new svg.Text('Creer un exercice : ')
                     .font(FONT, 25).anchor('left')
-                    .position(-INPUT_SIZE.w / 2, 10);
+                    .position(-INPUT_SIZE.w / 2, 0);
                 let exerciseTitleInput = new gui.TextField(0, 0, INPUT_SIZE.w, INPUT_SIZE.h, this.getLabel())
                 exerciseTitleInput.font(FONT, 15).color(myColors.grey);
                 exerciseTitleInput.text.position(-INPUT_SIZE.w / 2 + MARGIN, 7.5);
@@ -719,8 +707,7 @@ exports.DollAdminV = function (globalVariables) {
                 exerciseTitleInput.glass.mark('titleLabelClick');
                 titleManipulator.add(exerciseTitleInput.component)
                     .add(title);
-                titleManipulator.move(this.returnButton.width + exerciseTitleInput.width/2 + 2*MARGIN,
-                    this.header.height + MARGIN);
+                titleManipulator.move(this.returnButton.width / 2 + MARGIN, this.header.height + 2 * INPUT_SIZE.h + MARGIN);
                 let saveIcon = new svg.Image('../../images/save.png');
                 titleManipulator.add(saveIcon);
                 saveIcon
@@ -737,100 +724,86 @@ exports.DollAdminV = function (globalVariables) {
             createTitle();
         }
 
-        displayButtons() {
-            this.buttonsManipulator = new Manipulator(this);
-            let saveButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [[43, 120, 228], 1, myColors.black], 'Sauvegarder');
-            saveButton.onClick(this.saveDoll.bind(this));
-            saveButton.glass.mark('saveButtonDoll');
-            this.buttonsManipulator.add(saveButton.component);
-            this.buttonsManipulator.move(drawing.width - saveButton.width/2 - MARGIN, this.header.height + saveButton.height/2)
-            this.manipulator.add(this.buttonsManipulator);
-        }
-
-        displayTabs(){
-            let sizeTabW = LEFT_PANEL_SIZE/2 - MARGIN;
-
-            let statement = new svg.Rect(sizeTabW, TAB_SIZE.h)
-                .color(myColors.customBlue, 0, myColors.grey)
+        displayTabs() {
+            let statement = new svg.Rect(TAB_SIZE.w, TAB_SIZE.h)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(2, 2)
+                .position(-TAB_SIZE.w, 0);
             let statementText = new svg.Text('Enoncé')
                 .font(FONT, 18)
-                .position(-statement.width/2 + MARGIN/2, 6)
-                .anchor('left')
+                .position(-TAB_SIZE.w, 6);
             statement.mark('statement');
 
-            let rules = new svg.Rect(sizeTabW, TAB_SIZE.h)
-                .color(myColors.white, 0, myColors.grey)
-                .position(LEFT_PANEL_SIZE - sizeTabW, 0)
+            let rules = new svg.Rect(TAB_SIZE.w, TAB_SIZE.h)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(2, 2);
             let rulesText = new svg.Text('Règles')
                 .font(FONT, 18)
-                .position(rules.x - rules.width/2 + MARGIN/2, 6)
-                .anchor('left')
+                .position(0, 6);
             rules.mark('rules');
 
-            resizeStringForText(statementText, sizeTabW, TAB_SIZE.h);
-            resizeStringForText(rulesText, sizeTabW, TAB_SIZE.h);
+            resizeStringForText(statementText, TAB_SIZE.w, TAB_SIZE.h);
+            resizeStringForText(rulesText, TAB_SIZE.w, TAB_SIZE.h);
             svg.addEvent(statement, 'click', () => {
                 this.toggleTabs(false)
-                statement.color(myColors.customBlue, 0, myColors.grey);
-                rules.color(myColors.white, 0, myColors.grey);
             })
             svg.addEvent(statementText, 'click', () => {
                 this.toggleTabs(false)
-                statement.color(myColors.customBlue, 0, myColors.grey);
-                rules.color(myColors.white, 0, myColors.grey);
             })
             svg.addEvent(rules, 'click', () => {
                 this.toggleTabs(true)
-                statement.color(myColors.white, 0, myColors.grey);
-                rules.color(myColors.customBlue, 0, myColors.grey);
             })
             svg.addEvent(rulesText, 'click', () => {
                 this.toggleTabs(true)
-                statement.color(myColors.white, 0, myColors.grey);
-                rules.color(myColors.customBlue, 0, myColors.grey);
             })
-
 
             let tabsManip = new Manipulator(this);
             tabsManip.add(statement)
                 .add(statementText)
                 .add(rules)
                 .add(rulesText);
-            tabsManip.move(MARGIN + sizeTabW/2,this.header.height + INPUT_SIZE.h*2 + TAB_SIZE.h/2);
+            tabsManip.move(drawing.width - 2 * MARGIN - TAB_SIZE.w / 2, this.mainPanelManipulator.y - PANEL_SIZE.h / 2 - TAB_SIZE.h / 2);
             this.manipulator.add(tabsManip);
         }
 
-        displayLeftMainPanel() {
-            this.leftMainPanelManipulator = new Manipulator(this);
-            let backRect = new svg.Rect(LEFT_PANEL_SIZE, drawing.height - this.header.height - INPUT_SIZE.h*2 - TAB_SIZE.h - MARGIN)
-                .color(myColors.white, 0, myColors.grey)
-            this.leftMainPanelManipulator.add(backRect)
-                .move(backRect.width/2 + MARGIN,
-                    backRect.height/2 + 3*MARGIN + this.header.height + INPUT_SIZE.h + TAB_SIZE.h)
-            this.manipulator.add(this.leftMainPanelManipulator);
+        displayButtons() {
+            this.buttonsManipulator = new Manipulator(this);
+            let saveButton = new gui.Button(INPUT_SIZE.w, INPUT_SIZE.h, [[43, 120, 228], 1, myColors.black], 'Sauvegarder');
+            saveButton.onClick(this.saveDoll.bind(this));
+            saveButton.glass.mark('saveButtonDoll');
+            this.buttonsManipulator.add(saveButton.component);
+            this.buttonsManipulator.move(drawing.width / 2, drawing.height - INPUT_SIZE.h / 2 - MARGIN)
+            this.manipulator.add(this.buttonsManipulator);
+        }
+
+        displayMainPanel() {
+            this.mainPanelManipulator = new Manipulator(this);
+            let backRect = new svg.Rect(PANEL_SIZE.w, PANEL_SIZE.h)
+                .color(myColors.white, 1, myColors.grey)
+                .corners(5, 5);
+            this.mainPanelManipulator.add(backRect);
+            this.mainPanelManipulator.move(drawing.width / 2, drawing.height / 2 + PANEL_SIZE.h / 8)
+            this.manipulator.add(this.mainPanelManipulator);
 
             if (this.rulesDisplay) {
-                //this.displaySolutionsHeader();
+                this.displaySolutionsHeader();
             }
             else {
-                this.displayObjectives();
-                //this.displaySandBoxZone();
+                this.displaySandBoxZone();
             }
         }
 
         displaySandBoxZone() {
             this.sandboxManip = new Manipulator(this);
 
-            let actionList = new ListManipulatorView(this.actionTabs, 'H', drawing.width - LEFT_PANEL_SIZE - MARGIN*3, INPUT_SIZE.h*2, 25, 25, HEADER_TILE,
-                HEADER_TILE, 0, undefined, 8);
+            let actionList = new ListManipulatorView(this.actionTabs, 'H', SANDBOX_SIZE.w, SANDBOX_SIZE.header.h, 25, 25, HEADER_TILE,
+                HEADER_TILE, 5, undefined, 25);
 
-            this.sandboxMain = new gui.Panel(actionList.width,
-                drawing.height - this.header.height - INPUT_SIZE.h*2 - actionList.height - MARGIN, myColors.white);
-            this.sandboxMain.border.color(myColors.none, 0, myColors.black);
-
-            actionList.position(0, -this.sandboxMain.height/2 - actionList.height/2);
-            this.sandboxManip.add(this.sandboxMain.component)
-                .add(actionList.manipulator)
+            this.sandboxMain = new gui.Panel(SANDBOX_SIZE.w, SANDBOX_SIZE.h - SANDBOX_SIZE.header.h, myColors.white);
+            this.sandboxMain.border.corners(2, 2).color(myColors.none, 1, myColors.black);
+            this.sandboxMain.position(0, SANDBOX_SIZE.header.h / 2 + this.sandboxMain.height / 2);
+            this.sandboxManip.add(actionList.manipulator)
+                .add(this.sandboxMain.component);
             this.sandboxMain.component.mark('mainPanel');
 
             svg.addEvent(this.sandboxMain.component, 'click', (event) => {
@@ -838,16 +811,17 @@ exports.DollAdminV = function (globalVariables) {
                 this.removeContextMenu()
             });
 
-            this.sandboxManip.move(actionList.width/2 + LEFT_PANEL_SIZE + MARGIN*2, (this.sandboxMain.height)/2+ actionList.height
-                + 3*MARGIN + this.header.height + INPUT_SIZE.h);
-            this.manipulator.add(this.sandboxManip);
+            this.sandboxManip.move(-PANEL_SIZE.w / 2 + SANDBOX_SIZE.header.w / 2 + MARGIN, -PANEL_SIZE.h / 2 + SANDBOX_SIZE.header.h / 2 + 2 * MARGIN);
+            this.mainPanelManipulator.add(this.sandboxManip);
             actionList.refreshListView();
             this.elements.forEach((elem) => {
                 this.sandboxMain.content.add(elem.parentManip.component);
                 if (elem instanceof gui.TextField){
                     resizeStringForText(elem.text, elem.width, elem.height);
                 }
-            });
+            })
+            this.displayObjectives();
+            this.displayResponses();
         }
 
         displayObjectives() {
@@ -955,7 +929,7 @@ exports.DollAdminV = function (globalVariables) {
                 .add(this.objectivesInput.component)
                 .add(this.objectivesList.manipulator);
             objectivesManip.move(PANEL_SIZE.w / 2 - RIGHTBOX_SIZE.w / 2 - MARGIN, 2 * MARGIN - PANEL_SIZE.h / 2 + objectivesHeader.height / 2);
-            this.leftMainPanelManipulator.add(objectivesManip);
+            this.mainPanelManipulator.add(objectivesManip);
             this.objectivesList.refreshListView();
         }
 
@@ -1132,7 +1106,7 @@ exports.DollAdminV = function (globalVariables) {
                 .add(this.responsesList.manipulator);
             responsesManip.move(PANEL_SIZE.w / 2 - RIGHTBOX_SIZE.w / 2 - MARGIN,
                 2 * MARGIN - PANEL_SIZE.h / 2 + responsesHeader.height / 2 + RIGHTBOX_SIZE.h + 2 * MARGIN);
-            this.leftMainPanelManipulator.add(responsesManip);
+            this.mainPanelManipulator.add(responsesManip);
             this.responsesList.refreshListView();
         }
 
@@ -1234,9 +1208,10 @@ exports.DollAdminV = function (globalVariables) {
             };
 
             !this.solutionsHeaderManipulator && _createSolutionsHeader();
-            this.solutionsHeaderManipulator && this.leftMainPanelManipulator.add(this.solutionsHeaderManipulator);
+            this.solutionsHeaderManipulator && this.mainPanelManipulator.add(this.solutionsHeaderManipulator);
             //this.solutionsHeaderManipulator && this.objectivesSelectList.resizeAllText();
         }
+
 
         createSolutionsBody(){
             var _createBlockSolution = (x, y, best) => {
@@ -2204,10 +2179,10 @@ exports.DollAdminV = function (globalVariables) {
         }
 
         toggleTabs(bool) {
-            /*if (this.rulesDisplay != bool) {
+            if (this.rulesDisplay != bool) {
                 this.rulesDisplay = bool;
-                this.displayLeftMainPanel();
-            }*/
+                this.displayMainPanel();
+            }
         }
 
         uploadImageByFile(file, progressDisplay) {
